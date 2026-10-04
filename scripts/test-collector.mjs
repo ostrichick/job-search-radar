@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {
   defaultLocationReference,
+  domesticProvinceOptions,
   domesticRegionFor,
   marketScopesFor,
   eligibilityFor,
@@ -252,9 +253,24 @@ assert.equal(jeonjuAlias.province, '전북특별자치도');
 assert.equal(jeonjuAlias.city, '전주시');
 assert.equal(jeonjuAlias.evidenceLevel, 'derived_alias');
 const suncheonAlias = domesticRegionFor({ location: 'Suncheon, South Korea', countryCode: 'KR' });
-assert.equal(suncheonAlias.province, '전라남도');
+assert.equal(suncheonAlias.province, '전남광주통합특별시');
 assert.equal(suncheonAlias.city, '순천시');
 assert.equal(suncheonAlias.evidenceLevel, 'derived_alias');
+for (const [location, province, city] of [
+  ['Gunsan', '전북특별자치도', '군산시'],
+  ['Gunsan, South Korea', '전북특별자치도', '군산시'],
+  ['Goyang, South Korea', '경기도', '고양시'],
+  ['Gimhae, South Korea', '경상남도', '김해시'],
+  ['Yongin, South Korea', '경기도', '용인시'],
+  ['군산시, 대한민국', '전북특별자치도', '군산시']
+]) {
+  const normalized = domesticRegionFor({ location, countryCode: 'KR' });
+  assert.equal(normalized.province, province, `${location} must resolve to its current official province`);
+  assert.equal(normalized.city, city, `${location} must resolve to its current official city`);
+}
+assert.ok(domesticProvinceOptions.includes('전남광주통합특별시'));
+assert.ok(!domesticProvinceOptions.includes('광주광역시'));
+assert.ok(!domesticProvinceOptions.includes('전라남도'));
 const countryOnlyRegion = domesticRegionFor({ location: '위치 미상', countryCode: 'KR' });
 assert.equal(countryOnlyRegion.precision, 'country');
 assert.equal(countryOnlyRegion.evidenceLevel, 'country_code');
@@ -663,16 +679,16 @@ const appierCreativeQc = normalizeJob({
   id: 'greenhouse:appier:8187636',
   source: 'Appier', company: 'Appier',
   title: '[Part Time] AI Creative QC Reviewer, Korea',
-  location: 'Seoul, South Korea', remote: false, workplaceMode: 'hybrid', countryCode: 'KR',
+  location: 'Seoul, South Korea', remote: true, workplaceMode: 'remote', countryCode: 'KR',
   type: 'Part Time', url: 'https://job-boards.greenhouse.io/appier/jobs/8187636',
   description: 'AI 생성 광고 소재의 한국어 품질 검수. 자격 요건: 한국어 원어민 수준, 영어 텍스트 기반 커뮤니케이션 가능. 우대 사항: AI 생성물 검수 또는 데이터 라벨링 경험. 급여: 시급 10,320원 (주휴수당 포함 월 2,157,000원 선). 근무 형태: 재택 (교육 기간 중 Hybrid 가능). 근무 시간: 주 40시간.',
   tags: ['Korean', 'AI Creative QC']
 });
 assert.equal(appierCreativeQc.sourceKind, 'official_ats');
 assert.equal(appierCreativeQc.category, 'AI 평가·어노테이션');
-assert.equal(appierCreativeQc.workplaceMode, 'hybrid');
-assert.equal(appierCreativeQc.remote, false);
-assert.deepEqual(appierCreativeQc.marketScopes, ['domestic']);
+assert.equal(appierCreativeQc.workplaceMode, 'remote');
+assert.equal(appierCreativeQc.remote, true);
+assert.deepEqual(appierCreativeQc.marketScopes, ['overseas_remote', 'domestic']);
 assert.equal(appierCreativeQc.domesticRegion.province, '서울특별시');
 assert.equal(appierCreativeQc.salaryInfo.currency, 'KRW');
 assert.equal(appierCreativeQc.salaryInfo.min, 10320);

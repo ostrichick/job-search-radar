@@ -35,9 +35,9 @@ const state = {
 
 const $ = (id) => document.getElementById(id);
 const controls = ['query', 'source', 'category', 'remote', 'eligibility', 'domesticProvince', 'domesticLocality', 'compensationFilter', 'ageFilter', 'listingFilter', 'sourceKindFilter', 'paymentFilter', 'requirementsFilter', 'minScore', 'sort', 'statusFilter'];
-const domesticProvinceOptions = [
-  '서울특별시', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '대전광역시', '울산광역시', '세종특별자치시',
-  '경기도', '강원특별자치도', '충청북도', '충청남도', '전북특별자치도', '전라남도', '경상북도', '경상남도', '제주특별자치도'
+const fallbackDomesticProvinceOptions = [
+  '서울특별시', '전남광주통합특별시', '부산광역시', '대구광역시', '인천광역시', '대전광역시', '울산광역시', '세종특별자치시',
+  '경기도', '충청북도', '충청남도', '경상북도', '경상남도', '제주특별자치도', '강원특별자치도', '전북특별자치도'
 ];
 const advancedFilterDefaults = {
   category: '', remote: '', ageFilter: '', listingFilter: 'active',
@@ -50,6 +50,9 @@ const filterDefaults = {
 const legacySavedFilters = JSON.parse(localStorage.getItem('jobFilters') || '{}');
 const savedFiltersByMarket = JSON.parse(localStorage.getItem('jobFiltersByMarket') || '{}');
 const filterSchemaVersion = Number(localStorage.getItem('jobFilterSchemaVersion') || 0);
+function normalizeDomesticProvinceFilter(value) {
+  return ({ '광주광역시': '전남광주통합특별시', '전라남도': '전남광주통합특별시' })[value] || value || '';
+}
 if (filterSchemaVersion < 3) {
   if (legacySavedFilters.minScore === undefined || legacySavedFilters.minScore === '0') legacySavedFilters.minScore = '20';
   if (legacySavedFilters.listingFilter === undefined) legacySavedFilters.listingFilter = 'active';
@@ -82,6 +85,15 @@ if (filterSchemaVersion < 6) {
   if (!savedFiltersByMarket.overseas_remote) savedFiltersByMarket.overseas_remote = { ...legacySavedFilters };
   localStorage.setItem('jobFiltersByMarket', JSON.stringify(savedFiltersByMarket));
   localStorage.setItem('jobFilterSchemaVersion', '6');
+}
+if (filterSchemaVersion < 7) {
+  legacySavedFilters.domesticProvince = normalizeDomesticProvinceFilter(legacySavedFilters.domesticProvince);
+  if (savedFiltersByMarket.domestic && typeof savedFiltersByMarket.domestic === 'object') {
+    savedFiltersByMarket.domestic.domesticProvince = normalizeDomesticProvinceFilter(savedFiltersByMarket.domestic.domesticProvince);
+  }
+  localStorage.setItem('jobFilters', JSON.stringify(legacySavedFilters));
+  localStorage.setItem('jobFiltersByMarket', JSON.stringify(savedFiltersByMarket));
+  localStorage.setItem('jobFilterSchemaVersion', '7');
 }
 if (!savedFiltersByMarket.overseas_remote) savedFiltersByMarket.overseas_remote = { ...legacySavedFilters };
 const savedFilters = { ...filterDefaults[state.marketTab], ...(savedFiltersByMarket[state.marketTab] || {}) };
@@ -1180,6 +1192,9 @@ async function importState(file) {
     for (const market of ['overseas_remote', 'domestic']) {
       if (payload.filtersByMarket[market] && typeof payload.filtersByMarket[market] === 'object') {
         savedFiltersByMarket[market] = { ...filterDefaults[market], ...payload.filtersByMarket[market] };
+        if (market === 'domestic') {
+          savedFiltersByMarket[market].domesticProvince = normalizeDomesticProvinceFilter(savedFiltersByMarket[market].domesticProvince);
+        }
       }
     }
   } else if (payload.filters && typeof payload.filters === 'object') {
@@ -1234,7 +1249,10 @@ function updateDynamicFilters(forceSaved = false) {
   fillSelect('source', marketJobs.flatMap((job) => job.sources?.length ? job.sources : [job.source]));
   fillSelect('category', marketJobs.map((job) => job.category));
   if (state.marketTab === 'domestic') {
-    fillSelect('domesticProvince', [...domesticProvinceOptions, ...marketJobs.map((job) => job.domesticRegion?.province).filter(Boolean)]);
+    const feedProvinceOptions = Array.isArray(state.meta?.domesticProvinceOptions) && state.meta.domesticProvinceOptions.length
+      ? state.meta.domesticProvinceOptions
+      : fallbackDomesticProvinceOptions;
+    fillSelect('domesticProvince', [...feedProvinceOptions, ...marketJobs.map((job) => job.domesticRegion?.province).filter(Boolean)]);
     if ((forceSaved || !state.dynamicFiltersInitialized) && desired.domesticProvince && [...$('domesticProvince').options].some((option) => option.value === desired.domesticProvince)) {
       $('domesticProvince').value = desired.domesticProvince;
     }

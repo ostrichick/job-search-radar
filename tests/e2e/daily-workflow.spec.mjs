@@ -83,13 +83,14 @@ function job(overrides = {}) {
 function feed(jobs) {
   return {
     updatedAt: '2026-10-04T06:00:00.000Z',
+    domesticProvinceOptions: ['서울특별시', '전남광주통합특별시', '부산광역시', '대구광역시', '인천광역시', '대전광역시', '울산광역시', '세종특별자치시', '경기도', '충청북도', '충청남도', '경상북도', '경상남도', '제주특별자치도', '강원특별자치도', '전북특별자치도'],
     locationReference: {
       id: 'kr-jeonbuk-jeonju-deokjin-sanjeong',
       label: '전북특별자치도 전주시 덕진구 산정동',
       province: '전북특별자치도', city: '전주시', district: '덕진구', neighborhood: '산정동',
       lat: 35.84434, lon: 127.1736277, precision: 'neighborhood', coordinateSource: 'OpenStreetMap Nominatim', distanceMethod: 'haversine_straight_line'
     },
-    recommendationPolicyVersion: 1,
+    recommendationPolicyVersion: 2,
     sourceStatus: [{ source: 'RWS TrainAI', ok: true, count: jobs.length, qualityTier: 'strong', kept: jobs.length, recommended: jobs.filter((item) => item.recommendationEligible !== false).length }],
     sourceMetrics: {
       'RWS TrainAI': {
@@ -188,11 +189,11 @@ const domesticJobs = [
   })
 ];
 
-const appierHybridJob = job({
-  id: 'job:appier-hybrid', source: 'Appier', company: 'Appier', title: '[Part Time] AI Creative QC Reviewer, Korea',
-  location: 'Seoul, South Korea', remote: false, workplaceMode: 'hybrid', type: 'Part Time',
-  url: 'https://example.com/job/appier-hybrid', eligibilityCode: 'korea', eligibility: '한국에서 지원 가능', score: 42,
-  marketScopes: ['domestic'], marketSegment: 'domestic',
+const appierRemoteJob = job({
+  id: 'job:appier-remote', source: 'Appier', company: 'Appier', title: '[Part Time] AI Creative QC Reviewer, Korea',
+  location: 'Seoul, South Korea', remote: true, workplaceMode: 'remote', type: 'Part Time',
+  url: 'https://example.com/job/appier-remote', eligibilityCode: 'korea', eligibility: '한국에서 지원 가능', score: 42,
+  marketScopes: ['overseas_remote', 'domestic'], marketSegment: 'overseas_remote',
   salary: '₩10,320/시간', salaryInfo: { raw: '시급 10,320원', display: '₩10,320/시간', currency: 'KRW', min: 10320, max: 10320, period: 'hour', confidence: 'parsed' },
   requirementsStatus: 'routine_check', requirementsLabel: '일반 요건 확인 필요',
   domesticRegion: { country: '대한민국', province: '서울특별시', city: '', district: '', neighborhood: '', locality: '', label: '서울특별시', precision: 'city', evidenceLevel: 'source_structured', lat: 37.5666791, lon: 126.9782914, coordinatePrecision: 'city', coordinateSource: 'OpenStreetMap Nominatim' }
@@ -275,6 +276,8 @@ test('기본은 해외·원격이고 국내 탭에서 시도→시군구와 산�
   await expect(page.locator('#distanceReference')).toContainText('산정동');
   await expect(page.locator('#distanceReference')).toContainText('직선거리');
   await expect(page.locator('#domesticProvince')).toContainText('전북특별자치도');
+  await expect(page.locator('#domesticProvince')).toContainText('전남광주통합특별시');
+  await expect(page.locator('#domesticProvince')).not.toContainText('전라남도');
   await page.locator('#domesticProvince').selectOption('전북특별자치도');
   await expect(page.locator('#domesticLocality')).toContainText('전주시 덕진구');
   await page.locator('#domesticLocality').selectOption('전주시 덕진구');
@@ -299,16 +302,14 @@ test('국내 거리 근거가 부족하거나 원격이면 정밀 거리를 만�
   await expect(remote.locator('.distance-value')).toHaveText('원격 · 출근 거리 비해당');
 });
 
-test('국내 하이브리드는 근무형태와 행정구역 정밀도에 맞는 직선거리를 보여준다', async ({ page }) => {
-  await useFeed(page, () => feed([appierHybridJob, gangnamHybridJob]));
+test('국내 원격과 하이브리드는 근무형태에 맞는 거리 근거를 보여준다', async ({ page }) => {
+  await useFeed(page, () => feed([appierRemoteJob, gangnamHybridJob]));
   await page.goto('/');
   await page.locator('#marketDomestic').click();
 
   const appier = page.locator('.job-card').filter({ hasText: 'AI Creative QC Reviewer' });
-  await expect(appier.locator('.meta')).toContainText('하이브리드');
-  await expect(appier.locator('.distance-value')).toContainText('지역 기준 직선거리 약');
-  await expect(appier.locator('.distance-note')).toContainText('서울특별시 기준');
-  await expect(appier.locator('.distance-note')).toContainText('실제 도로 이동거리 아님');
+  await expect(appier.locator('.meta')).toContainText('원격');
+  await expect(appier.locator('.distance-value')).toHaveText('원격 · 출근 거리 비해당');
 
   const gangnam = page.locator('.job-card').filter({ hasText: 'Domestic Data Operations - Gangnam' });
   await expect(gangnam.locator('.distance-note')).toContainText('서울특별시 강남구 기준');
@@ -346,7 +347,7 @@ test('선택한 국내 지역 공고가 다음 피드에서 0건이 되어도 �
   await page.locator('#domesticLocality').selectOption('전주시 덕진구');
   await expect(page.locator('.job-card')).toHaveCount(1);
 
-  current = feed([...defaultJobs, domesticJobs[2], appierHybridJob]);
+  current = feed([...defaultJobs, domesticJobs[2], appierRemoteJob]);
   await page.reload();
   await expect(page.locator('#marketDomestic')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
@@ -354,6 +355,21 @@ test('선택한 국내 지역 공고가 다음 피드에서 0건이 되어도 �
   await expect(page.locator('.job-card')).toHaveCount(0);
   await expect(page.locator('#emptyMessage')).toContainText('전북특별자치도 전주시 덕진구');
   await expect(page.locator('#emptyMessage')).toContainText('확인하지 못했습니다');
+});
+
+test('2026 행정구역 변경 전 저장한 광주·전남 필터는 통합특별시로 마이그레이션된다', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('jobMarketTab', 'domestic');
+    localStorage.setItem('jobFilterSchemaVersion', '6');
+    localStorage.setItem('jobFiltersByMarket', JSON.stringify({
+      domestic: { domesticProvince: '전라남도', domesticLocality: '' }
+    }));
+  });
+  await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
+  await page.goto('/');
+  await expect(page.locator('#marketDomestic')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#domesticProvince')).toHaveValue('전남광주통합특별시');
+  await expect(page.locator('#domesticProvince')).not.toContainText('전라남도');
 });
 
 test('상태와 동적 소스 필터가 reload 후 유지된다', async ({ page }) => {

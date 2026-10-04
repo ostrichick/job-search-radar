@@ -1,0 +1,4187 @@
+{
+  "version": 1,
+  "source": {
+    "name": "행정표준코드관리시스템 법정동 코드 전체자료",
+    "url": "https://www.code.go.kr/stdcode/regCodeL.do?menuNo=101010100010",
+    "downloadEndpoint": "https://www.code.go.kr/etc/codeFullDown.do",
+    "checkedAt": "2026-10-05",
+    "activeLegalDongRecords": 20560,
+    "note": "폐지여부=존재인 공식 전체자료에서 시·도 및 시·군·구 경계를 생성. 런타임 네트워크 조회 없음."
+  },
+  "provinces": [
+    {
+      "name": "서울특별시",
+      "aliases": [
+        "seoul",
+        "서울",
+        "서울특별시"
+      ]
+    },
+    {
+      "name": "전남광주통합특별시",
+      "aliases": [
+        "gwangju",
+        "jeollanam",
+        "jeollanam-do",
+        "jeonnam",
+        "광주",
+        "광주광역시",
+        "전남",
+        "전남광주통합특별시",
+        "전라남도"
+      ]
+    },
+    {
+      "name": "부산광역시",
+      "aliases": [
+        "busan",
+        "부산",
+        "부산광역시"
+      ]
+    },
+    {
+      "name": "대구광역시",
+      "aliases": [
+        "daegu",
+        "대구",
+        "대구광역시"
+      ]
+    },
+    {
+      "name": "인천광역시",
+      "aliases": [
+        "incheon",
+        "인천",
+        "인천광역시"
+      ]
+    },
+    {
+      "name": "대전광역시",
+      "aliases": [
+        "daejeon",
+        "대전",
+        "대전광역시"
+      ]
+    },
+    {
+      "name": "울산광역시",
+      "aliases": [
+        "ulsan",
+        "울산",
+        "울산광역시"
+      ]
+    },
+    {
+      "name": "세종특별자치시",
+      "aliases": [
+        "sejong",
+        "세종",
+        "세종특별자치시"
+      ]
+    },
+    {
+      "name": "경기도",
+      "aliases": [
+        "gyeonggi",
+        "gyeonggi-do",
+        "경기",
+        "경기도"
+      ]
+    },
+    {
+      "name": "충청북도",
+      "aliases": [
+        "chungbuk",
+        "chungcheongbuk",
+        "chungcheongbuk-do",
+        "충북",
+        "충청북도"
+      ]
+    },
+    {
+      "name": "충청남도",
+      "aliases": [
+        "chungcheongnam",
+        "chungcheongnam-do",
+        "chungnam",
+        "충남",
+        "충청남도"
+      ]
+    },
+    {
+      "name": "경상북도",
+      "aliases": [
+        "gyeongbuk",
+        "gyeongsangbuk",
+        "gyeongsangbuk-do",
+        "경북",
+        "경상북도"
+      ]
+    },
+    {
+      "name": "경상남도",
+      "aliases": [
+        "gyeongnam",
+        "gyeongsangnam",
+        "gyeongsangnam-do",
+        "경남",
+        "경상남도"
+      ]
+    },
+    {
+      "name": "제주특별자치도",
+      "aliases": [
+        "jeju",
+        "jeju-do",
+        "제주",
+        "제주특별자치도"
+      ]
+    },
+    {
+      "name": "강원특별자치도",
+      "aliases": [
+        "gangwon",
+        "gangwon-do",
+        "강원",
+        "강원특별자치도"
+      ]
+    },
+    {
+      "name": "전북특별자치도",
+      "aliases": [
+        "jeollabuk",
+        "jeollabuk-do",
+        "jeonbuk",
+        "전라북도",
+        "전북",
+        "전북특별자치도"
+      ]
+    }
+  ],
+  "regions": [
+    {
+      "code": "5115000000",
+      "province": "강원특별자치도",
+      "city": "강릉시",
+      "district": "",
+      "aliases": [
+        "gangreung",
+        "gangreung city",
+        "gangreung si",
+        "gangreung-si",
+        "gangreungsi",
+        "강릉",
+        "강릉시"
+      ]
+    },
+    {
+      "code": "5182000000",
+      "province": "강원특별자치도",
+      "city": "고성군",
+      "district": "",
+      "aliases": [
+        "goseong",
+        "goseong county",
+        "goseong gun",
+        "goseong-gun",
+        "goseonggun",
+        "고성",
+        "고성군"
+      ]
+    },
+    {
+      "code": "5117000000",
+      "province": "강원특별자치도",
+      "city": "동해시",
+      "district": "",
+      "aliases": [
+        "donghae",
+        "donghae city",
+        "donghae si",
+        "donghae-si",
+        "donghaesi",
+        "동해",
+        "동해시"
+      ]
+    },
+    {
+      "code": "5123000000",
+      "province": "강원특별자치도",
+      "city": "삼척시",
+      "district": "",
+      "aliases": [
+        "samcheok",
+        "samcheok city",
+        "samcheok si",
+        "samcheok-si",
+        "samcheoksi",
+        "삼척",
+        "삼척시"
+      ]
+    },
+    {
+      "code": "5121000000",
+      "province": "강원특별자치도",
+      "city": "속초시",
+      "district": "",
+      "aliases": [
+        "sokcho",
+        "sokcho city",
+        "sokcho si",
+        "sokcho-si",
+        "sokchosi",
+        "속초",
+        "속초시"
+      ]
+    },
+    {
+      "code": "5180000000",
+      "province": "강원특별자치도",
+      "city": "양구군",
+      "district": "",
+      "aliases": [
+        "yanggu",
+        "yanggu county",
+        "yanggu gun",
+        "yanggu-gun",
+        "yanggugun",
+        "양구",
+        "양구군"
+      ]
+    },
+    {
+      "code": "5183000000",
+      "province": "강원특별자치도",
+      "city": "양양군",
+      "district": "",
+      "aliases": [
+        "yangyang",
+        "yangyang county",
+        "yangyang gun",
+        "yangyang-gun",
+        "yangyanggun",
+        "양양",
+        "양양군"
+      ]
+    },
+    {
+      "code": "5175000000",
+      "province": "강원특별자치도",
+      "city": "영월군",
+      "district": "",
+      "aliases": [
+        "yeongwol",
+        "yeongwol county",
+        "yeongwol gun",
+        "yeongwol-gun",
+        "yeongwolgun",
+        "영월",
+        "영월군"
+      ]
+    },
+    {
+      "code": "5113000000",
+      "province": "강원특별자치도",
+      "city": "원주시",
+      "district": "",
+      "aliases": [
+        "wonju",
+        "wonju city",
+        "wonju si",
+        "wonju-si",
+        "wonjusi",
+        "원주",
+        "원주시"
+      ]
+    },
+    {
+      "code": "5181000000",
+      "province": "강원특별자치도",
+      "city": "인제군",
+      "district": "",
+      "aliases": [
+        "inje",
+        "inje county",
+        "inje gun",
+        "inje-gun",
+        "injegun",
+        "인제",
+        "인제군"
+      ]
+    },
+    {
+      "code": "5177000000",
+      "province": "강원특별자치도",
+      "city": "정선군",
+      "district": "",
+      "aliases": [
+        "jeongseon",
+        "jeongseon county",
+        "jeongseon gun",
+        "jeongseon-gun",
+        "jeongseongun",
+        "정선",
+        "정선군"
+      ]
+    },
+    {
+      "code": "5178000000",
+      "province": "강원특별자치도",
+      "city": "철원군",
+      "district": "",
+      "aliases": [
+        "cheorwon",
+        "cheorwon county",
+        "cheorwon gun",
+        "cheorwon-gun",
+        "cheorwongun",
+        "철원",
+        "철원군"
+      ]
+    },
+    {
+      "code": "5111000000",
+      "province": "강원특별자치도",
+      "city": "춘천시",
+      "district": "",
+      "aliases": [
+        "chuncheon",
+        "chuncheon city",
+        "chuncheon si",
+        "chuncheon-si",
+        "chuncheonsi",
+        "춘천",
+        "춘천시"
+      ]
+    },
+    {
+      "code": "5119000000",
+      "province": "강원특별자치도",
+      "city": "태백시",
+      "district": "",
+      "aliases": [
+        "taebaek",
+        "taebaek city",
+        "taebaek si",
+        "taebaek-si",
+        "taebaeksi",
+        "태백",
+        "태백시"
+      ]
+    },
+    {
+      "code": "5176000000",
+      "province": "강원특별자치도",
+      "city": "평창군",
+      "district": "",
+      "aliases": [
+        "pyeongchang",
+        "pyeongchang county",
+        "pyeongchang gun",
+        "pyeongchang-gun",
+        "pyeongchanggun",
+        "평창",
+        "평창군"
+      ]
+    },
+    {
+      "code": "5172000000",
+      "province": "강원특별자치도",
+      "city": "홍천군",
+      "district": "",
+      "aliases": [
+        "hongcheon",
+        "hongcheon county",
+        "hongcheon gun",
+        "hongcheon-gun",
+        "hongcheongun",
+        "홍천",
+        "홍천군"
+      ]
+    },
+    {
+      "code": "5179000000",
+      "province": "강원특별자치도",
+      "city": "화천군",
+      "district": "",
+      "aliases": [
+        "hwacheon",
+        "hwacheon county",
+        "hwacheon gun",
+        "hwacheon-gun",
+        "hwacheongun",
+        "화천",
+        "화천군"
+      ]
+    },
+    {
+      "code": "5173000000",
+      "province": "강원특별자치도",
+      "city": "횡성군",
+      "district": "",
+      "aliases": [
+        "hoengseong",
+        "hoengseong county",
+        "hoengseong gun",
+        "hoengseong-gun",
+        "hoengseonggun",
+        "횡성",
+        "횡성군"
+      ]
+    },
+    {
+      "code": "4182000000",
+      "province": "경기도",
+      "city": "가평군",
+      "district": "",
+      "aliases": [
+        "gapyeong",
+        "gapyeong county",
+        "gapyeong gun",
+        "gapyeong-gun",
+        "gapyeonggun",
+        "가평",
+        "가평군"
+      ]
+    },
+    {
+      "code": "4128000000",
+      "province": "경기도",
+      "city": "고양시",
+      "district": "",
+      "aliases": [
+        "goyang",
+        "goyang city",
+        "goyang si",
+        "goyang-si",
+        "goyangsi",
+        "고양",
+        "고양시"
+      ]
+    },
+    {
+      "code": "4128100000",
+      "province": "경기도",
+      "city": "고양시",
+      "district": "덕양구",
+      "aliases": [
+        "deogyang",
+        "deogyang district",
+        "deogyang gu",
+        "deogyang-gu",
+        "deogyanggu",
+        "덕양",
+        "덕양구"
+      ]
+    },
+    {
+      "code": "4128500000",
+      "province": "경기도",
+      "city": "고양시",
+      "district": "일산동구",
+      "aliases": [
+        "ilsandong",
+        "ilsandong district",
+        "ilsandong gu",
+        "ilsandong-gu",
+        "ilsandonggu",
+        "일산동",
+        "일산동구"
+      ]
+    },
+    {
+      "code": "4128700000",
+      "province": "경기도",
+      "city": "고양시",
+      "district": "일산서구",
+      "aliases": [
+        "ilsanseo",
+        "ilsanseo district",
+        "ilsanseo gu",
+        "ilsanseo-gu",
+        "ilsanseogu",
+        "일산서",
+        "일산서구"
+      ]
+    },
+    {
+      "code": "4129000000",
+      "province": "경기도",
+      "city": "과천시",
+      "district": "",
+      "aliases": [
+        "gwacheon",
+        "gwacheon city",
+        "gwacheon si",
+        "gwacheon-si",
+        "gwacheonsi",
+        "과천",
+        "과천시"
+      ]
+    },
+    {
+      "code": "4121000000",
+      "province": "경기도",
+      "city": "광명시",
+      "district": "",
+      "aliases": [
+        "gwangmyeong",
+        "gwangmyeong city",
+        "gwangmyeong si",
+        "gwangmyeong-si",
+        "gwangmyeongsi",
+        "광명",
+        "광명시"
+      ]
+    },
+    {
+      "code": "4161000000",
+      "province": "경기도",
+      "city": "광주시",
+      "district": "",
+      "aliases": [
+        "gwangju",
+        "gwangju city",
+        "gwangju si",
+        "gwangju-si",
+        "gwangjusi",
+        "광주",
+        "광주시"
+      ]
+    },
+    {
+      "code": "4131000000",
+      "province": "경기도",
+      "city": "구리시",
+      "district": "",
+      "aliases": [
+        "guri",
+        "guri city",
+        "guri si",
+        "guri-si",
+        "gurisi",
+        "구리",
+        "구리시"
+      ]
+    },
+    {
+      "code": "4141000000",
+      "province": "경기도",
+      "city": "군포시",
+      "district": "",
+      "aliases": [
+        "gunpo",
+        "gunpo city",
+        "gunpo si",
+        "gunpo-si",
+        "gunposi",
+        "군포",
+        "군포시"
+      ]
+    },
+    {
+      "code": "4157000000",
+      "province": "경기도",
+      "city": "김포시",
+      "district": "",
+      "aliases": [
+        "gimpo",
+        "gimpo city",
+        "gimpo si",
+        "gimpo-si",
+        "gimposi",
+        "김포",
+        "김포시"
+      ]
+    },
+    {
+      "code": "4136000000",
+      "province": "경기도",
+      "city": "남양주시",
+      "district": "",
+      "aliases": [
+        "namyangju",
+        "namyangju city",
+        "namyangju si",
+        "namyangju-si",
+        "namyangjusi",
+        "남양주",
+        "남양주시"
+      ]
+    },
+    {
+      "code": "4125000000",
+      "province": "경기도",
+      "city": "동두천시",
+      "district": "",
+      "aliases": [
+        "dongducheon",
+        "dongducheon city",
+        "dongducheon si",
+        "dongducheon-si",
+        "dongducheonsi",
+        "동두천",
+        "동두천시"
+      ]
+    },
+    {
+      "code": "4119000000",
+      "province": "경기도",
+      "city": "부천시",
+      "district": "",
+      "aliases": [
+        "bucheon",
+        "bucheon city",
+        "bucheon si",
+        "bucheon-si",
+        "bucheonsi",
+        "부천",
+        "부천시"
+      ]
+    },
+    {
+      "code": "4119400000",
+      "province": "경기도",
+      "city": "부천시",
+      "district": "소사구",
+      "aliases": [
+        "sosa",
+        "sosa district",
+        "sosa gu",
+        "sosa-gu",
+        "sosagu",
+        "소사",
+        "소사구"
+      ]
+    },
+    {
+      "code": "4119600000",
+      "province": "경기도",
+      "city": "부천시",
+      "district": "오정구",
+      "aliases": [
+        "ojeong",
+        "ojeong district",
+        "ojeong gu",
+        "ojeong-gu",
+        "ojeonggu",
+        "오정",
+        "오정구"
+      ]
+    },
+    {
+      "code": "4119200000",
+      "province": "경기도",
+      "city": "부천시",
+      "district": "원미구",
+      "aliases": [
+        "wonmi",
+        "wonmi district",
+        "wonmi gu",
+        "wonmi-gu",
+        "wonmigu",
+        "원미",
+        "원미구"
+      ]
+    },
+    {
+      "code": "4113000000",
+      "province": "경기도",
+      "city": "성남시",
+      "district": "",
+      "aliases": [
+        "pangyo",
+        "seongnam",
+        "seongnam city",
+        "seongnam si",
+        "seongnam-si",
+        "seongnamsi",
+        "성남",
+        "성남시"
+      ]
+    },
+    {
+      "code": "4113500000",
+      "province": "경기도",
+      "city": "성남시",
+      "district": "분당구",
+      "aliases": [
+        "bundang",
+        "bundang district",
+        "bundang gu",
+        "bundang-gu",
+        "bundanggu",
+        "pangyo",
+        "분당",
+        "분당구"
+      ]
+    },
+    {
+      "code": "4113100000",
+      "province": "경기도",
+      "city": "성남시",
+      "district": "수정구",
+      "aliases": [
+        "pangyo",
+        "sujeong",
+        "sujeong district",
+        "sujeong gu",
+        "sujeong-gu",
+        "sujeonggu",
+        "수정",
+        "수정구"
+      ]
+    },
+    {
+      "code": "4113300000",
+      "province": "경기도",
+      "city": "성남시",
+      "district": "중원구",
+      "aliases": [
+        "jungwon",
+        "jungwon district",
+        "jungwon gu",
+        "jungwon-gu",
+        "jungwongu",
+        "pangyo",
+        "중원",
+        "중원구"
+      ]
+    },
+    {
+      "code": "4111000000",
+      "province": "경기도",
+      "city": "수원시",
+      "district": "",
+      "aliases": [
+        "suwon",
+        "suwon city",
+        "suwon si",
+        "suwon-si",
+        "suwonsi",
+        "수원",
+        "수원시"
+      ]
+    },
+    {
+      "code": "4111300000",
+      "province": "경기도",
+      "city": "수원시",
+      "district": "권선구",
+      "aliases": [
+        "gwonseon",
+        "gwonseon district",
+        "gwonseon gu",
+        "gwonseon-gu",
+        "gwonseongu",
+        "권선",
+        "권선구"
+      ]
+    },
+    {
+      "code": "4111700000",
+      "province": "경기도",
+      "city": "수원시",
+      "district": "영통구",
+      "aliases": [
+        "yeongtong",
+        "yeongtong district",
+        "yeongtong gu",
+        "yeongtong-gu",
+        "yeongtonggu",
+        "영통",
+        "영통구"
+      ]
+    },
+    {
+      "code": "4111100000",
+      "province": "경기도",
+      "city": "수원시",
+      "district": "장안구",
+      "aliases": [
+        "jangan",
+        "jangan district",
+        "jangan gu",
+        "jangan-gu",
+        "jangangu",
+        "장안",
+        "장안구"
+      ]
+    },
+    {
+      "code": "4111500000",
+      "province": "경기도",
+      "city": "수원시",
+      "district": "팔달구",
+      "aliases": [
+        "paldal",
+        "paldal district",
+        "paldal gu",
+        "paldal-gu",
+        "paldalgu",
+        "팔달",
+        "팔달구"
+      ]
+    },
+    {
+      "code": "4139000000",
+      "province": "경기도",
+      "city": "시흥시",
+      "district": "",
+      "aliases": [
+        "siheung",
+        "siheung city",
+        "siheung si",
+        "siheung-si",
+        "siheungsi",
+        "시흥",
+        "시흥시"
+      ]
+    },
+    {
+      "code": "4127000000",
+      "province": "경기도",
+      "city": "안산시",
+      "district": "",
+      "aliases": [
+        "ansan",
+        "ansan city",
+        "ansan si",
+        "ansan-si",
+        "ansansi",
+        "안산",
+        "안산시"
+      ]
+    },
+    {
+      "code": "4127300000",
+      "province": "경기도",
+      "city": "안산시",
+      "district": "단원구",
+      "aliases": [
+        "danwon",
+        "danwon district",
+        "danwon gu",
+        "danwon-gu",
+        "danwongu",
+        "단원",
+        "단원구"
+      ]
+    },
+    {
+      "code": "4127100000",
+      "province": "경기도",
+      "city": "안산시",
+      "district": "상록구",
+      "aliases": [
+        "sangrok",
+        "sangrok district",
+        "sangrok gu",
+        "sangrok-gu",
+        "sangrokgu",
+        "상록",
+        "상록구"
+      ]
+    },
+    {
+      "code": "4155000000",
+      "province": "경기도",
+      "city": "안성시",
+      "district": "",
+      "aliases": [
+        "anseong",
+        "anseong city",
+        "anseong si",
+        "anseong-si",
+        "anseongsi",
+        "안성",
+        "안성시"
+      ]
+    },
+    {
+      "code": "4117000000",
+      "province": "경기도",
+      "city": "안양시",
+      "district": "",
+      "aliases": [
+        "anyang",
+        "anyang city",
+        "anyang si",
+        "anyang-si",
+        "anyangsi",
+        "안양",
+        "안양시"
+      ]
+    },
+    {
+      "code": "4117300000",
+      "province": "경기도",
+      "city": "안양시",
+      "district": "동안구",
+      "aliases": [
+        "dongan",
+        "dongan district",
+        "dongan gu",
+        "dongan-gu",
+        "dongangu",
+        "동안",
+        "동안구"
+      ]
+    },
+    {
+      "code": "4117100000",
+      "province": "경기도",
+      "city": "안양시",
+      "district": "만안구",
+      "aliases": [
+        "manan",
+        "manan district",
+        "manan gu",
+        "manan-gu",
+        "manangu",
+        "만안",
+        "만안구"
+      ]
+    },
+    {
+      "code": "4163000000",
+      "province": "경기도",
+      "city": "양주시",
+      "district": "",
+      "aliases": [
+        "yangju",
+        "yangju city",
+        "yangju si",
+        "yangju-si",
+        "yangjusi",
+        "양주",
+        "양주시"
+      ]
+    },
+    {
+      "code": "4183000000",
+      "province": "경기도",
+      "city": "양평군",
+      "district": "",
+      "aliases": [
+        "yangpyeong",
+        "yangpyeong county",
+        "yangpyeong gun",
+        "yangpyeong-gun",
+        "yangpyeonggun",
+        "양평",
+        "양평군"
+      ]
+    },
+    {
+      "code": "4167000000",
+      "province": "경기도",
+      "city": "여주시",
+      "district": "",
+      "aliases": [
+        "yeoju",
+        "yeoju city",
+        "yeoju si",
+        "yeoju-si",
+        "yeojusi",
+        "여주",
+        "여주시"
+      ]
+    },
+    {
+      "code": "4180000000",
+      "province": "경기도",
+      "city": "연천군",
+      "district": "",
+      "aliases": [
+        "yeoncheon",
+        "yeoncheon county",
+        "yeoncheon gun",
+        "yeoncheon-gun",
+        "yeoncheongun",
+        "연천",
+        "연천군"
+      ]
+    },
+    {
+      "code": "4137000000",
+      "province": "경기도",
+      "city": "오산시",
+      "district": "",
+      "aliases": [
+        "osan",
+        "osan city",
+        "osan si",
+        "osan-si",
+        "osansi",
+        "오산",
+        "오산시"
+      ]
+    },
+    {
+      "code": "4146000000",
+      "province": "경기도",
+      "city": "용인시",
+      "district": "",
+      "aliases": [
+        "yongin",
+        "yongin city",
+        "yongin si",
+        "yongin-si",
+        "yonginsi",
+        "용인",
+        "용인시"
+      ]
+    },
+    {
+      "code": "4146300000",
+      "province": "경기도",
+      "city": "용인시",
+      "district": "기흥구",
+      "aliases": [
+        "giheung",
+        "giheung district",
+        "giheung gu",
+        "giheung-gu",
+        "giheunggu",
+        "기흥",
+        "기흥구"
+      ]
+    },
+    {
+      "code": "4146500000",
+      "province": "경기도",
+      "city": "용인시",
+      "district": "수지구",
+      "aliases": [
+        "suji",
+        "suji district",
+        "suji gu",
+        "suji-gu",
+        "sujigu",
+        "수지",
+        "수지구"
+      ]
+    },
+    {
+      "code": "4146100000",
+      "province": "경기도",
+      "city": "용인시",
+      "district": "처인구",
+      "aliases": [
+        "cheoin",
+        "cheoin district",
+        "cheoin gu",
+        "cheoin-gu",
+        "cheoingu",
+        "처인",
+        "처인구"
+      ]
+    },
+    {
+      "code": "4143000000",
+      "province": "경기도",
+      "city": "의왕시",
+      "district": "",
+      "aliases": [
+        "uiwang",
+        "uiwang city",
+        "uiwang si",
+        "uiwang-si",
+        "uiwangsi",
+        "의왕",
+        "의왕시"
+      ]
+    },
+    {
+      "code": "4115000000",
+      "province": "경기도",
+      "city": "의정부시",
+      "district": "",
+      "aliases": [
+        "uijeongbu",
+        "uijeongbu city",
+        "uijeongbu si",
+        "uijeongbu-si",
+        "uijeongbusi",
+        "의정부",
+        "의정부시"
+      ]
+    },
+    {
+      "code": "4150000000",
+      "province": "경기도",
+      "city": "이천시",
+      "district": "",
+      "aliases": [
+        "icheon",
+        "icheon city",
+        "icheon si",
+        "icheon-si",
+        "icheonsi",
+        "이천",
+        "이천시"
+      ]
+    },
+    {
+      "code": "4148000000",
+      "province": "경기도",
+      "city": "파주시",
+      "district": "",
+      "aliases": [
+        "paju",
+        "paju city",
+        "paju si",
+        "paju-si",
+        "pajusi",
+        "파주",
+        "파주시"
+      ]
+    },
+    {
+      "code": "4122000000",
+      "province": "경기도",
+      "city": "평택시",
+      "district": "",
+      "aliases": [
+        "pyeongtaek",
+        "pyeongtaek city",
+        "pyeongtaek si",
+        "pyeongtaek-si",
+        "pyeongtaeksi",
+        "평택",
+        "평택시"
+      ]
+    },
+    {
+      "code": "4165000000",
+      "province": "경기도",
+      "city": "포천시",
+      "district": "",
+      "aliases": [
+        "pocheon",
+        "pocheon city",
+        "pocheon si",
+        "pocheon-si",
+        "pocheonsi",
+        "포천",
+        "포천시"
+      ]
+    },
+    {
+      "code": "4145000000",
+      "province": "경기도",
+      "city": "하남시",
+      "district": "",
+      "aliases": [
+        "hanam",
+        "hanam city",
+        "hanam si",
+        "hanam-si",
+        "hanamsi",
+        "하남",
+        "하남시"
+      ]
+    },
+    {
+      "code": "4159000000",
+      "province": "경기도",
+      "city": "화성시",
+      "district": "",
+      "aliases": [
+        "hwaseong",
+        "hwaseong city",
+        "hwaseong si",
+        "hwaseong-si",
+        "hwaseongsi",
+        "화성",
+        "화성시"
+      ]
+    },
+    {
+      "code": "4159700000",
+      "province": "경기도",
+      "city": "화성시",
+      "district": "동탄구",
+      "aliases": [
+        "dongtan",
+        "dongtan district",
+        "dongtan gu",
+        "dongtan-gu",
+        "dongtangu",
+        "동탄",
+        "동탄구"
+      ]
+    },
+    {
+      "code": "4159100000",
+      "province": "경기도",
+      "city": "화성시",
+      "district": "만세구",
+      "aliases": [
+        "manse",
+        "manse district",
+        "manse gu",
+        "manse-gu",
+        "mansegu",
+        "만세",
+        "만세구"
+      ]
+    },
+    {
+      "code": "4159500000",
+      "province": "경기도",
+      "city": "화성시",
+      "district": "병점구",
+      "aliases": [
+        "byeongjeom",
+        "byeongjeom district",
+        "byeongjeom gu",
+        "byeongjeom-gu",
+        "byeongjeomgu",
+        "병점",
+        "병점구"
+      ]
+    },
+    {
+      "code": "4159300000",
+      "province": "경기도",
+      "city": "화성시",
+      "district": "효행구",
+      "aliases": [
+        "hyohaeng",
+        "hyohaeng district",
+        "hyohaeng gu",
+        "hyohaeng-gu",
+        "hyohaenggu",
+        "효행",
+        "효행구"
+      ]
+    },
+    {
+      "code": "4831000000",
+      "province": "경상남도",
+      "city": "거제시",
+      "district": "",
+      "aliases": [
+        "geoje",
+        "geoje city",
+        "geoje si",
+        "geoje-si",
+        "geojesi",
+        "거제",
+        "거제시"
+      ]
+    },
+    {
+      "code": "4888000000",
+      "province": "경상남도",
+      "city": "거창군",
+      "district": "",
+      "aliases": [
+        "geochang",
+        "geochang county",
+        "geochang gun",
+        "geochang-gun",
+        "geochanggun",
+        "거창",
+        "거창군"
+      ]
+    },
+    {
+      "code": "4882000000",
+      "province": "경상남도",
+      "city": "고성군",
+      "district": "",
+      "aliases": [
+        "goseong",
+        "goseong county",
+        "goseong gun",
+        "goseong-gun",
+        "goseonggun",
+        "고성",
+        "고성군"
+      ]
+    },
+    {
+      "code": "4825000000",
+      "province": "경상남도",
+      "city": "김해시",
+      "district": "",
+      "aliases": [
+        "gimhae",
+        "gimhae city",
+        "gimhae si",
+        "gimhae-si",
+        "gimhaesi",
+        "김해",
+        "김해시"
+      ]
+    },
+    {
+      "code": "4884000000",
+      "province": "경상남도",
+      "city": "남해군",
+      "district": "",
+      "aliases": [
+        "namhae",
+        "namhae county",
+        "namhae gun",
+        "namhae-gun",
+        "namhaegun",
+        "남해",
+        "남해군"
+      ]
+    },
+    {
+      "code": "4827000000",
+      "province": "경상남도",
+      "city": "밀양시",
+      "district": "",
+      "aliases": [
+        "miryang",
+        "miryang city",
+        "miryang si",
+        "miryang-si",
+        "miryangsi",
+        "밀양",
+        "밀양시"
+      ]
+    },
+    {
+      "code": "4824000000",
+      "province": "경상남도",
+      "city": "사천시",
+      "district": "",
+      "aliases": [
+        "sacheon",
+        "sacheon city",
+        "sacheon si",
+        "sacheon-si",
+        "sacheonsi",
+        "사천",
+        "사천시"
+      ]
+    },
+    {
+      "code": "4886000000",
+      "province": "경상남도",
+      "city": "산청군",
+      "district": "",
+      "aliases": [
+        "sancheong",
+        "sancheong county",
+        "sancheong gun",
+        "sancheong-gun",
+        "sancheonggun",
+        "산청",
+        "산청군"
+      ]
+    },
+    {
+      "code": "4833000000",
+      "province": "경상남도",
+      "city": "양산시",
+      "district": "",
+      "aliases": [
+        "yangsan",
+        "yangsan city",
+        "yangsan si",
+        "yangsan-si",
+        "yangsansi",
+        "양산",
+        "양산시"
+      ]
+    },
+    {
+      "code": "4872000000",
+      "province": "경상남도",
+      "city": "의령군",
+      "district": "",
+      "aliases": [
+        "uiryeong",
+        "uiryeong county",
+        "uiryeong gun",
+        "uiryeong-gun",
+        "uiryeonggun",
+        "의령",
+        "의령군"
+      ]
+    },
+    {
+      "code": "4817000000",
+      "province": "경상남도",
+      "city": "진주시",
+      "district": "",
+      "aliases": [
+        "jinju",
+        "jinju city",
+        "jinju si",
+        "jinju-si",
+        "jinjusi",
+        "진주",
+        "진주시"
+      ]
+    },
+    {
+      "code": "4874000000",
+      "province": "경상남도",
+      "city": "창녕군",
+      "district": "",
+      "aliases": [
+        "changnyeong",
+        "changnyeong county",
+        "changnyeong gun",
+        "changnyeong-gun",
+        "changnyeonggun",
+        "창녕",
+        "창녕군"
+      ]
+    },
+    {
+      "code": "4812000000",
+      "province": "경상남도",
+      "city": "창원시",
+      "district": "",
+      "aliases": [
+        "changwon",
+        "changwon city",
+        "changwon si",
+        "changwon-si",
+        "changwonsi",
+        "창원",
+        "창원시"
+      ]
+    },
+    {
+      "code": "4812500000",
+      "province": "경상남도",
+      "city": "창원시",
+      "district": "마산합포구",
+      "aliases": [
+        "masanhappo",
+        "masanhappo district",
+        "masanhappo gu",
+        "masanhappo-gu",
+        "masanhappogu",
+        "마산합포",
+        "마산합포구"
+      ]
+    },
+    {
+      "code": "4812700000",
+      "province": "경상남도",
+      "city": "창원시",
+      "district": "마산회원구",
+      "aliases": [
+        "masanhoewon",
+        "masanhoewon district",
+        "masanhoewon gu",
+        "masanhoewon-gu",
+        "masanhoewongu",
+        "마산회원",
+        "마산회원구"
+      ]
+    },
+    {
+      "code": "4812300000",
+      "province": "경상남도",
+      "city": "창원시",
+      "district": "성산구",
+      "aliases": [
+        "seongsan",
+        "seongsan district",
+        "seongsan gu",
+        "seongsan-gu",
+        "seongsangu",
+        "성산",
+        "성산구"
+      ]
+    },
+    {
+      "code": "4812100000",
+      "province": "경상남도",
+      "city": "창원시",
+      "district": "의창구",
+      "aliases": [
+        "uichang",
+        "uichang district",
+        "uichang gu",
+        "uichang-gu",
+        "uichanggu",
+        "의창",
+        "의창구"
+      ]
+    },
+    {
+      "code": "4812900000",
+      "province": "경상남도",
+      "city": "창원시",
+      "district": "진해구",
+      "aliases": [
+        "jinhae",
+        "jinhae district",
+        "jinhae gu",
+        "jinhae-gu",
+        "jinhaegu",
+        "진해",
+        "진해구"
+      ]
+    },
+    {
+      "code": "4822000000",
+      "province": "경상남도",
+      "city": "통영시",
+      "district": "",
+      "aliases": [
+        "tongyeong",
+        "tongyeong city",
+        "tongyeong si",
+        "tongyeong-si",
+        "tongyeongsi",
+        "통영",
+        "통영시"
+      ]
+    },
+    {
+      "code": "4885000000",
+      "province": "경상남도",
+      "city": "하동군",
+      "district": "",
+      "aliases": [
+        "hadong",
+        "hadong county",
+        "hadong gun",
+        "hadong-gun",
+        "hadonggun",
+        "하동",
+        "하동군"
+      ]
+    },
+    {
+      "code": "4873000000",
+      "province": "경상남도",
+      "city": "함안군",
+      "district": "",
+      "aliases": [
+        "haman",
+        "haman county",
+        "haman gun",
+        "haman-gun",
+        "hamangun",
+        "함안",
+        "함안군"
+      ]
+    },
+    {
+      "code": "4887000000",
+      "province": "경상남도",
+      "city": "함양군",
+      "district": "",
+      "aliases": [
+        "hamyang",
+        "hamyang county",
+        "hamyang gun",
+        "hamyang-gun",
+        "hamyanggun",
+        "함양",
+        "함양군"
+      ]
+    },
+    {
+      "code": "4889000000",
+      "province": "경상남도",
+      "city": "합천군",
+      "district": "",
+      "aliases": [
+        "hapcheon",
+        "hapcheon county",
+        "hapcheon gun",
+        "hapcheon-gun",
+        "hapcheongun",
+        "합천",
+        "합천군"
+      ]
+    },
+    {
+      "code": "4729000000",
+      "province": "경상북도",
+      "city": "경산시",
+      "district": "",
+      "aliases": [
+        "gyeongsan",
+        "gyeongsan city",
+        "gyeongsan si",
+        "gyeongsan-si",
+        "gyeongsansi",
+        "경산",
+        "경산시"
+      ]
+    },
+    {
+      "code": "4713000000",
+      "province": "경상북도",
+      "city": "경주시",
+      "district": "",
+      "aliases": [
+        "gyeongju",
+        "gyeongju city",
+        "gyeongju si",
+        "gyeongju-si",
+        "gyeongjusi",
+        "경주",
+        "경주시"
+      ]
+    },
+    {
+      "code": "4783000000",
+      "province": "경상북도",
+      "city": "고령군",
+      "district": "",
+      "aliases": [
+        "goryeong",
+        "goryeong county",
+        "goryeong gun",
+        "goryeong-gun",
+        "goryeonggun",
+        "고령",
+        "고령군"
+      ]
+    },
+    {
+      "code": "4719000000",
+      "province": "경상북도",
+      "city": "구미시",
+      "district": "",
+      "aliases": [
+        "gumi",
+        "gumi city",
+        "gumi si",
+        "gumi-si",
+        "gumisi",
+        "구미",
+        "구미시"
+      ]
+    },
+    {
+      "code": "4715000000",
+      "province": "경상북도",
+      "city": "김천시",
+      "district": "",
+      "aliases": [
+        "gimcheon",
+        "gimcheon city",
+        "gimcheon si",
+        "gimcheon-si",
+        "gimcheonsi",
+        "김천",
+        "김천시"
+      ]
+    },
+    {
+      "code": "4728000000",
+      "province": "경상북도",
+      "city": "문경시",
+      "district": "",
+      "aliases": [
+        "mungyeong",
+        "mungyeong city",
+        "mungyeong si",
+        "mungyeong-si",
+        "mungyeongsi",
+        "문경",
+        "문경시"
+      ]
+    },
+    {
+      "code": "4792000000",
+      "province": "경상북도",
+      "city": "봉화군",
+      "district": "",
+      "aliases": [
+        "bonghwa",
+        "bonghwa county",
+        "bonghwa gun",
+        "bonghwa-gun",
+        "bonghwagun",
+        "봉화",
+        "봉화군"
+      ]
+    },
+    {
+      "code": "4725000000",
+      "province": "경상북도",
+      "city": "상주시",
+      "district": "",
+      "aliases": [
+        "sangju",
+        "sangju city",
+        "sangju si",
+        "sangju-si",
+        "sangjusi",
+        "상주",
+        "상주시"
+      ]
+    },
+    {
+      "code": "4784000000",
+      "province": "경상북도",
+      "city": "성주군",
+      "district": "",
+      "aliases": [
+        "seongju",
+        "seongju county",
+        "seongju gun",
+        "seongju-gun",
+        "seongjugun",
+        "성주",
+        "성주군"
+      ]
+    },
+    {
+      "code": "4717000000",
+      "province": "경상북도",
+      "city": "안동시",
+      "district": "",
+      "aliases": [
+        "andong",
+        "andong city",
+        "andong si",
+        "andong-si",
+        "andongsi",
+        "안동",
+        "안동시"
+      ]
+    },
+    {
+      "code": "4777000000",
+      "province": "경상북도",
+      "city": "영덕군",
+      "district": "",
+      "aliases": [
+        "yeongdeok",
+        "yeongdeok county",
+        "yeongdeok gun",
+        "yeongdeok-gun",
+        "yeongdeokgun",
+        "영덕",
+        "영덕군"
+      ]
+    },
+    {
+      "code": "4776000000",
+      "province": "경상북도",
+      "city": "영양군",
+      "district": "",
+      "aliases": [
+        "yeongyang",
+        "yeongyang county",
+        "yeongyang gun",
+        "yeongyang-gun",
+        "yeongyanggun",
+        "영양",
+        "영양군"
+      ]
+    },
+    {
+      "code": "4721000000",
+      "province": "경상북도",
+      "city": "영주시",
+      "district": "",
+      "aliases": [
+        "yeongju",
+        "yeongju city",
+        "yeongju si",
+        "yeongju-si",
+        "yeongjusi",
+        "영주",
+        "영주시"
+      ]
+    },
+    {
+      "code": "4723000000",
+      "province": "경상북도",
+      "city": "영천시",
+      "district": "",
+      "aliases": [
+        "yeongcheon",
+        "yeongcheon city",
+        "yeongcheon si",
+        "yeongcheon-si",
+        "yeongcheonsi",
+        "영천",
+        "영천시"
+      ]
+    },
+    {
+      "code": "4790000000",
+      "province": "경상북도",
+      "city": "예천군",
+      "district": "",
+      "aliases": [
+        "yecheon",
+        "yecheon county",
+        "yecheon gun",
+        "yecheon-gun",
+        "yecheongun",
+        "예천",
+        "예천군"
+      ]
+    },
+    {
+      "code": "4794000000",
+      "province": "경상북도",
+      "city": "울릉군",
+      "district": "",
+      "aliases": [
+        "ulreung",
+        "ulreung county",
+        "ulreung gun",
+        "ulreung-gun",
+        "ulreunggun",
+        "울릉",
+        "울릉군"
+      ]
+    },
+    {
+      "code": "4793000000",
+      "province": "경상북도",
+      "city": "울진군",
+      "district": "",
+      "aliases": [
+        "uljin",
+        "uljin county",
+        "uljin gun",
+        "uljin-gun",
+        "uljingun",
+        "울진",
+        "울진군"
+      ]
+    },
+    {
+      "code": "4773000000",
+      "province": "경상북도",
+      "city": "의성군",
+      "district": "",
+      "aliases": [
+        "uiseong",
+        "uiseong county",
+        "uiseong gun",
+        "uiseong-gun",
+        "uiseonggun",
+        "의성",
+        "의성군"
+      ]
+    },
+    {
+      "code": "4782000000",
+      "province": "경상북도",
+      "city": "청도군",
+      "district": "",
+      "aliases": [
+        "cheongdo",
+        "cheongdo county",
+        "cheongdo gun",
+        "cheongdo-gun",
+        "cheongdogun",
+        "청도",
+        "청도군"
+      ]
+    },
+    {
+      "code": "4775000000",
+      "province": "경상북도",
+      "city": "청송군",
+      "district": "",
+      "aliases": [
+        "cheongsong",
+        "cheongsong county",
+        "cheongsong gun",
+        "cheongsong-gun",
+        "cheongsonggun",
+        "청송",
+        "청송군"
+      ]
+    },
+    {
+      "code": "4785000000",
+      "province": "경상북도",
+      "city": "칠곡군",
+      "district": "",
+      "aliases": [
+        "chilgok",
+        "chilgok county",
+        "chilgok gun",
+        "chilgok-gun",
+        "chilgokgun",
+        "칠곡",
+        "칠곡군"
+      ]
+    },
+    {
+      "code": "4711000000",
+      "province": "경상북도",
+      "city": "포항시",
+      "district": "",
+      "aliases": [
+        "pohang",
+        "pohang city",
+        "pohang si",
+        "pohang-si",
+        "pohangsi",
+        "포항",
+        "포항시"
+      ]
+    },
+    {
+      "code": "4711100000",
+      "province": "경상북도",
+      "city": "포항시",
+      "district": "남구",
+      "aliases": [
+        "nam",
+        "nam district",
+        "nam gu",
+        "nam-gu",
+        "namgu",
+        "남",
+        "남구"
+      ]
+    },
+    {
+      "code": "4711300000",
+      "province": "경상북도",
+      "city": "포항시",
+      "district": "북구",
+      "aliases": [
+        "buk",
+        "buk district",
+        "buk gu",
+        "buk-gu",
+        "bukgu",
+        "북",
+        "북구"
+      ]
+    },
+    {
+      "code": "2720000000",
+      "province": "대구광역시",
+      "city": "",
+      "district": "남구",
+      "aliases": [
+        "nam",
+        "nam district",
+        "nam gu",
+        "nam-gu",
+        "namgu",
+        "남",
+        "남구"
+      ]
+    },
+    {
+      "code": "2729000000",
+      "province": "대구광역시",
+      "city": "",
+      "district": "달서구",
+      "aliases": [
+        "dalseo",
+        "dalseo district",
+        "dalseo gu",
+        "dalseo-gu",
+        "dalseogu",
+        "달서",
+        "달서구"
+      ]
+    },
+    {
+      "code": "2714000000",
+      "province": "대구광역시",
+      "city": "",
+      "district": "동구",
+      "aliases": [
+        "dong",
+        "dong district",
+        "dong gu",
+        "dong-gu",
+        "donggu",
+        "동",
+        "동구"
+      ]
+    },
+    {
+      "code": "2723000000",
+      "province": "대구광역시",
+      "city": "",
+      "district": "북구",
+      "aliases": [
+        "buk",
+        "buk district",
+        "buk gu",
+        "buk-gu",
+        "bukgu",
+        "북",
+        "북구"
+      ]
+    },
+    {
+      "code": "2717000000",
+      "province": "대구광역시",
+      "city": "",
+      "district": "서구",
+      "aliases": [
+        "seo",
+        "seo district",
+        "seo gu",
+        "seo-gu",
+        "seogu",
+        "서",
+        "서구"
+      ]
+    },
+    {
+      "code": "2726000000",
+      "province": "대구광역시",
+      "city": "",
+      "district": "수성구",
+      "aliases": [
+        "suseong",
+        "suseong district",
+        "suseong gu",
+        "suseong-gu",
+        "suseonggu",
+        "수성",
+        "수성구"
+      ]
+    },
+    {
+      "code": "2711000000",
+      "province": "대구광역시",
+      "city": "",
+      "district": "중구",
+      "aliases": [
+        "jung",
+        "jung district",
+        "jung gu",
+        "jung-gu",
+        "junggu",
+        "중",
+        "중구"
+      ]
+    },
+    {
+      "code": "2772000000",
+      "province": "대구광역시",
+      "city": "군위군",
+      "district": "",
+      "aliases": [
+        "gunwi",
+        "gunwi county",
+        "gunwi gun",
+        "gunwi-gun",
+        "gunwigun",
+        "군위",
+        "군위군"
+      ]
+    },
+    {
+      "code": "2771000000",
+      "province": "대구광역시",
+      "city": "달성군",
+      "district": "",
+      "aliases": [
+        "dalseong",
+        "dalseong county",
+        "dalseong gun",
+        "dalseong-gun",
+        "dalseonggun",
+        "달성",
+        "달성군"
+      ]
+    },
+    {
+      "code": "3023000000",
+      "province": "대전광역시",
+      "city": "",
+      "district": "대덕구",
+      "aliases": [
+        "daedeok",
+        "daedeok district",
+        "daedeok gu",
+        "daedeok-gu",
+        "daedeokgu",
+        "대덕",
+        "대덕구"
+      ]
+    },
+    {
+      "code": "3011000000",
+      "province": "대전광역시",
+      "city": "",
+      "district": "동구",
+      "aliases": [
+        "dong",
+        "dong district",
+        "dong gu",
+        "dong-gu",
+        "donggu",
+        "동",
+        "동구"
+      ]
+    },
+    {
+      "code": "3017000000",
+      "province": "대전광역시",
+      "city": "",
+      "district": "서구",
+      "aliases": [
+        "seo",
+        "seo district",
+        "seo gu",
+        "seo-gu",
+        "seogu",
+        "서",
+        "서구"
+      ]
+    },
+    {
+      "code": "3020000000",
+      "province": "대전광역시",
+      "city": "",
+      "district": "유성구",
+      "aliases": [
+        "yuseong",
+        "yuseong district",
+        "yuseong gu",
+        "yuseong-gu",
+        "yuseonggu",
+        "유성",
+        "유성구"
+      ]
+    },
+    {
+      "code": "3014000000",
+      "province": "대전광역시",
+      "city": "",
+      "district": "중구",
+      "aliases": [
+        "jung",
+        "jung district",
+        "jung gu",
+        "jung-gu",
+        "junggu",
+        "중",
+        "중구"
+      ]
+    },
+    {
+      "code": "2644000000",
+      "province": "부산광역시",
+      "city": "",
+      "district": "강서구",
+      "aliases": [
+        "gangseo",
+        "gangseo district",
+        "gangseo gu",
+        "gangseo-gu",
+        "gangseogu",
+        "강서",
+        "강서구"
+      ]
+    },
+    {
+      "code": "2641000000",
+      "province": "부산광역시",
+      "city": "",
+      "district": "금정구",
+      "aliases": [
+        "geumjeong",
+        "geumjeong district",
+        "geumjeong gu",
+        "geumjeong-gu",
+        "geumjeonggu",
+        "금정",
+        "금정구"
+      ]
+    },
+    {
+      "code": "2629000000",
+      "province": "부산광역시",
+      "city": "",
+      "district": "남구",
+      "aliases": [
+        "nam",
+        "nam district",
+        "nam gu",
+        "nam-gu",
+        "namgu",
+        "남",
+        "남구"
+      ]
+    },
+    {
+      "code": "2617000000",
+      "province": "부산광역시",
+      "city": "",
+      "district": "동구",
+      "aliases": [
+        "dong",
+        "dong district",
+        "dong gu",
+        "dong-gu",
+        "donggu",
+        "동",
+        "동구"
+      ]
+    },
+    {
+      "code": "2626000000",
+      "province": "부산광역시",
+      "city": "",
+      "district": "동래구",
+      "aliases": [
+        "dongrae",
+        "dongrae district",
+        "dongrae gu",
+        "dongrae-gu",
+        "dongraegu",
+        "동래",
+        "동래구"
+      ]
+    },
+    {
+      "code": "2623000000",
+      "province": "부산광역시",
+      "city": "",
+      "district": "부산진구",
+      "aliases": [
+        "busanjin",
+        "busanjin district",
+        "busanjin gu",
+        "busanjin-gu",
+        "busanjingu",
+        "부산진",
+        "부산진구"
+      ]
+    },
+    {
+      "code": "2632000000",
+      "province": "부산광역시",
+      "city": "",
+      "district": "북구",
+      "aliases": [
+        "buk",
+        "buk district",
+        "buk gu",
+        "buk-gu",
+        "bukgu",
+        "북",
+        "북구"
+      ]
+    },
+    {
+      "code": "2653000000",
+      "province": "부산광역시",
+      "city": "",
+      "district": "사상구",
+      "aliases": [
+        "sasang",
+        "sasang district",
+        "sasang gu",
+        "sasang-gu",
+        "sasanggu",
+        "사상",
+        "사상구"
+      ]
+    },
+    {
+      "code": "2638000000",
+      "province": "부산광역시",
+      "city": "",
+      "district": "사하구",
+      "aliases": [
+        "saha",
+        "saha district",
+        "saha gu",
+        "saha-gu",
+        "sahagu",
+        "사하",
+        "사하구"
+      ]
+    },
+    {
+      "code": "2614000000",
+      "province": "부산광역시",
+      "city": "",
+      "district": "서구",
+      "aliases": [
+        "seo",
+        "seo district",
+        "seo gu",
+        "seo-gu",
+        "seogu",
+        "서",
+        "서구"
+      ]
+    },
+    {
+      "code": "2650000000",
+      "province": "부산광역시",
+      "city": "",
+      "district": "수영구",
+      "aliases": [
+        "suyeong",
+        "suyeong district",
+        "suyeong gu",
+        "suyeong-gu",
+        "suyeonggu",
+        "수영",
+        "수영구"
+      ]
+    },
+    {
+      "code": "2647000000",
+      "province": "부산광역시",
+      "city": "",
+      "district": "연제구",
+      "aliases": [
+        "yeonje",
+        "yeonje district",
+        "yeonje gu",
+        "yeonje-gu",
+        "yeonjegu",
+        "연제",
+        "연제구"
+      ]
+    },
+    {
+      "code": "2620000000",
+      "province": "부산광역시",
+      "city": "",
+      "district": "영도구",
+      "aliases": [
+        "yeongdo",
+        "yeongdo district",
+        "yeongdo gu",
+        "yeongdo-gu",
+        "yeongdogu",
+        "영도",
+        "영도구"
+      ]
+    },
+    {
+      "code": "2611000000",
+      "province": "부산광역시",
+      "city": "",
+      "district": "중구",
+      "aliases": [
+        "jung",
+        "jung district",
+        "jung gu",
+        "jung-gu",
+        "junggu",
+        "중",
+        "중구"
+      ]
+    },
+    {
+      "code": "2635000000",
+      "province": "부산광역시",
+      "city": "",
+      "district": "해운대구",
+      "aliases": [
+        "haeundae",
+        "haeundae district",
+        "haeundae gu",
+        "haeundae-gu",
+        "haeundaegu",
+        "해운대",
+        "해운대구"
+      ]
+    },
+    {
+      "code": "2671000000",
+      "province": "부산광역시",
+      "city": "기장군",
+      "district": "",
+      "aliases": [
+        "gijang",
+        "gijang county",
+        "gijang gun",
+        "gijang-gun",
+        "gijanggun",
+        "기장",
+        "기장군"
+      ]
+    },
+    {
+      "code": "1168000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "강남구",
+      "aliases": [
+        "gangnam",
+        "gangnam district",
+        "gangnam gu",
+        "gangnam-gu",
+        "gangnamgu",
+        "강남",
+        "강남구"
+      ]
+    },
+    {
+      "code": "1174000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "강동구",
+      "aliases": [
+        "gangdong",
+        "gangdong district",
+        "gangdong gu",
+        "gangdong-gu",
+        "gangdonggu",
+        "강동",
+        "강동구"
+      ]
+    },
+    {
+      "code": "1130500000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "강북구",
+      "aliases": [
+        "gangbuk",
+        "gangbuk district",
+        "gangbuk gu",
+        "gangbuk-gu",
+        "gangbukgu",
+        "강북",
+        "강북구"
+      ]
+    },
+    {
+      "code": "1150000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "강서구",
+      "aliases": [
+        "gangseo",
+        "gangseo district",
+        "gangseo gu",
+        "gangseo-gu",
+        "gangseogu",
+        "강서",
+        "강서구"
+      ]
+    },
+    {
+      "code": "1162000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "관악구",
+      "aliases": [
+        "gwanak",
+        "gwanak district",
+        "gwanak gu",
+        "gwanak-gu",
+        "gwanakgu",
+        "관악",
+        "관악구"
+      ]
+    },
+    {
+      "code": "1121500000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "광진구",
+      "aliases": [
+        "gwangjin",
+        "gwangjin district",
+        "gwangjin gu",
+        "gwangjin-gu",
+        "gwangjingu",
+        "광진",
+        "광진구"
+      ]
+    },
+    {
+      "code": "1153000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "구로구",
+      "aliases": [
+        "guro",
+        "guro district",
+        "guro gu",
+        "guro-gu",
+        "gurogu",
+        "구로",
+        "구로구"
+      ]
+    },
+    {
+      "code": "1154500000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "금천구",
+      "aliases": [
+        "geumcheon",
+        "geumcheon district",
+        "geumcheon gu",
+        "geumcheon-gu",
+        "geumcheongu",
+        "금천",
+        "금천구"
+      ]
+    },
+    {
+      "code": "1135000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "노원구",
+      "aliases": [
+        "nowon",
+        "nowon district",
+        "nowon gu",
+        "nowon-gu",
+        "nowongu",
+        "노원",
+        "노원구"
+      ]
+    },
+    {
+      "code": "1132000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "도봉구",
+      "aliases": [
+        "dobong",
+        "dobong district",
+        "dobong gu",
+        "dobong-gu",
+        "dobonggu",
+        "도봉",
+        "도봉구"
+      ]
+    },
+    {
+      "code": "1123000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "동대문구",
+      "aliases": [
+        "dongdaemun",
+        "dongdaemun district",
+        "dongdaemun gu",
+        "dongdaemun-gu",
+        "dongdaemungu",
+        "동대문",
+        "동대문구"
+      ]
+    },
+    {
+      "code": "1159000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "동작구",
+      "aliases": [
+        "dongjak",
+        "dongjak district",
+        "dongjak gu",
+        "dongjak-gu",
+        "dongjakgu",
+        "동작",
+        "동작구"
+      ]
+    },
+    {
+      "code": "1144000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "마포구",
+      "aliases": [
+        "mapo",
+        "mapo district",
+        "mapo gu",
+        "mapo-gu",
+        "mapogu",
+        "마포",
+        "마포구"
+      ]
+    },
+    {
+      "code": "1141000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "서대문구",
+      "aliases": [
+        "seodaemun",
+        "seodaemun district",
+        "seodaemun gu",
+        "seodaemun-gu",
+        "seodaemungu",
+        "서대문",
+        "서대문구"
+      ]
+    },
+    {
+      "code": "1165000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "서초구",
+      "aliases": [
+        "seocho",
+        "seocho district",
+        "seocho gu",
+        "seocho-gu",
+        "seochogu",
+        "서초",
+        "서초구"
+      ]
+    },
+    {
+      "code": "1120000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "성동구",
+      "aliases": [
+        "seongdong",
+        "seongdong district",
+        "seongdong gu",
+        "seongdong-gu",
+        "seongdonggu",
+        "성동",
+        "성동구"
+      ]
+    },
+    {
+      "code": "1129000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "성북구",
+      "aliases": [
+        "seongbuk",
+        "seongbuk district",
+        "seongbuk gu",
+        "seongbuk-gu",
+        "seongbukgu",
+        "성북",
+        "성북구"
+      ]
+    },
+    {
+      "code": "1171000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "송파구",
+      "aliases": [
+        "songpa",
+        "songpa district",
+        "songpa gu",
+        "songpa-gu",
+        "songpagu",
+        "송파",
+        "송파구"
+      ]
+    },
+    {
+      "code": "1147000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "양천구",
+      "aliases": [
+        "yangcheon",
+        "yangcheon district",
+        "yangcheon gu",
+        "yangcheon-gu",
+        "yangcheongu",
+        "양천",
+        "양천구"
+      ]
+    },
+    {
+      "code": "1156000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "영등포구",
+      "aliases": [
+        "yeongdeungpo",
+        "yeongdeungpo district",
+        "yeongdeungpo gu",
+        "yeongdeungpo-gu",
+        "yeongdeungpogu",
+        "영등포",
+        "영등포구"
+      ]
+    },
+    {
+      "code": "1117000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "용산구",
+      "aliases": [
+        "yongsan",
+        "yongsan district",
+        "yongsan gu",
+        "yongsan-gu",
+        "yongsangu",
+        "용산",
+        "용산구"
+      ]
+    },
+    {
+      "code": "1138000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "은평구",
+      "aliases": [
+        "eunpyeong",
+        "eunpyeong district",
+        "eunpyeong gu",
+        "eunpyeong-gu",
+        "eunpyeonggu",
+        "은평",
+        "은평구"
+      ]
+    },
+    {
+      "code": "1111000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "종로구",
+      "aliases": [
+        "jongro",
+        "jongro district",
+        "jongro gu",
+        "jongro-gu",
+        "jongrogu",
+        "종로",
+        "종로구"
+      ]
+    },
+    {
+      "code": "1114000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "중구",
+      "aliases": [
+        "jung",
+        "jung district",
+        "jung gu",
+        "jung-gu",
+        "junggu",
+        "중",
+        "중구"
+      ]
+    },
+    {
+      "code": "1126000000",
+      "province": "서울특별시",
+      "city": "",
+      "district": "중랑구",
+      "aliases": [
+        "jungrang",
+        "jungrang district",
+        "jungrang gu",
+        "jungrang-gu",
+        "jungranggu",
+        "중랑",
+        "중랑구"
+      ]
+    },
+    {
+      "code": "3114000000",
+      "province": "울산광역시",
+      "city": "",
+      "district": "남구",
+      "aliases": [
+        "nam",
+        "nam district",
+        "nam gu",
+        "nam-gu",
+        "namgu",
+        "남",
+        "남구"
+      ]
+    },
+    {
+      "code": "3117000000",
+      "province": "울산광역시",
+      "city": "",
+      "district": "동구",
+      "aliases": [
+        "dong",
+        "dong district",
+        "dong gu",
+        "dong-gu",
+        "donggu",
+        "동",
+        "동구"
+      ]
+    },
+    {
+      "code": "3120000000",
+      "province": "울산광역시",
+      "city": "",
+      "district": "북구",
+      "aliases": [
+        "buk",
+        "buk district",
+        "buk gu",
+        "buk-gu",
+        "bukgu",
+        "북",
+        "북구"
+      ]
+    },
+    {
+      "code": "3111000000",
+      "province": "울산광역시",
+      "city": "",
+      "district": "중구",
+      "aliases": [
+        "jung",
+        "jung district",
+        "jung gu",
+        "jung-gu",
+        "junggu",
+        "중",
+        "중구"
+      ]
+    },
+    {
+      "code": "3171000000",
+      "province": "울산광역시",
+      "city": "울주군",
+      "district": "",
+      "aliases": [
+        "ulju",
+        "ulju county",
+        "ulju gun",
+        "ulju-gun",
+        "uljugun",
+        "울주",
+        "울주군"
+      ]
+    },
+    {
+      "code": "2829000000",
+      "province": "인천광역시",
+      "city": "",
+      "district": "검단구",
+      "aliases": [
+        "geomdan",
+        "geomdan district",
+        "geomdan gu",
+        "geomdan-gu",
+        "geomdangu",
+        "검단",
+        "검단구"
+      ]
+    },
+    {
+      "code": "2824500000",
+      "province": "인천광역시",
+      "city": "",
+      "district": "계양구",
+      "aliases": [
+        "gyeyang",
+        "gyeyang district",
+        "gyeyang gu",
+        "gyeyang-gu",
+        "gyeyanggu",
+        "계양",
+        "계양구"
+      ]
+    },
+    {
+      "code": "2820000000",
+      "province": "인천광역시",
+      "city": "",
+      "district": "남동구",
+      "aliases": [
+        "namdong",
+        "namdong district",
+        "namdong gu",
+        "namdong-gu",
+        "namdonggu",
+        "남동",
+        "남동구"
+      ]
+    },
+    {
+      "code": "2817700000",
+      "province": "인천광역시",
+      "city": "",
+      "district": "미추홀구",
+      "aliases": [
+        "michuhol",
+        "michuhol district",
+        "michuhol gu",
+        "michuhol-gu",
+        "michuholgu",
+        "미추홀",
+        "미추홀구"
+      ]
+    },
+    {
+      "code": "2823700000",
+      "province": "인천광역시",
+      "city": "",
+      "district": "부평구",
+      "aliases": [
+        "bupyeong",
+        "bupyeong district",
+        "bupyeong gu",
+        "bupyeong-gu",
+        "bupyeonggu",
+        "부평",
+        "부평구"
+      ]
+    },
+    {
+      "code": "2827500000",
+      "province": "인천광역시",
+      "city": "",
+      "district": "서해구",
+      "aliases": [
+        "seohae",
+        "seohae district",
+        "seohae gu",
+        "seohae-gu",
+        "seohaegu",
+        "서해",
+        "서해구"
+      ]
+    },
+    {
+      "code": "2818500000",
+      "province": "인천광역시",
+      "city": "",
+      "district": "연수구",
+      "aliases": [
+        "yeonsu",
+        "yeonsu district",
+        "yeonsu gu",
+        "yeonsu-gu",
+        "yeonsugu",
+        "연수",
+        "연수구"
+      ]
+    },
+    {
+      "code": "2815500000",
+      "province": "인천광역시",
+      "city": "",
+      "district": "영종구",
+      "aliases": [
+        "yeongjong",
+        "yeongjong district",
+        "yeongjong gu",
+        "yeongjong-gu",
+        "yeongjonggu",
+        "영종",
+        "영종구"
+      ]
+    },
+    {
+      "code": "2812500000",
+      "province": "인천광역시",
+      "city": "",
+      "district": "제물포구",
+      "aliases": [
+        "jemulpo",
+        "jemulpo district",
+        "jemulpo gu",
+        "jemulpo-gu",
+        "jemulpogu",
+        "제물포",
+        "제물포구"
+      ]
+    },
+    {
+      "code": "2871000000",
+      "province": "인천광역시",
+      "city": "강화군",
+      "district": "",
+      "aliases": [
+        "ganghwa",
+        "ganghwa county",
+        "ganghwa gun",
+        "ganghwa-gun",
+        "ganghwagun",
+        "강화",
+        "강화군"
+      ]
+    },
+    {
+      "code": "2872000000",
+      "province": "인천광역시",
+      "city": "옹진군",
+      "district": "",
+      "aliases": [
+        "ongjin",
+        "ongjin county",
+        "ongjin gun",
+        "ongjin-gun",
+        "ongjingun",
+        "옹진",
+        "옹진군"
+      ]
+    },
+    {
+      "code": "1233000000",
+      "province": "전남광주통합특별시",
+      "city": "",
+      "district": "광산구",
+      "aliases": [
+        "gwangsan",
+        "gwangsan district",
+        "gwangsan gu",
+        "gwangsan-gu",
+        "gwangsangu",
+        "광산",
+        "광산구"
+      ]
+    },
+    {
+      "code": "1227000000",
+      "province": "전남광주통합특별시",
+      "city": "",
+      "district": "남구",
+      "aliases": [
+        "nam",
+        "nam district",
+        "nam gu",
+        "nam-gu",
+        "namgu",
+        "남",
+        "남구"
+      ]
+    },
+    {
+      "code": "1221000000",
+      "province": "전남광주통합특별시",
+      "city": "",
+      "district": "동구",
+      "aliases": [
+        "dong",
+        "dong district",
+        "dong gu",
+        "dong-gu",
+        "donggu",
+        "동",
+        "동구"
+      ]
+    },
+    {
+      "code": "1230000000",
+      "province": "전남광주통합특별시",
+      "city": "",
+      "district": "북구",
+      "aliases": [
+        "buk",
+        "buk district",
+        "buk gu",
+        "buk-gu",
+        "bukgu",
+        "북",
+        "북구"
+      ]
+    },
+    {
+      "code": "1224000000",
+      "province": "전남광주통합특별시",
+      "city": "",
+      "district": "서구",
+      "aliases": [
+        "seo",
+        "seo district",
+        "seo gu",
+        "seo-gu",
+        "seogu",
+        "서",
+        "서구"
+      ]
+    },
+    {
+      "code": "1278000000",
+      "province": "전남광주통합특별시",
+      "city": "강진군",
+      "district": "",
+      "aliases": [
+        "gangjin",
+        "gangjin county",
+        "gangjin gun",
+        "gangjin-gun",
+        "gangjingun",
+        "강진",
+        "강진군"
+      ]
+    },
+    {
+      "code": "1274000000",
+      "province": "전남광주통합특별시",
+      "city": "고흥군",
+      "district": "",
+      "aliases": [
+        "goheung",
+        "goheung county",
+        "goheung gun",
+        "goheung-gun",
+        "goheunggun",
+        "고흥",
+        "고흥군"
+      ]
+    },
+    {
+      "code": "1272000000",
+      "province": "전남광주통합특별시",
+      "city": "곡성군",
+      "district": "",
+      "aliases": [
+        "gokseong",
+        "gokseong county",
+        "gokseong gun",
+        "gokseong-gun",
+        "gokseonggun",
+        "곡성",
+        "곡성군"
+      ]
+    },
+    {
+      "code": "1219000000",
+      "province": "전남광주통합특별시",
+      "city": "광양시",
+      "district": "",
+      "aliases": [
+        "gwangyang",
+        "gwangyang city",
+        "gwangyang si",
+        "gwangyang-si",
+        "gwangyangsi",
+        "광양",
+        "광양시"
+      ]
+    },
+    {
+      "code": "1273000000",
+      "province": "전남광주통합특별시",
+      "city": "구례군",
+      "district": "",
+      "aliases": [
+        "gurye",
+        "gurye county",
+        "gurye gun",
+        "gurye-gun",
+        "guryegun",
+        "구례",
+        "구례군"
+      ]
+    },
+    {
+      "code": "1217000000",
+      "province": "전남광주통합특별시",
+      "city": "나주시",
+      "district": "",
+      "aliases": [
+        "naju",
+        "naju city",
+        "naju si",
+        "naju-si",
+        "najusi",
+        "나주",
+        "나주시"
+      ]
+    },
+    {
+      "code": "1271000000",
+      "province": "전남광주통합특별시",
+      "city": "담양군",
+      "district": "",
+      "aliases": [
+        "damyang",
+        "damyang county",
+        "damyang gun",
+        "damyang-gun",
+        "damyanggun",
+        "담양",
+        "담양군"
+      ]
+    },
+    {
+      "code": "1211000000",
+      "province": "전남광주통합특별시",
+      "city": "목포시",
+      "district": "",
+      "aliases": [
+        "mokpo",
+        "mokpo city",
+        "mokpo si",
+        "mokpo-si",
+        "mokposi",
+        "목포",
+        "목포시"
+      ]
+    },
+    {
+      "code": "1281000000",
+      "province": "전남광주통합특별시",
+      "city": "무안군",
+      "district": "",
+      "aliases": [
+        "muan",
+        "muan county",
+        "muan gun",
+        "muan-gun",
+        "muangun",
+        "무안",
+        "무안군"
+      ]
+    },
+    {
+      "code": "1275000000",
+      "province": "전남광주통합특별시",
+      "city": "보성군",
+      "district": "",
+      "aliases": [
+        "boseong",
+        "boseong county",
+        "boseong gun",
+        "boseong-gun",
+        "boseonggun",
+        "보성",
+        "보성군"
+      ]
+    },
+    {
+      "code": "1215000000",
+      "province": "전남광주통합특별시",
+      "city": "순천시",
+      "district": "",
+      "aliases": [
+        "suncheon",
+        "suncheon city",
+        "suncheon si",
+        "suncheon-si",
+        "suncheonsi",
+        "순천",
+        "순천시"
+      ]
+    },
+    {
+      "code": "1287000000",
+      "province": "전남광주통합특별시",
+      "city": "신안군",
+      "district": "",
+      "aliases": [
+        "sinan",
+        "sinan county",
+        "sinan gun",
+        "sinan-gun",
+        "sinangun",
+        "신안",
+        "신안군"
+      ]
+    },
+    {
+      "code": "1213000000",
+      "province": "전남광주통합특별시",
+      "city": "여수시",
+      "district": "",
+      "aliases": [
+        "yeosu",
+        "yeosu city",
+        "yeosu si",
+        "yeosu-si",
+        "yeosusi",
+        "여수",
+        "여수시"
+      ]
+    },
+    {
+      "code": "1283000000",
+      "province": "전남광주통합특별시",
+      "city": "영광군",
+      "district": "",
+      "aliases": [
+        "yeonggwang",
+        "yeonggwang county",
+        "yeonggwang gun",
+        "yeonggwang-gun",
+        "yeonggwanggun",
+        "영광",
+        "영광군"
+      ]
+    },
+    {
+      "code": "1280000000",
+      "province": "전남광주통합특별시",
+      "city": "영암군",
+      "district": "",
+      "aliases": [
+        "yeongam",
+        "yeongam county",
+        "yeongam gun",
+        "yeongam-gun",
+        "yeongamgun",
+        "영암",
+        "영암군"
+      ]
+    },
+    {
+      "code": "1285000000",
+      "province": "전남광주통합특별시",
+      "city": "완도군",
+      "district": "",
+      "aliases": [
+        "wando",
+        "wando county",
+        "wando gun",
+        "wando-gun",
+        "wandogun",
+        "완도",
+        "완도군"
+      ]
+    },
+    {
+      "code": "1284000000",
+      "province": "전남광주통합특별시",
+      "city": "장성군",
+      "district": "",
+      "aliases": [
+        "jangseong",
+        "jangseong county",
+        "jangseong gun",
+        "jangseong-gun",
+        "jangseonggun",
+        "장성",
+        "장성군"
+      ]
+    },
+    {
+      "code": "1277000000",
+      "province": "전남광주통합특별시",
+      "city": "장흥군",
+      "district": "",
+      "aliases": [
+        "jangheung",
+        "jangheung county",
+        "jangheung gun",
+        "jangheung-gun",
+        "jangheunggun",
+        "장흥",
+        "장흥군"
+      ]
+    },
+    {
+      "code": "1286000000",
+      "province": "전남광주통합특별시",
+      "city": "진도군",
+      "district": "",
+      "aliases": [
+        "jindo",
+        "jindo county",
+        "jindo gun",
+        "jindo-gun",
+        "jindogun",
+        "진도",
+        "진도군"
+      ]
+    },
+    {
+      "code": "1282000000",
+      "province": "전남광주통합특별시",
+      "city": "함평군",
+      "district": "",
+      "aliases": [
+        "hampyeong",
+        "hampyeong county",
+        "hampyeong gun",
+        "hampyeong-gun",
+        "hampyeonggun",
+        "함평",
+        "함평군"
+      ]
+    },
+    {
+      "code": "1279000000",
+      "province": "전남광주통합특별시",
+      "city": "해남군",
+      "district": "",
+      "aliases": [
+        "haenam",
+        "haenam county",
+        "haenam gun",
+        "haenam-gun",
+        "haenamgun",
+        "해남",
+        "해남군"
+      ]
+    },
+    {
+      "code": "1276000000",
+      "province": "전남광주통합특별시",
+      "city": "화순군",
+      "district": "",
+      "aliases": [
+        "hwasun",
+        "hwasun county",
+        "hwasun gun",
+        "hwasun-gun",
+        "hwasungun",
+        "화순",
+        "화순군"
+      ]
+    },
+    {
+      "code": "5279000000",
+      "province": "전북특별자치도",
+      "city": "고창군",
+      "district": "",
+      "aliases": [
+        "gochang",
+        "gochang county",
+        "gochang gun",
+        "gochang-gun",
+        "gochanggun",
+        "고창",
+        "고창군"
+      ]
+    },
+    {
+      "code": "5213000000",
+      "province": "전북특별자치도",
+      "city": "군산시",
+      "district": "",
+      "aliases": [
+        "gunsan",
+        "gunsan city",
+        "gunsan si",
+        "gunsan-si",
+        "gunsansi",
+        "군산",
+        "군산시"
+      ]
+    },
+    {
+      "code": "5221000000",
+      "province": "전북특별자치도",
+      "city": "김제시",
+      "district": "",
+      "aliases": [
+        "gimje",
+        "gimje city",
+        "gimje si",
+        "gimje-si",
+        "gimjesi",
+        "김제",
+        "김제시"
+      ]
+    },
+    {
+      "code": "5219000000",
+      "province": "전북특별자치도",
+      "city": "남원시",
+      "district": "",
+      "aliases": [
+        "namwon",
+        "namwon city",
+        "namwon si",
+        "namwon-si",
+        "namwonsi",
+        "남원",
+        "남원시"
+      ]
+    },
+    {
+      "code": "5273000000",
+      "province": "전북특별자치도",
+      "city": "무주군",
+      "district": "",
+      "aliases": [
+        "muju",
+        "muju county",
+        "muju gun",
+        "muju-gun",
+        "mujugun",
+        "무주",
+        "무주군"
+      ]
+    },
+    {
+      "code": "5280000000",
+      "province": "전북특별자치도",
+      "city": "부안군",
+      "district": "",
+      "aliases": [
+        "buan",
+        "buan county",
+        "buan gun",
+        "buan-gun",
+        "buangun",
+        "부안",
+        "부안군"
+      ]
+    },
+    {
+      "code": "5277000000",
+      "province": "전북특별자치도",
+      "city": "순창군",
+      "district": "",
+      "aliases": [
+        "sunchang",
+        "sunchang county",
+        "sunchang gun",
+        "sunchang-gun",
+        "sunchanggun",
+        "순창",
+        "순창군"
+      ]
+    },
+    {
+      "code": "5271000000",
+      "province": "전북특별자치도",
+      "city": "완주군",
+      "district": "",
+      "aliases": [
+        "wanju",
+        "wanju county",
+        "wanju gun",
+        "wanju-gun",
+        "wanjugun",
+        "완주",
+        "완주군"
+      ]
+    },
+    {
+      "code": "5214000000",
+      "province": "전북특별자치도",
+      "city": "익산시",
+      "district": "",
+      "aliases": [
+        "iksan",
+        "iksan city",
+        "iksan si",
+        "iksan-si",
+        "iksansi",
+        "익산",
+        "익산시"
+      ]
+    },
+    {
+      "code": "5275000000",
+      "province": "전북특별자치도",
+      "city": "임실군",
+      "district": "",
+      "aliases": [
+        "imsil",
+        "imsil county",
+        "imsil gun",
+        "imsil-gun",
+        "imsilgun",
+        "임실",
+        "임실군"
+      ]
+    },
+    {
+      "code": "5274000000",
+      "province": "전북특별자치도",
+      "city": "장수군",
+      "district": "",
+      "aliases": [
+        "jangsu",
+        "jangsu county",
+        "jangsu gun",
+        "jangsu-gun",
+        "jangsugun",
+        "장수",
+        "장수군"
+      ]
+    },
+    {
+      "code": "5211000000",
+      "province": "전북특별자치도",
+      "city": "전주시",
+      "district": "",
+      "aliases": [
+        "jeonju",
+        "jeonju city",
+        "jeonju si",
+        "jeonju-si",
+        "jeonjusi",
+        "전주",
+        "전주시"
+      ]
+    },
+    {
+      "code": "5211300000",
+      "province": "전북특별자치도",
+      "city": "전주시",
+      "district": "덕진구",
+      "aliases": [
+        "deokjin",
+        "deokjin district",
+        "deokjin gu",
+        "deokjin-gu",
+        "deokjingu",
+        "덕진",
+        "덕진구"
+      ]
+    },
+    {
+      "code": "5211100000",
+      "province": "전북특별자치도",
+      "city": "전주시",
+      "district": "완산구",
+      "aliases": [
+        "wansan",
+        "wansan district",
+        "wansan gu",
+        "wansan-gu",
+        "wansangu",
+        "완산",
+        "완산구"
+      ]
+    },
+    {
+      "code": "5218000000",
+      "province": "전북특별자치도",
+      "city": "정읍시",
+      "district": "",
+      "aliases": [
+        "jeongeup",
+        "jeongeup city",
+        "jeongeup si",
+        "jeongeup-si",
+        "jeongeupsi",
+        "정읍",
+        "정읍시"
+      ]
+    },
+    {
+      "code": "5272000000",
+      "province": "전북특별자치도",
+      "city": "진안군",
+      "district": "",
+      "aliases": [
+        "jinan",
+        "jinan county",
+        "jinan gun",
+        "jinan-gun",
+        "jinangun",
+        "진안",
+        "진안군"
+      ]
+    },
+    {
+      "code": "5013000000",
+      "province": "제주특별자치도",
+      "city": "서귀포시",
+      "district": "",
+      "aliases": [
+        "seogwipo",
+        "seogwipo city",
+        "seogwipo si",
+        "seogwipo-si",
+        "seogwiposi",
+        "서귀포",
+        "서귀포시"
+      ]
+    },
+    {
+      "code": "5011000000",
+      "province": "제주특별자치도",
+      "city": "제주시",
+      "district": "",
+      "aliases": [
+        "jeju",
+        "jeju city",
+        "jeju si",
+        "jeju-si",
+        "jejusi",
+        "제주",
+        "제주시"
+      ]
+    },
+    {
+      "code": "4425000000",
+      "province": "충청남도",
+      "city": "계룡시",
+      "district": "",
+      "aliases": [
+        "gyeryong",
+        "gyeryong city",
+        "gyeryong si",
+        "gyeryong-si",
+        "gyeryongsi",
+        "계룡",
+        "계룡시"
+      ]
+    },
+    {
+      "code": "4415000000",
+      "province": "충청남도",
+      "city": "공주시",
+      "district": "",
+      "aliases": [
+        "gongju",
+        "gongju city",
+        "gongju si",
+        "gongju-si",
+        "gongjusi",
+        "공주",
+        "공주시"
+      ]
+    },
+    {
+      "code": "4471000000",
+      "province": "충청남도",
+      "city": "금산군",
+      "district": "",
+      "aliases": [
+        "geumsan",
+        "geumsan county",
+        "geumsan gun",
+        "geumsan-gun",
+        "geumsangun",
+        "금산",
+        "금산군"
+      ]
+    },
+    {
+      "code": "4423000000",
+      "province": "충청남도",
+      "city": "논산시",
+      "district": "",
+      "aliases": [
+        "nonsan",
+        "nonsan city",
+        "nonsan si",
+        "nonsan-si",
+        "nonsansi",
+        "논산",
+        "논산시"
+      ]
+    },
+    {
+      "code": "4427000000",
+      "province": "충청남도",
+      "city": "당진시",
+      "district": "",
+      "aliases": [
+        "dangjin",
+        "dangjin city",
+        "dangjin si",
+        "dangjin-si",
+        "dangjinsi",
+        "당진",
+        "당진시"
+      ]
+    },
+    {
+      "code": "4418000000",
+      "province": "충청남도",
+      "city": "보령시",
+      "district": "",
+      "aliases": [
+        "boryeong",
+        "boryeong city",
+        "boryeong si",
+        "boryeong-si",
+        "boryeongsi",
+        "보령",
+        "보령시"
+      ]
+    },
+    {
+      "code": "4476000000",
+      "province": "충청남도",
+      "city": "부여군",
+      "district": "",
+      "aliases": [
+        "buyeo",
+        "buyeo county",
+        "buyeo gun",
+        "buyeo-gun",
+        "buyeogun",
+        "부여",
+        "부여군"
+      ]
+    },
+    {
+      "code": "4421000000",
+      "province": "충청남도",
+      "city": "서산시",
+      "district": "",
+      "aliases": [
+        "seosan",
+        "seosan city",
+        "seosan si",
+        "seosan-si",
+        "seosansi",
+        "서산",
+        "서산시"
+      ]
+    },
+    {
+      "code": "4477000000",
+      "province": "충청남도",
+      "city": "서천군",
+      "district": "",
+      "aliases": [
+        "seocheon",
+        "seocheon county",
+        "seocheon gun",
+        "seocheon-gun",
+        "seocheongun",
+        "서천",
+        "서천군"
+      ]
+    },
+    {
+      "code": "4420000000",
+      "province": "충청남도",
+      "city": "아산시",
+      "district": "",
+      "aliases": [
+        "asan",
+        "asan city",
+        "asan si",
+        "asan-si",
+        "asansi",
+        "아산",
+        "아산시"
+      ]
+    },
+    {
+      "code": "4481000000",
+      "province": "충청남도",
+      "city": "예산군",
+      "district": "",
+      "aliases": [
+        "yesan",
+        "yesan county",
+        "yesan gun",
+        "yesan-gun",
+        "yesangun",
+        "예산",
+        "예산군"
+      ]
+    },
+    {
+      "code": "4413000000",
+      "province": "충청남도",
+      "city": "천안시",
+      "district": "",
+      "aliases": [
+        "cheonan",
+        "cheonan city",
+        "cheonan si",
+        "cheonan-si",
+        "cheonansi",
+        "천안",
+        "천안시"
+      ]
+    },
+    {
+      "code": "4413100000",
+      "province": "충청남도",
+      "city": "천안시",
+      "district": "동남구",
+      "aliases": [
+        "dongnam",
+        "dongnam district",
+        "dongnam gu",
+        "dongnam-gu",
+        "dongnamgu",
+        "동남",
+        "동남구"
+      ]
+    },
+    {
+      "code": "4413300000",
+      "province": "충청남도",
+      "city": "천안시",
+      "district": "서북구",
+      "aliases": [
+        "seobuk",
+        "seobuk district",
+        "seobuk gu",
+        "seobuk-gu",
+        "seobukgu",
+        "서북",
+        "서북구"
+      ]
+    },
+    {
+      "code": "4479000000",
+      "province": "충청남도",
+      "city": "청양군",
+      "district": "",
+      "aliases": [
+        "cheongyang",
+        "cheongyang county",
+        "cheongyang gun",
+        "cheongyang-gun",
+        "cheongyanggun",
+        "청양",
+        "청양군"
+      ]
+    },
+    {
+      "code": "4482500000",
+      "province": "충청남도",
+      "city": "태안군",
+      "district": "",
+      "aliases": [
+        "taean",
+        "taean county",
+        "taean gun",
+        "taean-gun",
+        "taeangun",
+        "태안",
+        "태안군"
+      ]
+    },
+    {
+      "code": "4480000000",
+      "province": "충청남도",
+      "city": "홍성군",
+      "district": "",
+      "aliases": [
+        "hongseong",
+        "hongseong county",
+        "hongseong gun",
+        "hongseong-gun",
+        "hongseonggun",
+        "홍성",
+        "홍성군"
+      ]
+    },
+    {
+      "code": "4376000000",
+      "province": "충청북도",
+      "city": "괴산군",
+      "district": "",
+      "aliases": [
+        "goesan",
+        "goesan county",
+        "goesan gun",
+        "goesan-gun",
+        "goesangun",
+        "괴산",
+        "괴산군"
+      ]
+    },
+    {
+      "code": "4380000000",
+      "province": "충청북도",
+      "city": "단양군",
+      "district": "",
+      "aliases": [
+        "danyang",
+        "danyang county",
+        "danyang gun",
+        "danyang-gun",
+        "danyanggun",
+        "단양",
+        "단양군"
+      ]
+    },
+    {
+      "code": "4372000000",
+      "province": "충청북도",
+      "city": "보은군",
+      "district": "",
+      "aliases": [
+        "boeun",
+        "boeun county",
+        "boeun gun",
+        "boeun-gun",
+        "boeungun",
+        "보은",
+        "보은군"
+      ]
+    },
+    {
+      "code": "4374000000",
+      "province": "충청북도",
+      "city": "영동군",
+      "district": "",
+      "aliases": [
+        "yeongdong",
+        "yeongdong county",
+        "yeongdong gun",
+        "yeongdong-gun",
+        "yeongdonggun",
+        "영동",
+        "영동군"
+      ]
+    },
+    {
+      "code": "4373000000",
+      "province": "충청북도",
+      "city": "옥천군",
+      "district": "",
+      "aliases": [
+        "okcheon",
+        "okcheon county",
+        "okcheon gun",
+        "okcheon-gun",
+        "okcheongun",
+        "옥천",
+        "옥천군"
+      ]
+    },
+    {
+      "code": "4377000000",
+      "province": "충청북도",
+      "city": "음성군",
+      "district": "",
+      "aliases": [
+        "eumseong",
+        "eumseong county",
+        "eumseong gun",
+        "eumseong-gun",
+        "eumseonggun",
+        "음성",
+        "음성군"
+      ]
+    },
+    {
+      "code": "4315000000",
+      "province": "충청북도",
+      "city": "제천시",
+      "district": "",
+      "aliases": [
+        "jecheon",
+        "jecheon city",
+        "jecheon si",
+        "jecheon-si",
+        "jecheonsi",
+        "제천",
+        "제천시"
+      ]
+    },
+    {
+      "code": "4374500000",
+      "province": "충청북도",
+      "city": "증평군",
+      "district": "",
+      "aliases": [
+        "jeungpyeong",
+        "jeungpyeong county",
+        "jeungpyeong gun",
+        "jeungpyeong-gun",
+        "jeungpyeonggun",
+        "증평",
+        "증평군"
+      ]
+    },
+    {
+      "code": "4375000000",
+      "province": "충청북도",
+      "city": "진천군",
+      "district": "",
+      "aliases": [
+        "jincheon",
+        "jincheon county",
+        "jincheon gun",
+        "jincheon-gun",
+        "jincheongun",
+        "진천",
+        "진천군"
+      ]
+    },
+    {
+      "code": "4311000000",
+      "province": "충청북도",
+      "city": "청주시",
+      "district": "",
+      "aliases": [
+        "cheongju",
+        "cheongju city",
+        "cheongju si",
+        "cheongju-si",
+        "cheongjusi",
+        "청주",
+        "청주시"
+      ]
+    },
+    {
+      "code": "4311100000",
+      "province": "충청북도",
+      "city": "청주시",
+      "district": "상당구",
+      "aliases": [
+        "sangdang",
+        "sangdang district",
+        "sangdang gu",
+        "sangdang-gu",
+        "sangdanggu",
+        "상당",
+        "상당구"
+      ]
+    },
+    {
+      "code": "4311200000",
+      "province": "충청북도",
+      "city": "청주시",
+      "district": "서원구",
+      "aliases": [
+        "seowon",
+        "seowon district",
+        "seowon gu",
+        "seowon-gu",
+        "seowongu",
+        "서원",
+        "서원구"
+      ]
+    },
+    {
+      "code": "4311400000",
+      "province": "충청북도",
+      "city": "청주시",
+      "district": "청원구",
+      "aliases": [
+        "cheongwon",
+        "cheongwon district",
+        "cheongwon gu",
+        "cheongwon-gu",
+        "cheongwongu",
+        "청원",
+        "청원구"
+      ]
+    },
+    {
+      "code": "4311300000",
+      "province": "충청북도",
+      "city": "청주시",
+      "district": "흥덕구",
+      "aliases": [
+        "heungdeok",
+        "heungdeok district",
+        "heungdeok gu",
+        "heungdeok-gu",
+        "heungdeokgu",
+        "흥덕",
+        "흥덕구"
+      ]
+    },
+    {
+      "code": "4313000000",
+      "province": "충청북도",
+      "city": "충주시",
+      "district": "",
+      "aliases": [
+        "chungju",
+        "chungju city",
+        "chungju si",
+        "chungju-si",
+        "chungjusi",
+        "충주",
+        "충주시"
+      ]
+    }
+  ]
+}

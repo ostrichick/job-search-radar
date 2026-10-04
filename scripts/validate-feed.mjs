@@ -20,6 +20,12 @@ assert.ok(feed.locationReference && typeof feed.locationReference === 'object', 
 assert.equal(feed.locationReference.label, '전북특별자치도 전주시 덕진구 산정동', 'distance reference must remain the user-selected Sanjeong-dong baseline');
 assert.ok(Number.isFinite(feed.locationReference.lat) && Number.isFinite(feed.locationReference.lon), 'distance reference must use reproducible coordinates');
 assert.equal(feed.locationReference.distanceMethod, 'haversine_straight_line', 'distance contract must explicitly remain straight-line Haversine');
+assert.ok(Array.isArray(feed.domesticProvinceOptions) && feed.domesticProvinceOptions.length > 0,
+  'feed must persist the current official domestic province options');
+assert.ok(feed.domesticProvinceOptions.includes('전남광주통합특별시'),
+  'current domestic province options must reflect the 2026-07-01 Jeonnam-Gwangju integration');
+assert.ok(!feed.domesticProvinceOptions.includes('광주광역시') && !feed.domesticProvinceOptions.includes('전라남도'),
+  'retired province names must not remain as current domestic filter options');
 
 const ids = feed.jobs.map((job) => job.id);
 assert.equal(new Set(ids).size, ids.length, 'stable job ids must be unique');
@@ -39,6 +45,10 @@ for (const job of feed.jobs) {
       `${job.id} domestic region precision must use the supported hierarchy`);
     if (['onsite', 'hybrid'].includes(job.workplaceMode) && !['archived_missing', 'source_error'].includes(job.listingStatus)) {
       assert.ok(job.domesticRegion.province, `${job.id} commute-relevant domestic workplace must resolve at least to province level`);
+    }
+    if (job.domesticRegion.province) {
+      assert.ok(feed.domesticProvinceOptions.includes(job.domesticRegion.province),
+        `${job.id} domestic province must belong to the current official province hierarchy`);
     }
     const hasLat = job.domesticRegion.lat !== undefined && job.domesticRegion.lat !== null;
     const hasLon = job.domesticRegion.lon !== undefined && job.domesticRegion.lon !== null;

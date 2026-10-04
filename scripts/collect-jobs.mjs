@@ -9,6 +9,7 @@ const root = path.resolve(__dirname, '..');
 const profile = JSON.parse(await fs.readFile(path.join(root, 'config/search-profile.json'), 'utf8'));
 const sourceQuality = JSON.parse(await fs.readFile(path.join(root, 'config/source-quality.json'), 'utf8'));
 const paymentEvidencePolicy = JSON.parse(await fs.readFile(path.join(root, 'config/payment-evidence-policy.json'), 'utf8'));
+const koreaAdmin = JSON.parse(await fs.readFile(path.join(root, 'config/korea-admin-regions.json'), 'utf8'));
 
 function repairMojibake(value) {
   const raw = String(value ?? '');
@@ -48,57 +49,63 @@ const defaultLocationReference = Object.freeze({
   distanceMethod: 'haversine_straight_line'
 });
 
-const provinceMatchers = [
-  ['서울특별시', /서울|\bseoul\b/i],
-  ['부산광역시', /부산|\bbusan\b/i],
-  ['대구광역시', /대구|\bdaegu\b/i],
-  ['인천광역시', /인천|\bincheon\b/i],
-  ['광주광역시', /광주|\bgwangju\b/i],
-  ['대전광역시', /대전|\bdaejeon\b/i],
-  ['울산광역시', /울산|\bulsan\b/i],
-  ['세종특별자치시', /세종|\bsejong\b/i],
-  ['경기도', /경기도|\bgyeonggi(?:-do)?\b/i],
-  ['강원특별자치도', /강원|\bgangwon(?:-do)?\b/i],
-  ['충청북도', /충북|충청북도|\bchungcheongbuk(?:-do)?\b|\bchungbuk\b/i],
-  ['충청남도', /충남|충청남도|\bchungcheongnam(?:-do)?\b|\bchungnam\b/i],
-  ['전북특별자치도', /전북|전라북도|전북특별자치도|\bjeollabuk(?:-do)?\b|\bjeonbuk\b/i],
-  ['전라남도', /전남|전라남도|\bjeollanam(?:-do)?\b|\bjeonnam\b/i],
-  ['경상북도', /경북|경상북도|\bgyeongsangbuk(?:-do)?\b|\bgyeongbuk\b/i],
-  ['경상남도', /경남|경상남도|\bgyeongsangnam(?:-do)?\b|\bgyeongnam\b/i],
-  ['제주특별자치도', /제주|\bjeju(?:-do)?\b/i]
-];
+const domesticProvinceOptions = koreaAdmin.provinces.map((item) => item.name);
+
+function locationHasAlias(location, alias) {
+  const target = lower(alias);
+  if (!target) return false;
+  if (/[가-힣]/.test(target)) return lower(location).includes(target);
+  const escaped = target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '[\\s,_-]+');
+  return new RegExp(`(^|[^a-z0-9])${escaped}([^a-z0-9]|$)`, 'i').test(lower(location));
+}
+
+function matchingProvince(location) {
+  const matches = [];
+  for (const item of koreaAdmin.provinces) {
+    for (const alias of item.aliases || []) {
+      if (locationHasAlias(location, alias)) matches.push({ name: item.name, alias, length: lower(alias).length });
+    }
+  }
+  matches.sort((a, b) => b.length - a.length);
+  return matches[0]?.name || '';
+}
+
+function matchingAdminRegion(location, province = '') {
+  const matches = [];
+  for (const region of koreaAdmin.regions) {
+    if (province && region.province !== province) continue;
+    for (const alias of region.aliases || []) {
+      if (!locationHasAlias(location, alias)) continue;
+      const specificity = region.district ? 2 : region.city ? 1 : 0;
+      matches.push({ region, alias, score: lower(alias).length * 10 + specificity });
+    }
+  }
+  matches.sort((a, b) => b.score - a.score);
+  if (!matches.length) return null;
+  if (!province && matches[1]?.score === matches[0].score) {
+    const a = matches[0].region;
+    const b = matches[1].region;
+    if (`${a.province}|${a.city}|${a.district}` !== `${b.province}|${b.city}|${b.district}`) return null;
+  }
+  return matches[0].region;
+}
+
+function parentForKoreanAdmin(city, district, province = '') {
+  const candidates = koreaAdmin.regions.filter((region) => {
+    if (province && region.province !== province) return false;
+    if (city && region.city !== city) return false;
+    if (district && region.district !== district) return false;
+    return Boolean(city || district);
+  });
+  const unique = new Map(candidates.map((region) => [`${region.province}|${region.city}|${region.district}`, region]));
+  return unique.size === 1 ? [...unique.values()][0] : null;
+}
 
 const regionCentroids = {
   '서울특별시': { lat: 37.5666791, lon: 126.9782914, precision: 'city', coordinateSource: 'OpenStreetMap Nominatim', coordinateCheckedAt: '2026-10-04' },
   '서울특별시|강남구': { lat: 37.5177, lon: 127.0473, precision: 'district', coordinateSource: 'OpenStreetMap Nominatim', coordinateCheckedAt: '2026-10-04' },
   '전북특별자치도|전주시|덕진구|산정동': { ...defaultLocationReference }
 };
-
-const domesticCityAliases = [
-  { pattern: /\bjeonju(?:-si)?\b/i, city: '전주시', province: '전북특별자치도' },
-  { pattern: /\bsuncheon(?:-si)?\b/i, city: '순천시', province: '전라남도' },
-  { pattern: /\bseongnam(?:-si)?\b|\bpangyo\b/i, city: '성남시', province: '경기도' },
-  { pattern: /\bsuwon(?:-si)?\b/i, city: '수원시', province: '경기도' },
-  { pattern: /\bcheongju(?:-si)?\b/i, city: '청주시', province: '충청북도' },
-  { pattern: /\bcheonan(?:-si)?\b/i, city: '천안시', province: '충청남도' },
-  { pattern: /\bchuncheon(?:-si)?\b/i, city: '춘천시', province: '강원특별자치도' },
-  { pattern: /\bwonju(?:-si)?\b/i, city: '원주시', province: '강원특별자치도' },
-  { pattern: /\bpohang(?:-si)?\b/i, city: '포항시', province: '경상북도' },
-  { pattern: /\bchangwon(?:-si)?\b/i, city: '창원시', province: '경상남도' },
-  { pattern: /\bjeju(?:-si)?\b/i, city: '제주시', province: '제주특별자치도' }
-];
-
-const domesticDistrictAliases = [
-  { pattern: /\bgangnam(?:-gu)?\b|\bgangnam district\b/i, district: '강남구', province: '서울특별시' },
-  { pattern: /\bdeokjin(?:-gu)?\b/i, district: '덕진구', city: '전주시', province: '전북특별자치도' },
-  { pattern: /\bwansan(?:-gu)?\b/i, district: '완산구', city: '전주시', province: '전북특별자치도' }
-];
-
-const domesticCityParents = new Map([
-  ['전주시', '전북특별자치도'], ['순천시', '전라남도'], ['성남시', '경기도'], ['수원시', '경기도'],
-  ['청주시', '충청북도'], ['천안시', '충청남도'], ['춘천시', '강원특별자치도'], ['원주시', '강원특별자치도'],
-  ['포항시', '경상북도'], ['창원시', '경상남도'], ['제주시', '제주특별자치도']
-]);
 
 function normalizeWorkplaceMode(value, remoteFallback = false) {
   const mode = lower(value);
@@ -112,31 +119,32 @@ function domesticRegionFor(job) {
   const location = text(job.location);
   const lowerLocation = lower(location);
   const multiCountry = /\+\s*\d+\s*개\s*국가|\bworld\s*wide\b|\bworldwide\b|\bremote\s*-\s*europe\b|\b(?:china|japan|united states|canada|united kingdom|singapore|germany|france|brazil|india)\b/.test(lowerLocation.replace(/south korea|republic of korea/g, ''));
+  const matchedProvince = matchingProvince(location);
+  const matchedAdminRegion = matchingAdminRegion(location, matchedProvince);
   const koreaSpecific = job.countryCode === 'KR'
-    || /south korea|republic of korea|대한민국|한국|\bkorea\b|서울|\bseoul\b|부산|\bbusan\b|전주|\bjeonju\b/.test(lowerLocation);
+    || /south korea|republic of korea|대한민국|한국|\bkorea\b/.test(lowerLocation)
+    || Boolean(matchedProvince || matchedAdminRegion);
   if (!koreaSpecific || multiCountry) return null;
 
-  const provinceMatch = provinceMatchers.find(([, pattern]) => pattern.test(location));
-  let province = provinceMatch?.[0] || (/\bseoul\b/i.test(location) ? '서울특별시' : '');
+  let province = matchedProvince;
   const koreanUnits = [...location.matchAll(/([가-힣]{2,}(?:시|군|구|동))/g)].map((match) => match[1]);
   let city = koreanUnits.find((unit) => /시$/.test(unit) && !/특별시$|광역시$|자치시$/.test(unit)) || '';
   let district = koreanUnits.find((unit) => /군$|구$/.test(unit)) || '';
   let neighborhood = koreanUnits.find((unit) => /동$/.test(unit)) || '';
-  let aliasDerived = Boolean(provinceMatch && !/[가-힣]/.test(location));
-  const cityAlias = domesticCityAliases.find((item) => item.pattern.test(location));
-  if (!city && cityAlias) {
-    city = cityAlias.city;
-    province ||= cityAlias.province;
-    aliasDerived = true;
+  let aliasDerived = Boolean(province && !/[가-힣]/.test(location));
+  const adminAlias = matchedAdminRegion || matchingAdminRegion(location, province);
+  if (adminAlias) {
+    if (!city && adminAlias.city) city = adminAlias.city;
+    if (!district && adminAlias.district) district = adminAlias.district;
+    province ||= adminAlias.province;
+    if (!/[가-힣]/.test(location)) aliasDerived = true;
   }
-  const districtAlias = domesticDistrictAliases.find((item) => item.pattern.test(location));
-  if (!district && districtAlias) {
-    district = districtAlias.district;
-    city ||= districtAlias.city || '';
-    province ||= districtAlias.province;
-    aliasDerived = true;
+  const directParent = parentForKoreanAdmin(city, district, province);
+  if (directParent) {
+    province ||= directParent.province;
+    city ||= directParent.city;
+    district ||= directParent.district;
   }
-  if (!province && city && domesticCityParents.has(city)) province = domesticCityParents.get(city);
   if (!neighborhood && /\bsanjeong(?:-dong)?\b/i.test(location)) neighborhood = '산정동';
   if (neighborhood === '산정동' && !district) {
     district = '덕진구';
@@ -1614,8 +1622,8 @@ async function collectAppier() {
       title: j.title,
       company: 'Appier',
       location: j.location?.name || 'Seoul, South Korea',
-      remote: false,
-      workplaceMode: 'hybrid',
+      remote: true,
+      workplaceMode: 'remote',
       type: /\bpart\s*time\b/i.test(j.title || '') ? 'Part Time' : 'Contract',
       salary: '',
       url: j.absolute_url,
@@ -2480,6 +2488,7 @@ export async function collectJobs({ includeManual = true, persist = true, previo
   const payload = {
     updatedAt: new Date(now).toISOString(),
     locationReference: defaultLocationReference,
+    domesticProvinceOptions,
     sourceStatus: enrichedSourceStatus,
     sourceMetrics,
     recommendationPolicyVersion,
@@ -2506,6 +2515,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 
 export {
   defaultLocationReference,
+  domesticProvinceOptions,
   domesticRegionFor,
   marketScopesFor,
   marketSegmentFor,
