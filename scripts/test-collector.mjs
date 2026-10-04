@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { eligibilityFor, extractSalary, relevantToProfile, currentListingState, markPreservedSourceFailure, normalizeJob, dedupe, carryForwardLegacyIds, carryRecentlyMissing } from './collect-jobs.mjs';
+import { eligibilityFor, extractSalary, relevantToProfile, currentListingState, markPreservedSourceFailure, normalizeJob, dedupe, carryForwardLegacyIds, carryRecentlyMissing, oneFormaCandidate } from './collect-jobs.mjs';
 
 const remote = (location, description = '', countryCode = '') => ({ location, description, remote: true, countryCode });
 
@@ -108,5 +108,82 @@ assert.equal(tooOld.length, 0, 'missing jobs must age out after the grace period
 const specialist = normalizeJob({ ...base, id: 'legal', source: 'RWS TrainAI', title: 'Legal Annotators - Korean', location: 'South Korea', url: 'https://example.com/legal' });
 assert.ok(specialist.score < 20, 'unverified specialist credentials must not enter default recommendations');
 assert.match(specialist.fitWarning, /전문/);
+
+const oneFormaPost = {
+  id: 2366,
+  date_gmt: '2026-09-30T08:00:00',
+  link: 'https://www.oneforma.com/projects/multilingual-ai-quality-assurance-reviewer/',
+  title: { rendered: 'Multilingual AI Quality Assurance Reviewer' },
+  content: { rendered: '<p>Review multilingual AI outputs as a remote quality reviewer.</p>' },
+  _embedded: {
+    'wp:term': [
+      [{ taxonomy: 'job_type', name: 'Annotation' }],
+      [{ taxonomy: 'job_tag', name: 'Fixed Rate Per Hour' }, { taxonomy: 'job_tag', name: 'Remote' }, { taxonomy: 'job_tag', name: 'Selected Locations' }],
+      [{ taxonomy: 'domain', name: 'Languages' }],
+      [{ taxonomy: 'country', name: 'South Korea' }, { taxonomy: 'country', name: 'Japan' }],
+      [{ taxonomy: 'language', name: 'Korean' }, { taxonomy: 'language', name: 'Japanese' }]
+    ]
+  }
+};
+const oneFormaRaw = oneFormaCandidate(oneFormaPost);
+assert.equal(oneFormaRaw.remote, true);
+assert.match(oneFormaRaw.location, /South Korea/);
+assert.ok(oneFormaRaw.tags.includes('Korean'));
+const oneFormaJob = normalizeJob(oneFormaRaw);
+assert.equal(oneFormaJob.eligibilityCode, 'korea');
+assert.equal(oneFormaJob.sourceKind, 'official_platform');
+assert.equal(oneFormaJob.listingStatus, 'verified_open');
+
+const translationRater = normalizeJob({
+  ...base,
+  id: 'translation-rater',
+  source: 'OneForma',
+  title: 'Bilingual Translation Quality Rater',
+  location: 'Worldwide',
+  url: 'https://example.com/translation-rater',
+  description: 'Candidates should have some translation background and rate translations for selected language pairs.',
+  tags: ['Korean', 'Worldwide', 'Quality Rater']
+});
+assert.ok(translationRater.score < 20, 'translation roles must not be default recommendations without verified translation qualifications');
+assert.match(translationRater.fitWarning, /번역/);
+
+const residencyRequirement = normalizeJob({
+  ...base,
+  id: 'residency',
+  source: 'OneForma',
+  title: 'Local Search Quality Evaluator',
+  location: 'South Korea',
+  url: 'https://example.com/residency',
+  description: 'You must be living in South Korea for at least 5 years and be fluent in Korean.',
+  tags: ['Korean', 'Search Evaluator']
+});
+assert.ok(residencyRequirement.score < 20, 'unverified long-term residency requirements must not enter default recommendations');
+assert.match(residencyRequirement.fitWarning, /거주/);
+
+const annotationTenure = normalizeJob({
+  ...base,
+  id: 'annotation-tenure',
+  source: 'OneForma',
+  title: 'Multilingual Intent And Response Annotator',
+  location: 'Worldwide',
+  url: 'https://example.com/annotation-tenure',
+  description: 'Requirements: At least 1 year of experience working on annotation or data labeling projects.',
+  tags: ['Korean', 'Annotation']
+});
+assert.ok(annotationTenure.score < 20, 'unverified one-year annotation tenure must not enter default recommendations');
+assert.match(annotationTenure.fitWarning, /1년/);
+
+const transcriptionExperience = normalizeJob({
+  ...base,
+  id: 'transcription-experience',
+  source: 'OneForma',
+  title: 'Multilingual Podcast Transcription And Speech Annotator',
+  location: 'South Korea',
+  url: 'https://example.com/transcription-experience',
+  description: 'Requirements: Native Korean. Previous transcription or speech annotation experience.',
+  tags: ['Korean', 'Speech Annotator']
+});
+assert.ok(transcriptionExperience.score < 20, 'required transcription experience must be treated as an unverified hard requirement');
+assert.match(transcriptionExperience.fitWarning, /전사/);
 
 console.log('collector tests passed');

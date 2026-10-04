@@ -24,7 +24,8 @@ const text = (value) => repairMojibake(value).replace(/<[^>]+>/g, ' ').replace(/
 const lower = (value) => text(value).toLowerCase();
 const foreignLanguageRe = /\b(english|spanish|portuguese|romanian|japanese|polish|german|french|italian|dutch|finnish|hebrew|arabic|farsi|persian|urdu|hindi|bengali|marathi|tamil|telugu|vietnamese|thai|malay|indonesian|swedish|norwegian|danish|greek|latvian|lithuanian|estonian|slovak|slovenian|croatian|czech|hungarian|russian|ukrainian|turkish|serbian|bulgarian|albanian|kazakh|khmer|javanese|kannada|mandarin|cantonese|chinese|filipino|tagalog|icelandic|catalan)\b/i;
 
-const sourceRank = { official_ats: 4, job_board: 3, aggregator: 2, manual: 1 };
+const sourceRank = { official_ats: 5, official_platform: 4, job_board: 3, aggregator: 2, manual: 1 };
+const isOfficialKind = (kind) => ['official_ats', 'official_platform'].includes(kind);
 
 function sourceMeta(source) {
   return sourceQuality[source] ?? {
@@ -183,7 +184,7 @@ function currentListingState(job) {
     return { code: 'talent_pool', label: '인재풀·즉시 모집 아님', stale: false };
   }
   const ageDays = job.postedAt ? Math.floor((Date.now() - Date.parse(job.postedAt)) / 86400000) : null;
-  if (meta.kind === 'official_ats') return { code: 'verified_open', label: '모집 확인됨', stale: false };
+  if (isOfficialKind(meta.kind)) return { code: 'verified_open', label: '모집 확인됨', stale: false };
   if (meta.kind === 'manual') return { code: 'manual', label: '직접 확인 필요', stale: false };
   if (ageDays !== null && ageDays > 45) return { code: 'stale', label: '오래된 공고', stale: true };
   return { code: 'current_feed', label: '현재 피드', stale: false };
@@ -222,7 +223,7 @@ function hasPhrase(haystack, phrase) {
 function classify(job) {
   const title = lower(job.title);
   const rules = [
-    ['AI 평가·어노테이션', ['ai trainer', 'ai response', 'ai data specialist', 'generative ai analyst', 'data annotator', 'data annotation', 'response evaluator', 'search evaluator', 'search engine evaluator', 'internet safety evaluator', 'ads quality rater', 'quality rater', 'legal annotator', 'audio evaluation', 'speech evaluation', 'data rater', 'data labeling']],
+    ['AI 평가·어노테이션', ['ai trainer', 'ai response', 'ai data specialist', 'generative ai analyst', 'data annotator', 'data annotation', 'response evaluator', 'search evaluator', 'search engine evaluator', 'internet safety evaluator', 'ads quality rater', 'quality rater', 'quality assurance reviewer', 'ai quality assurance', 'legal annotator', 'audio evaluation', 'speech evaluation', 'speech annotator', 'transcription quality reviewer', 'data rater', 'data labeling']],
     ['한국어·언어', ['korean', '한국어', 'linguist', 'proofreader', 'proofreading', 'copy editor', 'content editor', 'localization', 'language quality']],
     ['조사·데이터', ['data entry', 'data researcher', 'web researcher', 'research assistant', 'market research', 'product catalog', 'catalog specialist', 'catalog coordinator', 'administrative assistant']],
     ['교육 운영', ['course operations', 'learning operations', 'education operations', 'class manager', 'training coordinator', 'learning coordinator', 'education coordinator']],
@@ -280,7 +281,7 @@ function scoreJob(job) {
   score += bodyMatched.filter((keyword) => strongBodyTerms.has(keyword.toLowerCase()) || strongBodyTerms.has(keyword)).length * 3;
   score += profile.preferredKeywords.filter((keyword) => hasPhrase(title, keyword)).length * 2;
   if (job.category !== '기타') score += 10;
-  if (job.sourceKind === 'official_ats') score += 8;
+  if (isOfficialKind(job.sourceKind)) score += 8;
   if (job.remote) score += 3;
   if (job.eligibilityCode === 'worldwide') score += 8;
   if (job.eligibilityCode === 'korea') score += 18;
@@ -293,7 +294,7 @@ function scoreJob(job) {
   if (/\b(engineer|developer|scientist|architect|consultant)\b/i.test(job.title) && !/korean|한국어/i.test(haystack)) score -= 28;
   if (/\b(senior|sr\.?|director|head|principal|staff|vice president|vp)\b/i.test(job.title)) score -= 12;
   const ageDays = job.postedAt ? Math.floor((Date.now() - Date.parse(job.postedAt)) / 86400000) : null;
-  if (job.sourceKind !== 'official_ats') {
+  if (!isOfficialKind(job.sourceKind)) {
     if (ageDays !== null && ageDays > 30) score -= 8;
     else if (ageDays !== null && ageDays > 14) score -= 3;
   }
@@ -347,8 +348,21 @@ function normalizeJob(raw) {
   } else if (/\b(legal|medical|clinical|pharma|life ?sciences?|patent)\b/.test(titleLower)) {
     job.fitWarning = '전문 분야 경력요건 확인';
     job.score = Math.min(job.score, 19);
-  } else if (/\b(linguist|translator|translation)\b/.test(titleLower) && !/\b(evaluator|rater|annotator|annotation)\b/.test(titleLower)) {
+  } else if (/\b(translator|translation)\b/.test(titleLower)) {
+    job.fitWarning = '번역 언어쌍·전문 번역 경험 확인';
+    job.score = Math.min(job.score, 19);
+  } else if (/\blinguist\b/.test(titleLower) && !/\b(evaluator|rater|annotator|annotation)\b/.test(titleLower)) {
     job.fitWarning = '전문 번역·언어 경력요건 확인';
+    job.score = Math.min(job.score, 19);
+  } else if (/\bat least\s+1\s+year\b[\s\S]{0,100}\b(?:annotation|data labeling)\b|\b(?:annotation|data labeling)\b[\s\S]{0,100}\bat least\s+1\s+year\b/i.test(fullDescription)) {
+    job.fitWarning = '어노테이션·데이터 라벨링 1년 이상 경력 요건 확인';
+    job.score = Math.min(job.score, 19);
+  } else if (/\bprevious\s+(?:transcription|speech annotation)(?:\s+or\s+(?:transcription|speech annotation))?\s+experience\b|\bprevious\s+transcription\s+or\s+speech annotation\s+experience\b/i.test(fullDescription)) {
+    job.fitWarning = '전사·음성 어노테이션 실무 경력 요건 확인';
+    job.score = Math.min(job.score, 19);
+  } else if (/\b(?:living|lived|resid(?:e|ing)|based)\b[\s\S]{0,100}\b(?:at least|minimum of|for at least)\b[\s\S]{0,30}\b\d+\s*(?:years?|yrs?)\b/i.test(fullDescription)
+    || /\b\d+\s*(?:years?|yrs?)\b[\s\S]{0,60}\b(?:living|resid(?:e|ing)|based)\b/i.test(fullDescription)) {
+    job.fitWarning = '장기 거주 요건 확인';
     job.score = Math.min(job.score, 19);
   } else {
     job.fitWarning = '';
@@ -417,6 +431,70 @@ async function collectWeloGlobal() {
 
 async function collectRws() {
   return collectLeverBoard('rws', 'RWS TrainAI', 'RWS');
+}
+
+function oneFormaTerms(post, taxonomy) {
+  return (post?._embedded?.['wp:term'] ?? [])
+    .flat()
+    .filter((term) => term?.taxonomy === taxonomy)
+    .map((term) => text(term.name))
+    .filter(Boolean);
+}
+
+function oneFormaCandidate(post) {
+  const countries = oneFormaTerms(post, 'country');
+  const languages = oneFormaTerms(post, 'language');
+  const types = oneFormaTerms(post, 'job_type');
+  const jobTags = oneFormaTerms(post, 'job_tag');
+  const domains = oneFormaTerms(post, 'domain');
+  const worldwide = jobTags.some((tag) => /worldwide/i.test(tag));
+  const koreaEligible = countries.some((country) => /south korea|korea republic/i.test(country));
+  const remote = worldwide
+    || jobTags.some((tag) => /remote/i.test(tag))
+    || countries.some((country) => /^remote$/i.test(country))
+    || /\bremote\b|work from home/i.test(text(post?.content?.rendered));
+  const location = worldwide
+    ? 'Worldwide'
+    : koreaEligible
+      ? (countries.length > 1 ? `South Korea + ${countries.length - 1}개 국가` : 'South Korea')
+      : countries.slice(0, 3).join(' / ') || (remote ? 'Remote' : '위치 미상');
+  const postedAt = post?.date_gmt
+    ? new Date(`${post.date_gmt}Z`).toISOString()
+    : post?.date
+      ? new Date(post.date).toISOString()
+      : null;
+  return {
+    id: `oneforma:${post?.id}`,
+    source: 'OneForma',
+    title: text(post?.title?.rendered),
+    company: 'OneForma',
+    location,
+    remote,
+    type: types.join(', ') || 'Project',
+    salary: '',
+    url: post?.link,
+    postedAt,
+    description: text(post?.content?.rendered || post?.excerpt?.rendered),
+    tags: [
+      ...languages.filter((language) => /korean/i.test(language)),
+      ...jobTags,
+      ...domains,
+      ...types,
+      ...languages
+    ].slice(0, 80),
+    countryCode: worldwide ? '' : (koreaEligible ? 'KR' : '')
+  };
+}
+
+async function collectOneForma() {
+  const rows = await fetchJson('https://www.oneforma.com/wp-json/wp/v2/job?per_page=100&_embed=1');
+  const collected = [];
+  for (const post of Array.isArray(rows) ? rows : []) {
+    const candidate = oneFormaCandidate(post);
+    if (!candidate.title || !candidate.url) continue;
+    if (relevantToProfile(candidate)) collected.push(normalizeJob(candidate));
+  }
+  return collected;
 }
 
 async function collectWeWorkRemotely() {
@@ -544,7 +622,7 @@ function dedupe(jobs) {
     const compatible = clusters.find((cluster) => {
       const current = cluster[0];
       if (current.url === job.url) return true;
-      if (current.sourceKind === 'official_ats' && job.sourceKind === 'official_ats') {
+      if (isOfficialKind(current.sourceKind) && isOfficialKind(job.sourceKind)) {
         return current.eligibilityCode === job.eligibilityCode && canonicalLocation(current.location) === canonicalLocation(job.location);
       }
       if (current.eligibilityCode === job.eligibilityCode) {
@@ -560,10 +638,10 @@ function dedupe(jobs) {
         const b = canonicalLocation(job.location);
         return a === b || a === 'remote' || b === 'remote';
       }
-      if (current.sourceKind === 'official_ats' || job.sourceKind === 'official_ats') {
-        const official = current.sourceKind === 'official_ats' ? current : job;
+      if (isOfficialKind(current.sourceKind) || isOfficialKind(job.sourceKind)) {
+        const official = isOfficialKind(current.sourceKind) ? current : job;
         const other = official === current ? job : current;
-        return other.sourceKind !== 'official_ats' && (official.eligibilityCode === 'worldwide' || other.eligibilityCode === 'unknown');
+        return !isOfficialKind(other.sourceKind) && (official.eligibilityCode === 'worldwide' || other.eligibilityCode === 'unknown');
       }
       return false;
     });
@@ -645,7 +723,7 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
   };
   for (const previous of previousJobs || []) {
     const preserveForGrace = Number(previous.score || 0) > 0
-      || previous.sourceKind === 'official_ats'
+      || isOfficialKind(previous.sourceKind)
       || previous.listingStatus === 'archived_missing';
     if (!preserveForGrace) continue;
     const previousUrl = lower(previous.url).replace(/[?#].*$/, '').replace(/\/$/, '');
@@ -680,6 +758,7 @@ export async function collectJobs({ includeManual = true, persist = true, previo
   const sources = [
     ['Welo Global', collectWeloGlobal],
     ['RWS TrainAI', collectRws],
+    ['OneForma', collectOneForma],
     ['We Work Remotely', collectWeWorkRemotely],
     ['Jobicy', collectJobicy],
     ['Remote OK', collectRemoteOk],
@@ -721,4 +800,4 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   console.log(JSON.stringify({ updatedAt: payload.updatedAt, sourceStatus: payload.sourceStatus, jobs: payload.jobs.length }, null, 2));
 }
 
-export { eligibilityFor, extractSalary, relevantToProfile, currentListingState, markPreservedSourceFailure, normalizeJob, dedupe, carryForwardLegacyIds, carryRecentlyMissing, canonicalCompany, canonicalTitle };
+export { eligibilityFor, extractSalary, relevantToProfile, currentListingState, markPreservedSourceFailure, normalizeJob, dedupe, carryForwardLegacyIds, carryRecentlyMissing, canonicalCompany, canonicalTitle, oneFormaCandidate };

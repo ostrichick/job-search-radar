@@ -24,6 +24,19 @@
       {"label": "공개 후기", "url": "https://www.trustpilot.com/review/www.rws.com"}
     ]
   },
+  "OneForma": {
+    "kind": "official_platform",
+    "listingLabel": "공식 프로젝트 플랫폼",
+    "paymentStatus": "caution",
+    "paymentLabel": "지급 후기 주의",
+    "reviewedAt": "2026-10-04",
+    "summary": "OneForma의 공식 공개 프로젝트 API에서 가져옵니다. 현재 프로젝트가 공식 플랫폼에 게시되어 있다는 사실과 실제 지급 경험은 별도이므로, 프로젝트별 단가·승인 기준·정산 주기를 확인하고 최근 공개 후기의 지급 지연·지원 응답 문제도 함께 고려해야 합니다.",
+    "evidence": [
+      {"label": "공식 프로젝트", "url": "https://www.oneforma.com/projects/"},
+      {"label": "공식 지급 안내", "url": "https://www.oneforma.com/help-center/payment-issues-and-finance/how-payments-work-on-oneforma/"},
+      {"label": "공개 후기", "url": "https://www.trustpilot.com/review/oneforma.com"}
+    ]
+  },
   "We Work Remotely": {
     "kind": "job_board",
     "listingLabel": "공개 공식 피드",

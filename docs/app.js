@@ -272,7 +272,7 @@ function qualityClass(type, value) {
     if (value === 'expired') return 'expired';
     if (value === 'talent_pool') return 'talent-pool';
   }
-  if (type === 'trust' && value === 'official_ats') return 'official';
+  if (type === 'trust' && ['official_ats', 'official_platform'].includes(value)) return 'official';
   if (type === 'payment' && value === 'caution') return 'caution';
   return '';
 }

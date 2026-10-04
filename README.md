@@ -18,7 +18,7 @@ npm start
 
 브라우저에서 `http://127.0.0.1:4317`을 엽니다.
 
-`local-server.mjs`는 데스크톱 바로가기용 로컬 서버이며 웹 배포에는 사용하지 않습니다. 웹 배포는 `public/`과 `api/`의 서버리스 엔드포인트를 사용합니다.
+`local-server.mjs`는 데스크톱 바로가기용 로컬 서버이며 웹 배포에는 사용하지 않습니다. 현재 GitHub Pages는 Actions가 `public/` 정적 UI와 최신 `jobs.json`을 생성해 배포하고, `api/`는 Vercel 보조 배포에서만 사용합니다.
 
 서버가 켜져 있는 동안 6시간마다 자동 갱신하며, 마지막 수집이 6시간 이상 지난 상태에서 서버를 시작해도 자동으로 다시 수집합니다. 화면의 **목록 새로고침** 버튼으로 현재 피드를 다시 읽을 수 있습니다.
 
@@ -26,6 +26,7 @@ npm start
 
 - Welo Global/Welocalize 공식 Lever 채용 API — 사용자 관심 분야와 한국/Worldwide/확인 필요 범위만 선별
 - RWS TrainAI 공식 Lever 채용 API — 사용자 관심 분야와 한국/Worldwide/확인 필요 범위만 선별
+- OneForma 공식 WordPress REST 프로젝트 API — 한국어·South Korea·AI/언어/오디오 프로젝트를 관심 조건에 맞춰 선별
 - We Work Remotely 공개 RSS — 현재 관심 조건과 맞는 공고가 있을 때만 포함
 - Jobicy 공개 Remote Jobs API
 - Remote OK 공개 JSON API
@@ -35,17 +36,17 @@ npm start
 
 LinkedIn과 Indeed는 직접 크롤링하지 않습니다. 두 플랫폼에서 발견한 공고는 화면의 **공고 추가**로 저장할 수 있습니다. Gmail Job Alert 자동 유입은 Gmail OAuth 토큰을 정적 웹앱에 넣지 않는 구조가 전제이며, 별도 서버/Apps Script 등 안전한 OAuth 보관 경로가 생길 때 연결합니다.
 
-공식 ATS에 현재 게시된 공고는 `모집 확인됨`으로, 채용 보드/집계 피드는 `현재 피드`로 구분합니다. 45일이 지난 비공식 피드는 `오래된 공고`, 명시적인 talent pool/network 문구는 `인재풀·즉시 모집 아님`, 명시적인 모집 종료 문구·지난 마감일은 `종료 확인됨`으로 분류합니다.
+공식 ATS나 공식 프로젝트 플랫폼에 현재 게시된 공고는 `모집 확인됨`으로, 채용 보드/집계 피드는 `현재 피드`로 구분합니다. 45일이 지난 비공식 피드는 `오래된 공고`, 명시적인 talent pool/network 문구는 `인재풀·즉시 모집 아님`, 명시적인 모집 종료 문구·지난 마감일은 `종료 확인됨`으로 분류합니다.
 
-Welo Global/Welocalize와 RWS는 공식 채용원과 지급 평판을 별도 축으로 표시합니다. 공식 채용 페이지에 실제 공고가 있다는 사실과 프리랜서 지급의 신뢰도는 같은 의미가 아니므로, 최근 공개 리뷰에 지급 지연·분쟁 불만이 있는 소스는 `지급 후기 주의`로 표시하고 상세 보기에서 근거 링크를 제공합니다.
+Welo Global/Welocalize, RWS, OneForma는 공식 모집원과 지급 평판을 별도 축으로 표시합니다. 공식 페이지에 실제 공고가 있다는 사실과 프리랜서 지급의 신뢰도는 같은 의미가 아니므로, 최근 공개 리뷰에 지급 지연·분쟁 불만이 있는 소스는 `지급 후기 주의`로 표시하고 상세 보기에서 근거 링크를 제공합니다.
 
 ## 웹 배포
 
-- Vercel: `api/`의 서버리스 수집 API를 사용합니다.
-- GitHub Pages: `npm run build:pages`가 최신 공고와 정적 UI를 `docs/`에 생성하며 `main/docs`를 영구 배포 대상으로 사용합니다.
-- `deployment/pages-workflow.yml.example`은 6시간 자동 수집·배포용 GitHub Actions 템플릿입니다. GitHub OAuth에 `workflow` 권한이 있는 환경에서 `.github/workflows/pages.yml`로 활성화할 수 있습니다.
-- 현재 Pages 배포는 `docs/jobs.json`에 포함된 마지막 수집 결과를 사용합니다. 자동 workflow가 활성화되기 전에는 `npm run build:pages` 후 `docs/` 변경을 push하면 최신 데이터로 갱신됩니다.
-- Windows에서는 `scripts/publish-pages.ps1`이 테스트와 피드 검증을 통과하고 수집 결과에 실제 변화가 있을 때만 `docs/`를 커밋·push합니다. 로컬 Task Scheduler로 6시간마다 실행하면 GitHub Actions 권한 없이도 Pages 피드를 자동 갱신할 수 있습니다.
+- Vercel: `api/`의 서버리스 수집 API를 사용할 수 있는 보조 배포 구성이 남아 있습니다.
+- GitHub Pages가 현재 영구 서비스입니다. `.github/workflows/pages.yml`이 6시간마다 또는 `main` push/수동 실행 시 Node 24에서 테스트 → 최신 피드 생성 → 피드 검증 → Pages artifact 배포를 수행합니다.
+- Pages 설정은 GitHub Actions(`build_type=workflow`) 방식입니다. 서버 측 실행이므로 개인 PC가 꺼져 있어도 갱신됩니다.
+- `docs/`는 더 이상 실제 Pages 배포 원본이 아니지만, `npm run build:pages`로 UI 동기화와 마지막 정상 피드 사본을 유지합니다. Actions의 정적 빌드는 이전 `public/jobs.json`이 없을 때 `docs/jobs.json`을 이전 피드로 사용해 stable ID 승계와 14일 실종 공고 grace를 이어갑니다.
+- `scripts/publish-pages.ps1`과 Windows 작업 스케줄러 `JobSearchRadarRefresh`는 롤백용으로 남겨 두었으며 현재 작업은 **비활성화**되어 있습니다. Actions 장애가 확인될 때만 다시 켭니다.
 - 관심 공고, 지원 상태, 숨김, 직접 추가 공고와 필터 설정은 사용자의 브라우저 `localStorage`에 저장됩니다.
 - 헤더의 **상태 백업 / 상태 가져오기**로 이 브라우저 상태를 버전이 있는 JSON 파일로 내보내고 다른 브라우저에 병합할 수 있습니다.
 - 관심·지원 예정·지원함으로 관리하는 공고는 간단한 로컬 스냅샷도 함께 보관해, 이후 원천 피드에서 사라져도 해당 상태 화면에서 제목·회사·원문 링크를 계속 확인할 수 있습니다.
