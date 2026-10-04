@@ -207,6 +207,45 @@ const gangnamHybridJob = job({
   domesticRegion: { country: '대한민국', province: '서울특별시', city: '', district: '강남구', neighborhood: '', locality: '강남구', label: '서울특별시 강남구', precision: 'district', evidenceLevel: 'source_structured', lat: 37.5177, lon: 127.0473, coordinatePrecision: 'district', coordinateSource: 'OpenStreetMap Nominatim' }
 });
 
+const work24LocalJobs = [
+  job({
+    id: 'job:work24-jeonju-office', source: '고용24', sourceKind: 'official_government', sourceTrustLabel: '고용노동부 공식 채용정보',
+    company: '전주 생활서비스', title: '일반 사무원', location: '전북특별자치도 전주시 덕진구 금암동 거북바우3길 15',
+    workAddress: '전북특별자치도 전주시 덕진구 금암동 거북바우3길 15', remote: false, workplaceMode: 'onsite',
+    type: '기간의 정함이 없는 근로계약', url: 'https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=JEONJU1',
+    platform: '고용24', sourcePostingId: 'JEONJU1', score: 45, category: '사무·운영',
+    salary: '최소 ₩2,330,000/월', salaryInfo: { raw: '월급 233만원 이상', display: '최소 ₩2,330,000/월', currency: 'KRW', min: 2330000, max: 2330000, period: 'month', confidence: 'parsed', qualifier: 'minimum' },
+    deadlineType: 'fixed', deadlineDate: '2026-10-31', deadlineLabel: '20261031',
+    listingStatus: 'official_listed', listingLabel: '고용24 모집 확인', listingBasis: 'official_government_feed',
+    listingEvidence: [{ type: 'official_government_listing', label: '정부 공식 채용정보 원문', url: 'https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=JEONJU1' }],
+    marketScopes: ['domestic'], marketSegment: 'domestic',
+    domesticRegion: { country: '대한민국', province: '전북특별자치도', city: '전주시', district: '덕진구', neighborhood: '금암동', locality: '전주시 덕진구', label: '전북특별자치도 전주시 덕진구 금암동', precision: 'address', evidenceLevel: 'source_structured', lat: 35.8294, lon: 127.1342, coordinatePrecision: 'district', coordinateLabel: '전북특별자치도 전주시 덕진구', coordinateSource: 'OpenStreetMap Nominatim' }
+  }),
+  job({
+    id: 'job:work24-wanju-office', source: '고용24', sourceKind: 'official_government', sourceTrustLabel: '고용노동부 공식 채용정보',
+    company: '완주 운영센터', title: '운영지원 사무원', location: '전북특별자치도 완주군 봉동읍 완주산단9로 15',
+    workAddress: '전북특별자치도 완주군 봉동읍 완주산단9로 15', remote: false, workplaceMode: 'onsite',
+    type: '기간의 정함이 있는 근로계약', url: 'https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=WANJU1',
+    platform: '고용24', sourcePostingId: 'WANJU1', score: 35, category: '사무·운영',
+    salary: '₩2,400,000/월', salaryInfo: { raw: '월급 240만원', display: '₩2,400,000/월', currency: 'KRW', min: 2400000, max: 2400000, period: 'month', confidence: 'parsed' },
+    deadlineType: 'rolling', deadlineDate: '', deadlineLabel: '채용시까지',
+    listingStatus: 'official_listed', listingLabel: '고용24 모집 확인', listingBasis: 'official_government_feed',
+    listingEvidence: [{ type: 'official_government_listing', label: '정부 공식 채용정보 원문', url: 'https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=WANJU1' }],
+    marketScopes: ['domestic'], marketSegment: 'domestic',
+    domesticRegion: { country: '대한민국', province: '전북특별자치도', city: '완주군', district: '', neighborhood: '봉동읍', locality: '완주군', label: '전북특별자치도 완주군 봉동읍', precision: 'address', evidenceLevel: 'source_structured', lat: 35.9039, lon: 127.1622, coordinatePrecision: 'city', coordinateLabel: '전북특별자치도 완주군', coordinateSource: 'OpenStreetMap Nominatim' }
+  }),
+  job({
+    id: 'job:work24-jeonju-unknown', source: '고용24', sourceKind: 'official_government', sourceTrustLabel: '고용노동부 공식 채용정보',
+    company: '전주 지원센터', title: '자료입력 보조', location: '전북특별자치도 전주시 완산구', remote: false, workplaceMode: 'onsite',
+    type: '시간선택제', url: 'https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=JEONJU2',
+    platform: '고용24', sourcePostingId: 'JEONJU2', score: 40, category: '사무·운영',
+    listingStatus: 'official_listed', listingLabel: '고용24 모집 확인', listingBasis: 'official_government_feed',
+    listingEvidence: [{ type: 'official_government_listing', label: '정부 공식 채용정보 원문', url: 'https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=JEONJU2' }],
+    marketScopes: ['domestic'], marketSegment: 'domestic',
+    domesticRegion: { country: '대한민국', province: '전북특별자치도', city: '전주시', district: '완산구', neighborhood: '', locality: '전주시 완산구', label: '전북특별자치도 전주시 완산구', precision: 'district', evidenceLevel: 'source_structured' }
+  })
+];
+
 async function useFeed(page, getFeed = () => feed(defaultJobs)) {
   await page.route('**/jobs.json*', async (route) => {
     await route.fulfill({
@@ -300,6 +339,9 @@ test('국내 거리 근거가 부족하거나 원격이면 정밀 거리를 만�
 
   const unknown = page.locator('.job-card').filter({ hasText: 'Korean Language AI Evaluator - Jeonju' });
   await expect(unknown.locator('.distance-value')).toHaveText('주소 부족으로 거리 계산 불가');
+  await page.locator('#remote').selectOption('');
+  await page.locator('#domesticProvince').selectOption('');
+  await page.locator('#domesticLocality').selectOption('');
   const remote = page.locator('.job-card').filter({ hasText: 'Korean Remote Evaluator - Seoul' });
   await expect(remote.locator('.distance-value')).toHaveText('원격 · 출근 거리 비해당');
 });
@@ -308,6 +350,9 @@ test('국내 원격과 하이브리드는 근무형태에 맞는 거리 근거�
   await useFeed(page, () => feed([appierRemoteJob, gangnamHybridJob]));
   await page.goto('/');
   await page.locator('#marketDomestic').click();
+  await page.locator('#remote').selectOption('');
+  await page.locator('#domesticProvince').selectOption('');
+  await page.locator('#domesticLocality').selectOption('');
 
   const appier = page.locator('.job-card').filter({ hasText: 'AI Creative QC Reviewer' });
   await expect(appier.locator('.meta')).toContainText('원격');
@@ -317,6 +362,49 @@ test('국내 원격과 하이브리드는 근무형태에 맞는 거리 근거�
   await expect(gangnam.locator('.distance-note')).toContainText('서울특별시 강남구 기준');
 });
 
+test('전주·완주 로컬 기본 탐색은 출근형을 거리순으로 보고 읍면동까지 좁힐 수 있다', async ({ page }) => {
+  await useFeed(page, () => feed([...defaultJobs, ...work24LocalJobs, appierRemoteJob]));
+  await page.goto('/');
+  await page.locator('#marketDomestic').click();
+
+  await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
+  await expect(page.locator('#domesticLocality')).toHaveValue('전주·완주');
+  await expect(page.locator('#remote')).toHaveValue('local');
+  await expect(page.locator('#minScore')).toHaveValue('20');
+  await expect(page.locator('#sort')).toHaveValue('distance');
+  await expect(page.locator('.job-card').filter({ hasText: 'AI Creative QC Reviewer' })).toHaveCount(0);
+
+  const titles = await page.locator('.job-card .title').allTextContents();
+  expect(titles.slice(0, 3)).toEqual(['일반 사무원', '운영지원 사무원', '자료입력 보조']);
+  await expect(page.locator('.job-card').filter({ hasText: '자료입력 보조' }).locator('.distance-value')).toHaveText('주소 부족으로 거리 계산 불가');
+
+  await page.locator('#domesticLocality').selectOption('완주군');
+  await expect(page.locator('#domesticNeighborhood')).toContainText('봉동읍');
+  await page.locator('#domesticNeighborhood').selectOption('봉동읍');
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  const wanju = page.locator('.job-card').filter({ hasText: '운영지원 사무원' });
+  await expect(wanju.locator('.distance-note')).toContainText('전북특별자치도 완주군 기준');
+  await expect(wanju.locator('.posted')).toContainText('채용시까지');
+
+  await wanju.locator('.details').click();
+  await expect(page.locator('#detailsLink')).toHaveText('채용정보 제공사이트로 이동 ↗');
+  await expect(page.locator('#work24Attribution')).toBeVisible();
+  await expect(page.locator('#work24Attribution')).toContainText('정보출처: 고용24');
+});
+
+test('거리 전체 보기에서는 근거리 출근형 → 주소 미확인 출근형 → 원격 순으로 정렬한다', async ({ page }) => {
+  await useFeed(page, () => feed([...work24LocalJobs, appierRemoteJob]));
+  await page.goto('/');
+  await page.locator('#marketDomestic').click();
+  await page.locator('#remote').selectOption('');
+  await page.locator('#domesticProvince').selectOption('');
+  await page.locator('#domesticLocality').selectOption('');
+
+  const titles = await page.locator('.job-card .title').allTextContents();
+  expect(titles).toEqual(['일반 사무원', '운영지원 사무원', '자료입력 보조', '[Part Time] AI Creative QC Reviewer, Korea']);
+  await expect(page.locator('.job-card').last().locator('.distance-value')).toHaveText('원격 · 출근 거리 비해당');
+});
+
 test('국내·해외 탭의 검색과 지역 필터는 서로 독립적으로 reload 후 유지된다', async ({ page }) => {
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
   await page.goto('/');
@@ -324,6 +412,7 @@ test('국내·해외 탭의 검색과 지역 필터는 서로 독립적으로 re
   await page.locator('#marketDomestic').click();
   await page.locator('#domesticProvince').selectOption('전북특별자치도');
   await page.locator('#domesticLocality').selectOption('전주시 덕진구');
+  await page.locator('#domesticNeighborhood').selectOption('산정동');
   await page.locator('#query').fill('Jeonju');
 
   await page.locator('#marketOverseas').click();
@@ -332,12 +421,14 @@ test('국내·해외 탭의 검색과 지역 필터는 서로 독립적으로 re
   await expect(page.locator('#query')).toHaveValue('Jeonju');
   await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
   await expect(page.locator('#domesticLocality')).toHaveValue('전주시 덕진구');
+  await expect(page.locator('#domesticNeighborhood')).toHaveValue('산정동');
 
   await page.reload();
   await expect(page.locator('#marketDomestic')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('#query')).toHaveValue('Jeonju');
   await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
   await expect(page.locator('#domesticLocality')).toHaveValue('전주시 덕진구');
+  await expect(page.locator('#domesticNeighborhood')).toHaveValue('산정동');
 });
 
 test('선택한 국내 지역 공고가 다음 피드에서 0건이 되어도 필터를 보존하고 명확히 안내한다', async ({ page }) => {
@@ -581,6 +672,7 @@ test('상태 백업/가져오기는 지원함 상태와 필터를 복원한다',
   await page.locator('#marketDomestic').click();
   await page.selectOption('#domesticProvince', '전북특별자치도');
   await page.selectOption('#domesticLocality', '전주시 덕진구');
+  await page.selectOption('#domesticNeighborhood', '산정동');
   await page.fill('#query', 'Jeonju');
   const [download] = await Promise.all([
     page.waitForEvent('download'),
@@ -598,6 +690,8 @@ test('상태 백업/가져오기는 지원함 상태와 필터를 복원한다',
   await expect(page.locator('#query')).toHaveValue('Jeonju');
   await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
   await expect(page.locator('#domesticLocality')).toHaveValue('전주시 덕진구');
+  await expect(page.locator('#domesticNeighborhood')).toHaveValue('산정동');
+  await expect(page.locator('#sort')).toHaveValue('distance');
   await page.locator('#marketOverseas').click();
   await expect(page.locator('#source')).toHaveValue('RWS TrainAI');
   await page.selectOption('#statusFilter', 'applied');

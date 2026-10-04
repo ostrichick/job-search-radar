@@ -58,6 +58,10 @@
         <label for="domesticLocality">시·군·구</label>
         <select id="domesticLocality"><option value="">전체 시·군·구</option></select>
       </div>
+      <div class="field market-domestic-only" hidden>
+        <label for="domesticNeighborhood">읍·면·동</label>
+        <select id="domesticNeighborhood"><option value="">전체 읍·면·동</option></select>
+      </div>
       <div class="field">
         <label for="compensationFilter">보수 정보</label>
         <select id="compensationFilter">
@@ -94,6 +98,7 @@
             <label for="remote">근무 형태</label>
             <select id="remote">
               <option value="">전체</option>
+              <option value="local">출근형</option>
               <option value="remote">원격</option>
             </select>
           </div>
@@ -126,6 +131,7 @@
             <select id="sourceKindFilter">
               <option value="">전체</option>
               <option value="official_ats">공식 직접 채용</option>
+              <option value="official_government">정부 공식 채용정보</option>
               <option value="official_platform">공식 프로젝트 플랫폼</option>
               <option value="job_board">채용 보드</option>
               <option value="aggregator">집계 피드</option>
@@ -318,6 +324,7 @@
       <p id="detailsVerifiedAt" class="verified-at"></p>
     </section>
     <div id="detailsDescription" class="details-description"></div>
+    <p id="work24Attribution" class="source-note" hidden>정보출처: 고용24 · 본 자료는 고용노동부 고용24(www.work24.go.kr)에서 제공된 정보이며, 무단복제 및 배포를 금지합니다.</p>
     <div class="dialog-actions details-actions"><button id="prevDetails" class="button secondary-light" type="button">← 이전</button><button id="nextDetails" class="button secondary-light" type="button">다음 →</button><a id="detailsLink" class="button primary" target="_blank" rel="noopener noreferrer">원문 공고 보기 ↗</a></div>
   </dialog>
   <script type="module" src="./app.js"></script>

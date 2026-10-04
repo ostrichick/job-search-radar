@@ -26,8 +26,8 @@ const text = (value) => repairMojibake(value).replace(/<[^>]+>/g, ' ').replace(/
 const lower = (value) => text(value).toLowerCase();
 const foreignLanguageRe = /\b(english|spanish|portuguese|romanian|japanese|polish|german|french|italian|dutch|finnish|hebrew|arabic|farsi|persian|urdu|hindi|bengali|marathi|tamil|telugu|vietnamese|thai|malay|indonesian|swedish|norwegian|danish|greek|latvian|lithuanian|estonian|slovak|slovenian|croatian|czech|hungarian|russian|ukrainian|turkish|serbian|bulgarian|albanian|kazakh|khmer|javanese|kannada|mandarin|cantonese|chinese|filipino|tagalog|icelandic|catalan)\b/i;
 
-const sourceRank = { official_ats: 5, official_platform: 4, job_board: 3, aggregator: 2, manual: 1 };
-const isOfficialKind = (kind) => ['official_ats', 'official_platform'].includes(kind);
+const sourceRank = { official_ats: 5, official_government: 5, official_platform: 4, job_board: 3, aggregator: 2, manual: 1 };
+const isOfficialKind = (kind) => ['official_ats', 'official_government', 'official_platform'].includes(kind);
 const dayMs = 86400000;
 const verificationHistoryLimit = 24;
 const sourceMetricHistoryLimit = 24;
@@ -104,6 +104,18 @@ function parentForKoreanAdmin(city, district, province = '') {
 const regionCentroids = {
   '서울특별시': { lat: 37.5666791, lon: 126.9782914, precision: 'city', coordinateSource: 'OpenStreetMap Nominatim', coordinateCheckedAt: '2026-10-04' },
   '서울특별시|강남구': { lat: 37.5177, lon: 127.0473, precision: 'district', coordinateSource: 'OpenStreetMap Nominatim', coordinateCheckedAt: '2026-10-04' },
+  '전북특별자치도|전주시|덕진구': {
+    lat: 35.8294, lon: 127.1342, precision: 'district', label: '전북특별자치도 전주시 덕진구',
+    coordinateSource: 'OpenStreetMap Nominatim', coordinateCheckedAt: '2026-10-05'
+  },
+  '전북특별자치도|전주시|완산구': {
+    lat: 35.8122, lon: 127.1197, precision: 'district', label: '전북특별자치도 전주시 완산구',
+    coordinateSource: 'OpenStreetMap Nominatim', coordinateCheckedAt: '2026-10-05'
+  },
+  '전북특별자치도|완주군': {
+    lat: 35.9039, lon: 127.1622, precision: 'city', label: '전북특별자치도 완주군',
+    coordinateSource: 'OpenStreetMap Nominatim', coordinateCheckedAt: '2026-10-05'
+  },
   '전북특별자치도|전주시|덕진구|산정동': { ...defaultLocationReference }
 };
 
@@ -116,7 +128,7 @@ function normalizeWorkplaceMode(value, remoteFallback = false) {
 }
 
 function domesticRegionFor(job) {
-  const location = text(job.location);
+  const location = text(job.workAddress || job.location);
   const lowerLocation = lower(location);
   const multiCountry = /\+\s*\d+\s*개\s*국가|\bworld\s*wide\b|\bworldwide\b|\bremote\s*-\s*europe\b|\b(?:china|japan|united states|canada|united kingdom|singapore|germany|france|brazil|india)\b/.test(lowerLocation.replace(/south korea|republic of korea/g, ''));
   const matchedProvince = matchingProvince(location);
@@ -127,16 +139,17 @@ function domesticRegionFor(job) {
   if (!koreaSpecific || multiCountry) return null;
 
   let province = matchedProvince;
-  const koreanUnits = [...location.matchAll(/([가-힣]{2,}(?:시|군|구|동))/g)].map((match) => match[1]);
+  const koreanUnits = [...location.matchAll(/([가-힣0-9]{2,}(?:시|군|구|읍|면|동))/g)].map((match) => match[1]);
   let city = koreanUnits.find((unit) => /시$/.test(unit) && !/특별시$|광역시$|자치시$/.test(unit)) || '';
   let district = koreanUnits.find((unit) => /군$|구$/.test(unit)) || '';
-  let neighborhood = koreanUnits.find((unit) => /동$/.test(unit)) || '';
+  let neighborhood = koreanUnits.find((unit) => /읍$|면$|동$/.test(unit)) || '';
   let aliasDerived = Boolean(province && !/[가-힣]/.test(location));
   const adminAlias = matchedAdminRegion || matchingAdminRegion(location, province);
   if (adminAlias) {
     if (!city && adminAlias.city) city = adminAlias.city;
     if (!district && adminAlias.district) district = adminAlias.district;
     province ||= adminAlias.province;
+    if (!adminAlias.district && city && district === city) district = '';
     if (!/[가-힣]/.test(location)) aliasDerived = true;
   }
   const directParent = parentForKoreanAdmin(city, district, province);
@@ -154,10 +167,20 @@ function domesticRegionFor(job) {
   }
 
   const locality = [city, district].filter(Boolean).join(' ');
-  const centroidKey = [province, city, district, neighborhood].filter(Boolean).join('|');
-  const centroid = regionCentroids[centroidKey] || (!city && !district && !neighborhood ? regionCentroids[province] : null);
+  const centroidKeys = [
+    [province, city, district, neighborhood],
+    [province, city, district],
+    [province, city],
+    [province, district],
+    [province]
+  ].map((parts) => parts.filter(Boolean).join('|')).filter(Boolean);
+  const centroid = centroidKeys.map((key) => regionCentroids[key]).find(Boolean) || null;
   const metropolitanProvince = province && /(?:특별시|광역시|특별자치시)$/.test(province);
-  const precision = neighborhood ? 'neighborhood' : district ? 'district' : city || metropolitanProvince ? 'city' : province ? 'province' : 'country';
+  const addressLike = job.locationEvidenceLevel === 'source_structured' && (
+    /[가-힣0-9·.-]+(?:대로|로|길)\s*\d+(?:-\d+)?/.test(location)
+    || /(?:읍|면|동|가)\s*\d+(?:-\d+)?/.test(location)
+  );
+  const precision = addressLike ? 'address' : neighborhood ? 'neighborhood' : district ? 'district' : city || metropolitanProvince ? 'city' : province ? 'province' : 'country';
   const hasKoreanAdminText = /[가-힣]{2,}(?:시|군|구|동)|서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충청|전북|전라|경상|제주/.test(location);
   const countryText = /south korea|republic of korea|대한민국|\bkorea\b|한국/i.test(location);
   const genericLocation = !location || /^(?:위치 미상|unknown|not specified|n\/?a)$/i.test(location);
@@ -180,10 +203,12 @@ function domesticRegionFor(job) {
     label: [province, locality, neighborhood].filter(Boolean).join(' ') || (genericLocation || countryText ? '대한민국' : location),
     precision,
     evidenceLevel,
+    ...(job.workAddress ? { sourceAddress: text(job.workAddress) } : {}),
     ...(centroid ? {
       lat: centroid.lat,
       lon: centroid.lon,
       coordinatePrecision: centroid.precision,
+      coordinateLabel: centroid.label || [province, city, district, neighborhood].filter(Boolean).join(' '),
       coordinateSource: centroid.coordinateSource,
       coordinateCheckedAt: centroid.coordinateCheckedAt
     } : {})
@@ -644,6 +669,74 @@ function xmlTag(block, tag) {
   return match ? decodeXml(match[1].trim()) : '';
 }
 
+function xmlBlocks(value, tag) {
+  return [...String(value ?? '').matchAll(new RegExp(`<${tag}>([\\s\\S]*?)<\\/${tag}>`, 'gi'))]
+    .map((match) => match[1]);
+}
+
+function work24IsoDate(value) {
+  const raw = text(value);
+  const digits = raw.replace(/[^0-9]/g, '');
+  if (digits.length < 8) return null;
+  const datePart = `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6, 8)}`;
+  const timePart = digits.length >= 14
+    ? `T${digits.slice(8, 10)}:${digits.slice(10, 12)}:${digits.slice(12, 14)}+09:00`
+    : 'T00:00:00+09:00';
+  const parsed = new Date(`${datePart}${timePart}`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+}
+
+function work24Deadline(value) {
+  const raw = text(value);
+  if (!raw) return { type: '', date: '', label: '' };
+  if (/채용시|상시|수시/.test(raw)) return { type: 'rolling', date: '', label: raw };
+  const digits = raw.replace(/[^0-9]/g, '');
+  const date = digits.length >= 8 ? `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6, 8)}` : '';
+  const valid = date && !Number.isNaN(Date.parse(`${date}T00:00:00+09:00`));
+  return {
+    type: valid ? 'fixed' : 'unknown',
+    date: valid ? date : '',
+    label: raw
+  };
+}
+
+const work24EmploymentType = (code) => ({
+  '10': '기간의 정함이 없는 근로계약',
+  '11': '기간의 정함이 없는 근로계약(시간선택제)',
+  '20': '기간의 정함이 있는 근로계약',
+  '21': '기간의 정함이 있는 근로계약(시간선택제)',
+  Y: '대체인력채용'
+})[text(code)] || (text(code) ? `고용형태 코드 ${text(code)}` : '미상');
+
+function parseWork24ListXml(xml) {
+  const blocks = xmlBlocks(xml, 'wanted');
+  return blocks.map((block) => ({
+    wantedAuthNo: xmlTag(block, 'wantedAuthNo'),
+    company: xmlTag(block, 'company'),
+    title: xmlTag(block, 'title'),
+    salTpNm: xmlTag(block, 'salTpNm'),
+    sal: xmlTag(block, 'sal'),
+    minSal: xmlTag(block, 'minSal'),
+    maxSal: xmlTag(block, 'maxSal'),
+    region: xmlTag(block, 'region'),
+    holidayTpNm: xmlTag(block, 'holidayTpNm'),
+    minEdubg: xmlTag(block, 'minEdubg'),
+    maxEdubg: xmlTag(block, 'maxEdubg'),
+    career: xmlTag(block, 'career'),
+    regDt: xmlTag(block, 'regDt'),
+    closeDt: xmlTag(block, 'closeDt'),
+    infoSvc: xmlTag(block, 'infoSvc'),
+    wantedInfoUrl: xmlTag(block, 'wantedInfoUrl'),
+    zipCd: xmlTag(block, 'zipCd'),
+    strtnmCd: xmlTag(block, 'strtnmCd'),
+    basicAddr: xmlTag(block, 'basicAddr'),
+    detailAddr: xmlTag(block, 'detailAddr'),
+    empTpCd: xmlTag(block, 'empTpCd'),
+    jobsCd: xmlTag(block, 'jobsCd'),
+    smodifyDtm: xmlTag(block, 'smodifyDtm')
+  })).filter((row) => row.wantedAuthNo && row.title);
+}
+
 function parseAmount(value) {
   let raw = String(value ?? '').trim().toLowerCase();
   if (/^\d+,\d{1,2}\s*[km]$/i.test(raw)) raw = raw.replace(',', '.');
@@ -673,21 +766,29 @@ function salaryContext(rawValue, description) {
 
 function extractSalary(rawValue, description = '') {
   const koreanPayText = text([rawValue, description].filter(Boolean).join(' '));
-  const koreanPay = koreanPayText.match(/(?:급여\s*:?\s*)?(시급|일급|주급|월급|연봉)\s*:?\s*(\d[\d,]*(?:\.\d+)?)\s*원/);
+  const koreanPay = koreanPayText.match(/(?:급여\s*:?\s*)?(시급|일급|주급|월급|연봉)\s*:?\s*(\d[\d,]*(?:\.\d+)?)\s*(만)?\s*원(?:\s*(?:[-~–—]|부터|~)\s*(\d[\d,]*(?:\.\d+)?)\s*(만)?\s*원)?\s*(이상|이하)?/);
   if (koreanPay) {
-    const min = parseAmount(koreanPay[2]);
+    const min = parseAmount(koreanPay[2]) * (koreanPay[3] ? 10000 : 1);
+    const secondRaw = parseAmount(koreanPay[4]);
+    const second = Number.isFinite(secondRaw) ? secondRaw * (koreanPay[5] ? 10000 : 1) : null;
+    const max = Number.isFinite(second) ? Math.max(min, second) : min;
+    const low = Number.isFinite(second) ? Math.min(min, second) : min;
     const period = ({ 시급: 'hour', 일급: 'day', 주급: 'week', 월급: 'month', 연봉: 'year' })[koreanPay[1]];
     const symbol = '₩';
-    const display = `${symbol}${Number(min).toLocaleString('en-US', { maximumFractionDigits: 2 })}${({ hour: '/시간', day: '/일', week: '/주', month: '/월', year: '/년' })[period]}`;
+    const fmt = (value) => Number(value).toLocaleString('en-US', { maximumFractionDigits: 2 });
+    const range = max !== low ? `${symbol}${fmt(low)}–${symbol}${fmt(max)}` : `${symbol}${fmt(low)}`;
+    const qualifier = koreanPay[6] === '이상' ? 'minimum' : koreanPay[6] === '이하' ? 'maximum' : '';
+    const qualifierLabel = qualifier === 'minimum' ? '최소 ' : qualifier === 'maximum' ? '최대 ' : '';
+    const display = `${qualifierLabel}${range}${({ hour: '/시간', day: '/일', week: '/주', month: '/월', year: '/년' })[period]}`;
     return {
       raw: koreanPay[0],
       display,
       currency: 'KRW',
-      min,
-      max: min,
+      min: low,
+      max,
       period,
       confidence: 'parsed',
-      qualifier: '',
+      qualifier,
       paymentBasis: '',
       scope: ''
     };
@@ -817,13 +918,24 @@ function canonicalLocation(value) {
   return normalized || 'remote';
 }
 
+function canonicalDomesticAddress(value) {
+  const normalized = text(value)
+    .replace(/^\s*\d{5}\s+/, '')
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const road = normalized.match(/([가-힣0-9·.-]+(?:대로|로|길)\s*\d+(?:-\d+)?)/);
+  const lot = normalized.match(/([가-힣0-9·.-]+(?:읍|면|동|가)\s*\d+(?:-\d+)?)/);
+  return lower(road?.[1] || lot?.[1] || '').replace(/\s+/g, '');
+}
+
 function domesticLocationKey(job) {
   if (!(job.marketScopes || marketScopesFor(job)).includes('domestic')) return '';
   if (job.remote && !/\b(?:hybrid|onsite|on-site)\b/i.test(job.workplaceMode || '')) return '';
   const region = job.domesticRegion || domesticRegionFor(job);
-  return [region?.province, region?.city, region?.district, region?.neighborhood]
-    .filter(Boolean)
-    .join('|') || canonicalLocation(job.location);
+  const admin = [region?.province, region?.city, region?.district, region?.neighborhood].filter(Boolean);
+  const addressKey = region?.precision === 'address' ? canonicalDomesticAddress(job.workAddress || job.location) : '';
+  return [...admin, addressKey].filter(Boolean).join('|') || canonicalLocation(job.location);
 }
 
 function stableJobId(job) {
@@ -841,6 +953,16 @@ function currentListingState(job) {
   const combined = lower(`${job.title} ${job._fullDescription || job.description}`);
   const title = lower(job.title);
   const lead = lower(job._fullDescription || job.description).slice(0, 700);
+  if (job.deadlineType === 'fixed' && job.deadlineDate) {
+    const closeAt = Date.parse(`${job.deadlineDate}T23:59:59+09:00`);
+    if (Number.isFinite(closeAt) && closeAt < Date.now()) {
+      return {
+        code: 'expired', label: '종료 확인됨', stale: true,
+        reason: `명시된 지원 마감일이 지남: ${job.deadlineDate}`,
+        basis: 'structured_deadline', verification: 'closed'
+      };
+    }
+  }
   if (/applications?(?: and assessments?)? (?:are )?closed|no longer accepting applications|position has been filled/.test(combined)) {
     return { code: 'expired', label: '종료 확인됨', stale: true, reason: '공고 본문에 모집 종료 문구가 확인됨', basis: 'closed_text', verification: 'closed' };
   }
@@ -884,6 +1006,16 @@ function currentListingState(job) {
       verification: 'direct_open'
     };
   }
+  if (meta.kind === 'official_government') {
+    return {
+      code: 'official_listed',
+      label: job.source === '고용24' ? '고용24 모집 확인' : '공식 채용정보 게시 확인',
+      stale: false,
+      reason: '정부 공식 채용정보 API의 현재 목록에서 해당 공고를 확인함',
+      basis: 'official_government_feed',
+      verification: 'official_listed'
+    };
+  }
   if (meta.kind === 'official_platform') {
     return {
       code: 'official_listed',
@@ -923,7 +1055,7 @@ function relevantToProfile(job) {
     && /\b(?:data entry|bookkeeping|billing|reporting|database maintenance)\b/.test(haystack)) return true;
   const broadOnly = new Set(['linguist', 'localization', 'copy editor', 'content editor', 'proofreader']);
   if (profile.includeKeywords.some((keyword) => !broadOnly.has(keyword.toLowerCase()) && hasPhrase(title, keyword))) return true;
-  return ['AI 평가·어노테이션', '한국어·언어', '조사·데이터', '교육 운영', '커뮤니티·운영', '채용 보조', '오디오·음성', '시험 감독', 'GIS·지도'].includes(classify(job));
+  return ['AI 평가·어노테이션', '한국어·언어', '조사·데이터', '교육 운영', '커뮤니티·운영', '채용 보조', '오디오·음성', '시험 감독', 'GIS·지도', '사무·운영', '일반·파트타임'].includes(classify(job));
 }
 
 function hasPhrase(haystack, phrase) {
@@ -938,6 +1070,12 @@ function classify(job) {
   const title = lower(job.title);
   if (job.source === 'Channel Corp' && /\bdata analyst\b/i.test(title)) return '조사·데이터';
   if (job.source === 'TSMG' && /^team coordinator$/i.test(title)) return '커뮤니티·운영';
+  if (job.source === '고용24' && /(?:사무(?:원|보조)?|행정|총무|운영지원|자료입력|전산입력|접수|원무|고객(?:응대|상담)|매장관리)/.test(title)) {
+    return '사무·운영';
+  }
+  if (job.source === '고용24' && /(?:매장(?:운영|보조)|카페|바리스타|판매(?:원|보조)?|계산원|안내(?:원|보조)?|홀서빙|주방보조|포장(?:원|보조)?|파트타임|아르바이트)/.test(title)) {
+    return '일반·파트타임';
+  }
   const rules = [
     ['AI 평가·어노테이션', ['ai trainer', 'ai response', 'ai data specialist', 'generative ai analyst', 'ai creative qc reviewer', 'foundation model evaluation engineer', 'model evaluation', 'data annotator', 'data annotation', 'response evaluator', 'search evaluator', 'search engine evaluator', 'internet safety evaluator', 'ads quality rater', 'quality rater', 'quality assurance reviewer', 'ai quality assurance', 'legal annotator', 'audio evaluation', 'speech evaluation', 'speech annotator', 'transcription quality reviewer', 'data rater', 'data labeling']],
     ['한국어·언어', ['korean', '한국어', 'linguist', 'proofreader', 'proofreading', 'copy editor', 'content editor', 'localization', 'language quality']],
@@ -1053,6 +1191,14 @@ function normalizeJob(raw) {
     sourceListingState: text(raw.sourceListingState),
     sourceCreatedAt: raw.sourceCreatedAt ? new Date(raw.sourceCreatedAt).toISOString() : null,
     sourceModifiedAt: raw.sourceModifiedAt ? new Date(raw.sourceModifiedAt).toISOString() : null,
+    sourcePostingId: text(raw.sourcePostingId || raw.id),
+    platform: text(raw.platform || raw.source),
+    workAddress: text(raw.workAddress),
+    experience: text(raw.experience),
+    education: text(raw.education),
+    deadlineType: text(raw.deadlineType),
+    deadlineDate: text(raw.deadlineDate),
+    deadlineLabel: text(raw.deadlineLabel),
     verifiedAt: new Date().toISOString()
   };
   job.domesticRegion = domesticRegionFor(job);
@@ -1130,6 +1276,8 @@ function normalizeJob(raw) {
   job.listingEvidence = [{
     type: quality.kind === 'official_ats'
       ? 'official_ats_listing'
+      : quality.kind === 'official_government'
+        ? 'official_government_listing'
       : quality.kind === 'official_platform'
         ? 'official_platform_listing'
         : quality.kind === 'manual'
@@ -1137,6 +1285,8 @@ function normalizeJob(raw) {
           : 'source_listing',
     label: quality.kind === 'official_ats'
       ? '공식 ATS 공고 원문'
+      : quality.kind === 'official_government'
+        ? '정부 공식 채용정보 원문'
       : quality.kind === 'official_platform'
         ? '공식 프로젝트 페이지'
         : quality.kind === 'manual'
@@ -1282,9 +1432,30 @@ function normalizeJob(raw) {
     fitWarnings.push('접근성 전문경력·WCAG 실무요건 확인');
     job.score = Math.min(job.score, 19);
   }
+  const structuredRoutineRequirements = [];
+  if (job.source === '고용24') {
+    structuredRoutineRequirements.push('공고 상세 자격·면허 요건 확인');
+    const career = lower(job.experience);
+    const education = lower(job.education);
+    const title = lower(job.title);
+    const requiredCareer = career
+      && !/관계없음|경력무관|신입(?:\s*가능)?|무관/.test(career)
+      && /경력|최소\s*\d+|\d+\s*(?:년|개월)/.test(career);
+    if (requiredCareer) {
+      fitWarnings.push(`경력 요건 확인: ${evidenceSnippet(job.experience, 80)}`);
+      job.score = Math.min(job.score, 19);
+    }
+    if (/간호사|간호조무사|요양보호사|사회복지사|약사|의사|치위생사|물리치료사|작업치료사|용접|지게차|전기기사|산업기사|건축기사|토목기사|개발자|엔지니어/.test(title)) {
+      fitWarnings.push('전문 자격·기술 경력 요건 확인');
+      job.score = Math.min(job.score, 19);
+    }
+    if (education && !/학력무관|무관/.test(education) && /대졸|석사|박사/.test(education)) {
+      structuredRoutineRequirements.push(`학력 요건 확인: ${evidenceSnippet(job.education, 80)}`);
+    }
+  }
   job.fitWarnings = [...new Set(fitWarnings)];
   job.fitWarning = job.fitWarnings.join(' · ');
-  const routineRequirements = [];
+  const routineRequirements = [...structuredRoutineRequirements];
   if (job.source === 'KRAFTON' && /Data Program Manager/i.test(job.title)) {
     routineRequirements.push('ML 논문 이해·기초 데이터 분석 역량 확인');
   }
@@ -1645,6 +1816,92 @@ async function collectAppier() {
 async function collectChannelCorp() {
   return collectLeverBoard('zoyi', 'Channel Corp', 'Channel Corp', {
     rowFilter: (job) => /^Data Analyst$/i.test(job?.text || '')
+  });
+}
+
+function work24Candidate(row) {
+  const address = text([row.basicAddr, row.detailAddr].filter(Boolean).join(' ')) || text(row.region);
+  const deadline = work24Deadline(row.closeDt);
+  const education = row.minEdubg && row.maxEdubg && row.minEdubg !== row.maxEdubg
+    ? `${row.minEdubg} ~ ${row.maxEdubg}`
+    : text(row.minEdubg || row.maxEdubg);
+  const salary = text([row.salTpNm, row.sal].filter(Boolean).join(' '));
+  const description = [
+    row.career ? `경력: ${row.career}` : '',
+    education ? `학력: ${education}` : '',
+    row.holidayTpNm ? `근무일: ${row.holidayTpNm}` : ''
+  ].filter(Boolean).join(' · ');
+  const wantedAuthNo = text(row.wantedAuthNo);
+  const url = `https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=${encodeURIComponent(wantedAuthNo)}&infoTypeCd=VALIDATION&infoTypeGroup=tb_workinfoworknet`;
+  return normalizeJob({
+    id: `work24:${wantedAuthNo}`,
+    sourcePostingId: wantedAuthNo,
+    platform: '고용24',
+    source: '고용24',
+    company: row.company,
+    title: row.title,
+    location: address,
+    workAddress: address,
+    remote: false,
+    workplaceMode: 'onsite',
+    type: work24EmploymentType(row.empTpCd),
+    salary,
+    salaryProvenance: 'source_metadata',
+    url,
+    postedAt: work24IsoDate(row.regDt),
+    sourceListingState: `listed:${row.closeDt || 'open'}`,
+    sourceModifiedAt: work24IsoDate(row.smodifyDtm),
+    description,
+    tags: [row.holidayTpNm, row.jobsCd, row.infoSvc].filter(Boolean),
+    countryCode: 'KR',
+    locationEvidenceLevel: 'source_structured',
+    experience: row.career,
+    education,
+    deadlineType: deadline.type,
+    deadlineDate: deadline.date,
+    deadlineLabel: deadline.label
+  });
+}
+
+function fallbackJobsForConfiguredSources(jobs, { work24Configured = false } = {}) {
+  if (work24Configured) return jobs;
+  return (jobs || []).filter((job) => job.source !== '고용24' && !(job.sources || []).includes('고용24'));
+}
+
+async function collectWork24(authKey) {
+  if (!text(authKey)) throw new Error('WORK24_AUTH_KEY is required');
+  const rowsById = new Map();
+  const region = '52110|52111|52113|52710';
+  for (let page = 1; page <= 10; page += 1) {
+    const params = new URLSearchParams({
+      authKey: text(authKey),
+      callTp: 'L',
+      returnType: 'XML',
+      startPage: String(page),
+      display: '100',
+      region
+    });
+    const xml = await fetchText(`https://www.work24.go.kr/cm/openApi/call/wk/callOpenApiSvcInfo210L01.do?${params}`, {
+      headers: { Accept: 'application/xml,text/xml,*/*' }
+    });
+    if (/인증키|authkey/i.test(xml) && /오류|error|유효|승인|인증/i.test(xml) && !/<wanted>/i.test(xml)) {
+      throw new Error('고용24 API 인증 또는 승인 상태를 확인해야 합니다.');
+    }
+    const pageRows = parseWork24ListXml(xml);
+    for (const row of pageRows) rowsById.set(row.wantedAuthNo, row);
+    if (pageRows.length < 100) break;
+  }
+  const collected = [];
+  for (const row of rowsById.values()) {
+    const candidate = work24Candidate(row);
+    const regionInfo = candidate.domesticRegion;
+    if (!regionInfo || regionInfo.province !== '전북특별자치도') continue;
+    if (!['전주시', '완주군'].includes(regionInfo.city)) continue;
+    collected.push(candidate);
+  }
+  return sourceCollection(collected, rowsById.size, {
+    localeEligibleCount: collected.length,
+    profileMatchedCount: collected.filter((job) => job.category !== '기타' || job.score >= 20).length
   });
 }
 
@@ -2391,6 +2648,7 @@ function applySourceMetricsToJobs(jobs, sourceMetrics = {}) {
 }
 
 export async function collectJobs({ includeManual = true, persist = true, previousJobs = null, previousFeed = null } = {}) {
+  const work24AuthKey = text(process.env.WORK24_AUTH_KEY || '');
   const sources = [
     ['Welo Global', collectWeloGlobal],
     ['RWS TrainAI', collectRws],
@@ -2408,6 +2666,7 @@ export async function collectJobs({ includeManual = true, persist = true, previo
     ['Remotive', collectRemotive],
     ['Arbeitnow', collectArbeitnow]
   ];
+  if (work24AuthKey) sources.unshift(['고용24', () => collectWork24(work24AuthKey)]);
   if (includeManual) sources.push(['직접 추가', collectManual]);
   let fallbackFeed = previousFeed && typeof previousFeed === 'object' ? previousFeed : null;
   let fallbackJobs = Array.isArray(previousJobs)
@@ -2425,6 +2684,7 @@ export async function collectJobs({ includeManual = true, persist = true, previo
     }
   }
   const previousSourceMetrics = fallbackFeed?.sourceMetrics || {};
+  const carryFallbackJobs = fallbackJobsForConfiguredSources(fallbackJobs, { work24Configured: Boolean(work24AuthKey) });
   const now = Date.now();
   const jobs = [];
   const sourceStatus = [];
@@ -2453,8 +2713,8 @@ export async function collectJobs({ includeManual = true, persist = true, previo
       sourceStatus.push({ source: name, ok: false, count: 0, preserved: preserved.length, error: String(error.message ?? error) });
     }
   }
-  const deduped = carryForwardLegacyIds(dedupe(jobs), fallbackJobs);
-  const reconciled = reconcileVerificationHistory(deduped, fallbackJobs, now);
+  const deduped = carryForwardLegacyIds(dedupe(jobs), carryFallbackJobs);
+  const reconciled = reconcileVerificationHistory(deduped, carryFallbackJobs, now);
   const keptCurrent = reconciled.filter(keepInFeed);
   const sourceNames = sources.map(([name]) => name);
   const sourceMetrics = buildSourceMetrics(
@@ -2475,7 +2735,7 @@ export async function collectJobs({ includeManual = true, persist = true, previo
       && isDefaultRecommendation(job)).length;
   }
   const uniqueJobs = refreshTimeBasedEvidence(
-    applySourceMetricsToJobs(carryRecentlyMissing(currentJobs, fallbackJobs, now), sourceMetrics),
+    applySourceMetricsToJobs(carryRecentlyMissing(currentJobs, carryFallbackJobs, now), sourceMetrics),
     now
   )
     .sort((a, b) => (b.score - a.score) || ((Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0)));
@@ -2521,6 +2781,9 @@ export {
   marketSegmentFor,
   eligibilityFor,
   extractSalary,
+  parseWork24ListXml,
+  work24Candidate,
+  fallbackJobsForConfiguredSources,
   relevantToProfile,
   currentListingState,
   markPreservedSourceFailure,

@@ -22,6 +22,8 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      WORK24_AUTH_KEY: ${{ secrets.WORK24_AUTH_KEY }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7

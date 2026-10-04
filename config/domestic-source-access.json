@@ -1,0 +1,40 @@
+{
+  "checkedAt": "2026-10-05",
+  "scope": "전북특별자치도 전주시·완주군 실제 근무 공고",
+  "policy": "로그인·CAPTCHA·안티봇 우회나 이용조건에 반하는 HTML 재배포 수집은 사용하지 않는다. 승인된 공식 API·제휴 피드만 자동수집에 연결한다.",
+  "sources": {
+    "알바몬": {
+      "status": "blocked_without_partnership",
+      "publicHumanPages": true,
+      "automatedCollection": false,
+      "reason": "공개 검색·상세는 사람이 열람할 수 있으나 채용정보 재배포·재가공은 제휴 조건이 필요하고 공개 무인증 API가 확인되지 않았다.",
+      "approvedPath": "제휴 XML/API 계약",
+      "partnershipUrl": "https://worxphere.ai/partnership"
+    },
+    "알바천국": {
+      "status": "blocked_without_partnership",
+      "publicHumanPages": true,
+      "automatedCollection": false,
+      "reason": "상세 페이지의 무단 재배포 제한과 자동접근 차단 응답을 확인했다. 차단을 우회하지 않는다.",
+      "approvedPath": "미디어윌/알바천국 제휴 승인",
+      "partnershipUrl": "https://corp.alba.co.kr/contact/Inquiry.asp"
+    },
+    "잡코리아": {
+      "status": "blocked_without_api_approval",
+      "publicHumanPages": true,
+      "automatedCollection": false,
+      "reason": "공식 채용정보 API는 신청·승인·호출 IP 등록이 필요한 제휴형 API이며 공개 무인증 재배포 피드가 아니다.",
+      "approvedPath": "잡코리아 공식 API 승인 및 이용조건 확인",
+      "apiUrl": "https://www.jobkorea.co.kr/service/api"
+    },
+    "고용24": {
+      "status": "ready_requires_auth_key",
+      "publicHumanPages": true,
+      "automatedCollection": true,
+      "reason": "고용노동부 공식 채용정보 OPEN-API 어댑터를 구현했다. 기업회원 신청·승인 후 발급된 인증키가 있을 때만 활성화한다.",
+      "approvedPath": "WORK24_AUTH_KEY",
+      "apiIntroUrl": "https://www.work24.go.kr/cm/e/a/0110/selectOpenApiIntro.do",
+      "requiredAttribution": "본 자료는 고용노동부 고용24(www.work24.go.kr)에서 제공된 정보이며, 무단복제 및 배포를 금지합니다."
+    }
+  }
+}

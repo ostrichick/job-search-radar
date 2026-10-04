@@ -6,6 +6,9 @@ import {
   marketScopesFor,
   eligibilityFor,
   extractSalary,
+  parseWork24ListXml,
+  work24Candidate,
+  fallbackJobsForConfiguredSources,
   relevantToProfile,
   currentListingState,
   markPreservedSourceFailure,
@@ -56,6 +59,17 @@ assert.equal(koreanHourly.currency, 'KRW');
 assert.equal(koreanHourly.min, 10320);
 assert.equal(koreanHourly.period, 'hour');
 assert.equal(koreanHourly.display, '₩10,320/시간');
+
+const koreanMonthlyRange = extractSalary('', '월급 2,330,000원~2,800,000원');
+assert.equal(koreanMonthlyRange.currency, 'KRW');
+assert.equal(koreanMonthlyRange.min, 2330000);
+assert.equal(koreanMonthlyRange.max, 2800000);
+assert.equal(koreanMonthlyRange.display, '₩2,330,000–₩2,800,000/월');
+
+const koreanAnnualMinimum = extractSalary('', '연봉 3,000만원 이상');
+assert.equal(koreanAnnualMinimum.min, 30000000);
+assert.equal(koreanAnnualMinimum.qualifier, 'minimum');
+assert.equal(koreanAnnualMinimum.display, '최소 ₩30,000,000/년');
 
 const decimal = extractSalary('', 'Rate: 22.95 USD/hour');
 assert.equal(decimal.min, 22.95);
@@ -276,6 +290,107 @@ assert.equal(countryOnlyRegion.precision, 'country');
 assert.equal(countryOnlyRegion.evidenceLevel, 'country_code');
 assert.equal(countryOnlyRegion.label, '대한민국');
 
+const wanjuStructured = domesticRegionFor({
+  location: '전북특별자치도 완주군 소양면 해월리 496-28',
+  workAddress: '전북특별자치도 완주군 소양면 해월리 496-28',
+  countryCode: 'KR',
+  locationEvidenceLevel: 'source_structured'
+});
+assert.equal(wanjuStructured.province, '전북특별자치도');
+assert.equal(wanjuStructured.city, '완주군');
+assert.equal(wanjuStructured.district, '', 'county-level Wanju must not be duplicated as both city and district');
+assert.equal(wanjuStructured.neighborhood, '소양면');
+assert.equal(wanjuStructured.locality, '완주군');
+assert.equal(wanjuStructured.coordinatePrecision, 'city');
+assert.equal(wanjuStructured.coordinateLabel, '전북특별자치도 완주군');
+
+const work24Rows = parseWork24ListXml(`<?xml version="1.0" encoding="UTF-8"?>
+<wantedRoot>
+  <wanted>
+    <wantedAuthNo>K161132610050001</wantedAuthNo>
+    <company>전주 생활서비스</company>
+    <title>일반 사무원</title>
+    <salTpNm>월급</salTpNm><sal>233만원 이상</sal><minSal>2330000</minSal><maxSal>0</maxSal>
+    <region>전북 전주시 덕진구</region><holidayTpNm>주 5일 근무</holidayTpNm>
+    <minEdubg>학력무관</minEdubg><maxEdubg>학력무관</maxEdubg><career>관계없음</career>
+    <regDt>20261005</regDt><closeDt>20991231</closeDt><infoSvc>VALIDATION</infoSvc>
+    <basicAddr>전북특별자치도 전주시 덕진구 금암동</basicAddr><detailAddr>거북바우3길 15</detailAddr>
+    <empTpCd>10</empTpCd><jobsCd>029500</jobsCd><smodifyDtm>20261005123000</smodifyDtm>
+  </wanted>
+  <wanted>
+    <wantedAuthNo>K161142610050002</wantedAuthNo>
+    <company>완주 운영센터</company>
+    <title>운영지원 사무원</title>
+    <salTpNm>월급</salTpNm><sal>240만원</sal>
+    <region>전북 완주군</region><minEdubg>학력무관</minEdubg><maxEdubg>학력무관</maxEdubg>
+    <career>경력 1년 이상</career><regDt>20261005</regDt><closeDt>채용시까지</closeDt>
+    <basicAddr>전북특별자치도 완주군 봉동읍</basicAddr><detailAddr>완주산단9로 15</detailAddr>
+    <empTpCd>20</empTpCd><jobsCd>029500</jobsCd><smodifyDtm>20261005130000</smodifyDtm>
+  </wanted>
+</wantedRoot>`);
+assert.equal(work24Rows.length, 2);
+assert.equal(work24Rows[0].wantedAuthNo, 'K161132610050001');
+assert.equal(work24Rows[1].career, '경력 1년 이상');
+
+const work24Office = work24Candidate(work24Rows[0]);
+assert.equal(work24Office.source, '고용24');
+assert.equal(work24Office.platform, '고용24');
+assert.equal(work24Office.sourcePostingId, 'K161132610050001');
+assert.equal(work24Office.sourceKind, 'official_government');
+assert.equal(work24Office.listingStatus, 'official_listed');
+assert.equal(work24Office.category, '사무·운영');
+assert.ok(work24Office.score >= 20, 'general local office work must remain reviewable');
+assert.equal(work24Office.requirementsStatus, 'routine_check');
+assert.ok(work24Office.requirementChecks.some((item) => /자격·면허/.test(item.label)),
+  'list-only Work24 candidates must keep detail qualification uncertainty visible');
+assert.equal(work24Office.salaryInfo.min, 2330000);
+assert.equal(work24Office.salaryInfo.qualifier, 'minimum');
+assert.equal(work24Office.domesticRegion.city, '전주시');
+assert.equal(work24Office.domesticRegion.district, '덕진구');
+assert.equal(work24Office.domesticRegion.neighborhood, '금암동');
+assert.equal(work24Office.domesticRegion.precision, 'address');
+assert.equal(work24Office.domesticRegion.coordinatePrecision, 'district');
+assert.match(work24Office.url, /wantedAuthNo=K161132610050001/);
+assert.equal(work24Office.deadlineType, 'fixed');
+assert.equal(work24Office.deadlineDate, '2099-12-31');
+
+const work24Experienced = work24Candidate(work24Rows[1]);
+assert.equal(work24Experienced.domesticRegion.city, '완주군');
+assert.equal(work24Experienced.domesticRegion.district, '');
+assert.equal(work24Experienced.domesticRegion.neighborhood, '봉동읍');
+assert.equal(work24Experienced.deadlineType, 'rolling');
+assert.equal(work24Experienced.requirementsStatus, 'hard_check');
+assert.ok(work24Experienced.score < 20, 'mandatory local career requirement must lower recommendation priority');
+assert.match(work24Experienced.fitWarning, /경력 요건 확인/);
+assert.match(work24Experienced.description, /경력: 경력 1년 이상/);
+
+const work24PartTime = work24Candidate({
+  ...work24Rows[0],
+  wantedAuthNo: 'K161132610050003',
+  title: '카페 매장 운영 파트타임',
+  salTpNm: '시급',
+  sal: '10,500원',
+  career: '관계없음',
+  minEdubg: '학력무관',
+  maxEdubg: '학력무관'
+});
+assert.equal(work24PartTime.category, '일반·파트타임');
+assert.ok(work24PartTime.score >= 20, 'practical local part-time roles must remain visible at the default domestic threshold');
+assert.equal(work24PartTime.requirementsStatus, 'routine_check');
+
+const work24Old = { ...work24Office, id: 'job:work24-old', source: '고용24', sources: ['고용24'] };
+const nonWork24Fallback = { id: 'job:other-source', source: 'RWS TrainAI', sources: ['RWS TrainAI'] };
+assert.deepEqual(
+  fallbackJobsForConfiguredSources([work24Old, nonWork24Fallback], { work24Configured: false }).map((job) => job.id),
+  [nonWork24Fallback.id],
+  'Work24 jobs must not survive archived-missing grace after its approved API key is removed'
+);
+assert.equal(
+  fallbackJobsForConfiguredSources([work24Old], { work24Configured: true }).length,
+  1,
+  'configured Work24 may use the normal source-failure preservation path'
+);
+
 const normalizedRemoteMode = normalizeJob({ ...base, id: 'mode-remote', remote: false, workplaceMode: 'Remote', location: 'South Korea', countryCode: 'KR', url: 'https://example.com/mode-remote' });
 assert.equal(normalizedRemoteMode.workplaceMode, 'remote');
 assert.equal(normalizedRemoteMode.remote, true);
@@ -314,6 +429,39 @@ const sameUrlJeonju = normalizeJob({ ...base, id: 'same-url-jeonju', location: '
 const sameUrlDomesticLocations = dedupe([sameUrlSeoul, sameUrlJeonju]);
 assert.equal(sameUrlDomesticLocations.length, 2, 'same URL must not override conflicting actual domestic workplace regions');
 assert.equal(new Set(sameUrlDomesticLocations.map((job) => job.id)).size, 2);
+const branchA = normalizeJob({
+  ...base,
+  id: 'branch-a',
+  company: '지역생활서비스',
+  title: '매장 운영 보조',
+  location: '전북특별자치도 전주시 덕진구 기린대로 400-14',
+  workAddress: '전북특별자치도 전주시 덕진구 기린대로 400-14',
+  locationEvidenceLevel: 'source_structured',
+  remote: false,
+  workplaceMode: 'onsite',
+  countryCode: 'KR',
+  url: 'https://example.com/branch-a'
+});
+const branchB = normalizeJob({
+  ...branchA,
+  id: 'branch-b',
+  location: '전북특별자치도 전주시 덕진구 기린대로 410',
+  workAddress: '전북특별자치도 전주시 덕진구 기린대로 410',
+  url: 'https://example.com/branch-b'
+});
+const distinctBranches = dedupe([branchA, branchB]);
+assert.equal(distinctBranches.length, 2, 'same company/title at different exact branch addresses must remain distinct');
+assert.equal(new Set(distinctBranches.map((job) => job.id)).size, 2);
+const branchACopy = normalizeJob({
+  ...branchA,
+  id: 'branch-a-copy',
+  source: 'Arbeitnow',
+  sourceListingState: 'published',
+  url: 'https://board.example.com/branch-a-copy'
+});
+const mergedSameBranch = dedupe([branchA, branchACopy]);
+assert.equal(mergedSameBranch.length, 1, 'the same company/title at the same exact branch address may merge across sources');
+assert.equal(mergedSameBranch[0].duplicateCount, 2);
 const seongnamAliasA = normalizeJob({ ...base, id: 'seongnam-a', location: 'Seongnam, South Korea', remote: false, workplaceMode: 'onsite', countryCode: 'KR', url: 'https://example.com/seongnam-a' });
 const seongnamAliasB = normalizeJob({ ...base, id: 'seongnam-b', location: 'Seongnam-si, Gyeonggi-do, South Korea', remote: false, workplaceMode: 'onsite', countryCode: 'KR', url: 'https://example.com/seongnam-b' });
 assert.equal(dedupe([seongnamAliasA])[0].id, dedupe([seongnamAliasB])[0].id, 'equivalent English Korean-admin aliases must produce the same domestic stable id');

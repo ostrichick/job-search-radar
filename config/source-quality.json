@@ -263,6 +263,23 @@
     "summary": "Arbeitnow 공개 Job Board API에서 가져오는 집계 공고입니다. 고용주의 공식 모집원 여부는 원문에서 별도 확인해야 합니다.",
     "evidence": [{"type": "official_feed", "label": "공개 API", "url": "https://www.arbeitnow.com/api/job-board-api"}]
   },
+  "고용24": {
+    "kind": "official_government",
+    "coverage": "current_catalog",
+    "evidenceRefreshability": "approved_open_api",
+    "listingLabel": "고용노동부 공식 채용정보",
+    "paymentStatus": "not_payer",
+    "paymentLabel": "지급 주체 아님",
+    "paymentEvidenceState": "not_applicable",
+    "paymentEvidenceLabel": "지급 주체 아님",
+    "paymentConfidence": "not_applicable",
+    "reviewedAt": "2026-10-05",
+    "summary": "고용노동부 고용24 채용정보 OPEN-API의 승인된 인증키가 구성된 경우 전주시·완주군 현재 채용정보를 공식 목록 API에서 수집합니다. 인증키가 없으면 네트워크 호출과 이전 공고 보존을 모두 하지 않습니다.",
+    "evidence": [
+      {"type": "official_source", "label": "고용24 OPEN-API 소개", "url": "https://www.work24.go.kr/cm/e/a/0110/selectOpenApiIntro.do"},
+      {"type": "official_feed", "label": "고용24 채용정보 API", "url": "https://www.work24.go.kr/cm/e/a/0110/selectOpenApiSvcInfo.do?apiSvcId=000000000000000000000000000060&fullApiSvcId=000000000000000000000000000000%5E000000000000000000000000000001&upprApiSvcId=000000000000000000000000000059"}
+    ]
+  },
   "직접 추가": {
     "kind": "manual",
     "coverage": "manual",

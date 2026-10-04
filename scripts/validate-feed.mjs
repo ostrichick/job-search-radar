@@ -100,6 +100,9 @@ for (const job of feed.jobs) {
   if (job.sourceKind === 'official_ats' && !['talent_pool', 'expired', 'archived_missing', 'source_error'].includes(job.listingStatus)) {
     assert.equal(job.listingStatus, 'verified_open', `${job.id} official ATS current listing must use verified_open`);
   }
+  if (job.sourceKind === 'official_government' && !['talent_pool', 'expired', 'archived_missing', 'source_error'].includes(job.listingStatus)) {
+    assert.equal(job.listingStatus, 'official_listed', `${job.id} official government current listing must use official_listed`);
+  }
   if (job.sourceKind === 'official_platform' && !['talent_pool', 'expired', 'archived_missing', 'source_error'].includes(job.listingStatus)) {
     assert.equal(job.listingStatus, 'official_listed', `${job.id} official platform publication must not be conflated with direct ATS open status`);
   }
@@ -107,6 +110,13 @@ for (const job of feed.jobs) {
     assert.ok(Array.isArray(job.listingEvidence) && job.listingEvidence.some((item) => item?.url === job.url),
       `${job.id} verified official listing must link directly to the checked posting`);
     assert.ok(job.listingCheckedAt || job.verifiedAt, `${job.id} verified official listing must include a check timestamp`);
+  }
+  if (job.source === '고용24') {
+    assert.equal(job.sourceKind, 'official_government', `${job.id} Work24 must use official government semantics`);
+    assert.ok(job.sourcePostingId && job.platform === '고용24', `${job.id} Work24 must retain platform posting identity`);
+    assert.ok(job.workAddress && job.domesticRegion?.evidenceLevel === 'source_structured', `${job.id} Work24 must retain structured workplace evidence`);
+    assert.match(job.url || '', /^https:\/\/www\.work24\.go\.kr\/wk\/a\/b\/1500\/empDetailAuthView\.do\?wantedAuthNo=/, `${job.id} Work24 must link to the mandated detail page`);
+    assert.ok(['fixed', 'rolling', 'unknown', ''].includes(job.deadlineType || ''), `${job.id} Work24 deadline type must be structured`);
   }
   if (['caution_repeated', 'mixed_caution', 'caution_single', 'policy_only', 'evidence_expired'].includes(job.paymentEvidenceState)) {
     assert.ok(Array.isArray(job.paymentSignals) && job.paymentSignals.length > 0,
@@ -193,13 +203,13 @@ assert.equal(fakeWorldwide.length, 0, 'generic Remote location must not be treat
 
 const zeroScoreNoise = feed.jobs.filter((job) =>
   Number(job.score || 0) <= 0
-  && !['official_ats', 'official_platform', 'manual'].includes(job.sourceKind)
+  && !['official_ats', 'official_government', 'official_platform', 'manual'].includes(job.sourceKind)
   && !['source_error', 'archived_missing'].includes(job.listingStatus));
 assert.equal(zeroScoreNoise.length, 0, 'zero-score collected noise must not remain in the active feed');
 
 const lowScoreIntermediaryNoise = feed.jobs.filter((job) =>
   Number(job.score || 0) < 10
-  && !['official_ats', 'official_platform', 'manual'].includes(job.sourceKind)
+  && !['official_ats', 'official_government', 'official_platform', 'manual'].includes(job.sourceKind)
   && !['source_error', 'archived_missing'].includes(job.listingStatus));
 assert.equal(lowScoreIntermediaryNoise.length, 0, 'very-low-score intermediary noise must not remain in the active feed');
 
