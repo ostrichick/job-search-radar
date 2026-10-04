@@ -601,6 +601,23 @@ assert.equal(kraftonDataProgram.requirementsStatus, 'routine_check');
 assert.match(kraftonDataProgram.requirementChecks.map((item) => item.label).join(' '), /ML 논문 이해·기초 데이터 분석/);
 assert.doesNotMatch(kraftonDataProgram.fitWarning, /전문경력/);
 
+const kraftonFoundationEvaluation = normalizeJob({
+  ...base,
+  id: 'greenhouse:krafton:8632414002',
+  source: 'KRAFTON', company: 'KRAFTON',
+  title: '[AI Research Div.] Foundation Model Evaluation Engineer - 독자 AI 파운데이션 모델 (2년 이상 / 인턴)',
+  location: 'Seoul', remote: false, workplaceMode: 'onsite', countryCode: 'KR',
+  url: 'https://job-boards.greenhouse.io/krafton/jobs/8632414002',
+  description: 'Required: a master or PhD in a deep-learning-related field or equivalent research experience. Required: AI model evaluation and analysis experience or experience writing top-tier ML/NLP papers.',
+  tags: ['AI', 'Model Evaluation']
+});
+assert.equal(kraftonFoundationEvaluation.category, 'AI 평가·어노테이션');
+assert.equal(kraftonFoundationEvaluation.requirementsStatus, 'hard_check');
+assert.ok(kraftonFoundationEvaluation.score < 20);
+assert.match(kraftonFoundationEvaluation.fitWarning, /석·박사 또는 동등 연구경험/);
+assert.match(kraftonFoundationEvaluation.fitWarning, /AI 모델 평가·분석 또는 상위권 ML\/NLP 논문 작성 경험/);
+assert.doesNotMatch(kraftonFoundationEvaluation.fitWarning, /개발 전문경력/);
+
 const appenLidar = normalizeJob({
   ...base,
   id: 'jobicy:154499',

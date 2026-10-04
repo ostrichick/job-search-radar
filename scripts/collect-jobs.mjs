@@ -841,7 +841,7 @@ function hasPhrase(haystack, phrase) {
 function classify(job) {
   const title = lower(job.title);
   const rules = [
-    ['AI 평가·어노테이션', ['ai trainer', 'ai response', 'ai data specialist', 'generative ai analyst', 'data annotator', 'data annotation', 'response evaluator', 'search evaluator', 'search engine evaluator', 'internet safety evaluator', 'ads quality rater', 'quality rater', 'quality assurance reviewer', 'ai quality assurance', 'legal annotator', 'audio evaluation', 'speech evaluation', 'speech annotator', 'transcription quality reviewer', 'data rater', 'data labeling']],
+    ['AI 평가·어노테이션', ['ai trainer', 'ai response', 'ai data specialist', 'generative ai analyst', 'foundation model evaluation engineer', 'model evaluation', 'data annotator', 'data annotation', 'response evaluator', 'search evaluator', 'search engine evaluator', 'internet safety evaluator', 'ads quality rater', 'quality rater', 'quality assurance reviewer', 'ai quality assurance', 'legal annotator', 'audio evaluation', 'speech evaluation', 'speech annotator', 'transcription quality reviewer', 'data rater', 'data labeling']],
     ['한국어·언어', ['korean', '한국어', 'linguist', 'proofreader', 'proofreading', 'copy editor', 'content editor', 'localization', 'language quality']],
     ['조사·데이터', ['data entry', 'data researcher', 'data program manager', 'web researcher', 'research assistant', 'market research', 'product catalog', 'catalog specialist', 'catalog coordinator', 'administrative assistant']],
     ['교육 운영', ['course operations', 'learning operations', 'education operations', 'class manager', 'training coordinator', 'learning coordinator', 'education coordinator']],
@@ -1133,7 +1133,13 @@ function normalizeJob(raw) {
       satisfiedRequirements.push('필수 데이터 평가·언어/교육 경험: 검증된 경력과 일치');
     }
   }
-  if (/\b(?:software|frontend|backend|full[- ]?stack|web|mobile)?\s*(?:engineer|developer)\b/i.test(titleLower)) {
+  const kraftonFoundationEvaluation = job.source === 'KRAFTON' && /Foundation Model Evaluation Engineer/i.test(job.title);
+  if (kraftonFoundationEvaluation) {
+    fitWarnings.push('딥러닝 관련 석·박사 또는 동등 연구경험 요건 확인');
+    fitWarnings.push('AI 모델 평가·분석 또는 상위권 ML/NLP 논문 작성 경험 요건 확인');
+    job.score = Math.min(job.score, 19);
+  }
+  if (!kraftonFoundationEvaluation && /\b(?:software|frontend|backend|full[- ]?stack|web|mobile)?\s*(?:engineer|developer)\b/i.test(titleLower)) {
     fitWarnings.push('개발 전문경력 요건 확인');
     job.score = Math.min(job.score, 19);
   }
