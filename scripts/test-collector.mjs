@@ -110,6 +110,11 @@ assert.equal(perSetBasis.confidence, 'basis_only');
 assert.equal(perSetBasis.display, '금액 비공개 · 완료 세트당 지급');
 assert.equal(perSetBasis.paymentBasis, 'per_completed_set');
 
+const taskBasedBasis = extractSalary('', 'We offer competitive task-based compensation with a flexible workload.');
+assert.equal(taskBasedBasis.confidence, 'basis_only');
+assert.equal(taskBasedBasis.display, '금액 비공개 · 건별 지급');
+assert.equal(taskBasedBasis.paymentBasis, 'per_task');
+
 assert.equal(relevantToProfile({ title: 'Video Reviewer', description: 'This project involves data annotation for AI training.', tags: [] }), true);
 assert.equal(relevantToProfile({ title: 'Senior Backend Engineer', description: 'Works with data and AI systems.', tags: [] }), false);
 assert.equal(relevantToProfile({ title: 'Remote Office Assistant', description: 'Support administrative operations, bookkeeping, billing, reporting, and data entry.', tags: [] }), true);
@@ -481,6 +486,44 @@ assert.ok(meridialLarp.score >= 20, 'verified Korean teaching and AI evaluation 
 assert.equal(meridialLarp.requirementsStatus, 'routine_check');
 assert.match(meridialLarp.requirementChecks.map((item) => item.label).join(' '), /검증된 경력과 일치/);
 assert.match(meridialLarp.requirementChecks.map((item) => item.label).join(' '), /C1\/C2/);
+assert.doesNotMatch(meridialLarp.decisionUnknowns.join(' '), /검증된 경력과 일치/,
+  'satisfied requirements must not be presented as decision unknowns');
+
+const tsmgKoreanQc = normalizeJob({
+  ...base,
+  id: 'lever:tsmg:c4edd822-bcd8-4e06-939b-a85ba4867707',
+  source: 'TSMG',
+  company: 'Terry Soot Management Group',
+  title: 'Quality control specialist for AI/ ML with Korean language',
+  location: 'Remote in South Korea',
+  url: 'https://jobs.lever.co/tsmg/c4edd822-bcd8-4e06-939b-a85ba4867707',
+  description: 'Review Korean language transcription quality for an AI speech recognition project. Previous transcription, proofreading, quality control, annotation, or linguistic project experience is a plus.',
+  tags: ['AI/ML Data Collection']
+});
+assert.equal(tsmgKoreanQc.sourceKind, 'official_ats');
+assert.equal(tsmgKoreanQc.eligibilityCode, 'korea');
+assert.ok(tsmgKoreanQc.score >= 20);
+assert.notEqual(tsmgKoreanQc.requirementsStatus, 'hard_check');
+
+const elevenLabsTranscription = normalizeJob({
+  ...base,
+  id: 'ashby:elevenlabs:ef0a1e14-40ee-43d2-aab9-59fc9f6a4b8c',
+  source: 'ElevenLabs',
+  company: 'ElevenLabs',
+  title: 'Transcription / Subtitling Specialist (Freelance)',
+  location: 'World Wide - Remote',
+  countryCode: '',
+  url: 'https://jobs.ashbyhq.com/elevenlabs/ef0a1e14-40ee-43d2-aab9-59fc9f6a4b8c',
+  description: 'Competitive task-based compensation. Requirements: Native or near-native fluency. Prior experience in transcription or subtitling and familiarity with relevant tools. This role is remote and can be executed globally.',
+  tags: ['Korean', 'Transcription', 'Productions']
+});
+assert.equal(elevenLabsTranscription.sourceKind, 'official_ats');
+assert.equal(elevenLabsTranscription.eligibilityCode, 'worldwide');
+assert.equal(elevenLabsTranscription.salaryInfo.paymentBasis, 'per_task');
+assert.equal(elevenLabsTranscription.salaryInfo.confidence, 'basis_only');
+assert.equal(elevenLabsTranscription.requirementsStatus, 'hard_check');
+assert.ok(elevenLabsTranscription.score < 20, 'mandatory prior transcription/subtitling experience must block the default recommendation');
+assert.match(elevenLabsTranscription.fitWarning, /전사·자막/);
 
 const appenLidar = normalizeJob({
   ...base,
@@ -510,6 +553,8 @@ const hardRelatedExperience = normalizeJob({
 assert.ok(hardRelatedExperience.score >= 20, 'verified AI evaluation/annotation/QA capability must satisfy the matching experience requirement');
 assert.doesNotMatch(hardRelatedExperience.fitWarning, /실무 경험/);
 assert.match(hardRelatedExperience.requirementChecks.map((item) => item.label).join(' '), /검증된 경력과 일치/);
+assert.doesNotMatch(hardRelatedExperience.decisionUnknowns.join(' '), /검증된 경력과 일치/,
+  'verified experience must remain a satisfied signal rather than an unknown');
 
 const hardSubjectMatterExpert = normalizeJob({
   ...base,
@@ -808,12 +853,53 @@ const sourceMetrics = buildSourceMetrics(
   Date.parse('2026-10-04T00:00:00Z')
 );
 assert.equal(sourceMetrics['Welo Global'].qualityTier, 'strong');
-assert.equal(sourceMetrics.Remotive.qualityTier, 'weak', 'high low-quality ratio on an intermediary source must prevent it from degrading recommendations');
+assert.equal(sourceMetrics.Remotive.qualityTier, 'mixed', 'one noisy intermediary run must not blanket-block a potentially useful source');
 const metricsApplied = applySourceMetricsToJobs([
   { ...historyBase, source: 'Remotive', sourceKind: 'job_board', requirementsStatus: 'clear', score: 80, eligibilityCode: 'worldwide', listingStatus: 'current_feed' }
 ], sourceMetrics)[0];
 assert.equal(metricsApplied.recommendationEligible, true, 'low source yield alone must not blanket-block an individually strong job');
 assert.equal(isDefaultRecommendation(metricsApplied), true);
+
+const repeatedNoisySourceMetrics = buildSourceMetrics(
+  ['Remotive'],
+  new Map([['Remotive', { rawCount: 100, matchedCount: 6, profileMatchedCount: 6 }]]),
+  [{ source: 'Remotive', ok: true, count: 6 }],
+  Array.from({ length: 6 }, (_, index) => ({ ...historyBase, id: `repeat-remotive-${index}`, source: 'Remotive', sourceKind: 'job_board' })),
+  [{ ...historyBase, id: 'repeat-remotive-0', source: 'Remotive', sourceKind: 'job_board' }],
+  {
+    Remotive: {
+      history: [
+        { at: '2026-10-01T00:00:00.000Z', ok: true, rawCount: 100, matchedCount: 6, keptCount: 1, recommendedCount: 0, duplicateCount: 0, lowQualityCount: 5 },
+        { at: '2026-10-02T00:00:00.000Z', ok: true, rawCount: 100, matchedCount: 6, keptCount: 1, recommendedCount: 0, duplicateCount: 0, lowQualityCount: 5 }
+      ]
+    }
+  },
+  Date.parse('2026-10-04T00:00:00Z')
+);
+assert.equal(repeatedNoisySourceMetrics.Remotive.qualityTier, 'weak', 'repeated 80%+ noise must downgrade an intermediary source');
+const repeatedNoisyJob = applySourceMetricsToJobs([
+  { ...historyBase, source: 'Remotive', sourceKind: 'job_board', requirementsStatus: 'clear', score: 80, eligibilityCode: 'worldwide', listingStatus: 'current_feed' }
+], repeatedNoisySourceMetrics)[0];
+assert.equal(repeatedNoisyJob.recommendationEligible, false, 'repeatedly weak sources must not contribute default recommendations');
+assert.match(repeatedNoisyJob.sourceRecommendationGateReason, /유효 공고 비율|중복·저품질/);
+
+const repeatedDuplicateMetrics = buildSourceMetrics(
+  ['Remote OK'],
+  new Map([['Remote OK', { rawCount: 100, matchedCount: 10, profileMatchedCount: 10 }]]),
+  [{ source: 'Remote OK', ok: true, count: 10 }],
+  Array.from({ length: 2 }, (_, index) => ({ ...historyBase, id: `remote-duplicate-${index}`, source: 'Remote OK', sourceKind: 'job_board' })),
+  Array.from({ length: 2 }, (_, index) => ({ ...historyBase, id: `remote-duplicate-${index}`, source: 'Remote OK', sourceKind: 'job_board' })),
+  {
+    'Remote OK': {
+      history: [
+        { at: '2026-10-01T00:00:00.000Z', ok: true, rawCount: 100, matchedCount: 10, keptCount: 2, recommendedCount: 0, duplicateCount: 8, lowQualityCount: 0 },
+        { at: '2026-10-02T00:00:00.000Z', ok: true, rawCount: 100, matchedCount: 10, keptCount: 2, recommendedCount: 0, duplicateCount: 8, lowQualityCount: 0 }
+      ]
+    }
+  },
+  Date.parse('2026-10-04T00:00:00Z')
+);
+assert.equal(repeatedDuplicateMetrics['Remote OK'].qualityTier, 'weak', 'repeated duplicate-heavy matching must count as source noise');
 
 const failedSourceMetrics = buildSourceMetrics(
   ['Remotive'],
@@ -895,21 +981,21 @@ const recommendationFixture = (index, overrides = {}) => ({
   ...overrides
 });
 const baselineRecommendations = {
-  recommendationPolicyVersion: 1,
+  recommendationPolicyVersion: 2,
   jobs: Array.from({ length: 8 }, (_, index) => recommendationFixture(index))
 };
 const collapsedRecommendations = {
-  recommendationPolicyVersion: 1,
+  recommendationPolicyVersion: 2,
   jobs: baselineRecommendations.jobs.slice(0, 2)
 };
 const collapseRisk = recommendationCollapseRisk(collapsedRecommendations, baselineRecommendations);
 assert.equal(collapseRisk.collapse, true, 'same-policy unexplained recommendation collapse must be detected');
 assert.equal(collapseRisk.baselineCount, 8);
 assert.equal(collapseRisk.currentCount, 2);
-assert.equal(recommendationCollapseRisk({ ...collapsedRecommendations, recommendationPolicyVersion: 2 }, baselineRecommendations).collapse, false,
+assert.equal(recommendationCollapseRisk({ ...collapsedRecommendations, recommendationPolicyVersion: 3 }, baselineRecommendations).collapse, false,
   'policy version bump must explicitly rebaseline intentional recommendation policy changes');
 const explainedRecommendations = {
-  recommendationPolicyVersion: 1,
+  recommendationPolicyVersion: 2,
   jobs: baselineRecommendations.jobs.map((job, index) => index < 2 ? job : recommendationFixture(index, {
     listingStatus: 'archived_missing',
     sourceCoverage: 'bounded_window',
@@ -920,7 +1006,7 @@ const explainedRecommendations = {
 assert.equal(recommendationCollapseRisk(explainedRecommendations, baselineRecommendations).collapse, false,
   'bounded-window disappearance must not trip the recommendation regression guard');
 const currentCatalogCollapse = {
-  recommendationPolicyVersion: 1,
+  recommendationPolicyVersion: 2,
   jobs: baselineRecommendations.jobs.map((job, index) => index < 2 ? job : recommendationFixture(index, {
     listingStatus: 'archived_missing',
     sourceCoverage: 'current_catalog',
@@ -930,6 +1016,17 @@ const currentCatalogCollapse = {
 };
 assert.equal(recommendationCollapseRisk(currentCatalogCollapse, baselineRecommendations).collapse, true,
   'healthy current-catalog disappearance must remain unexplained so collector regressions cannot silently collapse recommendations');
+
+const weakSourceDowngrade = {
+  recommendationPolicyVersion: 2,
+  jobs: baselineRecommendations.jobs.map((job, index) => index < 2 ? job : recommendationFixture(index, {
+    recommendationEligible: false,
+    sourceQualityTier: 'weak',
+    sourceRecommendationGateReason: '반복적으로 유효 공고 비율이 낮은 소스'
+  }))
+};
+assert.equal(recommendationCollapseRisk(weakSourceDowngrade, baselineRecommendations).collapse, false,
+  'intentional weak-source quality gating must be an explained recommendation loss rather than forcing low-value jobs to remain');
 
 const freshSignal = enrichPaymentSignal(
   { type: 'review_aggregate', checkedAt: '2026-10-04', latestSourceAt: '2026-10-02', direction: 'caution', recurrence: 'repeated' },

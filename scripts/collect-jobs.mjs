@@ -32,6 +32,7 @@ const verificationHistoryLimit = 24;
 const sourceMetricHistoryLimit = 24;
 const verificationCheckpointMs = 7 * dayMs;
 const contentFingerprintVersion = 2;
+const recommendationPolicyVersion = 2;
 
 function sourceMeta(source) {
   return sourceQuality[source] ?? {
@@ -526,6 +527,9 @@ function extractSalary(rawValue, description = '') {
     if (/\bpaid per (?:job|task|item)\b/.test(desc)) {
       return { raw: '', display: '금액 비공개 · 건별 지급', currency: '', min: null, max: null, period: 'task', confidence: 'basis_only', paymentBasis: 'per_task' };
     }
+    if (/\btask[- ]based compensation\b/.test(desc)) {
+      return { raw: '', display: '금액 비공개 · 건별 지급', currency: '', min: null, max: null, period: 'task', confidence: 'basis_only', paymentBasis: 'per_task' };
+    }
     return { raw: '', display: '', currency: '', min: null, max: null, period: '', confidence: 'none', paymentBasis: '' };
   }
   const normalizedRaw = lower(raw);
@@ -970,9 +974,10 @@ function normalizeJob(raw) {
     fitWarnings.push('어노테이션·데이터 라벨링 1년 이상 경력 요건 확인');
     job.score = Math.min(job.score, 19);
   }
-  if (/\bprevious\s+(?:transcription|speech annotation)(?:\s+or\s+(?:transcription|speech annotation))?\s+experience\b|\bprevious\s+transcription\s+or\s+speech annotation\s+experience\b/i.test(fullDescription)
-    && !/\b(?:preferred|advantage|plus|nice to have)\b[\s\S]{0,80}\b(?:transcription|speech annotation)\b|\b(?:transcription|speech annotation)\b[\s\S]{0,80}\b(?:preferred|advantage|plus|nice to have)\b/i.test(fullDescription)) {
-    fitWarnings.push('전사·음성 어노테이션 실무 경력 요건 확인');
+  const transcriptionExperienceContext = fullDescription.match(/[^.]{0,120}\b(?:previous|prior)\b[^.]{0,120}\b(?:transcription|subtitling|speech annotation)\b[^.]{0,180}/i)?.[0] || '';
+  const transcriptionExperienceOptional = /\b(?:preferred|advantage|a plus|plus|nice to have|optional)\b/i.test(transcriptionExperienceContext);
+  if (transcriptionExperienceContext && !transcriptionExperienceOptional) {
+    fitWarnings.push('전사·자막·음성 어노테이션 실무 경력 요건 확인');
     job.score = Math.min(job.score, 19);
   }
   const subjectMatterExperience = fullDescription.match(/\b(?:\d+\+?|at least\s+\d+|minimum(?:\s+of)?\s+\d+)\s+years?\b[^.]{0,80}\b(?:experience|professional background|industry background)\b[^.]{0,120}/i)?.[0] || '';
@@ -1155,7 +1160,7 @@ function normalizeJob(raw) {
     ...(job.salaryMetadataSuppressed && !job.salaryMetadataConflict ? ['채용보드 급여 메타데이터 원문 미확인'] : []),
     ...(['caution_repeated', 'mixed_caution', 'caution_single'].includes(job.paymentEvidenceState) ? ['지급 평판 주의 신호'] : []),
     ...(job.paymentEvidenceState === 'evidence_expired' ? ['지급 신뢰 근거 만료'] : []),
-    ...job.requirementChecks.map((item) => item.label)
+    ...job.requirementChecks.filter((item) => item.kind !== 'satisfied').map((item) => item.label)
   ].slice(0, 5);
   if (job.stale) job.score = Math.max(0, job.score - 15);
   if (job.listingStatus === 'talent_pool') job.score = Math.max(0, job.score - 45);
@@ -1194,11 +1199,13 @@ function sourceCollection(jobs, rawCount, extra = {}) {
   };
 }
 
-async function collectLeverBoard(site, source, company) {
-  const rows = await fetchJson(`https://api.lever.co/v0/postings/${site}?mode=json`);
+async function collectLeverBoard(site, source, company, { query = '', rowFilter = null } = {}) {
+  const suffix = query ? `&${query}` : '';
+  const rows = await fetchJson(`https://api.lever.co/v0/postings/${site}?mode=json${suffix}`);
   const collected = [];
   let profileMatchedCount = 0;
   for (const j of Array.isArray(rows) ? rows : []) {
+    if (rowFilter && !rowFilter(j)) continue;
     const location = Array.isArray(j.categories?.allLocations) && j.categories.allLocations.length
       ? j.categories.allLocations.join(' / ')
       : j.categories?.location;
@@ -1241,6 +1248,51 @@ async function collectWeloGlobal() {
 
 async function collectRws() {
   return collectLeverBoard('rws', 'RWS TrainAI', 'RWS');
+}
+
+async function collectTsmg() {
+  return collectLeverBoard('tsmg', 'TSMG', 'Terry Soot Management Group', {
+    query: 'location=Remote%20in%20South%20Korea',
+    rowFilter: (job) => /\bkorean\b/i.test(job?.text || '')
+      && /\b(?:transcription|quality control)\b/i.test(job?.text || '')
+  });
+}
+
+async function collectElevenLabs() {
+  const data = await fetchJson('https://api.ashbyhq.com/posting-api/job-board/elevenlabs');
+  const rows = Array.isArray(data?.jobs) ? data.jobs : [];
+  const collected = [];
+  let localeEligibleCount = 0;
+  let profileMatchedCount = 0;
+  for (const j of rows) {
+    if (j.isListed === false) continue;
+    const locations = [j.location, ...(j.secondaryLocations || []).map((item) => item?.location)].filter(Boolean);
+    if (!locations.some((location) => /\bkorea\b/i.test(location))) continue;
+    localeEligibleCount += 1;
+    if (!/\b(?:transcription|subtitling)\b/i.test(j.title || '')) continue;
+    const description = j.descriptionPlain || j.descriptionHtml || '';
+    const worldwide = /\b(?:executed globally|work globally|worldwide|anywhere in the world)\b/i.test(description);
+    const candidate = {
+      id: `ashby:elevenlabs:${j.id}`,
+      source: 'ElevenLabs',
+      title: j.title,
+      company: 'ElevenLabs',
+      location: worldwide ? 'World Wide - Remote' : 'Korea / Remote',
+      remote: Boolean(j.isRemote) || /remote/i.test(j.workplaceType || ''),
+      type: j.employmentType || j.workplaceType || 'Freelance',
+      salary: '',
+      url: j.jobUrl || j.applyUrl,
+      postedAt: j.publishedAt || null,
+      sourceListingState: 'published',
+      sourceCreatedAt: j.publishedAt || null,
+      description,
+      tags: ['Korean', 'Transcription', j.department, j.team, j.workplaceType, j.employmentType].filter(Boolean),
+      countryCode: worldwide ? '' : 'KR'
+    };
+    profileMatchedCount += 1;
+    collected.push(normalizeJob(candidate));
+  }
+  return sourceCollection(collected, rows.length, { localeEligibleCount, profileMatchedCount });
 }
 
 async function collectLilt() {
@@ -1771,6 +1823,7 @@ function recommendationCollapseRisk(feed, baseline) {
     ['source_error', 'talent_pool', 'expired', 'stale'].includes(current.listingStatus)
     || (current.listingStatus === 'archived_missing' && current.sourceCoverage === 'bounded_window')
     || ['degraded', 'unstable'].includes(current.sourceReliabilityState)
+    || current.sourceQualityTier === 'weak'
     || (current.lastChangeKind === 'content_changed'
       && (current.requirementsStatus === 'hard_check'
         || current.eligibilityCode === 'restricted'
@@ -1845,9 +1898,15 @@ function sourceQualityTier(meta, recentHistory, current) {
   const consecutiveFailures = history.slice().reverse().findIndex((item) => item.ok);
   const failureStreak = consecutiveFailures === -1 ? attempts : consecutiveFailures;
   if (isOfficialKind(meta.kind)) return failureStreak >= 2 ? 'degraded' : 'strong';
-  const lowQualityRate = Number(current?.lowQualityRate || 0);
-  const matchedCount = Number(current?.matchedCount || 0);
-  if ((attempts >= 4 && successRate < 0.75) || (matchedCount >= 3 && lowQualityRate >= 0.8)) return 'weak';
+  const qualityAttempts = history
+    .filter((item) => item.ok && Number(item.matchedCount || 0) >= 3)
+    .slice(-4);
+  const noisyAttempts = qualityAttempts.filter((item) => {
+    const matchedCount = Number(item.matchedCount || 0);
+    const noiseCount = Number(item.duplicateCount || 0) + Number(item.lowQualityCount || 0);
+    return matchedCount > 0 && noiseCount / matchedCount >= 0.8;
+  });
+  if ((attempts >= 4 && successRate < 0.75) || (qualityAttempts.length >= 3 && noisyAttempts.length >= 3)) return 'weak';
   return 'mixed';
 }
 
@@ -1881,10 +1940,12 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       && isDefaultRecommendation({ ...job, recommendationEligible: true })).length;
     const duplicateCount = Math.max(0, matchedCount - uniqueMatchedCount);
     const lowQualityCount = Math.max(0, uniqueMatchedCount - keptCount);
+    const noiseCount = duplicateCount + lowQualityCount;
     const matchRate = rawCount ? matchedCount / rawCount : 0;
     const keptRate = matchedCount ? keptCount / matchedCount : 0;
     const duplicateRate = matchedCount ? duplicateCount / matchedCount : 0;
     const lowQualityRate = matchedCount ? lowQualityCount / matchedCount : 0;
+    const noiseRate = matchedCount ? noiseCount / matchedCount : 0;
     const previous = previousSourceMetrics?.[source] || {};
     const previousHistory = Array.isArray(previous.history) ? previous.history : [];
     const historyEntry = {
@@ -1896,6 +1957,7 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       recommendedCount,
       duplicateCount,
       lowQualityCount,
+      noiseCount,
       ...(status.error ? { error: String(status.error).slice(0, 240) } : {})
     };
     const history = appendLimitedHistory(previousHistory, historyEntry, sourceMetricHistoryLimit);
@@ -1906,7 +1968,7 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       if (item.ok) break;
       consecutiveFailures += 1;
     }
-    const currentForTier = { ...historyEntry, lowQualityRate };
+    const currentForTier = { ...historyEntry, lowQualityRate, noiseRate };
     const qualityTier = sourceQualityTier(meta, history.slice(0, -1), currentForTier);
     const reliabilityState = sourceReliabilityState(meta, history);
     metrics[source] = {
@@ -1931,11 +1993,13 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       recommendedCount,
       duplicateCount,
       lowQualityCount,
+      noiseCount,
       matchRate: Math.round(matchRate * 1000) / 1000,
       validJobRate: Math.round(keptRate * 1000) / 1000,
       keptRate: Math.round(keptRate * 1000) / 1000,
       duplicateRate: Math.round(duplicateRate * 1000) / 1000,
       lowQualityRate: Math.round(lowQualityRate * 1000) / 1000,
+      noiseRate: Math.round(noiseRate * 1000) / 1000,
       history
     };
   }
@@ -1945,7 +2009,12 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
 function applySourceMetricsToJobs(jobs, sourceMetrics = {}) {
   return jobs.map((job) => {
     const metric = sourceMetrics[job.source] || {};
-    const recommendationEligible = !['degraded', 'unstable'].includes(metric.reliabilityState)
+    const sourceRecommendationGateReason = ['degraded', 'unstable'].includes(metric.reliabilityState)
+      ? '반복 수집 실패로 소스 신뢰가 낮음'
+      : metric.qualityTier === 'weak'
+        ? '반복적으로 유효 공고 비율이 낮거나 중복·저품질 비율이 높은 소스'
+        : '';
+    const recommendationEligible = !sourceRecommendationGateReason
       && job.requirementsStatus !== 'hard_check';
     return {
       ...job,
@@ -1953,6 +2022,7 @@ function applySourceMetricsToJobs(jobs, sourceMetrics = {}) {
       sourceReliabilityState: metric.reliabilityState || (isOfficialKind(job.sourceKind) ? 'reliable' : 'observed'),
       sourceRecentSuccessRate: metric.recentSuccessRate ?? null,
       sourceEvidenceRefreshability: metric.evidenceRefreshability || sourceMeta(job.source).evidenceRefreshability || 'unknown',
+      sourceRecommendationGateReason,
       recommendationEligible
     };
   });
@@ -1962,6 +2032,8 @@ export async function collectJobs({ includeManual = true, persist = true, previo
   const sources = [
     ['Welo Global', collectWeloGlobal],
     ['RWS TrainAI', collectRws],
+    ['TSMG', collectTsmg],
+    ['ElevenLabs', collectElevenLabs],
     ['LILT Production', collectLilt],
     ['Meridial', collectMeridial],
     ['OneForma', collectOneForma],
@@ -2052,13 +2124,13 @@ export async function collectJobs({ includeManual = true, persist = true, previo
     updatedAt: new Date(now).toISOString(),
     sourceStatus: enrichedSourceStatus,
     sourceMetrics,
-    recommendationPolicyVersion: 1,
+    recommendationPolicyVersion,
     recommendationSummary: {
       count: uniqueJobs.filter(isDefaultRecommendation).length,
-      baselineCount: fallbackFeed?.recommendationPolicyVersion === 1
+      baselineCount: fallbackFeed?.recommendationPolicyVersion === recommendationPolicyVersion
         ? Number(fallbackFeed?.recommendationSummary?.count || 0)
         : null,
-      minExpected: fallbackFeed?.recommendationPolicyVersion === 1
+      minExpected: fallbackFeed?.recommendationPolicyVersion === recommendationPolicyVersion
         ? Math.max(3, Math.ceil(Number(fallbackFeed?.recommendationSummary?.count || 0) * 0.5))
         : 1,
       hardRequirementCount: uniqueJobs.filter((job) => isDefaultRecommendation(job) && job.requirementsStatus === 'hard_check').length

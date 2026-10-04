@@ -104,6 +104,8 @@ assert.equal(feed.recommendationSummary.hardRequirementCount, 0,
   'recommendation summary must not include unresolved hard requirements');
 assert.equal(recommended.filter((job) => ['degraded', 'unstable'].includes(job.sourceReliabilityState)).length, 0,
   'recommendations must exclude sources with repeated reliability failures');
+assert.equal(recommended.filter((job) => job.sourceQualityTier === 'weak').length, 0,
+  'recommendations must exclude sources with repeatedly low valid-job yield');
 
 const recommendationRegression = recommendationCollapseRisk(feed, baseline);
 if (recommendationRegression.collapse) {
@@ -132,10 +134,12 @@ for (const [source, metric] of Object.entries(feed.sourceMetrics)) {
     `${source} duplicateRate must be a ratio`);
   assert.ok(Number.isFinite(metric.lowQualityRate) && metric.lowQualityRate >= 0 && metric.lowQualityRate <= 1,
     `${source} lowQualityRate must be a ratio`);
+  assert.ok(Number.isFinite(metric.noiseRate) && metric.noiseRate >= 0 && metric.noiseRate <= 1,
+    `${source} noiseRate must be a ratio`);
   assert.ok(metric.keptCount <= metric.matchedCount || !metric.history.at(-1)?.ok,
     `${source} kept count cannot exceed matched count on successful collection`);
-  if (['degraded', 'unstable'].includes(metric.reliabilityState)) {
-    assert.equal(metric.recommendedCount, 0, `${source} unreliable source must not contribute default recommendations`);
+  if (['degraded', 'unstable'].includes(metric.reliabilityState) || metric.qualityTier === 'weak') {
+    assert.equal(metric.recommendedCount, 0, `${source} unreliable or repeatedly weak source must not contribute default recommendations`);
   }
 }
 

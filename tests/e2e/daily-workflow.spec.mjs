@@ -175,6 +175,44 @@ test('기본 추천이 렌더링되고 검토 우선순위로 표시된다', asy
   await expect(page.locator('.eligibility-badge').first()).toContainText('한국에서 지원 가능');
 });
 
+test('기본 정렬은 같은 점수에서 오늘 판단하기 쉬운 공고를 먼저 보여준다', async ({ page }) => {
+  const uncertain = job({
+    id: 'job:sort-uncertain',
+    title: 'Korean Reviewer - More Unknowns',
+    url: 'https://example.com/job/sort-uncertain',
+    postedAt: '2026-10-04T05:00:00.000Z',
+    score: 90,
+    sourceKind: 'job_board',
+    sourceOfficiality: 'intermediary',
+    sourceQualityTier: 'mixed',
+    sourceReliabilityState: 'observed',
+    listingStatus: 'current_feed',
+    listingLabel: '집계·채용보드 현재 피드',
+    eligibilityCode: 'worldwide',
+    eligibility: 'Worldwide',
+    requirementsStatus: 'routine_check',
+    salary: '',
+    salaryInfo: { raw: '', display: '', currency: '', min: null, max: null, period: '', confidence: 'none' },
+    decisionUnknowns: ['고용주 공식 모집 상태', '급여·단가', '작업 장비 확인']
+  });
+  const ready = job({
+    id: 'job:sort-ready',
+    title: 'Korean Reviewer - Ready to Review',
+    url: 'https://example.com/job/sort-ready',
+    postedAt: '2026-09-20T05:00:00.000Z',
+    score: 90,
+    decisionUnknowns: []
+  });
+  await useFeed(page, () => feed([uncertain, ready]));
+  await page.goto('/');
+
+  await expect(page.locator('#sort option:checked')).toHaveText('오늘 먼저 볼 순');
+  await expect(page.locator('.job-card .title').first()).toHaveText('Korean Reviewer - Ready to Review');
+
+  await page.locator('#sort').selectOption('newest');
+  await expect(page.locator('.job-card .title').first()).toHaveText('Korean Reviewer - More Unknowns');
+});
+
 test('상태와 동적 소스 필터가 reload 후 유지된다', async ({ page }) => {
   await useFeed(page);
   await page.goto('/');

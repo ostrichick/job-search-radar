@@ -257,12 +257,31 @@ function filteredJobs() {
     if (aReviewed !== bReviewed) return aReviewed - bReviewed;
     const scoreDiff = b.score - a.score;
     if (scoreDiff) return scoreDiff;
+    const reliabilityRank = { reliable: 3, observed: 2, unstable: 1, degraded: 0 };
+    const reliabilityDiff = (reliabilityRank[b.sourceReliabilityState] || 0) - (reliabilityRank[a.sourceReliabilityState] || 0);
+    if (reliabilityDiff) return reliabilityDiff;
     const listingRank = { verified_open: 3, official_listed: 2, current_feed: 1 };
     const listingDiff = (listingRank[b.listingStatus] || 0) - (listingRank[a.listingStatus] || 0);
     if (listingDiff) return listingDiff;
+    const eligibilityRank = { korea: 3, worldwide: 2, unknown: 1, restricted: 0 };
+    const eligibilityDiff = (eligibilityRank[b.eligibilityCode] || 0) - (eligibilityRank[a.eligibilityCode] || 0);
+    if (eligibilityDiff) return eligibilityDiff;
+    const requirementRank = { clear: 3, routine_check: 2, hard_check: 0 };
+    const requirementDiff = (requirementRank[b.requirementsStatus] || 0) - (requirementRank[a.requirementsStatus] || 0);
+    if (requirementDiff) return requirementDiff;
+    const compensationRank = (job) => {
+      const summary = salarySummary(job);
+      return summary.hasAmount ? 2 : summary.value !== '금액 미공개' ? 1 : 0;
+    };
+    const compensationDiff = compensationRank(b) - compensationRank(a);
+    if (compensationDiff) return compensationDiff;
     const sourceRank = { strong: 3, mixed: 2, weak: 1, degraded: 0 };
     const sourceDiff = (sourceRank[b.sourceQualityTier] || 0) - (sourceRank[a.sourceQualityTier] || 0);
     if (sourceDiff) return sourceDiff;
+    const unknownDiff = (a.decisionUnknowns || []).length - (b.decisionUnknowns || []).length;
+    if (unknownDiff) return unknownDiff;
+    const verificationDiff = (Date.parse(b.lastVerifiedAt) || 0) - (Date.parse(a.lastVerifiedAt) || 0);
+    if (verificationDiff) return verificationDiff;
     return (Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0);
   });
   return jobs;
@@ -707,7 +726,7 @@ function openDetails(job) {
   $('detailsSourceSummary').textContent = job.sourceSummary || '원문에서 모집 상태와 계약·지급 조건을 확인하세요.';
   const sourceMetric = state.meta?.sourceMetrics?.[job.source];
   $('detailsSourceHealth').textContent = sourceMetric
-    ? `소스 품질 ${sourceMetric.qualityTier || '미상'} · 최근 성공 ${Math.round(Number(sourceMetric.recentSuccessRate || 0) * 100)}% · 유효 ${sourceMetric.keptCount || 0}/${sourceMetric.matchedCount || 0} (${Math.round(Number(sourceMetric.validJobRate || sourceMetric.keptRate || 0) * 100)}%) · 중복 ${Math.round(Number(sourceMetric.duplicateRate || 0) * 100)}% · 저품질 ${Math.round(Number(sourceMetric.lowQualityRate || 0) * 100)}% · 근거 갱신 ${sourceMetric.evidenceRefreshability || '미상'}`
+    ? `소스 품질 ${sourceMetric.qualityTier || '미상'} · 최근 성공 ${Math.round(Number(sourceMetric.recentSuccessRate || 0) * 100)}% · 유효 ${sourceMetric.keptCount || 0}/${sourceMetric.matchedCount || 0} (${Math.round(Number(sourceMetric.validJobRate || sourceMetric.keptRate || 0) * 100)}%) · 노이즈 ${Math.round(Number(sourceMetric.noiseRate || 0) * 100)}% · 중복 ${Math.round(Number(sourceMetric.duplicateRate || 0) * 100)}% · 저품질 ${Math.round(Number(sourceMetric.lowQualityRate || 0) * 100)}% · 근거 갱신 ${sourceMetric.evidenceRefreshability || '미상'}${job.sourceRecommendationGateReason ? ` · 추천 제외: ${job.sourceRecommendationGateReason}` : ''}`
     : `소스 품질 ${job.sourceQualityTier || '미상'} · 근거 갱신 ${job.sourceEvidenceRefreshability || '미상'}`;
   appendEvidenceLinks($('detailsEvidence'), job.sourceEvidence || []);
   for (const [index, url] of (job.alternateUrls || []).entries()) {
@@ -1070,7 +1089,7 @@ function renderSourceHealth(sourceStatus = []) {
       if (['unstable', 'degraded'].includes(metric.reliabilityState)) {
         return `${metric.source} · 수집 신뢰 ${metric.reliabilityState}`;
       }
-      return `${metric.source} · 유효 ${metric.keptCount || 0}/${metric.matchedCount || 0}`;
+      return `${metric.source} · 유효 ${metric.keptCount || 0}/${metric.matchedCount || 0} · 노이즈 ${Math.round(Number(metric.noiseRate || 0) * 100)}%`;
     });
   text.textContent = [...failureText, ...qualityText].join(' / ');
   summary.append(title, text);

@@ -42,6 +42,44 @@
       {"type": "review_aggregate", "direction": "mixed", "recurrence": "repeated", "checkedAt": "2026-10-04", "latestSourceAt": "2026-09-16", "reviewWindowDays": 365, "sampleSize": 30, "label": "공개 리뷰 집계", "url": "https://www.trustpilot.com/review/www.rws.com", "note": "최근 리뷰에서 지급 지연·미지급 불만이 반복되지만 긍정적 지급 경험도 일부 존재"}
     ]
   },
+  "TSMG": {
+    "kind": "official_ats",
+    "coverage": "current_catalog",
+    "evidenceRefreshability": "direct_api",
+    "listingLabel": "공식 직접 채용",
+    "paymentStatus": "unknown",
+    "paymentLabel": "지급 조건 직접 확인",
+    "paymentEvidenceState": "insufficient",
+    "paymentEvidenceLabel": "독립 지급 근거 부족",
+    "paymentConfidence": "low",
+    "reviewedAt": "2026-10-04",
+    "summary": "Terry Soot Management Group(TSMG)이 직접 게시한 공식 Lever 채용 공고 중 South Korea 원격 한국어 역할을 구조화 API에서 수집합니다.",
+    "paymentSummary": "공식 공고에서 모집 상태와 업무 조건은 확인하지만, 현재 독립적인 최신 지급 평판 근거를 자동 갱신하지 못하므로 실제 단가와 정산 조건은 지원 전 계약에서 확인해야 합니다.",
+    "evidence": [
+      {"type": "official_source", "label": "공식 Lever 채용", "url": "https://jobs.lever.co/tsmg"},
+      {"type": "official_feed", "label": "공식 Lever 공개 API", "url": "https://api.lever.co/v0/postings/tsmg?mode=json&location=Remote%20in%20South%20Korea"}
+    ],
+    "paymentSignals": []
+  },
+  "ElevenLabs": {
+    "kind": "official_ats",
+    "coverage": "current_catalog",
+    "evidenceRefreshability": "direct_api",
+    "listingLabel": "공식 직접 채용",
+    "paymentStatus": "unknown",
+    "paymentLabel": "지급 조건 직접 확인",
+    "paymentEvidenceState": "insufficient",
+    "paymentEvidenceLabel": "독립 지급 근거 부족",
+    "paymentConfidence": "low",
+    "reviewedAt": "2026-10-04",
+    "summary": "ElevenLabs가 운영하는 공식 Ashby 공개 API에서 한국 지원이 명시된 Productions 관련 공고를 직접 확인합니다.",
+    "paymentSummary": "공식 공고에 task-based compensation이 명시되지만 금액과 독립적인 최신 지급 평판 근거는 확인되지 않아 실제 단가·정산 조건은 계약에서 확인해야 합니다.",
+    "evidence": [
+      {"type": "official_source", "label": "ElevenLabs 공식 채용", "url": "https://elevenlabs.io/careers/positions"},
+      {"type": "official_feed", "label": "공식 Ashby 공개 API", "url": "https://api.ashbyhq.com/posting-api/job-board/elevenlabs"}
+    ],
+    "paymentSignals": []
+  },
   "LILT Production": {
     "kind": "official_ats",
     "coverage": "current_catalog",

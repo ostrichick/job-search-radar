@@ -6,9 +6,10 @@
   "scripts": {
     "start": "node local-server.mjs",
     "refresh": "node scripts/collect-jobs.mjs",
+    "parse:linkedin-alert": "node scripts/linkedin-alert-parser.mjs",
     "build:static": "node scripts/build-static.mjs",
     "build:pages": "node scripts/build-pages.mjs",
-    "test": "node scripts/test-collector.mjs && node scripts/test-state-rules.mjs",
+    "test": "node scripts/test-collector.mjs && node scripts/test-state-rules.mjs && node scripts/test-linkedin-alert-parser.mjs",
     "test:e2e": "playwright test",
     "validate:feed": "node scripts/validate-feed.mjs",
     "check:pages": "node scripts/check-pages-sync.mjs",
