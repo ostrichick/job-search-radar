@@ -18,13 +18,14 @@ const state = {
   hiddenIds: storedHidden,
   manualJobs: JSON.parse(localStorage.getItem('manualJobs') || '[]'),
   newIds: new Set(),
+  reviewedIds: new Set(JSON.parse(localStorage.getItem('reviewedJobIds') || '[]')),
   visibleLimit: 60,
   lastHidden: null,
   toastTimer: null
 };
 
 const $ = (id) => document.getElementById(id);
-const controls = ['query', 'source', 'category', 'remote', 'eligibility', 'minScore', 'sort', 'statusFilter'];
+const controls = ['query', 'source', 'category', 'remote', 'eligibility', 'ageFilter', 'minScore', 'sort', 'statusFilter'];
 const savedFilters = JSON.parse(localStorage.getItem('jobFilters') || '{}');
 for (const id of controls) {
   if (savedFilters[id] !== undefined) $(id).value = savedFilters[id];
@@ -46,6 +47,7 @@ function persist() {
   localStorage.setItem('jobFavorites', JSON.stringify([...state.favorites]));
   localStorage.setItem('jobStates', JSON.stringify(state.jobStates));
   localStorage.setItem('jobHidden', JSON.stringify([...state.hiddenIds]));
+  localStorage.setItem('reviewedJobIds', JSON.stringify([...state.reviewedIds]));
   localStorage.setItem('manualJobs', JSON.stringify(state.manualJobs));
 }
 
@@ -67,6 +69,7 @@ function filteredJobs() {
   const category = $('category').value;
   const remote = $('remote').value;
   const eligibility = $('eligibility').value;
+  const ageFilter = Number($('ageFilter').value || 0);
   const status = $('statusFilter').value;
   const minScore = Number($('minScore').value);
   let jobs = state.jobs.filter((job) => {
@@ -77,9 +80,14 @@ function filteredJobs() {
     if (source && job.source !== source) return false;
     if (category && job.category !== category) return false;
     if (eligibility && job.eligibility !== eligibility) return false;
+    if (ageFilter) {
+      const posted = Date.parse(job.postedAt);
+      if (!posted || ((Date.now() - posted) / 86400000) > ageFilter) return false;
+    }
     if (job.score < minScore) return false;
     if (status === 'active' && hidden) return false;
     if (status === 'new' && !state.newIds.has(job.id)) return false;
+    if (status === 'unreviewed' && state.reviewedIds.has(job.id)) return false;
     if (status === 'saved' && !state.favorites.has(job.id)) return false;
     if (status === 'planned' && jobState !== 'planned') return false;
     if (status === 'applied' && jobState !== 'applied') return false;
@@ -95,6 +103,9 @@ function filteredJobs() {
     if (sort === 'oldest') return (Date.parse(a.postedAt) || 0) - (Date.parse(b.postedAt) || 0);
     if (sort === 'company') return a.company.localeCompare(b.company, 'ko');
     if (sort === 'title') return a.title.localeCompare(b.title, 'ko');
+    const aReviewed = state.reviewedIds.has(a.id) ? 1 : 0;
+    const bReviewed = state.reviewedIds.has(b.id) ? 1 : 0;
+    if (aReviewed !== bReviewed) return aReviewed - bReviewed;
     return b.score - a.score || (Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0);
   });
   return jobs;
@@ -104,16 +115,17 @@ function renderStats() {
   const active = state.jobs.filter((j) => !state.hiddenIds.has(j.id)).length;
   const saved = state.favorites.size;
   const planned = Object.values(state.jobStates).filter((v) => v === 'planned').length;
-  const fresh = state.newIds.size;
+  const unreviewed = state.jobs.filter((j) => !state.hiddenIds.has(j.id) && !state.reviewedIds.has(j.id)).length;
   $('stats').innerHTML = [
     ['현재 공고', `${active}개`],
     ['관심 공고', `${saved}개`],
     ['지원 예정', `${planned}개`],
-    ['새로 들어온 공고', `${fresh}개`]
+    ['미검토 공고', `${unreviewed}개`]
   ].map(([label, value]) => `<div class="stat"><strong>${value}</strong><span>${label}</span></div>`).join('');
 }
 
 function setJobState(id, value) {
+  state.reviewedIds.add(id);
   if (value) state.jobStates[id] = value;
   else delete state.jobStates[id];
   persist();
@@ -122,6 +134,7 @@ function setJobState(id, value) {
 }
 
 function setHidden(id, hidden) {
+  state.reviewedIds.add(id);
   hidden ? state.hiddenIds.add(id) : state.hiddenIds.delete(id);
   persist();
   renderStats();
@@ -138,6 +151,9 @@ function hideWithUndo(job) {
 }
 
 function openDetails(job) {
+  state.reviewedIds.add(job.id);
+  persist();
+  renderStats();
   $('detailsTitle').textContent = job.title;
   $('detailsCompany').textContent = job.company;
   $('detailsMeta').innerHTML = [job.location, job.type, job.eligibility, job.category, job.salary].filter(Boolean).map((v) => `<span>${escapeHtml(v)}</span>`).join('');
@@ -169,11 +185,16 @@ function render() {
     node.querySelector('.posted').textContent = formatDate(job.postedAt);
     const apply = node.querySelector('.apply');
     apply.href = job.url;
+    apply.addEventListener('click', () => {
+      state.reviewedIds.add(job.id);
+      persist();
+    });
 
     const favorite = node.querySelector('.favorite');
     favorite.textContent = state.favorites.has(job.id) ? '★' : '☆';
     favorite.classList.toggle('active', state.favorites.has(job.id));
     favorite.addEventListener('click', () => {
+      state.reviewedIds.add(job.id);
       state.favorites.has(job.id) ? state.favorites.delete(job.id) : state.favorites.add(job.id);
       persist(); renderStats(); render();
     });
@@ -282,7 +303,10 @@ const dialog = $('addDialog');
 $('addJobBtn').addEventListener('click', () => dialog.showModal());
 $('closeDialog').addEventListener('click', () => dialog.close());
 $('cancelDialog').addEventListener('click', () => dialog.close());
-$('closeDetails').addEventListener('click', () => $('detailsDialog').close());
+$('closeDetails').addEventListener('click', () => {
+  $('detailsDialog').close();
+  if ($('statusFilter').value === 'unreviewed') render();
+});
 $('loadMore').addEventListener('click', () => { state.visibleLimit += 60; render(); });
 $('undoHide').addEventListener('click', () => {
   if (!state.lastHidden) return;

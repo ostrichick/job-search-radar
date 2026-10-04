@@ -49,6 +49,15 @@
         <select id="eligibility"><option value="">전체</option></select>
       </div>
       <div class="field">
+        <label for="ageFilter">게시 시점</label>
+        <select id="ageFilter">
+          <option value="">전체</option>
+          <option value="7">최근 7일</option>
+          <option value="14">최근 14일</option>
+          <option value="30">최근 30일</option>
+        </select>
+      </div>
+      <div class="field">
         <label for="minScore">최소 적합도</label>
         <select id="minScore">
           <option value="0" selected>전체</option>
@@ -74,6 +83,7 @@
           <option value="active">숨김 제외</option>
           <option value="all">전체</option>
           <option value="new">새 공고</option>
+          <option value="unreviewed">미검토</option>
           <option value="saved">관심 공고</option>
           <option value="planned">지원 예정</option>
           <option value="applied">지원함</option>
@@ -87,7 +97,7 @@
         <strong id="resultCount">0개</strong>
         <span id="updatedAt"></span>
       </div>
-      <p class="source-note">관심·지원·숨김 상태는 이 브라우저에 저장됩니다.</p>
+      <p class="source-note">상세·원문 확인 또는 상태 변경 시 검토 완료로 기록됩니다.</p>
     </section>
 
     <section id="jobs" class="job-grid" aria-live="polite"></section>

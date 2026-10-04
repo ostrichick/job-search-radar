@@ -30,18 +30,19 @@ function hasPhrase(haystack, phrase) {
 }
 
 function classify(job) {
-  const haystack = lower([job.title, job.description, job.tags?.join(' '), job.category].join(' '));
+  const title = lower(job.title);
   const rules = [
-    ['한국어·언어', ['korean', '한국어', 'linguist', 'proofread', 'localization', 'language quality', 'editor']],
-    ['조사·데이터', ['research', 'data entry', 'data researcher', 'catalog', 'product data', 'administrative assistant']],
-    ['교육 운영', ['education', 'learning operations', 'course operations', 'class manager', 'training']],
-    ['커뮤니티·운영', ['moderator', 'community', 'operations coordinator', 'event']],
-    ['채용 보조', ['sourcing', 'recruiting coordinator', 'talent coordinator', 'recruiter']],
-    ['오디오·음성', ['audio', 'podcast', 'voice', 'narration']],
-    ['시험 감독', ['proctor', 'exam']],
-    ['GIS·지도', ['gis', 'mapping', 'geospatial']]
+    ['AI 평가·어노테이션', ['ai trainer', 'ai response', 'data annotator', 'data annotation', 'response evaluator', 'search evaluator', 'data rater', 'data labeling']],
+    ['한국어·언어', ['korean', '한국어', 'linguist', 'proofreader', 'proofreading', 'copy editor', 'content editor', 'localization', 'language quality']],
+    ['조사·데이터', ['data entry', 'data researcher', 'web researcher', 'research assistant', 'market research', 'product catalog', 'catalog specialist', 'catalog coordinator', 'administrative assistant']],
+    ['교육 운영', ['course operations', 'learning operations', 'education operations', 'class manager', 'training coordinator', 'learning coordinator', 'education coordinator']],
+    ['커뮤니티·운영', ['content moderator', 'community moderator', 'community manager', 'event assistant', 'event coordinator', 'webinar coordinator']],
+    ['채용 보조', ['candidate sourcing', 'talent sourcing', 'sourcer', 'recruiting coordinator', 'recruitment coordinator', 'talent coordinator']],
+    ['오디오·음성', ['audio editor', 'podcast editor', 'voice actor', 'voice recording', 'narration', 'voice over', 'voiceover']],
+    ['시험 감독', ['proctor', 'exam proctor', 'invigilator']],
+    ['GIS·지도', ['gis', 'geospatial', 'mapping editor', 'mapping specialist', 'map editor']]
   ];
-  const match = rules.find(([, words]) => words.some((word) => haystack.includes(word)));
+  const match = rules.find(([, words]) => words.some((word) => hasPhrase(title, word)));
   return match?.[0] ?? '기타';
 }
 
@@ -59,24 +60,34 @@ function scoreJob(job) {
   const title = lower(job.title);
   const matched = profile.includeKeywords.filter((keyword) => hasPhrase(haystack, keyword));
   const titleMatched = profile.includeKeywords.filter((keyword) => hasPhrase(title, keyword));
+  const bodyMatched = matched.filter((keyword) => !titleMatched.includes(keyword));
   const excluded = profile.excludeKeywords.some((keyword) => hasPhrase(haystack, keyword));
   let score = 0;
-  for (const keyword of matched) {
+  for (const keyword of titleMatched) {
     if (keyword.toLowerCase() === 'korean' || keyword === '한국어') {
-      score += titleMatched.includes(keyword) ? 45 : 28;
+      score += 45;
     } else {
-      score += titleMatched.includes(keyword) ? 20 : 4;
+      score += 20;
     }
   }
-  score += profile.preferredKeywords.filter((keyword) => hasPhrase(title, keyword)).length * 3;
-  score += profile.preferredKeywords.filter((keyword) => hasPhrase(haystack, keyword)).length;
-  if (job.remote) score += 4;
-  if (/anywhere|worldwide|global/i.test(job.location)) score += 5;
-  if (/korea|south korea|한국/i.test(job.location)) score += 12;
+  const strongBodyTerms = new Set(['korean', '한국어', 'language quality', 'data entry', 'content moderator', 'community moderator', 'proofreader']);
+  score += bodyMatched.filter((keyword) => strongBodyTerms.has(keyword.toLowerCase()) || strongBodyTerms.has(keyword)).length * 3;
+  score += profile.preferredKeywords.filter((keyword) => hasPhrase(title, keyword)).length * 2;
+  if (job.category !== '기타') score += 10;
+  if (job.remote) score += 3;
+  if (job.eligibility === 'Worldwide') score += 8;
+  if (job.eligibility === '한국 명시') score += 15;
+  if (job.eligibility === '확인 필요') score -= 3;
+  if (job.eligibility === '지역 제한 가능') score -= 18;
+  if (job.eligibility === '현지 근무/확인 필요') score -= 25;
   if (/\blinguist\s*[-–—:]/i.test(job.title) && !/korean|한국어/i.test(job.title)) score -= 45;
-  if (/\b(engineer|developer|data scientist|software architect|director of engineering|sap consultant)\b/i.test(job.title) && !/korean|한국어/i.test(haystack)) score -= 28;
+  if (/\b(engineer|developer|scientist|architect|consultant)\b/i.test(job.title) && !/korean|한국어/i.test(haystack)) score -= 28;
+  if (/\b(senior|sr\.?|director|head|principal|staff|vice president|vp)\b/i.test(job.title)) score -= 12;
+  const ageDays = job.postedAt ? Math.floor((Date.now() - Date.parse(job.postedAt)) / 86400000) : null;
+  if (ageDays !== null && ageDays > 30) score -= 8;
+  else if (ageDays !== null && ageDays > 14) score -= 3;
   if (excluded) score -= 40;
-  return { score: Math.max(0, Math.min(100, score)), matchedKeywords: matched.slice(0, 8), excluded };
+  return { score: Math.max(0, Math.min(100, score)), matchedKeywords: [...titleMatched, ...bodyMatched].slice(0, 8), excluded };
 }
 
 function normalizeJob(raw) {

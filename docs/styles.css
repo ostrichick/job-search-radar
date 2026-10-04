@@ -20,7 +20,7 @@ main { padding: 24px clamp(20px, 5vw, 76px) 70px; }
 .stat { background: #fff; border: 1px solid #deddd7; border-radius: 16px; padding: 16px; }
 .stat strong { display: block; font-size: 26px; }.stat span { color: #6e706d; font-size: 13px; }
 .panel { background: #fff; border: 1px solid #deddd7; border-radius: 18px; }
-.filters { display: grid; grid-template-columns: 2fr repeat(7, minmax(110px, 1fr)); gap: 12px; padding: 16px; align-items: end; }
+.filters { display: grid; grid-template-columns: 2fr repeat(8, minmax(105px, 1fr)); gap: 12px; padding: 16px; align-items: end; }
 .field label, .dialog-grid label { display: block; font-size: 12px; color: #686a67; margin-bottom: 6px; font-weight: 700; }
 input, select, textarea { width: 100%; border: 1px solid #d2d1ca; background: #fbfbf9; border-radius: 10px; padding: 10px 11px; color: #191a18; }
 input:focus, select:focus, textarea:focus { outline: 2px solid #b9d94f; outline-offset: 1px; }
