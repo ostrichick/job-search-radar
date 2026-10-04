@@ -25,12 +25,21 @@ const ids = feed.jobs.map((job) => job.id);
 assert.equal(new Set(ids).size, ids.length, 'stable job ids must be unique');
 
 for (const job of feed.jobs) {
+  assert.ok(['remote', 'hybrid', 'onsite', 'unknown'].includes(job.workplaceMode), `${job.id} workplaceMode must use the canonical enum`);
+  assert.equal(Boolean(job.remote), job.workplaceMode === 'remote', `${job.id} remote boolean must agree with canonical workplaceMode`);
   assert.ok(Array.isArray(job.marketScopes) && job.marketScopes.length > 0, `${job.id} must declare at least one market scope`);
   assert.ok(job.marketScopes.every((scope) => ['overseas_remote', 'domestic'].includes(scope)), `${job.id} market scopes must use the supported contract`);
   if (job.marketScopes.includes('domestic')) {
     assert.ok(job.domesticRegion && typeof job.domesticRegion === 'object', `${job.id} domestic discovery requires structured region evidence`);
     assert.equal(job.domesticRegion.country, '대한민국', `${job.id} domestic region must resolve to Korea`);
     assert.ok(job.domesticRegion.evidenceLevel, `${job.id} domestic region must explain its evidence level`);
+    assert.ok(['source_structured', 'source_text', 'derived_alias', 'country_code'].includes(job.domesticRegion.evidenceLevel),
+      `${job.id} domestic region evidence must use the supported precision contract`);
+    assert.ok(['country', 'province', 'city', 'district', 'neighborhood', 'address', 'exact'].includes(job.domesticRegion.precision),
+      `${job.id} domestic region precision must use the supported hierarchy`);
+    if (['onsite', 'hybrid'].includes(job.workplaceMode) && !['archived_missing', 'source_error'].includes(job.listingStatus)) {
+      assert.ok(job.domesticRegion.province, `${job.id} commute-relevant domestic workplace must resolve at least to province level`);
+    }
     const hasLat = job.domesticRegion.lat !== undefined && job.domesticRegion.lat !== null;
     const hasLon = job.domesticRegion.lon !== undefined && job.domesticRegion.lon !== null;
     assert.equal(hasLat, hasLon, `${job.id} domestic coordinates must be complete or absent`);
@@ -54,6 +63,10 @@ for (const job of feed.jobs) {
   assert.ok(job.paymentEvidenceState, `${job.id} must separate payment evidence state from listing/source trust`);
   assert.ok(job.paymentEvidenceLabel, `${job.id} must have a user-readable payment evidence label`);
   assert.ok(job.paymentEvidenceFreshness, `${job.id} must expose payment evidence freshness`);
+  if (job.salaryInfo?.confidence === 'regional_only') {
+    assert.equal(job.salaryInfo.scope, 'regional_only', `${job.id} regional salary must retain its scope type`);
+    assert.ok(job.salaryInfo.scopeLabel, `${job.id} regional salary must retain the source region label`);
+  }
   assert.ok(['clear', 'routine_check', 'hard_check'].includes(job.requirementsStatus), `${job.id} must expose requirements review state`);
   assert.ok(job.requirementsLabel, `${job.id} must have a user-readable requirements label`);
   assert.ok(job.contentFingerprint, `${job.id} must have a content fingerprint`);

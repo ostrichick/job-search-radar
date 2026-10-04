@@ -35,6 +35,10 @@ const state = {
 
 const $ = (id) => document.getElementById(id);
 const controls = ['query', 'source', 'category', 'remote', 'eligibility', 'domesticProvince', 'domesticLocality', 'compensationFilter', 'ageFilter', 'listingFilter', 'sourceKindFilter', 'paymentFilter', 'requirementsFilter', 'minScore', 'sort', 'statusFilter'];
+const domesticProvinceOptions = [
+  '서울특별시', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '대전광역시', '울산광역시', '세종특별자치시',
+  '경기도', '강원특별자치도', '충청북도', '충청남도', '전북특별자치도', '전라남도', '경상북도', '경상남도', '제주특별자치도'
+];
 const advancedFilterDefaults = {
   category: '', remote: '', ageFilter: '', listingFilter: 'active',
   sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score'
@@ -95,7 +99,7 @@ for (const id of controls) {
   $(id).addEventListener('input', () => {
     state.visibleLimit = 60;
     state.selectedIds.clear();
-    if (id === 'domesticProvince') updateDomesticLocalityOptions();
+    if (id === 'domesticProvince') updateDomesticLocalityOptions('');
     persistFilters();
     updateAdvancedFilterSummary();
     render();
@@ -256,6 +260,10 @@ function distanceSummary(job) {
     km,
     kind: regionBased ? 'region' : 'exact'
   };
+}
+
+function workplaceModeLabel(job) {
+  return ({ remote: '원격', hybrid: '하이브리드', onsite: '출근' })[job.workplaceMode] || '';
 }
 
 function mergeJobs() {
@@ -498,7 +506,7 @@ function salarySummary(job) {
     period: info.period || '',
     confidence: info.confidence || 'none',
     paymentBasis: info.paymentBasis || '',
-    limited: Boolean(value) && (!hasAmount || info.confidence === 'regional_only' || job.salaryMetadataConflict || job.salaryMetadataSuppressed),
+    limited: Boolean(value) && (!hasAmount || info.confidence === 'regional_only' || info.scope === 'geography_dependent' || job.salaryMetadataConflict || job.salaryMetadataSuppressed),
     unknown: !value
   };
 }
@@ -838,7 +846,7 @@ function openDetails(job) {
     $('detailsDistanceValue').textContent = distance.value;
     $('detailsDistanceNote').textContent = distance.note;
   }
-  $('detailsMeta').innerHTML = [job.location, job.type, job.eligibility, job.category].filter(Boolean).map((v) => `<span>${escapeHtml(v)}</span>`).join('');
+  $('detailsMeta').innerHTML = [job.location, jobMarketScopes(job).includes('domestic') ? workplaceModeLabel(job) : '', job.type, job.eligibility, job.category].filter(Boolean).map((v) => `<span>${escapeHtml(v)}</span>`).join('');
   const payment = effectivePaymentEvidence(job);
   $('detailsTrust').innerHTML = [
     `<span class="${qualityClass('listing', job.listingStatus)}">${escapeHtml(job.listingLabel || '상태 확인 필요')}</span>`,
@@ -924,7 +932,19 @@ function render() {
   const visibleJobs = jobs.slice(0, state.visibleLimit);
   $('resultCount').textContent = jobs.length > visibleJobs.length ? `${jobs.length}개 중 ${visibleJobs.length}개 표시` : `${jobs.length}개 공고`;
   $('empty').hidden = jobs.length > 0;
-  if (!jobs.length && !state.loadError) $('emptyMessage').textContent = '현재 필터에 맞는 공고가 없습니다. 필터를 초기화하거나 조건을 넓혀보세요.';
+  if (!jobs.length && !state.loadError) {
+    const province = state.marketTab === 'domestic' ? $('domesticProvince').value : '';
+    const locality = state.marketTab === 'domestic' ? $('domesticLocality').value : '';
+    const regionLabel = [province, locality].filter(Boolean).join(' ');
+    const hasRegionJobs = state.marketTab === 'domestic' && province
+      ? state.jobs.some((job) => jobMarketScopes(job).includes('domestic')
+        && job.domesticRegion?.province === province
+        && (!locality || job.domesticRegion?.locality === locality))
+      : true;
+    $('emptyMessage').textContent = regionLabel && !hasRegionJobs
+      ? `현재 연결된 공식 소스에서 ${regionLabel} 공고를 확인하지 못했습니다. 지역 조건을 넓히거나 나중에 다시 확인해 주세요.`
+      : '현재 필터에 맞는 공고가 없습니다. 필터를 초기화하거나 조건을 넓혀보세요.';
+  }
   $('loadMore').hidden = visibleJobs.length >= jobs.length;
   const container = $('jobs');
   container.replaceChildren();
@@ -986,7 +1006,7 @@ function render() {
       node.querySelector('.distance-value').textContent = distance.value;
       node.querySelector('.distance-note').textContent = distance.note;
     }
-    const meta = [job.location, job.type, job.category].filter(Boolean);
+    const meta = [job.location, state.marketTab === 'domestic' ? workplaceModeLabel(job) : '', job.type, job.category].filter(Boolean);
     node.querySelector('.meta').innerHTML = meta.map((v) => `<span>${escapeHtml(v)}</span>`).join('');
     node.querySelector('.description').textContent = job.description || '상세 설명 없음';
     const tagValues = [...new Set([...(state.newIds.has(job.id) ? ['NEW'] : []), ...(job.duplicateCount > 1 ? [`중복 ${job.duplicateCount}개 통합`] : []), ...(job.fitWarning ? [job.fitWarning] : []), ...(job.matchedKeywords || []), ...(job.tags || [])])].slice(0, 6);
@@ -1198,13 +1218,13 @@ function fillSelect(id, values) {
 
 function updateDomesticLocalityOptions(preferred = null) {
   const province = $('domesticProvince')?.value || '';
+  const desired = preferred ?? $('domesticLocality').value;
   const values = state.jobs
     .filter((job) => jobMarketScopes(job).includes('domestic'))
     .filter((job) => !province || job.domesticRegion?.province === province)
     .map((job) => job.domesticRegion?.locality)
     .filter(Boolean);
-  fillSelect('domesticLocality', values);
-  const desired = preferred ?? $('domesticLocality').value;
+  fillSelect('domesticLocality', desired ? [...values, desired] : values);
   if (desired && [...$('domesticLocality').options].some((option) => option.value === desired)) $('domesticLocality').value = desired;
 }
 
@@ -1214,7 +1234,7 @@ function updateDynamicFilters(forceSaved = false) {
   fillSelect('source', marketJobs.flatMap((job) => job.sources?.length ? job.sources : [job.source]));
   fillSelect('category', marketJobs.map((job) => job.category));
   if (state.marketTab === 'domestic') {
-    fillSelect('domesticProvince', marketJobs.map((job) => job.domesticRegion?.province).filter(Boolean));
+    fillSelect('domesticProvince', [...domesticProvinceOptions, ...marketJobs.map((job) => job.domesticRegion?.province).filter(Boolean)]);
     if ((forceSaved || !state.dynamicFiltersInitialized) && desired.domesticProvince && [...$('domesticProvince').options].some((option) => option.value === desired.domesticProvince)) {
       $('domesticProvince').value = desired.domesticProvince;
     }

@@ -188,6 +188,24 @@ const domesticJobs = [
   })
 ];
 
+const appierHybridJob = job({
+  id: 'job:appier-hybrid', source: 'Appier', company: 'Appier', title: '[Part Time] AI Creative QC Reviewer, Korea',
+  location: 'Seoul, South Korea', remote: false, workplaceMode: 'hybrid', type: 'Part Time',
+  url: 'https://example.com/job/appier-hybrid', eligibilityCode: 'korea', eligibility: '한국에서 지원 가능', score: 42,
+  marketScopes: ['domestic'], marketSegment: 'domestic',
+  salary: '₩10,320/시간', salaryInfo: { raw: '시급 10,320원', display: '₩10,320/시간', currency: 'KRW', min: 10320, max: 10320, period: 'hour', confidence: 'parsed' },
+  requirementsStatus: 'routine_check', requirementsLabel: '일반 요건 확인 필요',
+  domesticRegion: { country: '대한민국', province: '서울특별시', city: '', district: '', neighborhood: '', locality: '', label: '서울특별시', precision: 'city', evidenceLevel: 'source_structured', lat: 37.5666791, lon: 126.9782914, coordinatePrecision: 'city', coordinateSource: 'OpenStreetMap Nominatim' }
+});
+
+const gangnamHybridJob = job({
+  id: 'job:gangnam-hybrid', source: 'Channel Corp', company: 'Channel Corp', title: 'Domestic Data Operations - Gangnam',
+  location: 'Gangnam District, Seoul', remote: false, workplaceMode: 'hybrid', type: 'Full time',
+  url: 'https://example.com/job/gangnam-hybrid', eligibilityCode: 'korea', eligibility: '한국에서 지원 가능', score: 55,
+  marketScopes: ['domestic'], marketSegment: 'domestic',
+  domesticRegion: { country: '대한민국', province: '서울특별시', city: '', district: '강남구', neighborhood: '', locality: '강남구', label: '서울특별시 강남구', precision: 'district', evidenceLevel: 'source_structured', lat: 37.5177, lon: 127.0473, coordinatePrecision: 'district', coordinateSource: 'OpenStreetMap Nominatim' }
+});
+
 async function useFeed(page, getFeed = () => feed(defaultJobs)) {
   await page.route('**/jobs.json*', async (route) => {
     await route.fulfill({
@@ -281,6 +299,21 @@ test('국내 거리 근거가 부족하거나 원격이면 정밀 거리를 만�
   await expect(remote.locator('.distance-value')).toHaveText('원격 · 출근 거리 비해당');
 });
 
+test('국내 하이브리드는 근무형태와 행정구역 정밀도에 맞는 직선거리를 보여준다', async ({ page }) => {
+  await useFeed(page, () => feed([appierHybridJob, gangnamHybridJob]));
+  await page.goto('/');
+  await page.locator('#marketDomestic').click();
+
+  const appier = page.locator('.job-card').filter({ hasText: 'AI Creative QC Reviewer' });
+  await expect(appier.locator('.meta')).toContainText('하이브리드');
+  await expect(appier.locator('.distance-value')).toContainText('지역 기준 직선거리 약');
+  await expect(appier.locator('.distance-note')).toContainText('서울특별시 기준');
+  await expect(appier.locator('.distance-note')).toContainText('실제 도로 이동거리 아님');
+
+  const gangnam = page.locator('.job-card').filter({ hasText: 'Domestic Data Operations - Gangnam' });
+  await expect(gangnam.locator('.distance-note')).toContainText('서울특별시 강남구 기준');
+});
+
 test('국내·해외 탭의 검색과 지역 필터는 서로 독립적으로 reload 후 유지된다', async ({ page }) => {
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
   await page.goto('/');
@@ -302,6 +335,25 @@ test('국내·해외 탭의 검색과 지역 필터는 서로 독립적으로 re
   await expect(page.locator('#query')).toHaveValue('Jeonju');
   await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
   await expect(page.locator('#domesticLocality')).toHaveValue('전주시 덕진구');
+});
+
+test('선택한 국내 지역 공고가 다음 피드에서 0건이 되어도 필터를 보존하고 명확히 안내한다', async ({ page }) => {
+  let current = feed([...defaultJobs, ...domesticJobs]);
+  await useFeed(page, () => current);
+  await page.goto('/');
+  await page.locator('#marketDomestic').click();
+  await page.locator('#domesticProvince').selectOption('전북특별자치도');
+  await page.locator('#domesticLocality').selectOption('전주시 덕진구');
+  await expect(page.locator('.job-card')).toHaveCount(1);
+
+  current = feed([...defaultJobs, domesticJobs[2], appierHybridJob]);
+  await page.reload();
+  await expect(page.locator('#marketDomestic')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
+  await expect(page.locator('#domesticLocality')).toHaveValue('전주시 덕진구');
+  await expect(page.locator('.job-card')).toHaveCount(0);
+  await expect(page.locator('#emptyMessage')).toContainText('전북특별자치도 전주시 덕진구');
+  await expect(page.locator('#emptyMessage')).toContainText('확인하지 못했습니다');
 });
 
 test('상태와 동적 소스 필터가 reload 후 유지된다', async ({ page }) => {

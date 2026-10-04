@@ -99,6 +99,44 @@
     ],
     "paymentSignals": []
   },
+  "Appier": {
+    "kind": "official_ats",
+    "coverage": "current_catalog",
+    "evidenceRefreshability": "direct_api",
+    "listingLabel": "공식 직접 채용",
+    "paymentStatus": "unknown",
+    "paymentLabel": "지급 조건 직접 확인",
+    "paymentEvidenceState": "insufficient",
+    "paymentEvidenceLabel": "독립 지급 근거 부족",
+    "paymentConfidence": "low",
+    "reviewedAt": "2026-10-04",
+    "summary": "Appier가 운영하는 공식 Greenhouse 채용 보드의 공개 구조화 API에서 한국 AI 생성물 품질 검수 관련 현재 공고를 직접 확인합니다.",
+    "paymentSummary": "공식 공고에 급여 금액과 근무 조건이 명시된 경우 이를 모집 조건으로 사용합니다. 독립적인 최신 지급 평판 근거는 별도로 확보하지 못했으므로 실제 정산·계약 조건은 지원 과정에서 확인해야 합니다.",
+    "evidence": [
+      {"type": "official_source", "label": "Appier 공식 채용", "url": "https://job-boards.greenhouse.io/appier"},
+      {"type": "official_feed", "label": "공식 Greenhouse 공개 API", "url": "https://boards-api.greenhouse.io/v1/boards/appier/jobs?content=true"}
+    ],
+    "paymentSignals": []
+  },
+  "Channel Corp": {
+    "kind": "official_ats",
+    "coverage": "current_catalog",
+    "evidenceRefreshability": "direct_api",
+    "listingLabel": "공식 직접 채용",
+    "paymentStatus": "unknown",
+    "paymentLabel": "지급 조건 직접 확인",
+    "paymentEvidenceState": "insufficient",
+    "paymentEvidenceLabel": "독립 지급 근거 부족",
+    "paymentConfidence": "low",
+    "reviewedAt": "2026-10-04",
+    "summary": "Channel Corp가 운영하는 공식 Lever 채용 보드에서 국내 하이브리드 데이터 직무의 현재 공개 공고를 구조화 API로 직접 확인합니다.",
+    "paymentSummary": "공식 ATS에서 모집 상태와 직무 요건은 직접 확인하지만 공개 구조화 급여 금액과 독립적인 지급 평판 근거는 충분하지 않아 실제 보수는 지원 과정에서 확인해야 합니다.",
+    "evidence": [
+      {"type": "official_source", "label": "Channel Corp 공식 채용", "url": "https://jobs.lever.co/zoyi"},
+      {"type": "official_feed", "label": "공식 Lever 공개 API", "url": "https://api.lever.co/v0/postings/zoyi?mode=json"}
+    ],
+    "paymentSignals": []
+  },
   "LILT Production": {
     "kind": "official_ats",
     "coverage": "current_catalog",

@@ -50,6 +50,12 @@ assert.equal(hourly.min, 13);
 assert.equal(hourly.period, 'hour');
 assert.equal(hourly.display, '$13/시간');
 
+const koreanHourly = extractSalary('', '근무 조건 급여: 시급 10,320원 (주휴수당 포함 월 2,157,000원 선)');
+assert.equal(koreanHourly.currency, 'KRW');
+assert.equal(koreanHourly.min, 10320);
+assert.equal(koreanHourly.period, 'hour');
+assert.equal(koreanHourly.display, '₩10,320/시간');
+
 const decimal = extractSalary('', 'Rate: 22.95 USD/hour');
 assert.equal(decimal.min, 22.95);
 assert.equal(decimal.display, '$22.95/시간');
@@ -94,6 +100,11 @@ assert.equal(regionalOnlyPay.scope, 'regional_only');
 assert.match(regionalOnlyPay.display, /미국 일부 주 기준/);
 assert.match(regionalOnlyPay.display, /\$15–\$25\/시간/);
 assert.match(regionalOnlyPay.display, /기타 지역 단가 확인/);
+
+const koreanRegionalPay = extractSalary('', 'For candidates located in Seoul and Busan, the starting base pay for this position ranges from $15 to $25 per hour. For candidates outside Seoul and Busan, compensation may fall outside the listed range.');
+assert.equal(koreanRegionalPay.scope, 'regional_only');
+assert.match(koreanRegionalPay.display, /Seoul and Busan 기준/);
+assert.doesNotMatch(koreanRegionalPay.display, /미국 일부 주/);
 
 const geographyAdjustedRange = extractSalary('', 'We offer a pay range of $6 to $65 per hour, with the exact rate determined after evaluating your experience, expertise, and geographic location. Final offer amounts may vary from the pay range listed above.');
 assert.equal(geographyAdjustedRange.display, '$6–$65/시간');
@@ -236,6 +247,27 @@ assert.equal(sanjeongDomestic.domesticRegion.lat, defaultLocationReference.lat);
 assert.equal(sanjeongDomestic.domesticRegion.coordinatePrecision, 'neighborhood');
 assert.deepEqual(marketScopesFor(sanjeongDomestic), ['domestic']);
 assert.equal(domesticRegionFor({ location: 'South Korea + 6개 국가', countryCode: 'KR' }), null);
+const jeonjuAlias = domesticRegionFor({ location: 'Jeonju, South Korea', countryCode: 'KR' });
+assert.equal(jeonjuAlias.province, '전북특별자치도');
+assert.equal(jeonjuAlias.city, '전주시');
+assert.equal(jeonjuAlias.evidenceLevel, 'derived_alias');
+const suncheonAlias = domesticRegionFor({ location: 'Suncheon, South Korea', countryCode: 'KR' });
+assert.equal(suncheonAlias.province, '전라남도');
+assert.equal(suncheonAlias.city, '순천시');
+assert.equal(suncheonAlias.evidenceLevel, 'derived_alias');
+const countryOnlyRegion = domesticRegionFor({ location: '위치 미상', countryCode: 'KR' });
+assert.equal(countryOnlyRegion.precision, 'country');
+assert.equal(countryOnlyRegion.evidenceLevel, 'country_code');
+assert.equal(countryOnlyRegion.label, '대한민국');
+
+const normalizedRemoteMode = normalizeJob({ ...base, id: 'mode-remote', remote: false, workplaceMode: 'Remote', location: 'South Korea', countryCode: 'KR', url: 'https://example.com/mode-remote' });
+assert.equal(normalizedRemoteMode.workplaceMode, 'remote');
+assert.equal(normalizedRemoteMode.remote, true);
+assert.deepEqual(normalizedRemoteMode.marketScopes, ['overseas_remote', 'domestic']);
+const normalizedHybridMode = normalizeJob({ ...base, id: 'mode-hybrid', remote: true, workplaceMode: 'Hybrid', location: 'Seoul', countryCode: 'KR', url: 'https://example.com/mode-hybrid' });
+assert.equal(normalizedHybridMode.workplaceMode, 'hybrid');
+assert.equal(normalizedHybridMode.remote, false, 'hybrid must not masquerade as fully remote');
+assert.deepEqual(normalizedHybridMode.marketScopes, ['domestic']);
 
 const korea = normalizeJob({ ...base, id: 'one', location: 'South Korea', url: 'https://example.com/korea' });
 const france = normalizeJob({ ...base, id: 'two', location: 'France', url: 'https://example.com/france' });
@@ -261,6 +293,14 @@ const domesticJeonju = normalizeJob({ ...base, id: 'domestic-jeonju', location: 
 const domesticLocationCopies = dedupe([domesticSeoul, domesticJeonju]);
 assert.equal(domesticLocationCopies.length, 2, 'same company/title in different domestic localities must remain distinct');
 assert.equal(new Set(domesticLocationCopies.map((job) => job.id)).size, 2);
+const sameUrlSeoul = normalizeJob({ ...base, id: 'same-url-seoul', location: '서울특별시 강남구', remote: false, workplaceMode: 'onsite', countryCode: 'KR', url: 'https://example.com/shared-domestic-posting' });
+const sameUrlJeonju = normalizeJob({ ...base, id: 'same-url-jeonju', location: '전북특별자치도 전주시 덕진구', remote: false, workplaceMode: 'onsite', countryCode: 'KR', url: 'https://example.com/shared-domestic-posting' });
+const sameUrlDomesticLocations = dedupe([sameUrlSeoul, sameUrlJeonju]);
+assert.equal(sameUrlDomesticLocations.length, 2, 'same URL must not override conflicting actual domestic workplace regions');
+assert.equal(new Set(sameUrlDomesticLocations.map((job) => job.id)).size, 2);
+const seongnamAliasA = normalizeJob({ ...base, id: 'seongnam-a', location: 'Seongnam, South Korea', remote: false, workplaceMode: 'onsite', countryCode: 'KR', url: 'https://example.com/seongnam-a' });
+const seongnamAliasB = normalizeJob({ ...base, id: 'seongnam-b', location: 'Seongnam-si, Gyeonggi-do, South Korea', remote: false, workplaceMode: 'onsite', countryCode: 'KR', url: 'https://example.com/seongnam-b' });
+assert.equal(dedupe([seongnamAliasA])[0].id, dedupe([seongnamAliasB])[0].id, 'equivalent English Korean-admin aliases must produce the same domestic stable id');
 assert.equal(dedupe([korea])[0].id, dedupe([normalizeJob({ ...base, id: 'korea-same', location: 'South Korea', url: 'https://example.com/korea-same' })])[0].id,
   'Korea-targeted remote stable ids must not change just because domestic discovery was added');
 
@@ -617,6 +657,69 @@ assert.ok(kraftonFoundationEvaluation.score < 20);
 assert.match(kraftonFoundationEvaluation.fitWarning, /석·박사 또는 동등 연구경험/);
 assert.match(kraftonFoundationEvaluation.fitWarning, /AI 모델 평가·분석 또는 상위권 ML\/NLP 논문 작성 경험/);
 assert.doesNotMatch(kraftonFoundationEvaluation.fitWarning, /개발 전문경력/);
+
+const appierCreativeQc = normalizeJob({
+  ...base,
+  id: 'greenhouse:appier:8187636',
+  source: 'Appier', company: 'Appier',
+  title: '[Part Time] AI Creative QC Reviewer, Korea',
+  location: 'Seoul, South Korea', remote: false, workplaceMode: 'hybrid', countryCode: 'KR',
+  type: 'Part Time', url: 'https://job-boards.greenhouse.io/appier/jobs/8187636',
+  description: 'AI 생성 광고 소재의 한국어 품질 검수. 자격 요건: 한국어 원어민 수준, 영어 텍스트 기반 커뮤니케이션 가능. 우대 사항: AI 생성물 검수 또는 데이터 라벨링 경험. 급여: 시급 10,320원 (주휴수당 포함 월 2,157,000원 선). 근무 형태: 재택 (교육 기간 중 Hybrid 가능). 근무 시간: 주 40시간.',
+  tags: ['Korean', 'AI Creative QC']
+});
+assert.equal(appierCreativeQc.sourceKind, 'official_ats');
+assert.equal(appierCreativeQc.category, 'AI 평가·어노테이션');
+assert.equal(appierCreativeQc.workplaceMode, 'hybrid');
+assert.equal(appierCreativeQc.remote, false);
+assert.deepEqual(appierCreativeQc.marketScopes, ['domestic']);
+assert.equal(appierCreativeQc.domesticRegion.province, '서울특별시');
+assert.equal(appierCreativeQc.salaryInfo.currency, 'KRW');
+assert.equal(appierCreativeQc.salaryInfo.min, 10320);
+assert.equal(appierCreativeQc.salaryInfo.period, 'hour');
+assert.equal(appierCreativeQc.salaryInfo.display, '₩10,320/시간');
+assert.equal(appierCreativeQc.requirementsStatus, 'routine_check');
+assert.doesNotMatch(appierCreativeQc.fitWarning, /데이터 라벨링|QC/);
+assert.match(appierCreativeQc.requirementChecks.map((item) => item.label).join(' '), /교육 기간 중 하이브리드 출근/);
+assert.ok(appierCreativeQc.score >= 20, 'preferred AI/QC experience must not hard-block the Appier role');
+
+const channelDataAnalyst = normalizeJob({
+  ...base,
+  id: 'lever:zoyi:31ee3067-0c55-4ca3-b7a5-5a6c0d80e249',
+  source: 'Channel Corp', company: 'Channel Corp',
+  title: 'Data Analyst',
+  location: 'Gangnam District, Seoul', remote: false, workplaceMode: 'hybrid', countryCode: 'KR',
+  type: '주니어/시니어/정규직', url: 'https://jobs.lever.co/zoyi/31ee3067-0c55-4ca3-b7a5-5a6c0d80e249',
+  description: '데이터 분석(DA) 관련 실무 경험 1년 ~ 5년 이상. SQL을 활용하여 Raw Data를 능숙하게 추출하고 분석. 1차 면접은 라이브 쿼리 테스트와 Q&A 형식으로 진행됩니다.',
+  tags: ['Data']
+});
+assert.equal(channelDataAnalyst.sourceKind, 'official_ats');
+assert.equal(channelDataAnalyst.category, '조사·데이터');
+assert.equal(channelDataAnalyst.workplaceMode, 'hybrid');
+assert.equal(channelDataAnalyst.domesticRegion.province, '서울특별시');
+assert.equal(channelDataAnalyst.domesticRegion.district, '강남구');
+assert.equal(channelDataAnalyst.domesticRegion.coordinatePrecision, 'district');
+assert.equal(channelDataAnalyst.requirementsStatus, 'hard_check');
+assert.ok(channelDataAnalyst.score < 20, 'mandatory DA experience and SQL must keep Channel Data Analyst out of default recommendations');
+assert.match(channelDataAnalyst.fitWarning, /데이터 분석 실무 1년 이상·SQL/);
+assert.match(channelDataAnalyst.requirementChecks.map((item) => item.label).join(' '), /라이브 SQL 테스트/);
+
+const tsmgCoordinator = normalizeJob({
+  ...base,
+  id: 'lever:tsmg:8b91fe18-a80a-46bd-9513-c521b5d37c5c',
+  source: 'TSMG', company: 'Terry Soot Management Group',
+  title: 'Team Coordinator',
+  location: 'Remote in South Korea', remote: true, workplaceMode: 'remote', countryCode: 'KR',
+  type: 'Part time', url: 'https://jobs.lever.co/tsmg/8b91fe18-a80a-46bd-9513-c521b5d37c5c',
+  description: 'Project focuses on structured image data collection and usability testing. Coordinate local participants, onboarding, scheduling, device logistics, sessions, metadata and documentation. Previous experience in coordination or training is a plus. Excellent communication skills in English. Knowledge of the local language is preferred but not mandatory.',
+  tags: ['AI/ML Data Collection']
+});
+assert.equal(tsmgCoordinator.category, '커뮤니티·운영');
+assert.equal(tsmgCoordinator.requirementsStatus, 'routine_check');
+assert.equal(tsmgCoordinator.remote, true);
+assert.deepEqual(tsmgCoordinator.marketScopes, ['overseas_remote', 'domestic']);
+assert.ok(tsmgCoordinator.score >= 20, 'preferred-only coordination experience must not be promoted to a hard requirement');
+assert.doesNotMatch(tsmgCoordinator.fitWarning, /coordination|training|경력/);
 
 const appenLidar = normalizeJob({
   ...base,
