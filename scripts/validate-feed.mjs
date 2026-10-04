@@ -38,6 +38,11 @@ for (const job of feed.jobs) {
   assert.ok(['clear', 'routine_check', 'hard_check'].includes(job.requirementsStatus), `${job.id} must expose requirements review state`);
   assert.ok(job.requirementsLabel, `${job.id} must have a user-readable requirements label`);
   assert.ok(job.contentFingerprint, `${job.id} must have a content fingerprint`);
+  if (!['archived_missing', 'source_error'].includes(job.listingStatus)) {
+    assert.equal(job.contentFingerprintVersion, 2, `${job.id} current source fingerprint must use contract v2`);
+    assert.ok(job.sourceFieldFingerprints && typeof job.sourceFieldFingerprints === 'object',
+      `${job.id} current source fingerprint must retain per-field hashes`);
+  }
   assert.ok(job.firstSeenAt, `${job.id} must retain firstSeenAt`);
   assert.ok(job.lastVerifiedAt || job.listingStatus === 'archived_missing',
     `${job.id} must retain last successful verification timestamp`);

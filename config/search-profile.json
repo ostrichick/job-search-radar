@@ -91,6 +91,7 @@
     "operations"
   ],
   "verifiedCapabilities": [
+    "korean_teaching",
     "ai_evaluation",
     "data_annotation",
     "quality_review",

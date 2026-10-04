@@ -107,8 +107,67 @@ assert.equal(relevantToProfile({ title: 'Senior Backend Engineer', description: 
 assert.equal(relevantToProfile({ title: 'Remote Office Assistant', description: 'Support administrative operations, bookkeeping, billing, reporting, and data entry.', tags: [] }), true);
 assert.equal(relevantToProfile({ title: 'Remote Office Assistant', description: 'Schedule meetings and answer general phone calls.', tags: [] }), false);
 
+const remoteOkStableBase = {
+  source: 'Remote OK', company: 'iMerit Technology', title: 'Video Data Annotator', location: 'Remote', remote: true,
+  type: 'Remote', salary: '', postedAt: new Date().toISOString(), tags: ['data annotation'], countryCode: '',
+  url: 'https://remoteok.com/remote-jobs/remote-video-data-annotator-imerit-technology-1137428'
+};
+const remoteOkStableA = normalizeJob({
+  ...remoteOkStableBase,
+  id: 'remoteok:1137428',
+  description: '<p>Location: Remote</p><p>Review and annotate videos. No prior AI experience is required.</p><br/><br/>Please mention the word **IMPROVES** and tag RTE= when applying to show you read the job post completely (#RTE=). This is a beta feature to avoid spam applicants.'
+});
+const remoteOkStableB = normalizeJob({
+  ...remoteOkStableBase,
+  id: 'remoteok:1137428',
+  description: '<p>Location: Remote</p><p>Review and annotate videos. No prior AI experience is required.</p><br/><br/>Please mention the word **IMPROVES** and tag RTI= when applying to show you read the job post completely (#RTI=). This is a beta feature to avoid spam applicants.'
+});
+assert.equal(remoteOkStableA.description, remoteOkStableB.description, 'Remote OK request-specific anti-spam footer must not leak into the displayed description');
+assert.equal(remoteOkStableA.contentFingerprint, remoteOkStableB.contentFingerprint, 'Remote OK request-specific anti-spam footer must not create false source changes');
+const remoteOkRealChange = normalizeJob({
+  ...remoteOkStableBase,
+  id: 'remoteok:1137428',
+  description: '<p>Location: Remote</p><p>Review and annotate videos. Two years of prior annotation experience is required.</p><br/><br/>Please mention the word **IMPROVES** and tag RTM= when applying to show you read the job post completely (#RTM=). This is a beta feature to avoid spam applicants.'
+});
+assert.notEqual(remoteOkStableA.contentFingerprint, remoteOkRealChange.contentFingerprint, 'real Remote OK requirement changes must still change the source fingerprint');
+assert.equal(remoteOkStableA.contentFingerprintVersion, 2);
+assert.ok(remoteOkStableA.sourceFieldFingerprints?.description);
+
+const longSourceA = normalizeJob({
+  company: 'Example Inc.', remote: true, type: 'Remote', salary: '', postedAt: new Date().toISOString(), countryCode: '',
+  id: 'long-source-change',
+  source: 'Welo Global',
+  title: 'Korean AI Reviewer',
+  location: 'South Korea',
+  url: 'https://example.com/long-source-change',
+  description: `${'Stable source text. '.repeat(90)}Requirement tail A`,
+  tags: ['Korean', 'AI']
+});
+const longSourceFirst = reconcileVerificationHistory([longSourceA], [], Date.parse('2026-10-01T00:00:00Z'))[0];
+const longSourceB = normalizeJob({
+  company: 'Example Inc.', remote: true, type: 'Remote', salary: '', postedAt: new Date().toISOString(), countryCode: '',
+  id: 'long-source-change',
+  source: 'Welo Global',
+  title: 'Korean AI Reviewer',
+  location: 'South Korea',
+  url: 'https://example.com/long-source-change',
+  description: `${'Stable source text. '.repeat(90)}Requirement tail B`,
+  tags: ['Korean', 'AI']
+});
+const longSourceChanged = reconcileVerificationHistory([longSourceB], [longSourceFirst], Date.parse('2026-10-02T00:00:00Z'))[0];
+assert.ok(longSourceChanged.lastChangedFields.includes('description'), 'v2 field hashes must detect source changes beyond the stored description preview');
+
 const pool = currentListingState({ source: 'Welo Global', title: 'AI Trainers Network - Korean', description: 'This is not an active job opening.', postedAt: new Date().toISOString() });
 assert.equal(pool.code, 'talent_pool');
+
+const liltProjectPool = currentListingState({
+  source: 'LILT Production',
+  title: 'AI Training Contributor - Korean - Remote',
+  description: 'Work availability fluctuates with project demand. Finalize onboarding and become eligible for Applied AI projects.',
+  postedAt: new Date().toISOString()
+});
+assert.equal(liltProjectPool.code, 'talent_pool');
+assert.equal(liltProjectPool.basis, 'project_pool');
 
 const currentProject = currentListingState({ source: 'Welo Global', title: 'Generative AI Analyst | Korean (Korea)', description: 'Project Details. Commitment: 4 weeks. Pay Rate: $13/hour. Apply now. Join our database and become part of our growing community.', postedAt: new Date().toISOString() });
 assert.equal(currentProject.code, 'verified_open');
@@ -127,6 +186,7 @@ assert.equal(activeTalentDuty.code, 'current_feed');
 const remoteFieldBoundary = eligibilityFor(remote('Remote', 'Location: Remote Engagement: Independent Contractor | Project-Based'));
 assert.equal(remoteFieldBoundary.code, 'unknown', 'generic Remote location followed by another field label must not become a fake geography');
 assert.match(remoteFieldBoundary.reason, /국가 범위/);
+assert.equal(eligibilityFor(remote('World Wide - Remote', '')).code, 'worldwide', 'Greenhouse World Wide spelling must be treated as worldwide eligibility');
 
 const preservedFailure = markPreservedSourceFailure({ listingStatus: 'verified_open', listingLabel: '모집 확인됨', stale: false, score: 100 });
 assert.equal(preservedFailure.listingStatus, 'source_error');
@@ -326,6 +386,109 @@ const iosRequirement = normalizeJob({
 assert.ok(iosRequirement.score < 20, 'unverified Apple device requirements must not enter default recommendations');
 assert.match(iosRequirement.fitWarning, /iOS/);
 
+const meridialLanguageSpecialist = normalizeJob({
+  ...base,
+  id: 'greenhouse:agency:4629001101',
+  source: 'Meridial',
+  title: 'Korean Language Specialist - Freelance AI Trainer Project',
+  company: 'Meridial',
+  location: 'World Wide - Remote',
+  url: 'https://job-boards.eu.greenhouse.io/agency/jobs/4629001101',
+  description: 'A degree is not required for this role; real-world experience speaks louder. Teaching experience or hands-on linguistic analysis projects signal fit. We offer a pay range of $6 to $65 per hour. As a contractor you’ll supply a secure computer and high-speed internet.',
+  tags: ['Korean', 'Freelance AI Trainer']
+});
+assert.equal(meridialLanguageSpecialist.sourceKind, 'official_ats');
+assert.equal(meridialLanguageSpecialist.listingStatus, 'verified_open');
+assert.ok(meridialLanguageSpecialist.score >= 20);
+assert.notEqual(meridialLanguageSpecialist.requirementsStatus, 'hard_check');
+
+const meridialAndroid = normalizeJob({
+  ...base,
+  id: 'greenhouse:agency:4762606101',
+  source: 'Meridial',
+  title: 'Korean Language Specialist (Android Device) - Freelance AI Trainer Project',
+  company: 'Meridial',
+  location: 'South Korea',
+  url: 'https://job-boards.eu.greenhouse.io/agency/jobs/4762606101',
+  description: 'Candidates must have access to Android devices. A masters or PhD is ideal.',
+  tags: ['Korean']
+});
+assert.ok(meridialAndroid.score < 20);
+assert.match(meridialAndroid.fitWarning, /Android/);
+
+const meridialMultimodal = normalizeJob({
+  ...base,
+  id: 'greenhouse:agency:4778241101',
+  source: 'Meridial',
+  title: 'Korean Language Data Contributor (Multimodal) – Freelance AI Trainer Project',
+  company: 'Meridial',
+  location: 'World Wide - Remote',
+  url: 'https://job-boards.eu.greenhouse.io/agency/jobs/4778241101',
+  description: 'Eligibility for this project requires that you are 18 years or older and agree to the applicable participant and consent agreements. Supply a secure computer and high-speed internet.',
+  tags: ['Korean', 'AI']
+});
+assert.match(meridialMultimodal.requirementChecks.map((item) => item.label).join(' '), /18세/);
+assert.match(meridialMultimodal.requirementChecks.map((item) => item.label).join(' '), /동의서/);
+
+const meridialVoice = normalizeJob({
+  ...base,
+  id: 'greenhouse:agency:voice',
+  source: 'Meridial',
+  title: 'Korean Voice Actor - Freelance AI Trainer Project',
+  company: 'Meridial',
+  location: 'World Wide - Remote',
+  url: 'https://example.com/meridial-voice',
+  description: 'Voice AI can improve education, entertainment, accessibility, and beyond. We need demonstrated experience in professional voice acting, dubbing, or narration.',
+  tags: ['Korean']
+});
+assert.match(meridialVoice.fitWarning, /음성 연기/);
+assert.doesNotMatch(meridialVoice.fitWarning, /접근성/, 'generic product accessibility context must not imply WCAG professional experience');
+
+const meridialCoding = normalizeJob({
+  ...base,
+  id: 'greenhouse:agency:coding',
+  source: 'Meridial',
+  title: 'Coding Specialist (Fluent in Korean) - Freelance AI Trainer Project',
+  company: 'Meridial',
+  location: 'South Korea',
+  url: 'https://example.com/meridial-coding',
+  description: 'Evaluate coding tasks for AI systems.',
+  tags: ['Korean']
+});
+assert.ok(meridialCoding.score < 20);
+assert.match(meridialCoding.fitWarning, /코딩/);
+
+const meridialLarp = normalizeJob({
+  ...base,
+  id: 'greenhouse:agency:4927750101',
+  source: 'Meridial',
+  title: 'Language Alignment & Resource Partner (Korean) - Freelance AI Trainer Project',
+  company: 'Meridial',
+  location: 'World Wide - Remote',
+  url: 'https://job-boards.eu.greenhouse.io/agency/jobs/4927750101',
+  description: 'Required Expertise: Demonstrable work or educational experience in linguistics, education, or other fields requiring high attention to linguistic detail. Prior, tangible experience working in human data evaluation or annotation. Verified Korean language proficiency of C1 or C2.',
+  tags: ['Korean', 'AI']
+});
+assert.ok(meridialLarp.score >= 20, 'verified Korean teaching and AI evaluation experience should satisfy LARP experience requirements');
+assert.equal(meridialLarp.requirementsStatus, 'routine_check');
+assert.match(meridialLarp.requirementChecks.map((item) => item.label).join(' '), /검증된 경력과 일치/);
+assert.match(meridialLarp.requirementChecks.map((item) => item.label).join(' '), /C1\/C2/);
+
+const appenLidar = normalizeJob({
+  ...base,
+  id: 'jobicy:154499',
+  source: 'Jobicy',
+  title: '3D & LiDAR Data Annotation Analyst',
+  company: 'Appen',
+  location: 'Anywhere',
+  url: 'https://jobicy.com/jobs/154499-3d-lidar-data-annotation-analyst',
+  description: 'What You Bring Experience working in a fast-paced, scaled environment with defined productivity, quality, or accuracy targets. Experience with image annotation GenAI workflows. Reliable high-speed internet, a distraction-free workspace, and the ability to work on a company-provisioned machine within a controlled environment. Nice to Haves Experience with 3D annotation tools.',
+  tags: ['Data Annotation']
+});
+assert.ok(appenLidar.score < 20);
+assert.match(appenLidar.fitWarning, /GenAI/);
+assert.match(appenLidar.requirementChecks.map((item) => item.label).join(' '), /회사 제공 장비/);
+
 const hardRelatedExperience = normalizeJob({
   ...base,
   id: 'hard-related-experience',
@@ -338,6 +501,7 @@ const hardRelatedExperience = normalizeJob({
 });
 assert.ok(hardRelatedExperience.score >= 20, 'verified AI evaluation/annotation/QA capability must satisfy the matching experience requirement');
 assert.doesNotMatch(hardRelatedExperience.fitWarning, /실무 경험/);
+assert.match(hardRelatedExperience.requirementChecks.map((item) => item.label).join(' '), /검증된 경력과 일치/);
 
 const hardSubjectMatterExpert = normalizeJob({
   ...base,
@@ -550,12 +714,69 @@ assert.equal(failedHistory.lastChangeKind, 'source_failed');
 assert.equal(failedHistory.lastSeenAt, reappeared.lastSeenAt, 'source failure must not pretend the posting was successfully seen again');
 assert.equal(failedHistory.lastVerifiedAt, reappeared.lastVerifiedAt, 'source failure must preserve the last successful verification timestamp');
 assert.ok(failedHistory.sourceFailureCheckedAt);
+const stillFailedRaw = markPreservedSourceFailure(reappearedRaw);
+const stillFailedHistory = reconcileVerificationHistory(
+  [stillFailedRaw],
+  [failedHistory],
+  Date.parse('2026-10-14T00:00:00Z')
+)[0];
+assert.equal(stillFailedHistory.verificationHistory.length, failedHistory.verificationHistory.length,
+  'prolonged source_error must not append a false verified_unchanged checkpoint');
+assert.notEqual(stillFailedHistory.verificationHistory.at(-1).event, 'verified_unchanged');
 const recovered = reconcileVerificationHistory(
   [reappearedRaw],
   [failedHistory],
   Date.parse('2026-10-07T00:00:00Z')
 )[0];
 assert.equal(recovered.lastChangeKind, 'source_recovered');
+
+const legacySalaryHistory = {
+  ...historyUnchangedRaw,
+  contentFingerprintVersion: undefined,
+  sourceFieldFingerprints: undefined,
+  lastChangeKind: 'content_changed',
+  lastChangeAt: '2026-10-02T00:00:00.000Z',
+  lastContentChangeAt: '2026-10-02T00:00:00.000Z',
+  lastChangedFields: ['salary'],
+  verificationHistory: [{
+    at: '2026-10-02T00:00:00.000Z',
+    event: 'content_changed',
+    changedFields: ['salary'],
+    reason: '원문 주요 필드 변경: salary'
+  }]
+};
+const rebasedHistory = reconcileVerificationHistory(
+  [historyUnchangedRaw],
+  [legacySalaryHistory],
+  Date.parse('2026-10-03T00:00:00Z')
+)[0];
+assert.ok(rebasedHistory.verificationHistory.some((item) => item.event === 'legacy_content_change_unverified'),
+  'v1 derived-salary content events must be retained but explicitly downgraded as unverified');
+assert.equal(rebasedHistory.verificationHistory.at(-1).event, 'source_fingerprint_rebased');
+assert.equal(rebasedHistory.lastChangeKind, 'source_fingerprint_rebased');
+assert.equal(rebasedHistory.lastContentChangeAt, '');
+
+const legacyUnchangedHistory = {
+  ...historyUnchangedRaw,
+  contentFingerprintVersion: undefined,
+  sourceFieldFingerprints: undefined,
+  lastChangeKind: 'first_seen',
+  lastChangeAt: '2026-10-01T00:00:00.000Z',
+  verificationHistory: [{
+    at: '2026-10-01T00:00:00.000Z',
+    event: 'first_seen',
+    toStatus: 'verified_open',
+    reason: '처음 수집됨'
+  }]
+};
+const rebasedUnchangedHistory = reconcileVerificationHistory(
+  [historyUnchangedRaw],
+  [legacyUnchangedHistory],
+  Date.parse('2026-10-10T00:00:00Z')
+)[0];
+assert.equal(rebasedUnchangedHistory.verificationHistory.at(-1).event, 'source_fingerprint_rebased',
+  'every v1→v2 contract transition must be recorded as a rebase rather than a verified_unchanged comparison');
+assert.equal(rebasedUnchangedHistory.lastChangeKind, 'source_fingerprint_rebased');
 
 const sourceMetrics = buildSourceMetrics(
   ['Welo Global', 'Remotive'],

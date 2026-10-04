@@ -61,6 +61,25 @@
     ],
     "paymentSignals": []
   },
+  "Meridial": {
+    "kind": "official_ats",
+    "coverage": "current_catalog",
+    "evidenceRefreshability": "direct_api",
+    "listingLabel": "공식 직접 채용",
+    "paymentStatus": "unknown",
+    "paymentLabel": "지급 조건 직접 확인",
+    "paymentEvidenceState": "insufficient",
+    "paymentEvidenceLabel": "독립 지급 근거 부족",
+    "paymentConfidence": "low",
+    "reviewedAt": "2026-10-04",
+    "summary": "Meridial이 운영하는 공식 Greenhouse 채용 보드의 공개 구조화 API에서 직접 수집합니다. 현재 공개 공고 여부는 직접 확인하지만 실제 프로젝트 배정량과 최종 단가는 원문·계약에서 확인해야 합니다.",
+    "paymentSummary": "공식 공고에 제시된 보수 범위는 모집 조건 정보로만 사용합니다. 독립적인 최신 지급 평판 근거를 자동 갱신하지 못하므로 지급 신뢰 상태를 별도로 단정하지 않습니다.",
+    "evidence": [
+      {"type": "official_source", "label": "공식 Greenhouse 채용", "url": "https://job-boards.eu.greenhouse.io/agency"},
+      {"type": "official_feed", "label": "공식 Greenhouse 공개 API", "url": "https://boards-api.greenhouse.io/v1/boards/agency/jobs?content=true"}
+    ],
+    "paymentSignals": []
+  },
   "OneForma": {
     "kind": "official_platform",
     "coverage": "current_catalog",

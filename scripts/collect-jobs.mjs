@@ -31,6 +31,7 @@ const dayMs = 86400000;
 const verificationHistoryLimit = 24;
 const sourceMetricHistoryLimit = 24;
 const verificationCheckpointMs = 7 * dayMs;
+const contentFingerprintVersion = 2;
 
 function sourceMeta(source) {
   return sourceQuality[source] ?? {
@@ -54,6 +55,26 @@ function normalizedUrl(value) {
   return lower(value).replace(/[?#].*$/, '').replace(/\/$/, '');
 }
 
+function stableSourceDescription(source, value) {
+  const normalized = text(value);
+  if (source === 'Remote OK') {
+    return normalized.replace(/\s*Please mention the word\b[\s\S]*$/i, '').trim();
+  }
+  return normalized;
+}
+
+function decodeHtmlEntities(value) {
+  return String(value ?? '')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(Number.parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, decimal) => String.fromCodePoint(Number.parseInt(decimal, 10)));
+}
+
 function appendLimitedHistory(history = [], event, limit = verificationHistoryLimit) {
   const next = Array.isArray(history) ? [...history] : [];
   if (event) {
@@ -74,12 +95,21 @@ function sourceContentSnapshot(job) {
     company: text(job.company),
     location: text(job.location),
     type: text(job.type),
-    salary: text(job.salary),
-    description: text(job._fullDescription || job.description),
+    // Only source-provided salary metadata belongs in the original-source fingerprint.
+    // Parsed/display salary is derived from the description and can change when parser policy changes.
+    salary: text(job.salaryMetadataRaw || ''),
+    description: stableSourceDescription(job.source, job._fullDescription || job.description),
     tags: Array.isArray(job.tags) ? job.tags.map(text).filter(Boolean).sort() : [],
     countryCode: text(job.countryCode),
     sourceListingState: text(job.sourceListingState)
   };
+}
+
+function sourceFieldFingerprints(job) {
+  return Object.fromEntries(Object.entries(sourceContentSnapshot(job)).map(([key, value]) => [
+    key,
+    crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0, 16)
+  ]));
 }
 
 function contentFingerprint(job) {
@@ -90,9 +120,50 @@ function contentFingerprint(job) {
 }
 
 function changedSourceFields(previous, current) {
+  if (previous.contentFingerprintVersion === contentFingerprintVersion
+    && current.contentFingerprintVersion === contentFingerprintVersion
+    && previous.sourceFieldFingerprints
+    && current.sourceFieldFingerprints) {
+    return Object.keys(current.sourceFieldFingerprints)
+      .filter((key) => previous.sourceFieldFingerprints[key] !== current.sourceFieldFingerprints[key]);
+  }
   const a = sourceContentSnapshot(previous);
   const b = sourceContentSnapshot(current);
   return Object.keys(b).filter((key) => JSON.stringify(a[key]) !== JSON.stringify(b[key]));
+}
+
+function rebaseLegacyContentHistory(history, job, nowIso, fingerprint) {
+  if (job.contentFingerprintVersion !== contentFingerprintVersion) return { history, rebased: false, reclassified: false };
+  const previousVersion = Number(job.previousContentFingerprintVersion || 0);
+  if (previousVersion >= contentFingerprintVersion) return { history, rebased: false, reclassified: false };
+  let reclassified = false;
+  const migrated = (Array.isArray(history) ? history : []).map((event) => {
+    if (event?.event !== 'content_changed') return event;
+    const fields = Array.isArray(event.changedFields) ? event.changedFields : [];
+    const salaryOnly = fields.length > 0 && fields.every((field) => field === 'salary');
+    const remoteOkVolatile = job.source === 'Remote OK'
+      && fields.length > 0
+      && fields.every((field) => ['salary', 'description'].includes(field));
+    if (!salaryOnly && !remoteOkVolatile) return event;
+    reclassified = true;
+    return {
+      ...event,
+      event: 'legacy_content_change_unverified',
+      reason: `구형 원문 변경 기록 재분류: ${event.reason || '파생 표시값 또는 변동성 소스 텍스트 영향 가능'}`
+    };
+  });
+  return {
+    history: appendLimitedHistory(migrated, {
+      at: nowIso,
+      event: 'source_fingerprint_rebased',
+      fromStatus: `v${previousVersion || 1}`,
+      toStatus: `v${contentFingerprintVersion}`,
+      fingerprint,
+      reason: '원문 변경 판정 기준을 원시 소스 필드 기반 v2로 재설정함. 파생 급여 표시와 Remote OK 변동성 anti-spam footer는 원문 변경에서 제외함.'
+    }),
+    rebased: true,
+    reclassified
+  };
 }
 
 function previousJobLookup(previousJobs = []) {
@@ -147,7 +218,9 @@ function reconcileVerificationHistory(jobs, previousJobs = [], now = Date.now())
       };
     }
 
-    const hadPreviousFingerprint = Boolean(previous.contentFingerprint);
+    job.previousContentFingerprintVersion = Number(previous.contentFingerprintVersion || 0);
+    const sameFingerprintContract = Number(previous.contentFingerprintVersion || 0) === Number(job.contentFingerprintVersion || 0);
+    const hadPreviousFingerprint = Boolean(previous.contentFingerprint) && sameFingerprintContract;
     const previousFingerprint = previous.contentFingerprint || '';
     const changedFields = hadPreviousFingerprint && previousFingerprint !== fingerprint
       ? changedSourceFields(previous, job)
@@ -228,9 +301,14 @@ function reconcileVerificationHistory(jobs, previousJobs = [], now = Date.now())
     }
 
     let history = Array.isArray(previous.verificationHistory) ? previous.verificationHistory : [];
+    const rebase = rebaseLegacyContentHistory(history, job, nowIso, fingerprint);
+    history = rebase.history;
     for (const event of events) history = appendLimitedHistory(history, event);
     const lastHistoryAt = Date.parse(history.at(-1)?.at || '');
-    if (!events.length && (!Number.isFinite(lastHistoryAt) || now - lastHistoryAt >= verificationCheckpointMs)) {
+    if (!events.length
+      && !rebase.rebased
+      && !['source_error', 'archived_missing'].includes(job.listingStatus)
+      && (!Number.isFinite(lastHistoryAt) || now - lastHistoryAt >= verificationCheckpointMs)) {
       history = appendLimitedHistory(history, {
         at: nowIso,
         event: 'verified_unchanged',
@@ -242,9 +320,11 @@ function reconcileVerificationHistory(jobs, previousJobs = [], now = Date.now())
     }
 
     const primaryEvent = events.find((event) => ['reappeared', 'source_recovered', 'source_failed', 'content_changed', 'status_changed', 'evidence_freshness_changed', 'evidence_state_changed'].includes(event.event));
+    const historyEvent = primaryEvent || (rebase.rebased ? history.at(-1) : null);
     const verifiedCurrent = job.listingStatus !== 'source_error';
     return {
       ...job,
+      previousContentFingerprintVersion: undefined,
       contentFingerprint: fingerprint,
       firstSeenAt: previous.firstSeenAt || previous.verifiedAt || previous.listingCheckedAt || nowIso,
       lastSeenAt: verifiedCurrent ? nowIso : (previous.lastSeenAt || previous.lastVerifiedAt || previous.verifiedAt || previous.listingCheckedAt || ''),
@@ -253,11 +333,11 @@ function reconcileVerificationHistory(jobs, previousJobs = [], now = Date.now())
       missingSince: '',
       missingCheckedAt: '',
       previousListingStatus: previous.listingStatus || '',
-      lastContentChangeAt: changedFields.length ? nowIso : (previous.lastContentChangeAt || ''),
+      lastContentChangeAt: changedFields.length ? nowIso : (rebase.reclassified ? '' : (previous.lastContentChangeAt || '')),
       lastStateChangeAt: previous.listingStatus !== job.listingStatus ? nowIso : (previous.lastStateChangeAt || ''),
-      lastChangeKind: primaryEvent?.event || previous.lastChangeKind || 'verified_unchanged',
-      lastChangeAt: primaryEvent?.at || previous.lastChangeAt || previous.lastVerifiedAt || previous.verifiedAt || nowIso,
-      lastChangedFields: changedFields.length ? changedFields : (previous.lastChangedFields || []),
+      lastChangeKind: historyEvent?.event || previous.lastChangeKind || 'verified_unchanged',
+      lastChangeAt: historyEvent?.at || previous.lastChangeAt || previous.lastVerifiedAt || previous.verifiedAt || nowIso,
+      lastChangedFields: changedFields.length ? changedFields : (rebase.reclassified ? [] : (previous.lastChangedFields || [])),
       verificationHistory: history
     };
   });
@@ -565,13 +645,21 @@ function currentListingState(job) {
   }
   const explicitPool = /not an active job opening|not an immediate (?:job|position|opening)|인재 파이프라인|즉시 시작되는 포지션이 아닙니다/.test(lead);
   const poolTitle = /talent pool|talent network|ai trainers network|future opportunities|pipeline of talent/.test(title);
-  if (explicitPool || poolTitle) {
+  const liltProjectPool = job.source === 'LILT Production'
+    && /\bai training contributor\b/.test(title)
+    && /become eligible for applied ai projects/.test(combined)
+    && /work availability fluctuates with project demand/.test(combined);
+  if (explicitPool || poolTitle || liltProjectPool) {
     return {
       code: 'talent_pool',
       label: '인재풀·즉시 모집 아님',
       stale: false,
-      reason: explicitPool ? '본문 앞부분에 즉시 채용이 아님을 명시' : '제목이 인재풀·향후 기회 모집임',
-      basis: explicitPool ? 'pool_lead' : 'pool_title',
+      reason: liltProjectPool
+        ? '평가·온보딩 후 향후 Applied AI 프로젝트 참여 자격을 얻는 구조이며 작업량이 프로젝트 수요에 따라 변동됨'
+        : explicitPool
+          ? '본문 앞부분에 즉시 채용이 아님을 명시'
+          : '제목이 인재풀·향후 기회 모집임',
+      basis: liltProjectPool ? 'project_pool' : explicitPool ? 'pool_lead' : 'pool_title',
       verification: 'talent_pool'
     };
   }
@@ -674,7 +762,7 @@ function eligibilityFor(job) {
   }
   if (restrictionText) return { code: 'restricted', label: '특정 국가 제한', basis: 'restriction_text', reason: `거주·근무 제한 문구가 있음: ${evidenceSnippet(restrictionText)}` };
   if (/\b(anywhere in|within)\s+[a-z]/.test(location)) return { code: 'restricted', label: '특정 국가 제한', basis: 'location', reason: `특정 지역 범위가 명시됨: ${locationRaw}` };
-  if (/\b(worldwide|remote, worldwide|anywhere in the world|work from anywhere|globally)\b/.test(location)) {
+  if (/\b(worldwide|world\s+wide|remote, worldwide|anywhere in the world|work from anywhere|globally)\b/.test(location)) {
     return { code: 'worldwide', label: 'Worldwide', basis: 'location', reason: `Worldwide/전 세계 지원 범위가 명시됨: ${locationRaw}` };
   }
   const restricted = /\b(usa|united states|us only|canada|uk|united kingdom|europe|eu|emea|apac|latam|mena|north america|south america|germany|france|australia|singapore|japan|india|philippines|mexico|brazil|spain|italy|netherlands|poland|romania)\b/;
@@ -731,7 +819,7 @@ function scoreJob(job) {
 }
 
 function normalizeJob(raw) {
-  const fullDescription = text(raw.description);
+  const fullDescription = stableSourceDescription(raw.source, raw.description);
   const job = {
     id: raw.id,
     source: raw.source,
@@ -845,6 +933,11 @@ function normalizeJob(raw) {
   Object.assign(job, scoreJob(job));
   const titleLower = lower(job.title);
   const fitWarnings = [];
+  const satisfiedRequirements = [];
+  const verifiedCapabilities = new Set(profile.verifiedCapabilities || []);
+  const userHasAiQualityExperience = ['ai_evaluation', 'data_annotation', 'quality_review', 'rubric_qa']
+    .some((capability) => verifiedCapabilities.has(capability));
+  const userHasKoreanTeachingExperience = verifiedCapabilities.has('korean_teaching');
   if (/\b(phd|doctorate|doctoral)\b|박사/.test(titleLower)) {
     fitWarnings.push('박사급 전문요건 확인');
     job.score = Math.min(job.score, 10);
@@ -898,25 +991,61 @@ function normalizeJob(raw) {
     job.score = Math.min(job.score, 19);
   }
   const hardExperienceContext = fullDescription.match(/.{0,120}\bwith experience in\s+(?:annotation|content review|quality assurance|data operations)(?:[^.]{0,140})/i)?.[0] || '';
-  const verifiedCapabilities = new Set(profile.verifiedCapabilities || []);
-  const userHasAiQualityExperience = ['ai_evaluation', 'data_annotation', 'quality_review', 'rubric_qa']
-    .some((capability) => verifiedCapabilities.has(capability));
   if (hardExperienceContext
     && !userHasAiQualityExperience
     && !/\b(?:preferred|a plus|plus|advantage|nice to have|optional)\b/i.test(hardExperienceContext)) {
     fitWarnings.push('관련 어노테이션·콘텐츠 검토·QA 실무 경험 요건 확인');
     job.score = Math.min(job.score, 19);
+  } else if (hardExperienceContext && userHasAiQualityExperience) {
+    satisfiedRequirements.push('필수 AI 평가·어노테이션·QA 경험: 검증된 경력과 일치');
+  }
+  const larpDataExperience = /\bprior,? tangible experience working in human data evaluation or annotation\b/i.test(fullDescription);
+  const larpLanguageEducationExperience = /\bdemonstrable work or educational experience in linguistics, education\b/i.test(fullDescription);
+  if (/\blanguage alignment\s*&\s*resource partner\b/i.test(titleLower)) {
+    if (larpDataExperience && !userHasAiQualityExperience) {
+      fitWarnings.push('휴먼 데이터 평가·어노테이션 실무 경험 요건 확인');
+      job.score = Math.min(job.score, 19);
+    }
+    if (larpLanguageEducationExperience && !userHasKoreanTeachingExperience) {
+      fitWarnings.push('언어·교육 관련 경력요건 확인');
+      job.score = Math.min(job.score, 19);
+    }
+    if (larpDataExperience && larpLanguageEducationExperience && userHasAiQualityExperience && userHasKoreanTeachingExperience) {
+      satisfiedRequirements.push('필수 데이터 평가·언어/교육 경험: 검증된 경력과 일치');
+    }
   }
   if (/\b(?:software|frontend|backend|full[- ]?stack|web|mobile)?\s*(?:engineer|developer)\b/i.test(titleLower)) {
     fitWarnings.push('개발 전문경력 요건 확인');
+    job.score = Math.min(job.score, 19);
+  }
+  if (/\bcoding specialist\b/i.test(titleLower)) {
+    fitWarnings.push('코딩 전문역량 요건 확인');
+    job.score = Math.min(job.score, 19);
+  }
+  if (/\bvoice actor\b/i.test(titleLower)) {
+    fitWarnings.push('전문 음성 연기·녹음 경력요건 확인');
+    job.score = Math.min(job.score, 19);
+  }
+  if (/\b(?:mathematics|science|stem) specialist\b/i.test(titleLower)) {
+    fitWarnings.push('수학·과학 전문 분야 요건 확인');
+    job.score = Math.min(job.score, 19);
+  }
+  if (/\bandroid device\b/i.test(titleLower) || /\baccess to android devices?\b/i.test(fullDescription)) {
+    fitWarnings.push('Android 기기 요건 확인');
+    job.score = Math.min(job.score, 19);
+  }
+  if (/\b3d\s*&\s*lidar data annotation analyst\b/i.test(titleLower)
+    && /\bexperience working in a fast-paced, scaled environment\b/i.test(fullDescription)
+    && /\bexperience with image annotation genai workflows\b/i.test(fullDescription)) {
+    fitWarnings.push('이미지 어노테이션·GenAI 워크플로우 실무 경험 요건 확인');
     job.score = Math.min(job.score, 19);
   }
   if (/\b(?:copywriter|copywriting|content writer|marketing writer)\b/i.test(titleLower)) {
     fitWarnings.push('전문 카피라이팅·콘텐츠 작성 경력요건 확인');
     job.score = Math.min(job.score, 19);
   }
-  if (/\b(?:accessibility|a11y|wcag)\b/i.test(`${titleLower} ${fullDescription.slice(0, 1200)}`)
-    && /\b(?:specialist|expert|engineer|developer|consultant|auditor|tester|testing|experience|required|must)\b/i.test(`${titleLower} ${fullDescription.slice(0, 1200)}`)) {
+  const accessibilityRequirement = /\b(?:accessibility|a11y|wcag)\b[^.]{0,120}\b(?:specialist|expert|engineer|developer|consultant|auditor|tester|testing|experience|required|must)\b|\b(?:specialist|expert|engineer|developer|consultant|auditor|tester|testing|experience|required|must)\b[^.]{0,120}\b(?:accessibility|a11y|wcag)\b/i.test(fullDescription);
+  if (/\b(?:accessibility|a11y|wcag)\b/i.test(titleLower) || accessibilityRequirement) {
     fitWarnings.push('접근성 전문경력·WCAG 실무요건 확인');
     job.score = Math.min(job.score, 19);
   }
@@ -928,6 +1057,9 @@ function normalizeJob(raw) {
   } else if (/\bstrong (?:level of )?written english\b|\bstrong written english\b/i.test(fullDescription)) {
     routineRequirements.push('영어 문서 이해·작성 능력 확인');
   }
+  if (/\bverified korean language proficiency of c1 or c2\b|\bkorean\b[^.]{0,60}\bc1\s*(?:or|\/)\s*c2\b/i.test(fullDescription)) {
+    routineRequirements.push('한국어 C1/C2 수준 확인');
+  }
   if (/\b(?:microphone|headset)\b/i.test(fullDescription)
     && !job.fitWarnings.some((warning) => /iOS|기기/.test(warning))) {
     routineRequirements.push('마이크·헤드셋 등 작업 장비 확인');
@@ -935,6 +1067,12 @@ function normalizeJob(raw) {
   if (/\b(?:laptop|personal computer|fast computer|computer|desktop|phone)\b/i.test(fullDescription)
     && !job.fitWarnings.some((warning) => /iOS|기기/.test(warning))) {
     routineRequirements.push('PC·노트북·휴대전화 등 작업 장비 확인');
+  }
+  if (/\bcompany-provisioned machine\b|\bcontrolled environment\b/i.test(fullDescription)) {
+    routineRequirements.push('회사 제공 장비·통제 환경 사용 요건 확인');
+  }
+  if (/\bagree to (?:the )?(?:applicable )?participant and consent agreements?\b/i.test(fullDescription)) {
+    routineRequirements.push('참여·데이터 제공 동의서 확인');
   }
   if (/\b(?:antivirus|anti-virus)\b/i.test(fullDescription)) {
     routineRequirements.push('안티바이러스·보안 소프트웨어 요건 확인');
@@ -966,12 +1104,13 @@ function normalizeJob(raw) {
   if (/\bonly one\b[^.]{0,60}\b(?:rater|worker|evaluator)\b[^.]{0,60}\bper household\b/i.test(fullDescription)) {
     routineRequirements.push('가구당 참여 인원 제한 확인');
   }
-  if (/\bmust be\s+18\+|\b18\+\s+years?\s+old\b|\bat least\s+18\s+years?\s+old\b/i.test(fullDescription)) {
+  if (/\bmust be\s+18\+|\b18\+\s+years?\s+old\b|\bat least\s+18\s+years?\s+old\b|\brequires?\b[^.]{0,60}\b18\s+years?\s+or\s+older\b/i.test(fullDescription)) {
     routineRequirements.push('만 18세 이상 요건 확인');
   }
   job.requirementChecks = [
     ...job.fitWarnings.map((label) => ({ kind: 'hard', label })),
-    ...[...new Set(routineRequirements)].map((label) => ({ kind: 'routine', label }))
+    ...[...new Set(routineRequirements)].map((label) => ({ kind: 'routine', label })),
+    ...[...new Set(satisfiedRequirements)].map((label) => ({ kind: 'satisfied', label }))
   ];
   job.requirementsStatus = job.fitWarnings.length
     ? 'hard_check'
@@ -982,7 +1121,9 @@ function normalizeJob(raw) {
     ? '하드요건 확인 필요'
     : job.requirementsStatus === 'routine_check'
       ? '일반 요건 확인 필요'
-      : '추가 하드요건 감지 없음';
+      : satisfiedRequirements.length
+        ? '검증된 경력과 필수요건 일치'
+        : '추가 하드요건 감지 없음';
   job.fitReasons = [
     ...(job.matchedKeywords?.length ? [`일치 키워드: ${job.matchedKeywords.slice(0, 4).join(', ')}`] : []),
     ...(job.category !== '기타' ? [`관심 분야: ${job.category}`] : []),
@@ -1015,6 +1156,8 @@ function normalizeJob(raw) {
   if (job.stale) job.score = Math.max(0, job.score - 15);
   if (job.listingStatus === 'talent_pool') job.score = Math.max(0, job.score - 45);
   if (job.listingStatus === 'expired') job.score = 0;
+  job.contentFingerprintVersion = contentFingerprintVersion;
+  job.sourceFieldFingerprints = sourceFieldFingerprints(job);
   job.contentFingerprint = contentFingerprint(job);
   delete job._fullDescription;
   return job;
@@ -1127,6 +1270,43 @@ async function collectLilt() {
     if (['korea', 'worldwide', 'unknown'].includes(normalized.eligibilityCode)) collected.push(normalized);
   }
   return sourceCollection(collected, rows.length, { profileMatchedCount });
+}
+
+async function collectMeridial() {
+  const data = await fetchJson('https://boards-api.greenhouse.io/v1/boards/agency/jobs?content=true');
+  const rows = Array.isArray(data?.jobs) ? data.jobs : [];
+  const collected = [];
+  let localeEligibleCount = 0;
+  let profileMatchedCount = 0;
+  for (const j of rows) {
+    if (!/\bkorean\b/i.test(j.title || '')) continue;
+    localeEligibleCount += 1;
+    const description = text(decodeHtmlEntities(j.content || ''));
+    const location = j.location?.name || 'Remote';
+    const candidate = {
+      id: `greenhouse:agency:${j.id}`,
+      source: 'Meridial',
+      title: j.title,
+      company: j.company_name || 'Meridial',
+      location,
+      remote: /\bremote\b/i.test(location) || /workplace type\s*:?\s*remote/i.test(description),
+      type: /\b(?:freelance|independent contractor)\b/i.test(description) ? 'Freelance / Contract' : 'Contract',
+      salary: '',
+      url: j.absolute_url,
+      postedAt: j.first_published || null,
+      sourceListingState: 'published',
+      sourceCreatedAt: j.first_published || null,
+      sourceModifiedAt: j.updated_at || null,
+      description,
+      tags: ['Greenhouse', /freelance ai trainer project/i.test(j.title || '') ? 'Freelance AI Trainer' : 'AI'],
+      countryCode: /\bsouth korea\b/i.test(location) ? 'KR' : ''
+    };
+    if (!candidate.title || !candidate.url || !relevantToProfile(candidate)) continue;
+    profileMatchedCount += 1;
+    const normalized = normalizeJob(candidate);
+    if (['korea', 'worldwide', 'unknown'].includes(normalized.eligibilityCode)) collected.push(normalized);
+  }
+  return sourceCollection(collected, rows.length, { localeEligibleCount, profileMatchedCount });
 }
 
 function oneFormaTerms(post, taxonomy) {
@@ -1261,7 +1441,7 @@ async function collectJobicy() {
     salaryProvenance: 'board_metadata',
     url: j.url,
     postedAt: j.pubDate,
-    description: j.jobExcerpt || j.jobDescription,
+    description: j.jobDescription || j.jobExcerpt,
     tags: [...(j.jobIndustry ?? []), j.jobLevel].filter(Boolean)
   })).filter(relevantToProfile).map(normalizeJob);
   return sourceCollection(collected, rows.length);
@@ -1779,6 +1959,7 @@ export async function collectJobs({ includeManual = true, persist = true, previo
     ['Welo Global', collectWeloGlobal],
     ['RWS TrainAI', collectRws],
     ['LILT Production', collectLilt],
+    ['Meridial', collectMeridial],
     ['OneForma', collectOneForma],
     ['We Work Remotely', collectWeWorkRemotely],
     ['Jobicy', collectJobicy],
