@@ -33,6 +33,101 @@ const sourceMetricHistoryLimit = 24;
 const verificationCheckpointMs = 7 * dayMs;
 const contentFingerprintVersion = 2;
 const recommendationPolicyVersion = 2;
+const defaultLocationReference = Object.freeze({
+  id: 'kr-jeonbuk-jeonju-deokjin-sanjeong',
+  label: '전북특별자치도 전주시 덕진구 산정동',
+  province: '전북특별자치도',
+  city: '전주시',
+  district: '덕진구',
+  neighborhood: '산정동',
+  lat: 35.84434,
+  lon: 127.1736277,
+  precision: 'neighborhood',
+  coordinateSource: 'OpenStreetMap Nominatim',
+  coordinateCheckedAt: '2026-10-04',
+  distanceMethod: 'haversine_straight_line'
+});
+
+const provinceMatchers = [
+  ['서울특별시', /서울|\bseoul\b/i],
+  ['부산광역시', /부산|\bbusan\b/i],
+  ['대구광역시', /대구|\bdaegu\b/i],
+  ['인천광역시', /인천|\bincheon\b/i],
+  ['광주광역시', /광주|\bgwangju\b/i],
+  ['대전광역시', /대전|\bdaejeon\b/i],
+  ['울산광역시', /울산|\bulsan\b/i],
+  ['세종특별자치시', /세종|\bsejong\b/i],
+  ['경기도', /경기도|\bgyeonggi(?:-do)?\b/i],
+  ['강원특별자치도', /강원|\bgangwon(?:-do)?\b/i],
+  ['충청북도', /충북|충청북도|\bchungcheongbuk(?:-do)?\b|\bchungbuk\b/i],
+  ['충청남도', /충남|충청남도|\bchungcheongnam(?:-do)?\b|\bchungnam\b/i],
+  ['전북특별자치도', /전북|전라북도|전북특별자치도|\bjeollabuk(?:-do)?\b|\bjeonbuk\b/i],
+  ['전라남도', /전남|전라남도|\bjeollanam(?:-do)?\b|\bjeonnam\b/i],
+  ['경상북도', /경북|경상북도|\bgyeongsangbuk(?:-do)?\b|\bgyeongbuk\b/i],
+  ['경상남도', /경남|경상남도|\bgyeongsangnam(?:-do)?\b|\bgyeongnam\b/i],
+  ['제주특별자치도', /제주|\bjeju(?:-do)?\b/i]
+];
+
+const regionCentroids = {
+  '서울특별시': { lat: 37.5666791, lon: 126.9782914, precision: 'city', coordinateSource: 'OpenStreetMap Nominatim', coordinateCheckedAt: '2026-10-04' },
+  '전북특별자치도|전주시|덕진구|산정동': { ...defaultLocationReference }
+};
+
+function domesticRegionFor(job) {
+  const location = text(job.location);
+  const lowerLocation = lower(location);
+  const multiCountry = /\+\s*\d+\s*개\s*국가|\bworld\s*wide\b|\bworldwide\b|\bremote\s*-\s*europe\b|\b(?:china|japan|united states|canada|united kingdom|singapore|germany|france|brazil|india)\b/.test(lowerLocation.replace(/south korea|republic of korea/g, ''));
+  const koreaSpecific = job.countryCode === 'KR'
+    || /south korea|republic of korea|대한민국|한국|\bkorea\b|서울|\bseoul\b|부산|\bbusan\b|전주|\bjeonju\b/.test(lowerLocation);
+  if (!koreaSpecific || multiCountry) return null;
+
+  const province = provinceMatchers.find(([, pattern]) => pattern.test(location))?.[0]
+    || (/\bseoul\b/i.test(location) ? '서울특별시' : '');
+  const koreanUnits = [...location.matchAll(/([가-힣]{2,}(?:시|군|구|동))/g)].map((match) => match[1]);
+  let city = koreanUnits.find((unit) => /시$/.test(unit) && !/특별시$|광역시$|자치시$/.test(unit)) || '';
+  let district = koreanUnits.find((unit) => /군$|구$/.test(unit)) || '';
+  let neighborhood = koreanUnits.find((unit) => /동$/.test(unit)) || '';
+  if (!city && /\bjeonju\b/i.test(location)) city = '전주시';
+  if (!district && /\bdeokjin(?:-gu)?\b/i.test(location)) district = '덕진구';
+  if (!district && /\bwansan(?:-gu)?\b/i.test(location)) district = '완산구';
+  if (!neighborhood && /\bsanjeong(?:-dong)?\b/i.test(location)) neighborhood = '산정동';
+
+  const locality = [city, district].filter(Boolean).join(' ');
+  const centroidKey = [province, city, district, neighborhood].filter(Boolean).join('|');
+  const centroid = regionCentroids[centroidKey] || (!city && !district && !neighborhood ? regionCentroids[province] : null);
+  const precision = neighborhood ? 'neighborhood' : district ? 'district' : city ? 'city' : province ? 'province' : 'country';
+  return {
+    country: '대한민국',
+    province,
+    city,
+    district,
+    neighborhood,
+    locality,
+    label: [province, locality, neighborhood].filter(Boolean).join(' ') || location,
+    precision,
+    evidenceLevel: 'source_location_text',
+    ...(centroid ? {
+      lat: centroid.lat,
+      lon: centroid.lon,
+      coordinatePrecision: centroid.precision,
+      coordinateSource: centroid.coordinateSource,
+      coordinateCheckedAt: centroid.coordinateCheckedAt
+    } : {})
+  };
+}
+
+function marketSegmentFor(job) {
+  const scopes = marketScopesFor(job);
+  return scopes[0] || 'overseas_remote';
+}
+
+function marketScopesFor(job) {
+  const domesticRegion = job.domesticRegion || domesticRegionFor(job);
+  const scopes = [];
+  if (job.remote || !domesticRegion) scopes.push('overseas_remote');
+  if (domesticRegion) scopes.push('domestic');
+  return [...new Set(scopes)];
+}
 
 function sourceMeta(source) {
   return sourceQuality[source] ?? {
@@ -626,9 +721,20 @@ function canonicalLocation(value) {
   return normalized || 'remote';
 }
 
+function domesticLocationKey(job) {
+  if (!(job.marketScopes || marketScopesFor(job)).includes('domestic')) return '';
+  if (job.remote && !/\b(?:hybrid|onsite|on-site)\b/i.test(job.workplaceMode || '')) return '';
+  const region = job.domesticRegion || domesticRegionFor(job);
+  return [region?.province, region?.city, region?.district, region?.neighborhood]
+    .filter(Boolean)
+    .join('|') || canonicalLocation(job.location);
+}
+
 function stableJobId(job) {
-  const scope = ['worldwide', 'korea'].includes(job.eligibilityCode)
-    ? job.eligibilityCode
+  const scope = domesticLocationKey(job)
+    ? `domestic:${domesticLocationKey(job)}`
+    : ['worldwide', 'korea'].includes(job.eligibilityCode)
+      ? job.eligibilityCode
     : `${job.eligibilityCode || 'unknown'}:${canonicalLocation(job.location)}`;
   const key = `${canonicalCompany(job.company)}::${canonicalTitle(job.title)}::${scope}`;
   return `job:${crypto.createHash('sha1').update(key).digest('hex').slice(0, 16)}`;
@@ -737,7 +843,7 @@ function classify(job) {
   const rules = [
     ['AI 평가·어노테이션', ['ai trainer', 'ai response', 'ai data specialist', 'generative ai analyst', 'data annotator', 'data annotation', 'response evaluator', 'search evaluator', 'search engine evaluator', 'internet safety evaluator', 'ads quality rater', 'quality rater', 'quality assurance reviewer', 'ai quality assurance', 'legal annotator', 'audio evaluation', 'speech evaluation', 'speech annotator', 'transcription quality reviewer', 'data rater', 'data labeling']],
     ['한국어·언어', ['korean', '한국어', 'linguist', 'proofreader', 'proofreading', 'copy editor', 'content editor', 'localization', 'language quality']],
-    ['조사·데이터', ['data entry', 'data researcher', 'web researcher', 'research assistant', 'market research', 'product catalog', 'catalog specialist', 'catalog coordinator', 'administrative assistant']],
+    ['조사·데이터', ['data entry', 'data researcher', 'data program manager', 'web researcher', 'research assistant', 'market research', 'product catalog', 'catalog specialist', 'catalog coordinator', 'administrative assistant']],
     ['교육 운영', ['course operations', 'learning operations', 'education operations', 'class manager', 'training coordinator', 'learning coordinator', 'education coordinator']],
     ['커뮤니티·운영', ['content moderator', 'community moderator', 'community manager', 'event assistant', 'event coordinator', 'webinar coordinator']],
     ['채용 보조', ['candidate sourcing', 'talent sourcing', 'sourcer', 'recruiting coordinator', 'recruitment coordinator', 'talent coordinator']],
@@ -835,6 +941,7 @@ function normalizeJob(raw) {
     company: text(raw.company) || '회사 미상',
     location: text(raw.location) || '위치 미상',
     remote: Boolean(raw.remote),
+    workplaceMode: text(raw.workplaceMode) || (raw.remote ? 'remote' : 'unknown'),
     type: text(raw.type) || '미상',
     salary: text(raw.salary),
     url: raw.url,
@@ -848,6 +955,9 @@ function normalizeJob(raw) {
     sourceModifiedAt: raw.sourceModifiedAt ? new Date(raw.sourceModifiedAt).toISOString() : null,
     verifiedAt: new Date().toISOString()
   };
+  job.domesticRegion = domesticRegionFor(job);
+  job.marketScopes = marketScopesFor(job);
+  job.marketSegment = marketSegmentFor(job);
   job.category = classify(job);
   const eligibility = eligibilityFor(job);
   job.eligibility = eligibility.label;
@@ -1053,6 +1163,10 @@ function normalizeJob(raw) {
     fitWarnings.push('전문 카피라이팅·콘텐츠 작성 경력요건 확인');
     job.score = Math.min(job.score, 19);
   }
+  if (job.source === 'KRAFTON' && /Korean Localization Specialist/i.test(job.title) && /1\s*년\s*이상/.test(job.title)) {
+    fitWarnings.push('게임 로컬라이제이션·번역·언어 품질 실무 1년 이상 경력 요건 확인');
+    job.score = Math.min(job.score, 19);
+  }
   const accessibilityRequirement = /\b(?:accessibility|a11y|wcag)\b[^.]{0,120}\b(?:specialist|expert|engineer|developer|consultant|auditor|tester|testing|experience|required|must)\b|\b(?:specialist|expert|engineer|developer|consultant|auditor|tester|testing|experience|required|must)\b[^.]{0,120}\b(?:accessibility|a11y|wcag)\b/i.test(fullDescription);
   if (/\b(?:accessibility|a11y|wcag)\b/i.test(titleLower) || accessibilityRequirement) {
     fitWarnings.push('접근성 전문경력·WCAG 실무요건 확인');
@@ -1061,6 +1175,9 @@ function normalizeJob(raw) {
   job.fitWarnings = [...new Set(fitWarnings)];
   job.fitWarning = job.fitWarnings.join(' · ');
   const routineRequirements = [];
+  if (job.source === 'KRAFTON' && /Data Program Manager/i.test(job.title)) {
+    routineRequirements.push('ML 논문 이해·기초 데이터 분석 역량 확인');
+  }
   if (/\benglish proficiency\s*:?\s*(?:fluent|advanced)|\benglish\b[^.]{0,40}\b(?:b2|c1|c2)\b|\b(?:b2|c1|c2)\b[^.]{0,40}\benglish\b/i.test(fullDescription)) {
     routineRequirements.push('영어 요구 수준 확인');
   } else if (/\bstrong (?:level of )?written english\b|\bstrong written english\b/i.test(fullDescription)) {
@@ -1223,6 +1340,7 @@ async function collectLeverBoard(site, source, company, { query = '', rowFilter 
       company,
       location,
       remote: j.workplaceType === 'remote',
+      workplaceMode: j.workplaceType || '',
       type: j.categories?.commitment || j.workplaceType,
       salary: '',
       url: j.hostedUrl,
@@ -1279,6 +1397,7 @@ async function collectElevenLabs() {
       company: 'ElevenLabs',
       location: worldwide ? 'World Wide - Remote' : 'Korea / Remote',
       remote: Boolean(j.isRemote) || /remote/i.test(j.workplaceType || ''),
+      workplaceMode: j.workplaceType || '',
       type: j.employmentType || j.workplaceType || 'Freelance',
       salary: '',
       url: j.jobUrl || j.applyUrl,
@@ -1310,6 +1429,7 @@ async function collectLilt() {
       company: 'LILT',
       location: j.location || 'Remote',
       remote: Boolean(j.isRemote) || /remote/i.test(j.workplaceType || j.location || ''),
+      workplaceMode: j.workplaceType || '',
       type: j.employmentType || j.workplaceType || 'Contract',
       salary: '',
       url: j.jobUrl || j.applyUrl,
@@ -1324,6 +1444,41 @@ async function collectLilt() {
     profileMatchedCount += 1;
     const normalized = normalizeJob(candidate);
     if (['korea', 'worldwide', 'unknown'].includes(normalized.eligibilityCode)) collected.push(normalized);
+  }
+  return sourceCollection(collected, rows.length, { profileMatchedCount });
+}
+
+async function collectKrafton() {
+  const data = await fetchJson('https://boards-api.greenhouse.io/v1/boards/krafton/jobs?content=true');
+  const rows = Array.isArray(data?.jobs) ? data.jobs : [];
+  const collected = [];
+  let profileMatchedCount = 0;
+  const relevantTitle = /\b(?:data program manager|foundation model evaluation engineer|korean localization specialist)\b/i;
+  for (const j of rows) {
+    if (!relevantTitle.test(j.title || '')) continue;
+    const description = text(decodeHtmlEntities(j.content || ''));
+    const metadata = Object.fromEntries((j.metadata || []).filter((item) => item?.name).map((item) => [item.name, item.value]));
+    const candidate = {
+      id: `greenhouse:krafton:${j.id}`,
+      source: 'KRAFTON',
+      title: j.title,
+      company: 'KRAFTON',
+      location: j.location?.name || 'Seoul, South Korea',
+      remote: false,
+      workplaceMode: 'onsite',
+      type: metadata['Employment Type'] || '미상',
+      salary: '',
+      url: j.absolute_url,
+      postedAt: j.first_published || null,
+      sourceListingState: 'published',
+      sourceCreatedAt: j.first_published || null,
+      sourceModifiedAt: j.updated_at || null,
+      description,
+      tags: [metadata['Job Category - Data'], metadata['Job Category - Business & Service'], metadata.Sector, metadata['Employment Type']].filter(Boolean),
+      countryCode: 'KR'
+    };
+    profileMatchedCount += 1;
+    collected.push(normalizeJob(candidate));
   }
   return sourceCollection(collected, rows.length, { profileMatchedCount });
 }
@@ -1346,6 +1501,7 @@ async function collectMeridial() {
       company: j.company_name || 'Meridial',
       location,
       remote: /\bremote\b/i.test(location) || /workplace type\s*:?\s*remote/i.test(description),
+      workplaceMode: /\bhybrid\b/i.test(description) ? 'hybrid' : (/\bremote\b/i.test(location) || /workplace type\s*:?\s*remote/i.test(description) ? 'remote' : 'unknown'),
       type: /\b(?:freelance|independent contractor)\b/i.test(description) ? 'Freelance / Contract' : 'Contract',
       salary: '',
       url: j.absolute_url,
@@ -1590,6 +1746,10 @@ function dedupe(jobs) {
     const compatible = clusters.find((cluster) => {
       const current = cluster[0];
       if (current.url === job.url) return true;
+      if (domesticLocationKey(current) || domesticLocationKey(job)) {
+        return Boolean(domesticLocationKey(current)) === Boolean(domesticLocationKey(job))
+          && domesticLocationKey(current) === domesticLocationKey(job);
+      }
       if (isOfficialKind(current.sourceKind) && isOfficialKind(job.sourceKind)) {
         return current.eligibilityCode === job.eligibilityCode && canonicalLocation(current.location) === canonicalLocation(job.location);
       }
@@ -1733,12 +1893,38 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
       || (derivedEligibility.code === eligibilityCode
         ? derivedEligibility.reason
         : `이전 피드의 지원 범위 분류를 보존: ${previous.eligibility || eligibilityCode}`);
+    const legacyRequirementChecks = Array.isArray(previous.requirementChecks)
+      ? previous.requirementChecks
+      : (previous.fitWarnings || (previous.fitWarning ? [previous.fitWarning] : []))
+        .filter(Boolean)
+        .map((label) => ({ kind: 'hard', label }));
+    const requirementsStatus = ['clear', 'routine_check', 'hard_check'].includes(previous.requirementsStatus)
+      ? previous.requirementsStatus
+      : legacyRequirementChecks.some((item) => item.kind === 'hard')
+        ? 'hard_check'
+        : legacyRequirementChecks.some((item) => item.kind === 'routine')
+          ? 'routine_check'
+          : 'clear';
+    const requirementsLabel = previous.requirementsLabel || (requirementsStatus === 'hard_check'
+      ? '하드요건 확인 필요'
+      : requirementsStatus === 'routine_check'
+        ? '일반 요건 확인 필요'
+        : '추가 하드요건 감지 없음');
+    const preservedContentFingerprint = previous.contentFingerprint || contentFingerprint(previous);
     carried.push({
       ...previous,
+      domesticRegion: previous.domesticRegion || domesticRegionFor(previous),
+      marketScopes: previous.marketScopes || marketScopesFor(previous),
+      marketSegment: previous.marketSegment || marketSegmentFor(previous),
+      workplaceMode: previous.workplaceMode || (previous.remote ? 'remote' : 'unknown'),
       eligibilityCode,
       eligibility: previous.eligibility || ({ korea: '한국에서 지원 가능', worldwide: 'Worldwide', restricted: '특정 국가 제한', unknown: '확인 필요' }[eligibilityCode]),
       eligibilityBasis,
       eligibilityReason,
+      requirementChecks: legacyRequirementChecks,
+      requirementsStatus,
+      requirementsLabel,
+      contentFingerprint: preservedContentFingerprint,
       sourceKind: previous.sourceKind || quality.kind,
       sourceCoverage: previous.sourceCoverage || quality.coverage || 'unknown',
       sourceTrustLabel: previous.sourceTrustLabel || quality.listingLabel,
@@ -2034,6 +2220,7 @@ export async function collectJobs({ includeManual = true, persist = true, previo
     ['RWS TrainAI', collectRws],
     ['TSMG', collectTsmg],
     ['ElevenLabs', collectElevenLabs],
+    ['KRAFTON', collectKrafton],
     ['LILT Production', collectLilt],
     ['Meridial', collectMeridial],
     ['OneForma', collectOneForma],
@@ -2122,6 +2309,7 @@ export async function collectJobs({ includeManual = true, persist = true, previo
   }));
   const payload = {
     updatedAt: new Date(now).toISOString(),
+    locationReference: defaultLocationReference,
     sourceStatus: enrichedSourceStatus,
     sourceMetrics,
     recommendationPolicyVersion,
@@ -2147,6 +2335,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 }
 
 export {
+  defaultLocationReference,
+  domesticRegionFor,
+  marketScopesFor,
+  marketSegmentFor,
   eligibilityFor,
   extractSalary,
   relevantToProfile,

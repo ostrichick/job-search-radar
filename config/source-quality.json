@@ -80,6 +80,25 @@
     ],
     "paymentSignals": []
   },
+  "KRAFTON": {
+    "kind": "official_ats",
+    "coverage": "current_catalog",
+    "evidenceRefreshability": "direct_api",
+    "listingLabel": "공식 직접 채용",
+    "paymentStatus": "unknown",
+    "paymentLabel": "지급 조건 직접 확인",
+    "paymentEvidenceState": "insufficient",
+    "paymentEvidenceLabel": "독립 지급 근거 부족",
+    "paymentConfidence": "low",
+    "reviewedAt": "2026-10-04",
+    "summary": "KRAFTON이 운영하는 공식 Greenhouse 채용 보드에서 국내 데이터·AI 평가·한국어 언어 품질 관련 현재 공고를 구조화 API로 직접 확인합니다.",
+    "paymentSummary": "공식 채용 공고에서 모집 상태와 고용 형태는 확인하지만 현재 구조화된 급여 금액과 독립적인 지급 평판 근거는 충분하지 않아 실제 보수는 지원 과정에서 확인해야 합니다.",
+    "evidence": [
+      {"type": "official_source", "label": "KRAFTON 공식 채용", "url": "https://www.krafton.com/careers/jobs/"},
+      {"type": "official_feed", "label": "공식 Greenhouse 공개 API", "url": "https://boards-api.greenhouse.io/v1/boards/krafton/jobs?content=true"}
+    ],
+    "paymentSignals": []
+  },
   "LILT Production": {
     "kind": "official_ats",
     "coverage": "current_catalog",

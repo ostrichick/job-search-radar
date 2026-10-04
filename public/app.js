@@ -29,20 +29,26 @@ const state = {
   currentDetailId: null,
   detailQueue: [],
   loadError: null,
-  dynamicFiltersInitialized: false
+  dynamicFiltersInitialized: false,
+  marketTab: localStorage.getItem('jobMarketTab') === 'domestic' ? 'domestic' : 'overseas_remote'
 };
 
 const $ = (id) => document.getElementById(id);
-const controls = ['query', 'source', 'category', 'remote', 'eligibility', 'compensationFilter', 'ageFilter', 'listingFilter', 'sourceKindFilter', 'paymentFilter', 'requirementsFilter', 'minScore', 'sort', 'statusFilter'];
+const controls = ['query', 'source', 'category', 'remote', 'eligibility', 'domesticProvince', 'domesticLocality', 'compensationFilter', 'ageFilter', 'listingFilter', 'sourceKindFilter', 'paymentFilter', 'requirementsFilter', 'minScore', 'sort', 'statusFilter'];
 const advancedFilterDefaults = {
   category: '', remote: '', ageFilter: '', listingFilter: 'active',
   sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score'
 };
-const savedFilters = JSON.parse(localStorage.getItem('jobFilters') || '{}');
+const filterDefaults = {
+  overseas_remote: { query: '', source: '', category: '', remote: '', eligibility: 'likely', domesticProvince: '', domesticLocality: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score', statusFilter: 'active' },
+  domestic: { query: '', source: '', category: '', remote: '', eligibility: '', domesticProvince: '', domesticLocality: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score', statusFilter: 'active' }
+};
+const legacySavedFilters = JSON.parse(localStorage.getItem('jobFilters') || '{}');
+const savedFiltersByMarket = JSON.parse(localStorage.getItem('jobFiltersByMarket') || '{}');
 const filterSchemaVersion = Number(localStorage.getItem('jobFilterSchemaVersion') || 0);
 if (filterSchemaVersion < 3) {
-  if (savedFilters.minScore === undefined || savedFilters.minScore === '0') savedFilters.minScore = '20';
-  if (savedFilters.listingFilter === undefined) savedFilters.listingFilter = 'active';
+  if (legacySavedFilters.minScore === undefined || legacySavedFilters.minScore === '0') legacySavedFilters.minScore = '20';
+  if (legacySavedFilters.listingFilter === undefined) legacySavedFilters.listingFilter = 'active';
   const oldEligibilityMap = {
     '한국 명시': 'korea',
     '한국에서 지원 가능': 'korea',
@@ -52,22 +58,29 @@ if (filterSchemaVersion < 3) {
     '확인 필요': 'unknown',
     '현지 근무/확인 필요': 'restricted'
   };
-  savedFilters.eligibility = oldEligibilityMap[savedFilters.eligibility] ?? 'likely';
-  if (['korea', 'worldwide'].includes(savedFilters.remote)) savedFilters.remote = '';
+  legacySavedFilters.eligibility = oldEligibilityMap[legacySavedFilters.eligibility] ?? 'likely';
+  if (['korea', 'worldwide'].includes(legacySavedFilters.remote)) legacySavedFilters.remote = '';
   localStorage.setItem('jobFilterSchemaVersion', '3');
-  localStorage.setItem('jobFilters', JSON.stringify(savedFilters));
+  localStorage.setItem('jobFilters', JSON.stringify(legacySavedFilters));
 }
 if (filterSchemaVersion < 4) {
-  if (savedFilters.paymentFilter === 'caution') savedFilters.paymentFilter = 'has_caution';
-  if (savedFilters.paymentFilter === 'not_payer') savedFilters.paymentFilter = 'not_applicable';
+  if (legacySavedFilters.paymentFilter === 'caution') legacySavedFilters.paymentFilter = 'has_caution';
+  if (legacySavedFilters.paymentFilter === 'not_payer') legacySavedFilters.paymentFilter = 'not_applicable';
   localStorage.setItem('jobFilterSchemaVersion', '4');
-  localStorage.setItem('jobFilters', JSON.stringify(savedFilters));
+  localStorage.setItem('jobFilters', JSON.stringify(legacySavedFilters));
 }
 if (filterSchemaVersion < 5) {
-  if (savedFilters.requirementsFilter === undefined) savedFilters.requirementsFilter = '';
+  if (legacySavedFilters.requirementsFilter === undefined) legacySavedFilters.requirementsFilter = '';
   localStorage.setItem('jobFilterSchemaVersion', '5');
-  localStorage.setItem('jobFilters', JSON.stringify(savedFilters));
+  localStorage.setItem('jobFilters', JSON.stringify(legacySavedFilters));
 }
+if (filterSchemaVersion < 6) {
+  if (!savedFiltersByMarket.overseas_remote) savedFiltersByMarket.overseas_remote = { ...legacySavedFilters };
+  localStorage.setItem('jobFiltersByMarket', JSON.stringify(savedFiltersByMarket));
+  localStorage.setItem('jobFilterSchemaVersion', '6');
+}
+if (!savedFiltersByMarket.overseas_remote) savedFiltersByMarket.overseas_remote = { ...legacySavedFilters };
+const savedFilters = { ...filterDefaults[state.marketTab], ...(savedFiltersByMarket[state.marketTab] || {}) };
 function updateAdvancedFilterSummary() {
   const summary = $('advancedFiltersSummary');
   if (!summary) return;
@@ -78,15 +91,18 @@ function updateAdvancedFilterSummary() {
 }
 
 for (const id of controls) {
-  if (!['source', 'category'].includes(id) && savedFilters[id] !== undefined) $(id).value = savedFilters[id];
+  if (!['source', 'category', 'domesticProvince', 'domesticLocality'].includes(id) && savedFilters[id] !== undefined) $(id).value = savedFilters[id];
   $(id).addEventListener('input', () => {
     state.visibleLimit = 60;
     state.selectedIds.clear();
+    if (id === 'domesticProvince') updateDomesticLocalityOptions();
     persistFilters();
     updateAdvancedFilterSummary();
     render();
   });
 }
+$('marketOverseas').addEventListener('click', () => setMarketTab('overseas_remote'));
+$('marketDomestic').addEventListener('click', () => setMarketTab('domestic'));
 const advancedFilters = $('advancedFilters');
 if (advancedFilters) {
   const storedOpen = localStorage.getItem('jobAdvancedFiltersOpen');
@@ -94,6 +110,7 @@ if (advancedFilters) {
   advancedFilters.addEventListener('toggle', () => localStorage.setItem('jobAdvancedFiltersOpen', String(advancedFilters.open)));
 }
 updateAdvancedFilterSummary();
+updateMarketUI();
 
 function formatDate(value) {
   if (!value) return '게시일 미상';
@@ -146,10 +163,99 @@ function migrateLegacyState() {
   return known;
 }
 
+function currentFilterValues() {
+  return Object.fromEntries(controls.map((id) => [id, $(id)?.value ?? '']));
+}
+
 function persistFilters() {
-  const values = {};
-  for (const id of controls) values[id] = $(id).value;
+  const values = currentFilterValues();
+  savedFiltersByMarket[state.marketTab] = values;
+  localStorage.setItem('jobFiltersByMarket', JSON.stringify(savedFiltersByMarket));
   localStorage.setItem('jobFilters', JSON.stringify(values));
+  localStorage.setItem('jobMarketTab', state.marketTab);
+}
+
+function applyFilterValues(values = {}) {
+  const merged = { ...filterDefaults[state.marketTab], ...values };
+  for (const id of controls) {
+    const element = $(id);
+    if (!element || ['source', 'category', 'domesticProvince', 'domesticLocality'].includes(id)) continue;
+    const value = String(merged[id] ?? '');
+    if (element.tagName === 'SELECT' && ![...element.options].some((option) => option.value === value)) continue;
+    element.value = value;
+  }
+}
+
+function jobMarketScopes(job) {
+  if (Array.isArray(job.marketScopes) && job.marketScopes.length) return job.marketScopes;
+  return [job.marketSegment || 'overseas_remote'];
+}
+
+function setMarketTab(market) {
+  if (!['overseas_remote', 'domestic'].includes(market) || market === state.marketTab) return;
+  persistFilters();
+  state.marketTab = market;
+  state.visibleLimit = 60;
+  state.selectedIds.clear();
+  applyFilterValues(savedFiltersByMarket[market] || filterDefaults[market]);
+  updateMarketUI();
+  updateDynamicFilters(true);
+  persistFilters();
+  renderStats();
+  render();
+}
+
+function updateMarketUI() {
+  for (const button of document.querySelectorAll('.market-tab')) {
+    const selected = button.dataset.market === state.marketTab;
+    button.setAttribute('aria-pressed', String(selected));
+    button.classList.toggle('active', selected);
+  }
+  for (const element of document.querySelectorAll('.market-overseas-only')) element.hidden = state.marketTab !== 'overseas_remote';
+  for (const element of document.querySelectorAll('.market-domestic-only')) element.hidden = state.marketTab !== 'domestic';
+  const distanceOption = $('sort')?.querySelector('option[value="distance"]');
+  if (distanceOption) distanceOption.hidden = state.marketTab !== 'domestic';
+  const reference = state.meta?.locationReference;
+  if ($('distanceReference')) {
+    $('distanceReference').textContent = reference
+      ? `거리 기준 · ${reference.label} · 직선거리 기준(실제 이동거리 아님)`
+      : '거리 기준 · 전북특별자치도 전주시 덕진구 산정동 · 직선거리 기준';
+  }
+}
+
+function haversineKm(a, b) {
+  if (![a?.lat, a?.lon, b?.lat, b?.lon].every(Number.isFinite)) return null;
+  const toRad = (value) => value * Math.PI / 180;
+  const dLat = toRad(b.lat - a.lat);
+  const dLon = toRad(b.lon - a.lon);
+  const lat1 = toRad(a.lat);
+  const lat2 = toRad(b.lat);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+  return 6371 * 2 * Math.asin(Math.sqrt(h));
+}
+
+function distanceSummary(job) {
+  if (!jobMarketScopes(job).includes('domestic')) return null;
+  if (job.remote && !/hybrid/i.test(job.workplaceMode || '')) {
+    return { value: '원격 · 출근 거리 비해당', note: '한국 내 지원 지역은 확인되지만 출근 위치 비교 대상이 아닙니다.', km: null, kind: 'remote' };
+  }
+  const region = job.domesticRegion || {};
+  const reference = state.meta?.locationReference || { lat: 35.84434, lon: 127.1736277, label: '전북특별자치도 전주시 덕진구 산정동' };
+  const km = haversineKm(reference, { lat: region.lat, lon: region.lon });
+  if (!Number.isFinite(km)) {
+    return { value: '주소 부족으로 거리 계산 불가', note: '공고에 거리 계산에 충분한 주소·좌표가 없습니다.', km: null, kind: 'unknown' };
+  }
+  const rounded = km < 10 ? Math.round(km * 10) / 10 : Math.round(km);
+  const regionBased = !['exact', 'address', 'coordinates'].includes(region.coordinatePrecision);
+  const targetEvidence = regionBased
+    ? `${region.label || region.province || '공고 지역'} 기준`
+    : '공고 위치 좌표 기준';
+  return {
+    value: regionBased ? `지역 기준 직선거리 약 ${rounded}km` : `직선거리 약 ${rounded}km`,
+    note: `${targetEvidence} · ${reference.label}에서의 직선거리 · 실제 도로 이동거리 아님${region.coordinateSource ? ` · 좌표 ${region.coordinateSource}` : ''}`,
+    km,
+    kind: regionBased ? 'region' : 'exact'
+  };
 }
 
 function mergeJobs() {
@@ -204,6 +310,8 @@ function filteredJobs() {
   const category = $('category').value;
   const remote = $('remote').value;
   const eligibility = $('eligibility').value;
+  const domesticProvince = $('domesticProvince').value;
+  const domesticLocality = $('domesticLocality').value;
   const compensationFilter = $('compensationFilter').value;
   const ageFilter = Number($('ageFilter').value || 0);
   const listingFilter = $('listingFilter').value;
@@ -213,14 +321,22 @@ function filteredJobs() {
   const status = $('statusFilter').value;
   const minScore = Number($('minScore').value);
   let jobs = state.jobs.filter((job) => {
-    const haystack = [job.title, job.company, job.location, job.description, job.category, salaryLabel(job), ...(job.tags || []), ...(job.matchedKeywords || [])].join(' ').toLowerCase();
+    if (!jobMarketScopes(job).includes(state.marketTab)) return false;
+    const region = job.domesticRegion || {};
+    const haystack = [job.title, job.company, job.location, region.label, region.province, region.locality, job.description, job.category, salaryLabel(job), ...(job.tags || []), ...(job.matchedKeywords || [])].join(' ').toLowerCase();
     const jobState = state.jobStates[job.id] || '';
     const hidden = state.hiddenIds.has(job.id);
     if (q && !haystack.includes(q)) return false;
     if (source && job.source !== source && !(job.sources || []).includes(source)) return false;
     if (category && job.category !== category) return false;
-    if (eligibility === 'likely' && !['korea', 'worldwide'].includes(job.eligibilityCode)) return false;
-    if (eligibility && eligibility !== 'likely' && job.eligibilityCode !== eligibility) return false;
+    if (state.marketTab === 'overseas_remote') {
+      if (eligibility === 'likely' && !['korea', 'worldwide'].includes(job.eligibilityCode)) return false;
+      if (eligibility && eligibility !== 'likely' && job.eligibilityCode !== eligibility) return false;
+    }
+    if (state.marketTab === 'domestic') {
+      if (domesticProvince && region.province !== domesticProvince) return false;
+      if (domesticLocality && region.locality !== domesticLocality) return false;
+    }
     if (!compensationMatches(job, compensationFilter)) return false;
     if (ageFilter) {
       const posted = Date.parse(job.postedAt);
@@ -252,6 +368,13 @@ function filteredJobs() {
     if (sort === 'oldest') return (Date.parse(a.postedAt) || 0) - (Date.parse(b.postedAt) || 0);
     if (sort === 'company') return a.company.localeCompare(b.company, 'ko');
     if (sort === 'title') return a.title.localeCompare(b.title, 'ko');
+    if (sort === 'distance') {
+      const aDistance = distanceSummary(a)?.km;
+      const bDistance = distanceSummary(b)?.km;
+      const distanceDiff = (Number.isFinite(aDistance) ? aDistance : Number.POSITIVE_INFINITY)
+        - (Number.isFinite(bDistance) ? bDistance : Number.POSITIVE_INFINITY);
+      if (distanceDiff) return distanceDiff;
+    }
     const aReviewed = state.reviewedIds.has(a.id) ? 1 : 0;
     const bReviewed = state.reviewedIds.has(b.id) ? 1 : 0;
     if (aReviewed !== bReviewed) return aReviewed - bReviewed;
@@ -288,10 +411,12 @@ function filteredJobs() {
 }
 
 function renderStats() {
-  const recommended = state.jobs.filter((j) => !state.hiddenIds.has(j.id) && isRecommendedJob(j)).length;
-  const saved = state.favorites.size;
-  const planned = Object.values(state.jobStates).filter((v) => v === 'planned').length;
-  const unreviewed = state.jobs.filter((j) => !state.hiddenIds.has(j.id) && !state.reviewedIds.has(j.id) && isRecommendedJob(j)).length;
+  const marketJobs = state.jobs.filter((job) => jobMarketScopes(job).includes(state.marketTab));
+  const marketIds = new Set(marketJobs.map((job) => job.id));
+  const recommended = marketJobs.filter((j) => !state.hiddenIds.has(j.id) && isRecommendedJob(j)).length;
+  const saved = [...state.favorites].filter((id) => marketIds.has(id)).length;
+  const planned = Object.entries(state.jobStates).filter(([id, value]) => marketIds.has(id) && value === 'planned').length;
+  const unreviewed = marketJobs.filter((j) => !state.hiddenIds.has(j.id) && !state.reviewedIds.has(j.id) && isRecommendedJob(j)).length;
   $('stats').innerHTML = [
     ['추천 공고', `${recommended}개`],
     ['관심 공고', `${saved}개`],
@@ -705,6 +830,14 @@ function openDetails(job) {
   $('detailsCompensation').classList.toggle('limited', compensation.limited);
   $('detailsCompensationValue').textContent = compensation.value;
   $('detailsCompensationNote').textContent = compensation.note;
+  const distance = distanceSummary(job);
+  $('detailsDistance').hidden = !distance || state.marketTab !== 'domestic';
+  if (distance && state.marketTab === 'domestic') {
+    $('detailsDistance').classList.toggle('unknown', distance.kind === 'unknown');
+    $('detailsDistance').classList.toggle('remote', distance.kind === 'remote');
+    $('detailsDistanceValue').textContent = distance.value;
+    $('detailsDistanceNote').textContent = distance.note;
+  }
   $('detailsMeta').innerHTML = [job.location, job.type, job.eligibility, job.category].filter(Boolean).map((v) => `<span>${escapeHtml(v)}</span>`).join('');
   const payment = effectivePaymentEvidence(job);
   $('detailsTrust').innerHTML = [
@@ -844,6 +977,15 @@ function render() {
     compensationNode.classList.toggle('limited', compensation.limited);
     node.querySelector('.compensation-value').textContent = compensation.value;
     node.querySelector('.compensation-note').textContent = compensation.note;
+    const distance = distanceSummary(job);
+    const distanceNode = node.querySelector('.distance-summary');
+    distanceNode.hidden = !distance || state.marketTab !== 'domestic';
+    if (distance && state.marketTab === 'domestic') {
+      distanceNode.classList.toggle('unknown', distance.kind === 'unknown');
+      distanceNode.classList.toggle('remote', distance.kind === 'remote');
+      node.querySelector('.distance-value').textContent = distance.value;
+      node.querySelector('.distance-note').textContent = distance.note;
+    }
     const meta = [job.location, job.type, job.category].filter(Boolean);
     node.querySelector('.meta').innerHTML = meta.map((v) => `<span>${escapeHtml(v)}</span>`).join('');
     node.querySelector('.description').textContent = job.description || '상세 설명 없음';
@@ -941,12 +1083,9 @@ function applyBatch(action) {
 }
 
 function resetFilters() {
-  const defaults = {
-    query: '', source: '', category: '', remote: '', eligibility: 'likely', compensationFilter: '', ageFilter: '',
-    listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20',
-    sort: 'score', statusFilter: 'active'
-  };
+  const defaults = filterDefaults[state.marketTab];
   for (const [id, value] of Object.entries(defaults)) if ($(id)) $(id).value = value;
+  updateDomesticLocalityOptions();
   state.visibleLimit = 60;
   persistFilters();
   updateAdvancedFilterSummary();
@@ -954,9 +1093,10 @@ function resetFilters() {
 }
 
 function exportState() {
+  persistFilters();
   const payload = {
     schema: 'job-search-radar-state',
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     favorites: [...state.favorites],
     jobStates: state.jobStates,
@@ -965,7 +1105,9 @@ function exportState() {
     newIds: [...state.newIds],
     manualJobs: state.manualJobs,
     trackedJobs: state.trackedJobs,
-    filters: Object.fromEntries(controls.map((id) => [id, $(id).value])),
+    marketTab: state.marketTab,
+    filters: currentFilterValues(),
+    filtersByMarket: savedFiltersByMarket,
     knownJobIds: JSON.parse(localStorage.getItem('knownJobIds') || '[]')
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -986,7 +1128,7 @@ function mergeArraySet(target, values) {
 
 async function importState(file) {
   const payload = JSON.parse(await file.text());
-  if (payload?.schema !== 'job-search-radar-state' || payload?.version !== 1) throw new Error('지원하지 않는 백업 파일입니다.');
+  if (payload?.schema !== 'job-search-radar-state' || ![1, 2].includes(payload?.version)) throw new Error('지원하지 않는 백업 파일입니다.');
   mergeArraySet(state.favorites, payload.favorites);
   mergeArraySet(state.hiddenIds, payload.hiddenIds);
   mergeArraySet(state.reviewedIds, payload.reviewedIds);
@@ -1014,21 +1156,25 @@ async function importState(file) {
   const known = new Set(JSON.parse(localStorage.getItem('knownJobIds') || '[]'));
   mergeArraySet(known, payload.knownJobIds);
   localStorage.setItem('knownJobIds', JSON.stringify([...known]));
-  if (payload.filters && typeof payload.filters === 'object') {
-    for (const id of controls) {
-      if (payload.filters[id] === undefined || !$(id)) continue;
-      const element = $(id);
-      const value = String(payload.filters[id]);
-      if (element.tagName === 'SELECT' && ![...element.options].some((option) => option.value === value)) continue;
-      element.value = value;
+  if (payload.filtersByMarket && typeof payload.filtersByMarket === 'object' && !Array.isArray(payload.filtersByMarket)) {
+    for (const market of ['overseas_remote', 'domestic']) {
+      if (payload.filtersByMarket[market] && typeof payload.filtersByMarket[market] === 'object') {
+        savedFiltersByMarket[market] = { ...filterDefaults[market], ...payload.filtersByMarket[market] };
+      }
     }
-    persistFilters();
+  } else if (payload.filters && typeof payload.filters === 'object') {
+    savedFiltersByMarket.overseas_remote = { ...filterDefaults.overseas_remote, ...payload.filters };
   }
+  if (['overseas_remote', 'domestic'].includes(payload.marketTab)) state.marketTab = payload.marketTab;
+  localStorage.setItem('jobMarketTab', state.marketTab);
   mergeJobs();
   migrateLegacyState();
   state.newIds = reconcileNewIds(state.newIds, state.reviewedIds, new Set(state.jobs.map((job) => job.id)));
   persist();
-  updateDynamicFilters();
+  applyFilterValues(savedFiltersByMarket[state.marketTab] || filterDefaults[state.marketTab]);
+  updateMarketUI();
+  updateDynamicFilters(true);
+  persistFilters();
   renderStats();
   render();
 }
@@ -1050,16 +1196,41 @@ function fillSelect(id, values) {
   select.value = current;
 }
 
-function updateDynamicFilters() {
-  fillSelect('source', state.jobs.flatMap((job) => job.sources?.length ? job.sources : [job.source]));
-  fillSelect('category', state.jobs.map((job) => job.category));
-  if (!state.dynamicFiltersInitialized) {
+function updateDomesticLocalityOptions(preferred = null) {
+  const province = $('domesticProvince')?.value || '';
+  const values = state.jobs
+    .filter((job) => jobMarketScopes(job).includes('domestic'))
+    .filter((job) => !province || job.domesticRegion?.province === province)
+    .map((job) => job.domesticRegion?.locality)
+    .filter(Boolean);
+  fillSelect('domesticLocality', values);
+  const desired = preferred ?? $('domesticLocality').value;
+  if (desired && [...$('domesticLocality').options].some((option) => option.value === desired)) $('domesticLocality').value = desired;
+}
+
+function updateDynamicFilters(forceSaved = false) {
+  const marketJobs = state.jobs.filter((job) => jobMarketScopes(job).includes(state.marketTab));
+  const desired = { ...filterDefaults[state.marketTab], ...(savedFiltersByMarket[state.marketTab] || {}) };
+  fillSelect('source', marketJobs.flatMap((job) => job.sources?.length ? job.sources : [job.source]));
+  fillSelect('category', marketJobs.map((job) => job.category));
+  if (state.marketTab === 'domestic') {
+    fillSelect('domesticProvince', marketJobs.map((job) => job.domesticRegion?.province).filter(Boolean));
+    if ((forceSaved || !state.dynamicFiltersInitialized) && desired.domesticProvince && [...$('domesticProvince').options].some((option) => option.value === desired.domesticProvince)) {
+      $('domesticProvince').value = desired.domesticProvince;
+    }
+    updateDomesticLocalityOptions((forceSaved || !state.dynamicFiltersInitialized) ? desired.domesticLocality : null);
+  } else {
+    $('domesticProvince').value = '';
+    updateDomesticLocalityOptions('');
+  }
+  if (forceSaved || !state.dynamicFiltersInitialized) {
     for (const id of ['source', 'category']) {
-      const value = savedFilters[id];
+      const value = desired[id];
       if (value !== undefined && [...$(id).options].some((option) => option.value === value)) $(id).value = value;
     }
     state.dynamicFiltersInitialized = true;
   }
+  updateMarketUI();
   updateAdvancedFilterSummary();
 }
 
@@ -1324,6 +1495,18 @@ $('addForm').addEventListener('submit', (event) => {
     applyValueReasons: ['사용자가 직접 검토 대상으로 추가함'],
     decisionUnknowns: ['현재 모집 여부', '지원 가능 국가', '급여·단가', '지급 신뢰 근거'],
     score: 50,
+    marketScopes: [state.marketTab],
+    marketSegment: state.marketTab,
+    ...(state.marketTab === 'domestic' ? {
+      domesticRegion: {
+        country: '대한민국',
+        province: $('domesticProvince').value || '',
+        locality: $('domesticLocality').value || '',
+        label: [$('domesticProvince').value, $('domesticLocality').value].filter(Boolean).join(' ') || String(data.location || '').trim(),
+        evidenceLevel: 'manual_tab_context'
+      },
+      workplaceMode: form.has('remote') ? 'remote' : 'unknown'
+    } : {}),
     manual: true
   };
   state.manualJobs.unshift(manual);

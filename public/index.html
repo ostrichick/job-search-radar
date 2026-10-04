@@ -24,6 +24,10 @@
   </header>
 
   <main>
+    <nav class="market-tabs" aria-label="공고 탐색 범위">
+      <button id="marketOverseas" class="market-tab" type="button" aria-pressed="true" data-market="overseas_remote">해외 / 원격근무</button>
+      <button id="marketDomestic" class="market-tab" type="button" aria-pressed="false" data-market="domestic">국내</button>
+    </nav>
     <section class="stats" id="stats"></section>
 
     <section class="panel filters">
@@ -35,7 +39,7 @@
         <label for="source">소스</label>
         <select id="source"><option value="">전체</option></select>
       </div>
-      <div class="field">
+      <div class="field market-overseas-only">
         <label for="eligibility">지원 범위</label>
         <select id="eligibility">
           <option value="likely" selected>한국 / Worldwide</option>
@@ -45,6 +49,14 @@
           <option value="restricted">특정 국가 제한</option>
           <option value="unknown">확인 필요</option>
         </select>
+      </div>
+      <div class="field market-domestic-only" hidden>
+        <label for="domesticProvince">시·도</label>
+        <select id="domesticProvince"><option value="">전체 시·도</option></select>
+      </div>
+      <div class="field market-domestic-only" hidden>
+        <label for="domesticLocality">시·군·구</label>
+        <select id="domesticLocality"><option value="">전체 시·군·구</option></select>
       </div>
       <div class="field">
         <label for="compensationFilter">보수 정보</label>
@@ -158,6 +170,7 @@
             <label for="sort">정렬</label>
             <select id="sort">
               <option value="score">오늘 먼저 볼 순</option>
+              <option value="distance" hidden>거리 가까운 순</option>
               <option value="newest">최신 순</option>
               <option value="oldest">오래된 순</option>
               <option value="company">회사명</option>
@@ -166,6 +179,7 @@
           </div>
         </div>
       </details>
+      <p id="distanceReference" class="distance-reference market-domestic-only" hidden></p>
     </section>
 
     <section id="batchBar" class="batch-bar" hidden aria-live="polite">
@@ -233,6 +247,7 @@
         <strong class="compensation-value"></strong>
         <span class="compensation-note"></span>
       </div>
+      <div class="distance-summary" aria-label="기준 위치 거리" hidden><span class="distance-label">거리</span><strong class="distance-value"></strong><span class="distance-note"></span></div>
       <div class="meta"></div>
       <p class="description"></p>
       <div class="tags"></div>
@@ -254,6 +269,11 @@
       <span class="compensation-label">보수</span>
       <strong id="detailsCompensationValue" class="compensation-value"></strong>
       <span id="detailsCompensationNote" class="compensation-note"></span>
+    </div>
+    <div id="detailsDistance" class="details-distance" aria-label="기준 위치 거리" hidden>
+      <span class="distance-label">거리</span>
+      <strong id="detailsDistanceValue" class="distance-value"></strong>
+      <span id="detailsDistanceNote" class="distance-note"></span>
     </div>
     <div id="detailsMeta" class="meta"></div>
     <section class="trust-panel" aria-labelledby="trustHeading">

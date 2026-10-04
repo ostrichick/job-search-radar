@@ -61,6 +61,8 @@ function job(overrides = {}) {
     verificationHistory: [{ at: now, event: 'verified_unchanged', fromStatus: 'verified_open', toStatus: 'verified_open', reason: '변경 없이 재검증됨' }],
     stale: false,
     score: 90,
+    marketScopes: ['overseas_remote'],
+    marketSegment: 'overseas_remote',
     matchedKeywords: ['korean', 'ai data specialist'],
     fitReasons: ['일치 키워드: korean, ai data specialist', '지원 범위: 한국에서 지원 가능'],
     fitWarnings: [],
@@ -81,6 +83,12 @@ function job(overrides = {}) {
 function feed(jobs) {
   return {
     updatedAt: '2026-10-04T06:00:00.000Z',
+    locationReference: {
+      id: 'kr-jeonbuk-jeonju-deokjin-sanjeong',
+      label: '전북특별자치도 전주시 덕진구 산정동',
+      province: '전북특별자치도', city: '전주시', district: '덕진구', neighborhood: '산정동',
+      lat: 35.84434, lon: 127.1736277, precision: 'neighborhood', coordinateSource: 'OpenStreetMap Nominatim', distanceMethod: 'haversine_straight_line'
+    },
     recommendationPolicyVersion: 1,
     sourceStatus: [{ source: 'RWS TrainAI', ok: true, count: jobs.length, qualityTier: 'strong', kept: jobs.length, recommended: jobs.filter((item) => item.recommendationEligible !== false).length }],
     sourceMetrics: {
@@ -157,6 +165,29 @@ const defaultJobs = [
   })
 ];
 
+const domesticJobs = [
+  job({
+    id: 'job:jeonju-onsite', source: 'KRAFTON', company: '전주 데이터랩', title: 'Korean AI Data Reviewer - Jeonju',
+    location: '전북특별자치도 전주시 덕진구 산정동', remote: false, workplaceMode: 'onsite', type: 'Contract',
+    url: 'https://example.com/job/jeonju-onsite', eligibilityCode: 'korea', eligibility: '한국에서 지원 가능', score: 75,
+    marketScopes: ['domestic'], marketSegment: 'domestic',
+    domesticRegion: { country: '대한민국', province: '전북특별자치도', city: '전주시', district: '덕진구', neighborhood: '산정동', locality: '전주시 덕진구', label: '전북특별자치도 전주시 덕진구 산정동', evidenceLevel: 'source_location_text', lat: 35.84434, lon: 127.1736277, coordinatePrecision: 'neighborhood', coordinateSource: 'OpenStreetMap Nominatim' }
+  }),
+  job({
+    id: 'job:jeonju-unknown-distance', source: 'KRAFTON', company: '전주 AI 교육', title: 'Korean Language AI Evaluator - Jeonju',
+    location: '전북특별자치도 전주시 완산구', remote: false, workplaceMode: 'onsite', type: 'Contract',
+    url: 'https://example.com/job/jeonju-unknown-distance', score: 68,
+    marketScopes: ['domestic'], marketSegment: 'domestic',
+    domesticRegion: { country: '대한민국', province: '전북특별자치도', city: '전주시', district: '완산구', neighborhood: '', locality: '전주시 완산구', label: '전북특별자치도 전주시 완산구', evidenceLevel: 'source_location_text' }
+  }),
+  job({
+    id: 'job:seoul-remote-domestic', source: 'RWS TrainAI', company: 'RWS', title: 'Korean Remote Evaluator - Seoul',
+    location: 'Seoul', remote: true, workplaceMode: 'remote', type: 'Freelance', url: 'https://example.com/job/seoul-remote-domestic', score: 80,
+    marketScopes: ['overseas_remote', 'domestic'], marketSegment: 'overseas_remote',
+    domesticRegion: { country: '대한민국', province: '서울특별시', city: '', district: '', neighborhood: '', locality: '', label: '서울특별시', evidenceLevel: 'source_location_text', lat: 37.5666791, lon: 126.9782914, coordinatePrecision: 'city', coordinateSource: 'OpenStreetMap Nominatim' }
+  })
+];
+
 async function useFeed(page, getFeed = () => feed(defaultJobs)) {
   await page.route('**/jobs.json*', async (route) => {
     await route.fulfill({
@@ -211,6 +242,66 @@ test('기본 정렬은 같은 점수에서 오늘 판단하기 쉬운 공고를 
 
   await page.locator('#sort').selectOption('newest');
   await expect(page.locator('.job-card .title').first()).toHaveText('Korean Reviewer - More Unknowns');
+});
+
+test('기본은 해외·원격이고 국내 탭에서 시도→시군구와 산정동 기준 거리를 구분한다', async ({ page }) => {
+  await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
+  await page.goto('/');
+
+  await expect(page.locator('#marketOverseas')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.job-card').filter({ hasText: 'Korean Remote Evaluator - Seoul' })).toHaveCount(1);
+  await expect(page.locator('.job-card').filter({ hasText: 'Korean AI Data Reviewer - Jeonju' })).toHaveCount(0);
+
+  await page.locator('#marketDomestic').click();
+  await expect(page.locator('#marketDomestic')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#distanceReference')).toContainText('산정동');
+  await expect(page.locator('#distanceReference')).toContainText('직선거리');
+  await expect(page.locator('#domesticProvince')).toContainText('전북특별자치도');
+  await page.locator('#domesticProvince').selectOption('전북특별자치도');
+  await expect(page.locator('#domesticLocality')).toContainText('전주시 덕진구');
+  await page.locator('#domesticLocality').selectOption('전주시 덕진구');
+
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  const card = page.locator('.job-card').filter({ hasText: 'Korean AI Data Reviewer - Jeonju' });
+  await expect(card.locator('.distance-value')).toContainText('지역 기준 직선거리 약 0km');
+  await expect(card.locator('.distance-note')).toContainText('전북특별자치도 전주시 덕진구 산정동 기준');
+  await expect(card.locator('.distance-note')).toContainText('실제 도로 이동거리 아님');
+  await card.locator('.details').click();
+  await expect(page.locator('#detailsDistanceValue')).toContainText('지역 기준 직선거리 약 0km');
+});
+
+test('국내 거리 근거가 부족하거나 원격이면 정밀 거리를 만들지 않는다', async ({ page }) => {
+  await useFeed(page, () => feed(domesticJobs));
+  await page.goto('/');
+  await page.locator('#marketDomestic').click();
+
+  const unknown = page.locator('.job-card').filter({ hasText: 'Korean Language AI Evaluator - Jeonju' });
+  await expect(unknown.locator('.distance-value')).toHaveText('주소 부족으로 거리 계산 불가');
+  const remote = page.locator('.job-card').filter({ hasText: 'Korean Remote Evaluator - Seoul' });
+  await expect(remote.locator('.distance-value')).toHaveText('원격 · 출근 거리 비해당');
+});
+
+test('국내·해외 탭의 검색과 지역 필터는 서로 독립적으로 reload 후 유지된다', async ({ page }) => {
+  await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
+  await page.goto('/');
+  await page.locator('#query').fill('Reviewer');
+  await page.locator('#marketDomestic').click();
+  await page.locator('#domesticProvince').selectOption('전북특별자치도');
+  await page.locator('#domesticLocality').selectOption('전주시 덕진구');
+  await page.locator('#query').fill('Jeonju');
+
+  await page.locator('#marketOverseas').click();
+  await expect(page.locator('#query')).toHaveValue('Reviewer');
+  await page.locator('#marketDomestic').click();
+  await expect(page.locator('#query')).toHaveValue('Jeonju');
+  await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
+  await expect(page.locator('#domesticLocality')).toHaveValue('전주시 덕진구');
+
+  await page.reload();
+  await expect(page.locator('#marketDomestic')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#query')).toHaveValue('Jeonju');
+  await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
+  await expect(page.locator('#domesticLocality')).toHaveValue('전주시 덕진구');
 });
 
 test('상태와 동적 소스 필터가 reload 후 유지된다', async ({ page }) => {
@@ -301,7 +392,7 @@ test('상세 이전/다음과 근거 패널이 현재 필터 큐를 따른다', 
 
 test('390px viewport에서 가로 overflow가 없다', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await useFeed(page);
+  await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
   await page.goto('/');
   expect(await page.locator('#advancedFilters').evaluate((element) => element.open)).toBe(false);
   const widths = await page.evaluate(() => ({
@@ -317,7 +408,77 @@ test('390px viewport에서 가로 overflow가 없다', async ({ page }) => {
   expect(widths.firstCardY).toBeLessThan(1100);
   expect(widths.selectHitWidth).toBeGreaterThanOrEqual(43);
   expect(widths.selectHitHeight).toBeGreaterThanOrEqual(43);
-  await expect(page.locator('.job-card')).toHaveCount(3);
+  await expect(page.locator('.job-card')).toHaveCount(4);
+  await page.locator('#marketDomestic').click();
+  const domesticWidths = await page.evaluate(() => ({ inner: innerWidth, html: document.documentElement.scrollWidth, body: document.body.scrollWidth }));
+  expect(domesticWidths.html).toBeLessThanOrEqual(domesticWidths.inner);
+  expect(domesticWidths.body).toBeLessThanOrEqual(domesticWidths.inner);
+  await expect(page.locator('#distanceReference')).toContainText('직선거리');
+});
+
+test('1440px 실제 브라우저에서 overflow·console 오류·이름 없는 주요 컨트롤이 없다', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const browserErrors = [];
+  const failedResponses = [];
+  page.on('pageerror', (error) => browserErrors.push(`page: ${error.message}`));
+  page.on('console', (message) => {
+    if (message.type() === 'error') browserErrors.push(`console: ${message.text()}`);
+  });
+  page.on('response', (response) => {
+    if (response.status() >= 400) failedResponses.push({ url: response.url(), status: response.status() });
+  });
+  await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
+  await page.goto('/');
+  await page.locator('#marketDomestic').click();
+
+  const audit = await page.evaluate(() => {
+    const interactive = [...document.querySelectorAll('button, a[href], input, select, textarea')]
+      .filter((element) => !element.hidden && !element.closest('[hidden]'));
+    const unnamed = interactive.filter((element) => {
+      const id = element.id;
+      const label = id ? document.querySelector(`label[for="${CSS.escape(id)}"]`)?.textContent : '';
+      const wrappingLabel = element.closest('label')?.textContent || '';
+      const labelledBy = (element.getAttribute('aria-labelledby') || '')
+        .split(/\s+/)
+        .filter(Boolean)
+        .map((labelId) => document.getElementById(labelId)?.textContent || '')
+        .join(' ');
+      const name = (
+        element.getAttribute('aria-label')
+        || element.getAttribute('title')
+        || label
+        || wrappingLabel
+        || labelledBy
+        || element.textContent
+        || element.getAttribute('value')
+        || ''
+      ).trim();
+      return !name;
+    }).map((element) => `${element.tagName.toLowerCase()}#${element.id || ''}`);
+    const navigation = performance.getEntriesByType('navigation')[0];
+    return {
+      inner: window.innerWidth,
+      html: document.documentElement.scrollWidth,
+      body: document.body.scrollWidth,
+      unnamed,
+      resourceCount: performance.getEntriesByType('resource').length,
+      domContentLoaded: navigation ? navigation.domContentLoadedEventEnd : 0
+    };
+  });
+
+  expect(audit.html).toBeLessThanOrEqual(audit.inner);
+  expect(audit.body).toBeLessThanOrEqual(audit.inner);
+  expect(audit.unnamed).toEqual([]);
+  expect(audit.resourceCount).toBeLessThan(20);
+  expect(audit.domContentLoaded).toBeGreaterThan(0);
+  const unexpectedResponses = failedResponses.filter(({ url, status }) => !(status === 404 && /\/api\/jobs(?:$|\?)/.test(url)));
+  const hasExpectedStaticApiFallback = failedResponses.some(({ url, status }) => status === 404 && /\/api\/jobs(?:$|\?)/.test(url));
+  const unexpectedBrowserErrors = browserErrors.filter((message) => !(
+    hasExpectedStaticApiFallback
+    && /Failed to load resource: the server responded with a status of 404 \(Not Found\)/.test(message)
+  ));
+  expect(unexpectedResponses).toEqual([]);
+  expect(unexpectedBrowserErrors).toEqual([]);
 });
 
 test('빈 결과와 로드 오류에서 복구할 수 있다', async ({ page }) => {
@@ -342,11 +503,15 @@ test('빈 결과와 로드 오류에서 복구할 수 있다', async ({ page }) 
 });
 
 test('상태 백업/가져오기는 지원함 상태와 필터를 복원한다', async ({ page }) => {
-  await useFeed(page);
+  await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
   await page.goto('/');
   const target = page.locator('.job-card').filter({ hasText: 'AI Data Specialist - Korean' });
   await target.locator('.job-state').selectOption('applied');
   await page.selectOption('#source', 'RWS TrainAI');
+  await page.locator('#marketDomestic').click();
+  await page.selectOption('#domesticProvince', '전북특별자치도');
+  await page.selectOption('#domesticLocality', '전주시 덕진구');
+  await page.fill('#query', 'Jeonju');
   const [download] = await Promise.all([
     page.waitForEvent('download'),
     page.locator('#exportStateBtn').click()
@@ -359,6 +524,11 @@ test('상태 백업/가져오기는 지원함 상태와 필터를 복원한다',
   await expect(page.locator('#source')).toHaveValue('');
   await page.locator('#importStateFile').setInputFiles(backupPath);
   await expect(page.locator('#toastText')).toContainText('백업 상태를 현재 데이터에 병합했습니다');
+  await expect(page.locator('#marketDomestic')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#query')).toHaveValue('Jeonju');
+  await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
+  await expect(page.locator('#domesticLocality')).toHaveValue('전주시 덕진구');
+  await page.locator('#marketOverseas').click();
   await expect(page.locator('#source')).toHaveValue('RWS TrainAI');
   await page.selectOption('#statusFilter', 'applied');
   await expect(page.locator('.job-card')).toHaveCount(1);

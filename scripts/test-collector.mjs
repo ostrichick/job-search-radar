@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
 import {
+  defaultLocationReference,
+  domesticRegionFor,
+  marketScopesFor,
   eligibilityFor,
   extractSalary,
   relevantToProfile,
@@ -210,6 +213,30 @@ const base = {
   source: 'Welo Global', company: 'Example Inc.', title: 'Korean Evaluator', remote: true,
   type: 'Remote', salary: '', postedAt: new Date().toISOString(), description: '', tags: [], countryCode: ''
 };
+const koreaRemoteMarket = normalizeJob({ ...base, id: 'market-korea-remote', location: 'Seoul', countryCode: 'KR', url: 'https://example.com/market-korea-remote' });
+assert.deepEqual(koreaRemoteMarket.marketScopes, ['overseas_remote', 'domestic'], 'Korea-targeted remote work must remain in the default overseas/remote view and also be discoverable domestically');
+assert.equal(koreaRemoteMarket.domesticRegion.province, '서울특별시');
+const multiCountryRemoteMarket = normalizeJob({ ...base, id: 'market-multi-country', location: 'South Korea + 14개 국가', countryCode: 'KR', url: 'https://example.com/market-multi-country' });
+assert.deepEqual(multiCountryRemoteMarket.marketScopes, ['overseas_remote'], 'multi-country remote projects must not masquerade as a domestic workplace listing');
+assert.equal(multiCountryRemoteMarket.domesticRegion, null);
+const sanjeongDomestic = normalizeJob({
+  ...base,
+  id: 'market-sanjeong-onsite',
+  location: '전북특별자치도 전주시 덕진구 산정동',
+  remote: false,
+  workplaceMode: 'onsite',
+  countryCode: 'KR',
+  url: 'https://example.com/market-sanjeong-onsite'
+});
+assert.deepEqual(sanjeongDomestic.marketScopes, ['domestic']);
+assert.equal(sanjeongDomestic.domesticRegion.province, '전북특별자치도');
+assert.equal(sanjeongDomestic.domesticRegion.locality, '전주시 덕진구');
+assert.equal(sanjeongDomestic.domesticRegion.neighborhood, '산정동');
+assert.equal(sanjeongDomestic.domesticRegion.lat, defaultLocationReference.lat);
+assert.equal(sanjeongDomestic.domesticRegion.coordinatePrecision, 'neighborhood');
+assert.deepEqual(marketScopesFor(sanjeongDomestic), ['domestic']);
+assert.equal(domesticRegionFor({ location: 'South Korea + 6개 국가', countryCode: 'KR' }), null);
+
 const korea = normalizeJob({ ...base, id: 'one', location: 'South Korea', url: 'https://example.com/korea' });
 const france = normalizeJob({ ...base, id: 'two', location: 'France', url: 'https://example.com/france' });
 const regional = dedupe([korea, france]);
@@ -229,6 +256,14 @@ const regionalBoardCopies = dedupe([berlin, paris]);
 assert.equal(regionalBoardCopies.length, 2, 'same title/company in different restricted locations must not merge');
 assert.equal(new Set(regionalBoardCopies.map((job) => job.id)).size, 2);
 
+const domesticSeoul = normalizeJob({ ...base, id: 'domestic-seoul', location: '서울특별시', remote: false, workplaceMode: 'onsite', countryCode: 'KR', url: 'https://example.com/domestic-seoul' });
+const domesticJeonju = normalizeJob({ ...base, id: 'domestic-jeonju', location: '전북특별자치도 전주시 덕진구', remote: false, workplaceMode: 'onsite', countryCode: 'KR', url: 'https://example.com/domestic-jeonju' });
+const domesticLocationCopies = dedupe([domesticSeoul, domesticJeonju]);
+assert.equal(domesticLocationCopies.length, 2, 'same company/title in different domestic localities must remain distinct');
+assert.equal(new Set(domesticLocationCopies.map((job) => job.id)).size, 2);
+assert.equal(dedupe([korea])[0].id, dedupe([normalizeJob({ ...base, id: 'korea-same', location: 'South Korea', url: 'https://example.com/korea-same' })])[0].id,
+  'Korea-targeted remote stable ids must not change just because domestic discovery was added');
+
 const priorUnknown = dedupe([normalizeJob({ ...base, id: 'remoteok:42', source: 'Remote OK', location: 'Remote', url: 'https://example.com/same' })])[0];
 const freshKorea = dedupe([normalizeJob({ ...base, id: 'remoteok:42', source: 'Remote OK', location: 'South Korea', url: 'https://example.com/same' })])[0];
 assert.notEqual(priorUnknown.id, freshKorea.id, 'eligibility changes can legitimately change the stable id');
@@ -241,6 +276,10 @@ const withGracePeriod = carryRecentlyMissing([], [disappeared], now);
 assert.equal(withGracePeriod.length, 1);
 assert.equal(withGracePeriod[0].listingStatus, 'archived_missing');
 assert.equal(withGracePeriod[0].score, 0);
+assert.ok(['clear', 'routine_check', 'hard_check'].includes(withGracePeriod[0].requirementsStatus),
+  'legacy carried jobs must be upgraded to the current requirements contract');
+assert.ok(withGracePeriod[0].requirementsLabel);
+assert.ok(withGracePeriod[0].contentFingerprint, 'legacy carried jobs must retain a stable historical content fingerprint');
 const secondGraceCycle = carryRecentlyMissing([], withGracePeriod, now + 86400000);
 assert.equal(secondGraceCycle.length, 1, 'relevant archived_missing jobs must remain through subsequent grace-period collections');
 assert.equal(secondGraceCycle[0].listingStatus, 'archived_missing');
@@ -524,6 +563,43 @@ assert.equal(elevenLabsTranscription.salaryInfo.confidence, 'basis_only');
 assert.equal(elevenLabsTranscription.requirementsStatus, 'hard_check');
 assert.ok(elevenLabsTranscription.score < 20, 'mandatory prior transcription/subtitling experience must block the default recommendation');
 assert.match(elevenLabsTranscription.fitWarning, /전사·자막/);
+
+const kraftonLocalization = normalizeJob({
+  ...base,
+  id: 'greenhouse:krafton:8798601002',
+  source: 'KRAFTON',
+  company: 'KRAFTON',
+  title: '[Studio Support Div.] Korean Localization Specialist (1년 이상 / 계약직)',
+  location: 'Seoul; Seoul, South Korea',
+  remote: false,
+  workplaceMode: 'onsite',
+  countryCode: 'KR',
+  url: 'https://job-boards.greenhouse.io/krafton/jobs/8798601002',
+  description: 'Review Korean localization and AI translation quality. Required: at least one year of professional game localization translation, editing, or language QA experience.',
+  tags: ['Localization']
+});
+assert.equal(kraftonLocalization.sourceKind, 'official_ats');
+assert.deepEqual(kraftonLocalization.marketScopes, ['domestic']);
+assert.equal(kraftonLocalization.domesticRegion.province, '서울특별시');
+assert.equal(kraftonLocalization.domesticRegion.coordinatePrecision, 'city');
+assert.equal(kraftonLocalization.requirementsStatus, 'hard_check');
+assert.ok(kraftonLocalization.score < 20, 'professional game localization experience must not be inferred from Korean teaching');
+assert.match(kraftonLocalization.fitWarning, /로컬라이제이션/);
+
+const kraftonDataProgram = normalizeJob({
+  ...base,
+  id: 'greenhouse:krafton:8798984002',
+  source: 'KRAFTON', company: 'KRAFTON',
+  title: '[AI Research Div.] Data Program Manager (경력무관 / 인턴)',
+  location: 'Seoul; Seoul, South Korea', remote: false, workplaceMode: 'onsite', countryCode: 'KR',
+  url: 'https://job-boards.greenhouse.io/krafton/jobs/8798984002',
+  description: 'Plan AI training data sourcing, quality criteria, vendors, and data analysis. No years of prior experience are required.',
+  tags: ['Machine Learning', 'Data']
+});
+assert.ok(kraftonDataProgram.score >= 20, 'exact domestic AI data-program role without hard experience must remain reviewable');
+assert.equal(kraftonDataProgram.requirementsStatus, 'routine_check');
+assert.match(kraftonDataProgram.requirementChecks.map((item) => item.label).join(' '), /ML 논문 이해·기초 데이터 분석/);
+assert.doesNotMatch(kraftonDataProgram.fitWarning, /전문경력/);
 
 const appenLidar = normalizeJob({
   ...base,

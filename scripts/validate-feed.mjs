@@ -16,11 +16,30 @@ assert.ok(feed.recommendationSummary && typeof feed.recommendationSummary === 'o
   'feed must persist recommendationSummary');
 assert.ok(Number.isInteger(feed.recommendationPolicyVersion) && feed.recommendationPolicyVersion >= 1,
   'feed must persist recommendationPolicyVersion');
+assert.ok(feed.locationReference && typeof feed.locationReference === 'object', 'feed must persist the domestic distance reference');
+assert.equal(feed.locationReference.label, '전북특별자치도 전주시 덕진구 산정동', 'distance reference must remain the user-selected Sanjeong-dong baseline');
+assert.ok(Number.isFinite(feed.locationReference.lat) && Number.isFinite(feed.locationReference.lon), 'distance reference must use reproducible coordinates');
+assert.equal(feed.locationReference.distanceMethod, 'haversine_straight_line', 'distance contract must explicitly remain straight-line Haversine');
 
 const ids = feed.jobs.map((job) => job.id);
 assert.equal(new Set(ids).size, ids.length, 'stable job ids must be unique');
 
 for (const job of feed.jobs) {
+  assert.ok(Array.isArray(job.marketScopes) && job.marketScopes.length > 0, `${job.id} must declare at least one market scope`);
+  assert.ok(job.marketScopes.every((scope) => ['overseas_remote', 'domestic'].includes(scope)), `${job.id} market scopes must use the supported contract`);
+  if (job.marketScopes.includes('domestic')) {
+    assert.ok(job.domesticRegion && typeof job.domesticRegion === 'object', `${job.id} domestic discovery requires structured region evidence`);
+    assert.equal(job.domesticRegion.country, '대한민국', `${job.id} domestic region must resolve to Korea`);
+    assert.ok(job.domesticRegion.evidenceLevel, `${job.id} domestic region must explain its evidence level`);
+    const hasLat = job.domesticRegion.lat !== undefined && job.domesticRegion.lat !== null;
+    const hasLon = job.domesticRegion.lon !== undefined && job.domesticRegion.lon !== null;
+    assert.equal(hasLat, hasLon, `${job.id} domestic coordinates must be complete or absent`);
+    if (hasLat) {
+      assert.ok(Number.isFinite(job.domesticRegion.lat) && Number.isFinite(job.domesticRegion.lon), `${job.id} domestic coordinates must be finite`);
+      assert.ok(job.domesticRegion.coordinatePrecision, `${job.id} geocoded domestic region must retain coordinate precision`);
+      assert.ok(job.domesticRegion.coordinateSource, `${job.id} geocoded domestic region must retain coordinate source`);
+    }
+  }
   assert.ok(job.eligibilityCode, `${job.id} must have eligibilityCode`);
   assert.ok(job.eligibilityReason, `${job.id} must explain eligibility classification`);
   assert.ok(job.eligibilityBasis, `${job.id} must identify eligibility evidence basis`);
