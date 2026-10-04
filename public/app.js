@@ -454,13 +454,30 @@ function recentVerificationBadges(job, now = Date.now()) {
     const at = Date.parse(value || '');
     return Number.isFinite(at) && now - at <= days * 86400000;
   };
-  const change = job.lastChangeKind;
-  if ((job.listingStatus === 'source_error' || change === 'source_failed') && recent(job.lastChangeAt || job.missingCheckedAt, 7)) {
-    badges.push({ state: 'source-failed', label: '소스 확인 실패' });
+  const lifecycle = {
+    source_failed: { state: 'source-failed', label: '소스 확인 실패' },
+    content_changed: { state: 'changed', label: '원문 변경됨' },
+    reappeared: { state: 'reappeared', label: '재등장' },
+    source_recovered: { state: 'recovered', label: '소스 복구' }
+  };
+  const recentEvents = (Array.isArray(job.verificationHistory) ? job.verificationHistory : [])
+    .filter((item) => lifecycle[item?.event] && recent(item.at, 7))
+    .slice()
+    .reverse();
+  if (job.listingStatus === 'source_error' && !recentEvents.some((item) => item.event === 'source_failed')) {
+    recentEvents.unshift({ event: 'source_failed', at: job.lastChangeAt || job.sourceFailureCheckedAt || job.missingCheckedAt });
   }
-  if (change === 'content_changed' && recent(job.lastChangeAt, 7)) badges.push({ state: 'changed', label: '원문 변경됨' });
-  if (change === 'reappeared' && recent(job.lastChangeAt, 7)) badges.push({ state: 'reappeared', label: '재등장' });
-  if (change === 'source_recovered' && recent(job.lastChangeAt, 7)) badges.push({ state: 'recovered', label: '소스 복구' });
+  const lifecycleStates = new Set();
+  for (const event of recentEvents) {
+    const badge = lifecycle[event.event];
+    if (!badge || lifecycleStates.has(badge.state)) continue;
+    lifecycleStates.add(badge.state);
+    badges.push(badge);
+    if (badges.length >= 2) break;
+  }
+  if (!badges.length && lifecycle[job.lastChangeKind] && recent(job.lastChangeAt, 7)) {
+    badges.push(lifecycle[job.lastChangeKind]);
+  }
   const payment = effectivePaymentEvidence(job, now);
   if (payment.freshness === 'aging') badges.push({ state: 'aging', label: '근거 만료 임박' });
   if (payment.freshness === 'expired') badges.push({ state: 'expired', label: '지급 근거 만료' });
@@ -641,7 +658,7 @@ function openDetails(job) {
   $('detailsSourceSummary').textContent = job.sourceSummary || '원문에서 모집 상태와 계약·지급 조건을 확인하세요.';
   const sourceMetric = state.meta?.sourceMetrics?.[job.source];
   $('detailsSourceHealth').textContent = sourceMetric
-    ? `소스 품질 ${sourceMetric.qualityTier || '미상'} · 최근 성공 ${Math.round(Number(sourceMetric.recentSuccessRate || 0) * 100)}% · 유효 ${sourceMetric.keptCount || 0}/${sourceMetric.matchedCount || 0} · 근거 갱신 ${sourceMetric.evidenceRefreshability || '미상'}`
+    ? `소스 품질 ${sourceMetric.qualityTier || '미상'} · 최근 성공 ${Math.round(Number(sourceMetric.recentSuccessRate || 0) * 100)}% · 유효 ${sourceMetric.keptCount || 0}/${sourceMetric.matchedCount || 0} (${Math.round(Number(sourceMetric.validJobRate || sourceMetric.keptRate || 0) * 100)}%) · 중복 ${Math.round(Number(sourceMetric.duplicateRate || 0) * 100)}% · 저품질 ${Math.round(Number(sourceMetric.lowQualityRate || 0) * 100)}% · 근거 갱신 ${sourceMetric.evidenceRefreshability || '미상'}`
     : `소스 품질 ${job.sourceQualityTier || '미상'} · 근거 갱신 ${job.sourceEvidenceRefreshability || '미상'}`;
   appendEvidenceLinks($('detailsEvidence'), job.sourceEvidence || []);
   for (const [index, url] of (job.alternateUrls || []).entries()) {

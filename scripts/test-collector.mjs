@@ -16,7 +16,9 @@ import {
   reconcileVerificationHistory,
   buildSourceMetrics,
   applySourceMetricsToJobs,
-  isDefaultRecommendation
+  isDefaultRecommendation,
+  recommendationCollapseRisk,
+  refreshTimeBasedEvidence
 } from './collect-jobs.mjs';
 
 const remote = (location, description = '', countryCode = '') => ({ location, description, remote: true, countryCode });
@@ -84,6 +86,12 @@ assert.equal(perJobApprox.paymentBasis, 'per_task_equivalent');
 const unrelatedAbout = extractSalary('', 'Pay Rate: $13/hour. Are you passionate about language, technology, and data quality?');
 assert.equal(unrelatedAbout.display, '$13/시간');
 
+const regionalOnlyPay = extractSalary('', 'For candidates located in California, New York, Washington, and Colorado, the starting base pay for this position ranges from $15 to $25 per hour. For candidates outside of California, New York, Washington, and Colorado, compensation may fall outside the listed range.');
+assert.equal(regionalOnlyPay.scope, 'regional_only');
+assert.match(regionalOnlyPay.display, /미국 일부 주 기준/);
+assert.match(regionalOnlyPay.display, /\$15–\$25\/시간/);
+assert.match(regionalOnlyPay.display, /기타 지역 단가 확인/);
+
 const fixedHourlyBasis = extractSalary('', 'Compensation is calculated at a fixed hourly rate. The amount depends on language and location.');
 assert.equal(fixedHourlyBasis.confidence, 'basis_only');
 assert.equal(fixedHourlyBasis.display, '금액 비공개 · 시간당 고정 단가');
@@ -96,6 +104,8 @@ assert.equal(perSetBasis.paymentBasis, 'per_completed_set');
 
 assert.equal(relevantToProfile({ title: 'Video Reviewer', description: 'This project involves data annotation for AI training.', tags: [] }), true);
 assert.equal(relevantToProfile({ title: 'Senior Backend Engineer', description: 'Works with data and AI systems.', tags: [] }), false);
+assert.equal(relevantToProfile({ title: 'Remote Office Assistant', description: 'Support administrative operations, bookkeeping, billing, reporting, and data entry.', tags: [] }), true);
+assert.equal(relevantToProfile({ title: 'Remote Office Assistant', description: 'Schedule meetings and answer general phone calls.', tags: [] }), false);
 
 const pool = currentListingState({ source: 'Welo Global', title: 'AI Trainers Network - Korean', description: 'This is not an active job opening.', postedAt: new Date().toISOString() });
 assert.equal(pool.code, 'talent_pool');
@@ -329,6 +339,53 @@ const hardRelatedExperience = normalizeJob({
 assert.ok(hardRelatedExperience.score >= 20, 'verified AI evaluation/annotation/QA capability must satisfy the matching experience requirement');
 assert.doesNotMatch(hardRelatedExperience.fitWarning, /실무 경험/);
 
+const hardSubjectMatterExpert = normalizeJob({
+  ...base,
+  id: 'hard-sme',
+  source: 'LILT Production',
+  title: 'Subject Matter Expert – Retail Trade & Store Operations (English/Korean) – Remote',
+  location: 'Korea (Remote)',
+  url: 'https://example.com/hard-sme',
+  description: 'Qualifications: Native Korean. 5+ years of professional experience in Retail, Store Operations, or related industry background.',
+  tags: ['Korean', 'AI Data Services']
+});
+assert.ok(hardSubjectMatterExpert.score < 20, 'subject-matter expert roles with explicit five-year domain experience must not enter default recommendations');
+assert.equal(hardSubjectMatterExpert.requirementsStatus, 'hard_check');
+assert.match(hardSubjectMatterExpert.fitWarning, /전문경력/);
+
+const boardMetadataConflict = normalizeJob({
+  ...base,
+  id: 'board-metadata-conflict',
+  source: 'Remotive',
+  title: 'Remote Office Assistant',
+  location: 'Worldwide',
+  url: 'https://example.com/board-metadata-conflict',
+  salary: '$35.3k-$52k',
+  salaryProvenance: 'board_metadata',
+  description: 'For candidates located in California, New York, Washington, and Colorado, the starting base pay for this position ranges from $15 to $25 per hour. For candidates outside of California, New York, Washington, and Colorado, compensation may fall outside the listed range. Data entry and reporting are core duties.',
+  tags: ['Operations']
+});
+assert.equal(boardMetadataConflict.salaryProvenance, 'posting_text');
+assert.equal(boardMetadataConflict.salaryMetadataSuppressed, true);
+assert.equal(boardMetadataConflict.salaryMetadataConflict, true);
+assert.match(boardMetadataConflict.salaryInfo.display, /미국 일부 주 기준/);
+
+const boardMetadataOnly = normalizeJob({
+  ...base,
+  id: 'board-metadata-only',
+  source: 'Remote OK',
+  title: 'Korean AI Response Reviewer',
+  location: 'South Korea',
+  url: 'https://example.com/board-metadata-only',
+  salary: '20000',
+  salaryProvenance: 'board_metadata',
+  description: 'The final rate will be specified in the offer. Review Korean AI responses.',
+  tags: ['Korean', 'AI']
+});
+assert.equal(boardMetadataOnly.salaryInfo.display, '');
+assert.equal(boardMetadataOnly.salaryProvenance, 'board_metadata_unverified');
+assert.equal(boardMetadataOnly.salaryMetadataSuppressed, true);
+
 const preferredRelatedExperience = normalizeJob({
   ...base,
   id: 'preferred-related-experience',
@@ -556,6 +613,68 @@ const evidenceAgingHistory = reconcileVerificationHistory(
   Date.parse('2026-10-08T00:00:00Z')
 )[0];
 assert.equal(evidenceAgingHistory.verificationHistory.at(-1).event, 'evidence_freshness_changed');
+
+const archivedEvidence = {
+  ...historyFirst,
+  source: 'Welo Global',
+  listingStatus: 'archived_missing',
+  paymentEvidenceFreshness: 'fresh',
+  paymentEvidenceState: 'mixed_caution',
+  verificationHistory: [{ at: '2026-10-04T00:00:00.000Z', event: 'disappeared', fromStatus: 'verified_open', toStatus: 'archived_missing' }]
+};
+const archivedAged = refreshTimeBasedEvidence([archivedEvidence], Date.parse('2027-01-10T00:00:00Z'))[0];
+assert.notEqual(archivedAged.paymentEvidenceFreshness, 'fresh');
+assert.equal(archivedAged.verificationHistory.at(-1).event, 'evidence_freshness_changed');
+const archivedAgedAgain = refreshTimeBasedEvidence([archivedAged], Date.parse('2027-01-10T12:00:00Z'))[0];
+assert.equal(archivedAgedAgain.verificationHistory.length, archivedAged.verificationHistory.length, 'unchanged carried evidence freshness must not append duplicate events');
+
+const sourceErrorEvidence = {
+  ...historyFirst,
+  source: 'Welo Global',
+  listingStatus: 'source_error',
+  paymentEvidenceFreshness: 'fresh',
+  paymentEvidenceState: 'mixed_caution'
+};
+const sourceErrorExpired = refreshTimeBasedEvidence([sourceErrorEvidence], Date.parse('2027-05-01T00:00:00Z'))[0];
+assert.equal(sourceErrorExpired.paymentEvidenceFreshness, 'expired');
+assert.equal(sourceErrorExpired.verificationHistory.at(-1).event, 'evidence_freshness_changed');
+
+const recommendationFixture = (index, overrides = {}) => ({
+  id: `rec-${index}`,
+  url: `https://example.com/rec-${index}`,
+  title: `Korean AI Evaluator ${index}`,
+  score: 70,
+  recommendationEligible: true,
+  eligibilityCode: 'korea',
+  requirementsStatus: 'clear',
+  listingStatus: 'verified_open',
+  sourceReliabilityState: 'reliable',
+  ...overrides
+});
+const baselineRecommendations = {
+  recommendationPolicyVersion: 1,
+  jobs: Array.from({ length: 8 }, (_, index) => recommendationFixture(index))
+};
+const collapsedRecommendations = {
+  recommendationPolicyVersion: 1,
+  jobs: baselineRecommendations.jobs.slice(0, 2)
+};
+const collapseRisk = recommendationCollapseRisk(collapsedRecommendations, baselineRecommendations);
+assert.equal(collapseRisk.collapse, true, 'same-policy unexplained recommendation collapse must be detected');
+assert.equal(collapseRisk.baselineCount, 8);
+assert.equal(collapseRisk.currentCount, 2);
+assert.equal(recommendationCollapseRisk({ ...collapsedRecommendations, recommendationPolicyVersion: 2 }, baselineRecommendations).collapse, false,
+  'policy version bump must explicitly rebaseline intentional recommendation policy changes');
+const explainedRecommendations = {
+  recommendationPolicyVersion: 1,
+  jobs: baselineRecommendations.jobs.map((job, index) => index < 2 ? job : recommendationFixture(index, {
+    listingStatus: 'archived_missing',
+    recommendationEligible: false,
+    score: 0
+  }))
+};
+assert.equal(recommendationCollapseRisk(explainedRecommendations, baselineRecommendations).collapse, false,
+  'explicit disappearance/source-state losses must not trip the recommendation regression guard');
 
 const freshSignal = enrichPaymentSignal(
   { type: 'review_aggregate', checkedAt: '2026-10-04', latestSourceAt: '2026-10-02', direction: 'caution', recurrence: 'repeated' },

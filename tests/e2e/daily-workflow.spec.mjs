@@ -81,12 +81,14 @@ function job(overrides = {}) {
 function feed(jobs) {
   return {
     updatedAt: '2026-10-04T06:00:00.000Z',
+    recommendationPolicyVersion: 1,
     sourceStatus: [{ source: 'RWS TrainAI', ok: true, count: jobs.length, qualityTier: 'strong', kept: jobs.length, recommended: jobs.filter((item) => item.recommendationEligible !== false).length }],
     sourceMetrics: {
       'RWS TrainAI': {
         source: 'RWS TrainAI', kind: 'official_ats', officiality: 'official', coverage: 'current_catalog',
         evidenceRefreshability: 'direct_api', qualityTier: 'strong', reliabilityState: 'reliable',
         recentSuccessRate: 1, matchedCount: jobs.length, keptCount: jobs.length, recommendedCount: jobs.filter((item) => item.recommendationEligible !== false).length,
+        validJobRate: 1, keptRate: 1, duplicateRate: 0, lowQualityRate: 0,
         history: [{ at: '2026-10-04T06:00:00.000Z', ok: true, rawCount: jobs.length, matchedCount: jobs.length, keptCount: jobs.length }]
       }
     },
@@ -545,4 +547,73 @@ test('추천 품질 게이트가 정상 후보 세트를 과도하게 축소하�
   await expect(page.locator('#stats')).toContainText('6개');
   await expect(page.locator('.title', { hasText: 'Unreliable Source' })).toHaveCount(0);
   await expect(page.locator('.title', { hasText: 'Accessibility Specialist' })).toHaveCount(0);
+});
+
+test('재등장·복구와 원문 변경이 같은 실행에서 함께 발생해도 카드에 둘 다 표시한다', async ({ page }) => {
+  const returnedChanged = job({
+    id: 'job:returned-changed',
+    title: 'Korean AI Reviewer - Returned And Changed',
+    url: 'https://example.com/job/returned-changed',
+    lastChangeKind: 'reappeared',
+    lastChangeAt: '2026-10-04T06:00:00.000Z',
+    verificationHistory: [
+      { at: '2026-10-03T06:00:00.000Z', event: 'disappeared', fromStatus: 'verified_open', toStatus: 'archived_missing', reason: '원천에서 사라짐' },
+      { at: '2026-10-04T06:00:00.000Z', event: 'reappeared', fromStatus: 'archived_missing', toStatus: 'verified_open', reason: '원천에 다시 나타남' },
+      { at: '2026-10-04T06:00:00.000Z', event: 'content_changed', fromStatus: 'archived_missing', toStatus: 'verified_open', reason: '원문 주요 필드 변경: salary, description' }
+    ]
+  });
+  const recoveredChanged = job({
+    id: 'job:recovered-changed',
+    title: 'Korean AI Reviewer - Recovered And Changed',
+    url: 'https://example.com/job/recovered-changed',
+    lastChangeKind: 'source_recovered',
+    lastChangeAt: '2026-10-04T06:00:00.000Z',
+    verificationHistory: [
+      { at: '2026-10-03T06:00:00.000Z', event: 'source_failed', fromStatus: 'verified_open', toStatus: 'source_error', reason: '소스 확인 실패' },
+      { at: '2026-10-04T06:00:00.000Z', event: 'source_recovered', fromStatus: 'source_error', toStatus: 'verified_open', reason: '소스 복구' },
+      { at: '2026-10-04T06:00:00.000Z', event: 'content_changed', fromStatus: 'source_error', toStatus: 'verified_open', reason: '원문 주요 필드 변경: requirements' }
+    ]
+  });
+  await useFeed(page, () => feed([returnedChanged, recoveredChanged]));
+  await page.goto('/');
+  const returnedCard = page.locator('.job-card', { hasText: 'Returned And Changed' });
+  await expect(returnedCard.locator('.verification-badge[data-state="changed"]')).toHaveText('원문 변경됨');
+  await expect(returnedCard.locator('.verification-badge[data-state="reappeared"]')).toHaveText('재등장');
+  const recoveredCard = page.locator('.job-card', { hasText: 'Recovered And Changed' });
+  await expect(recoveredCard.locator('.verification-badge[data-state="changed"]')).toHaveText('원문 변경됨');
+  await expect(recoveredCard.locator('.verification-badge[data-state="recovered"]')).toHaveText('소스 복구');
+});
+
+test('검증 이력이 새 피드로 교체되어도 이전 사건을 유지한다', async ({ page }) => {
+  let current = feed([job({
+    id: 'job:history-retention',
+    title: 'Korean Reviewer - History Retention',
+    url: 'https://example.com/job/history-retention',
+    verificationHistory: [
+      { at: '2026-10-01T06:00:00.000Z', event: 'first_seen', toStatus: 'verified_open', reason: '처음 수집됨' },
+      { at: '2026-10-03T06:00:00.000Z', event: 'content_changed', fromStatus: 'verified_open', toStatus: 'verified_open', reason: '원문 주요 필드 변경: description' }
+    ]
+  })]);
+  await useFeed(page, () => current);
+  await page.goto('/');
+  await page.locator('.details').click();
+  await expect(page.locator('#detailsHistory')).toContainText('원문 변경');
+  await page.locator('#detailsDialog').evaluate((dialog) => dialog.close());
+
+  current = feed([job({
+    id: 'job:history-retention',
+    title: 'Korean Reviewer - History Retention',
+    url: 'https://example.com/job/history-retention',
+    lastChangeKind: 'verified_unchanged',
+    verificationHistory: [
+      { at: '2026-10-01T06:00:00.000Z', event: 'first_seen', toStatus: 'verified_open', reason: '처음 수집됨' },
+      { at: '2026-10-03T06:00:00.000Z', event: 'content_changed', fromStatus: 'verified_open', toStatus: 'verified_open', reason: '원문 주요 필드 변경: description' },
+      { at: '2026-10-04T06:00:00.000Z', event: 'verified_unchanged', fromStatus: 'verified_open', toStatus: 'verified_open', reason: '변경 없이 재검증됨' }
+    ]
+  })]);
+  await page.reload();
+  await page.locator('.details').click();
+  await expect(page.locator('#detailsHistory')).toContainText('처음 발견');
+  await expect(page.locator('#detailsHistory')).toContainText('원문 변경');
+  await expect(page.locator('#detailsHistory')).toContainText('변경 없이 재검증');
 });

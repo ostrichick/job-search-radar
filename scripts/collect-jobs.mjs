@@ -412,6 +412,18 @@ function salaryContext(rawValue, description) {
 }
 
 function extractSalary(rawValue, description = '') {
+  const regionalPay = text(description).match(/for candidates located in (.{1,140}?)(?:,?\s+the\s+)?(?:starting base pay|base pay|pay)[^.]{0,100}(?:ranges? from\s+)?([$€£₩¥]\s*\d[\d,.]*(?:\.\d+)?)\s*(?:to|[-–—])\s*([$€£₩¥]?\s*\d[\d,.]*(?:\.\d+)?)\s*(?:per\s+|\/)(hour|hr|day|week|month|year).{0,260}(?:outside|other locations?|elsewhere).{0,180}(?:may|can|could|will)?\s*(?:fall outside|vary|differ)/i);
+  if (!text(rawValue) && regionalPay) {
+    const scoped = extractSalary(`${regionalPay[2]} to ${regionalPay[3]} per ${regionalPay[4]}`);
+    return {
+      ...scoped,
+      raw: regionalPay[0],
+      display: `미국 일부 주 기준 ${scoped.display} · 기타 지역 단가 확인`,
+      confidence: 'regional_only',
+      scope: 'regional_only',
+      scopeLabel: text(regionalPay[1])
+    };
+  }
   const raw = salaryContext(rawValue, description);
   if (!raw) {
     const desc = lower(description);
@@ -440,8 +452,8 @@ function extractSalary(rawValue, description = '') {
   const periodRaw = periodMatch?.[1]?.toLowerCase() ?? '';
   const period = periodMap[periodRaw] ?? periodRaw;
   const currencyToken = '(?:USD|EUR|GBP|KRW|CAD|AUD|JPY|CHF|PLN|BRL|INR|SGD|HKD|AED|USDT|[$€£₩¥])';
-  const rangeMatch = raw.match(new RegExp(`${currencyToken}\\s*(\\d[\\d,.]*(?:\\.\\d+)?\\s*[kKmM]?)\\s*[-–—]\\s*(?:${currencyToken}\\s*)?(\\d[\\d,.]*(?:\\.\\d+)?\\s*[kKmM]?)`, 'i'))
-    || raw.match(new RegExp(`(\\d[\\d,.]*(?:\\.\\d+)?\\s*[kKmM]?)\\s*[-–—]\\s*(\\d[\\d,.]*(?:\\.\\d+)?\\s*[kKmM]?)\\s*${currencyToken}`, 'i'));
+  const rangeMatch = raw.match(new RegExp(`${currencyToken}\\s*(\\d[\\d,.]*(?:\\.\\d+)?\\s*[kKmM]?)\\s*(?:[-–—]|to)\\s*(?:${currencyToken}\\s*)?(\\d[\\d,.]*(?:\\.\\d+)?\\s*[kKmM]?)`, 'i'))
+    || raw.match(new RegExp(`(\\d[\\d,.]*(?:\\.\\d+)?\\s*[kKmM]?)\\s*(?:[-–—]|to)\\s*(\\d[\\d,.]*(?:\\.\\d+)?\\s*[kKmM]?)\\s*${currencyToken}`, 'i'));
   let numbers = [];
   if (rangeMatch) {
     let first = parseAmount(rangeMatch[1]);
@@ -599,6 +611,8 @@ function relevantToProfile(job) {
   if (/bilingual/.test(title) && /korean|한국어/.test(title) && foreignLanguageRe.test(title.replace(/korean|한국어/g, ''))) return false;
   if (/korean|한국어/.test(haystack)) return true;
   if (['data annotation', 'language quality', 'content moderation', 'ai response evaluation'].some((term) => hasPhrase(haystack, term))) return true;
+  if (/\b(?:office|administrative|operations) assistant\b/.test(title)
+    && /\b(?:data entry|bookkeeping|billing|reporting|database maintenance)\b/.test(haystack)) return true;
   const broadOnly = new Set(['linguist', 'localization', 'copy editor', 'content editor', 'proofreader']);
   if (profile.includeKeywords.some((keyword) => !broadOnly.has(keyword.toLowerCase()) && hasPhrase(title, keyword))) return true;
   return ['AI 평가·어노테이션', '한국어·언어', '조사·데이터', '교육 운영', '커뮤니티·운영', '채용 보조', '오디오·음성', '시험 감독', 'GIS·지도'].includes(classify(job));
@@ -734,9 +748,44 @@ function normalizeJob(raw) {
   job.eligibilityCode = eligibility.code;
   job.eligibilityBasis = eligibility.basis || '';
   job.eligibilityReason = eligibility.reason || '';
-  job.salaryInfo = extractSalary(job.salary, fullDescription);
-  if (!job.salary && job.salaryInfo.confidence === 'parsed') job.salary = job.salaryInfo.display;
   const quality = sourceMeta(job.source);
+  const salaryMetadataRaw = text(raw.salary);
+  const metadataSalaryInfo = extractSalary(salaryMetadataRaw, fullDescription);
+  const descriptionSalaryInfo = extractSalary('', fullDescription);
+  const intermediaryMetadata = raw.salaryProvenance === 'board_metadata' && !isOfficialKind(quality.kind);
+  let salaryInfo = metadataSalaryInfo;
+  let salaryProvenance = salaryMetadataRaw ? (raw.salaryProvenance || 'source_metadata') : 'none';
+  let salaryMetadataSuppressed = false;
+  let salaryMetadataConflict = false;
+  if (intermediaryMetadata) {
+    if (descriptionSalaryInfo.display) {
+      salaryInfo = descriptionSalaryInfo;
+      salaryProvenance = 'posting_text';
+      salaryMetadataSuppressed = Boolean(salaryMetadataRaw);
+      salaryMetadataConflict = Boolean(salaryMetadataRaw)
+        && (metadataSalaryInfo.currency !== descriptionSalaryInfo.currency
+          || metadataSalaryInfo.min !== descriptionSalaryInfo.min
+          || metadataSalaryInfo.max !== descriptionSalaryInfo.max
+          || metadataSalaryInfo.period !== descriptionSalaryInfo.period);
+    } else {
+      salaryInfo = {
+        ...metadataSalaryInfo,
+        display: '',
+        confidence: salaryMetadataRaw ? 'metadata_unverified' : 'none'
+      };
+      salaryProvenance = salaryMetadataRaw ? 'board_metadata_unverified' : 'none';
+      salaryMetadataSuppressed = Boolean(salaryMetadataRaw);
+    }
+  } else if (!salaryMetadataRaw && descriptionSalaryInfo.display) {
+    salaryInfo = descriptionSalaryInfo;
+    salaryProvenance = 'posting_text';
+  }
+  job.salaryInfo = salaryInfo;
+  job.salary = salaryInfo.display || (intermediaryMetadata ? '' : salaryMetadataRaw);
+  job.salaryProvenance = salaryProvenance;
+  job.salaryMetadataRaw = salaryMetadataRaw;
+  job.salaryMetadataSuppressed = salaryMetadataSuppressed;
+  job.salaryMetadataConflict = salaryMetadataConflict;
   job.sourceKind = quality.kind;
   job.sourceCoverage = quality.coverage || 'unknown';
   job.sourceTrustLabel = quality.listingLabel;
@@ -819,6 +868,11 @@ function normalizeJob(raw) {
     fitWarnings.push('전사·음성 어노테이션 실무 경력 요건 확인');
     job.score = Math.min(job.score, 19);
   }
+  const subjectMatterExperience = fullDescription.match(/\b(?:\d+\+?|at least\s+\d+|minimum(?:\s+of)?\s+\d+)\s+years?\b[^.]{0,80}\b(?:experience|professional background|industry background)\b[^.]{0,120}/i)?.[0] || '';
+  if (/\bsubject matter expert\b/i.test(titleLower) && subjectMatterExperience) {
+    fitWarnings.push(`분야 전문경력 요건 확인: ${evidenceSnippet(subjectMatterExperience, 90)}`);
+    job.score = Math.min(job.score, 19);
+  }
   if (/\b(?:living|lived|resid(?:e|ing)|based)\b[\s\S]{0,100}\b(?:at least|minimum of|for at least)\b[\s\S]{0,30}\b\d+\s*(?:years?|yrs?)\b/i.test(fullDescription)
     || /\b\d+\s*(?:years?|yrs?)\b[\s\S]{0,60}\b(?:living|resid(?:e|ing)|based)\b/i.test(fullDescription)
     || /\b(?:have\s+)?lived\b[\s\S]{0,80}\b(?:for\s+)?several\s+years\b/i.test(fullDescription)) {
@@ -868,9 +922,12 @@ function normalizeJob(raw) {
     && !job.fitWarnings.some((warning) => /iOS|기기/.test(warning))) {
     routineRequirements.push('마이크·헤드셋 등 작업 장비 확인');
   }
-  if (/\b(?:laptop|personal computer|desktop|phone)\b/i.test(fullDescription)
+  if (/\b(?:laptop|personal computer|fast computer|computer|desktop|phone)\b/i.test(fullDescription)
     && !job.fitWarnings.some((warning) => /iOS|기기/.test(warning))) {
     routineRequirements.push('PC·노트북·휴대전화 등 작업 장비 확인');
+  }
+  if (/\b(?:antivirus|anti-virus)\b/i.test(fullDescription)) {
+    routineRequirements.push('안티바이러스·보안 소프트웨어 요건 확인');
   }
   if (/\bresident in korea\b|\bbased in korea\b|\bresid(?:e|ing) in south korea\b/i.test(fullDescription)) {
     routineRequirements.push('한국 거주 요건 확인');
@@ -881,11 +938,26 @@ function normalizeJob(raw) {
   if (/\b(?:do not use|no)\b[^.]{0,60}\b(?:vpn|ip masking)\b|\bip masking programs?\b/i.test(fullDescription)) {
     routineRequirements.push('VPN·IP 마스킹 사용 금지');
   }
-  if (/\b(?:at least|minimum of|up to)\s+\d+\s*(?:billable )?hours? per (?:day|week)\b|\b\d+\s*hours?\s+to\s+\d+\s*hours? per week\b/i.test(fullDescription)) {
+  if (/\b(?:at least|minimum of|up to)\s+\d+\s*(?:billable )?hours? per (?:day|week)\b|\b\d+\s*hours?\s+(?:to\s+\d+\s*hours?\s+)?per week\b/i.test(fullDescription)) {
     routineRequirements.push('주간·일일 시간 투입 요건 확인');
+  }
+  if (/\b\d{1,2}(?::\d{2})?\s*(?:a\.?m\.?|p\.?m\.?)\s+(?:to|[-–—])\s+\d{1,2}(?::\d{2})?\s*(?:a\.?m\.?|p\.?m\.?)\s+(?:pacific|eastern|central|mountain)\s+time\b/i.test(fullDescription)) {
+    routineRequirements.push('고정 근무시간·시간대 요건 확인');
   }
   if (/\b(?:language certification tests?|required practice tasks?|certification is mandatory|required certifications?)\b/i.test(fullDescription)) {
     routineRequirements.push('자격 테스트·사전 과제 통과 필요');
+  }
+  if (/\b(?:required test|quality test|skills? assessment|short assessment)\b/i.test(fullDescription)) {
+    routineRequirements.push('선발 테스트·평가 통과 필요');
+  }
+  if (/\b(?:must sign|mandatory to sign|sign and adhere to)\b[^.]{0,80}\b(?:nda|confidentiality agreement)\b|\bproject nda\b/i.test(fullDescription)) {
+    routineRequirements.push('NDA·기밀유지 동의 필요');
+  }
+  if (/\bonly one\b[^.]{0,60}\b(?:rater|worker|evaluator)\b[^.]{0,60}\bper household\b/i.test(fullDescription)) {
+    routineRequirements.push('가구당 참여 인원 제한 확인');
+  }
+  if (/\bmust be\s+18\+|\b18\+\s+years?\s+old\b|\bat least\s+18\s+years?\s+old\b/i.test(fullDescription)) {
+    routineRequirements.push('만 18세 이상 요건 확인');
   }
   job.requirementChecks = [
     ...job.fitWarnings.map((label) => ({ kind: 'hard', label })),
@@ -924,6 +996,8 @@ function normalizeJob(raw) {
     ...(job.listingStatus === 'current_feed' ? ['고용주 공식 모집 상태'] : []),
     ...(job.eligibilityCode === 'unknown' ? ['지원 가능 국가'] : []),
     ...(!job.salaryInfo?.display ? ['급여·단가'] : []),
+    ...(job.salaryMetadataConflict ? ['채용보드 급여 메타데이터와 원문 급여 불일치'] : []),
+    ...(job.salaryMetadataSuppressed && !job.salaryMetadataConflict ? ['채용보드 급여 메타데이터 원문 미확인'] : []),
     ...(['caution_repeated', 'mixed_caution', 'caution_single'].includes(job.paymentEvidenceState) ? ['지급 평판 주의 신호'] : []),
     ...(job.paymentEvidenceState === 'evidence_expired' ? ['지급 신뢰 근거 만료'] : []),
     ...job.requirementChecks.map((item) => item.label)
@@ -971,7 +1045,11 @@ async function collectLeverBoard(site, source, company) {
     const location = Array.isArray(j.categories?.allLocations) && j.categories.allLocations.length
       ? j.categories.allLocations.join(' / ')
       : j.categories?.location;
-    const description = [j.descriptionPlain, j.descriptionBodyPlain, j.additionalPlain]
+    const listText = (Array.isArray(j.lists) ? j.lists : [])
+      .map((section) => [section?.text, text(section?.content)].filter(Boolean).join(': '))
+      .filter(Boolean)
+      .join('\n');
+    const description = [j.descriptionPlain, j.descriptionBodyPlain, j.additionalPlain, listText]
       .filter(Boolean)
       .join('\n');
     const candidate = {
@@ -1006,6 +1084,39 @@ async function collectWeloGlobal() {
 
 async function collectRws() {
   return collectLeverBoard('rws', 'RWS TrainAI', 'RWS');
+}
+
+async function collectLilt() {
+  const data = await fetchJson('https://api.ashbyhq.com/posting-api/job-board/lilt-production');
+  const rows = Array.isArray(data?.jobs) ? data.jobs : [];
+  const collected = [];
+  let profileMatchedCount = 0;
+  for (const j of rows) {
+    if (j.isListed === false) continue;
+    if (!/\b(?:korean|korea)\b/i.test(`${j.title || ''} ${j.location || ''}`)) continue;
+    const candidate = {
+      id: `ashby:lilt-production:${j.id}`,
+      source: 'LILT Production',
+      title: j.title,
+      company: 'LILT',
+      location: j.location || 'Remote',
+      remote: Boolean(j.isRemote) || /remote/i.test(j.workplaceType || j.location || ''),
+      type: j.employmentType || j.workplaceType || 'Contract',
+      salary: '',
+      url: j.jobUrl || j.applyUrl,
+      postedAt: j.publishedAt || null,
+      sourceListingState: 'published',
+      sourceCreatedAt: j.publishedAt || null,
+      description: j.descriptionPlain || j.descriptionHtml || '',
+      tags: [j.department, j.team, j.workplaceType, j.employmentType].filter(Boolean),
+      countryCode: /\bkorea\b/i.test(j.location || '') ? 'KR' : ''
+    };
+    if (!candidate.title || !candidate.url || !relevantToProfile(candidate)) continue;
+    profileMatchedCount += 1;
+    const normalized = normalizeJob(candidate);
+    if (['korea', 'worldwide', 'unknown'].includes(normalized.eligibilityCode)) collected.push(normalized);
+  }
+  return sourceCollection(collected, rows.length, { profileMatchedCount });
 }
 
 function oneFormaTerms(post, taxonomy) {
@@ -1137,6 +1248,7 @@ async function collectJobicy() {
     remote: true,
     type: Array.isArray(j.jobType) ? j.jobType.join(', ') : j.jobType,
     salary: j.salaryMin || j.salaryMax ? `${j.salaryCurrency ?? ''} ${j.salaryMin ?? ''}${j.salaryMax ? `–${j.salaryMax}` : ''} ${j.salaryPeriod ?? ''}` : '',
+    salaryProvenance: 'board_metadata',
     url: j.url,
     postedAt: j.pubDate,
     description: j.jobExcerpt || j.jobDescription,
@@ -1157,6 +1269,7 @@ async function collectRemoteOk() {
     remote: true,
     type: 'Remote',
     salary: j.salary_min || j.salary_max ? `${j.salary_min ?? ''}${j.salary_max ? `–${j.salary_max}` : ''}` : '',
+    salaryProvenance: 'board_metadata',
     url: j.url,
     postedAt: j.date || (j.epoch ? new Date(j.epoch * 1000).toISOString() : null),
     description: j.description,
@@ -1177,6 +1290,7 @@ async function collectRemotive() {
     remote: true,
     type: j.job_type,
     salary: j.salary,
+    salaryProvenance: 'board_metadata',
     url: j.url,
     postedAt: j.publication_date,
     description: j.description,
@@ -1362,7 +1476,9 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
       });
     }
     const quality = sourceMeta(previous.source);
-    const paymentEvidence = derivePaymentEvidence(quality, now);
+    const paymentEvidence = previous.paymentEvidenceFreshness
+      ? null
+      : derivePaymentEvidence(quality, now);
     const eligibilityCode = previous.eligibilityCode || legacyEligibilityMap[previous.eligibility] || 'unknown';
     const derivedEligibility = eligibilityFor(previous);
     const eligibilityBasis = previous.eligibilityBasis
@@ -1383,14 +1499,14 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
       sourceOfficiality: previous.sourceOfficiality || (isOfficialKind(quality.kind) ? 'official' : quality.kind === 'manual' ? 'manual' : 'intermediary'),
       paymentStatus: previous.paymentStatus || quality.paymentStatus,
       paymentLabel: previous.paymentLabel || quality.paymentLabel,
-      paymentEvidenceState: paymentEvidence.state,
-      paymentEvidenceLabel: paymentEvidence.label,
-      paymentConfidence: paymentEvidence.confidence,
-      paymentEvidenceFreshness: paymentEvidence.freshness,
-      paymentEvidenceCheckedAt: paymentEvidence.checkedAt,
-      paymentEvidenceNextReviewAt: paymentEvidence.nextReviewAt,
-      paymentSummary: paymentEvidence.summary,
-      paymentSignals: paymentEvidence.signals,
+      paymentEvidenceState: previous.paymentEvidenceState || paymentEvidence?.state || 'insufficient',
+      paymentEvidenceLabel: previous.paymentEvidenceLabel || paymentEvidence?.label || '근거 부족',
+      paymentConfidence: previous.paymentConfidence || paymentEvidence?.confidence || 'low',
+      paymentEvidenceFreshness: previous.paymentEvidenceFreshness || paymentEvidence?.freshness || 'insufficient',
+      paymentEvidenceCheckedAt: previous.paymentEvidenceCheckedAt || paymentEvidence?.checkedAt || '',
+      paymentEvidenceNextReviewAt: previous.paymentEvidenceNextReviewAt || paymentEvidence?.nextReviewAt || '',
+      paymentSummary: previous.paymentSummary || paymentEvidence?.summary || quality.paymentSummary || '',
+      paymentSignals: previous.paymentSignals || paymentEvidence?.signals || [],
       sourceSummary: previous.sourceSummary || quality.summary,
       sourceEvidence: previous.sourceEvidence || quality.evidence,
       sourceReviewAt: previous.sourceReviewAt || quality.reviewedAt || '',
@@ -1433,6 +1549,88 @@ function isDefaultRecommendation(job) {
     && ['korea', 'worldwide'].includes(job.eligibilityCode)
     && job.requirementsStatus !== 'hard_check'
     && !['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus);
+}
+
+function recommendationCollapseRisk(feed, baseline) {
+  if (!baseline
+    || baseline.recommendationPolicyVersion !== feed.recommendationPolicyVersion
+    || !Array.isArray(baseline.jobs)) {
+    return { guarded: false, collapse: false, baselineCount: 0, currentCount: 0, threshold: 0, unexplainedLosses: [] };
+  }
+  const baselineRecommended = baseline.jobs.filter(isDefaultRecommendation);
+  const currentRecommended = (feed.jobs || []).filter(isDefaultRecommendation);
+  const currentById = new Map();
+  const currentByUrl = new Map();
+  for (const job of feed.jobs || []) {
+    for (const id of [job.id, ...(job.legacyIds || [])].filter(Boolean)) currentById.set(id, job);
+    for (const url of [job.url, ...(job.alternateUrls || [])].filter(Boolean)) currentByUrl.set(normalizedUrl(url), job);
+  }
+  const findCurrent = (previous) => currentById.get(previous.id)
+    || (previous.legacyIds || []).map((id) => currentById.get(id)).find(Boolean)
+    || currentByUrl.get(normalizedUrl(previous.url))
+    || (previous.alternateUrls || []).map((url) => currentByUrl.get(normalizedUrl(url))).find(Boolean)
+    || null;
+  const losses = baselineRecommended
+    .map((previous) => ({ previous, current: findCurrent(previous) }))
+    .filter(({ current }) => !isDefaultRecommendation(current || {}));
+  const explained = ({ current }) => Boolean(current) && (
+    ['source_error', 'archived_missing', 'talent_pool', 'expired', 'stale'].includes(current.listingStatus)
+    || ['degraded', 'unstable'].includes(current.sourceReliabilityState)
+    || (current.lastChangeKind === 'content_changed'
+      && (current.requirementsStatus === 'hard_check'
+        || current.eligibilityCode === 'restricted'
+        || Number(current.score || 0) < 20))
+  );
+  const unexplainedLosses = losses.filter((item) => !explained(item));
+  const threshold = baselineRecommended.length >= 5
+    ? Math.max(3, Math.ceil(baselineRecommended.length * 0.5))
+    : 1;
+  return {
+    guarded: baselineRecommended.length >= 5,
+    collapse: baselineRecommended.length >= 5
+      && currentRecommended.length < threshold
+      && unexplainedLosses.length > 0,
+    baselineCount: baselineRecommended.length,
+    currentCount: currentRecommended.length,
+    threshold,
+    unexplainedLosses
+  };
+}
+
+function refreshTimeBasedEvidence(jobs, now = Date.now()) {
+  const nowIso = new Date(now).toISOString();
+  return jobs.map((job) => {
+    const quality = sourceMeta(job.source);
+    const paymentEvidence = derivePaymentEvidence(quality, now);
+    const previousFreshness = job.paymentEvidenceFreshness || '';
+    const previousState = job.paymentEvidenceState || '';
+    let verificationHistory = Array.isArray(job.verificationHistory) ? job.verificationHistory : [];
+    if (previousFreshness
+      && (previousFreshness !== paymentEvidence.freshness || previousState !== paymentEvidence.state)) {
+      verificationHistory = appendLimitedHistory(verificationHistory, {
+        at: nowIso,
+        event: 'evidence_freshness_changed',
+        fromStatus: previousFreshness,
+        toStatus: paymentEvidence.freshness,
+        fingerprint: job.contentFingerprint || contentFingerprint(job),
+        reason: `지급 근거 최신성 변경: ${previousFreshness} → ${paymentEvidence.freshness}`
+      });
+    }
+    return {
+      ...job,
+      paymentStatus: quality.paymentStatus,
+      paymentLabel: quality.paymentLabel,
+      paymentEvidenceState: paymentEvidence.state,
+      paymentEvidenceLabel: paymentEvidence.label,
+      paymentConfidence: paymentEvidence.confidence,
+      paymentEvidenceFreshness: paymentEvidence.freshness,
+      paymentEvidenceCheckedAt: paymentEvidence.checkedAt,
+      paymentEvidenceNextReviewAt: paymentEvidence.nextReviewAt,
+      paymentSummary: paymentEvidence.summary,
+      paymentSignals: paymentEvidence.signals,
+      verificationHistory
+    };
+  });
 }
 
 function sourceQualityTier(meta, recentHistory, current) {
@@ -1481,6 +1679,7 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
     const lowQualityCount = Math.max(0, uniqueMatchedCount - keptCount);
     const matchRate = rawCount ? matchedCount / rawCount : 0;
     const keptRate = matchedCount ? keptCount / matchedCount : 0;
+    const duplicateRate = matchedCount ? duplicateCount / matchedCount : 0;
     const lowQualityRate = matchedCount ? lowQualityCount / matchedCount : 0;
     const previous = previousSourceMetrics?.[source] || {};
     const previousHistory = Array.isArray(previous.history) ? previous.history : [];
@@ -1529,7 +1728,9 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       duplicateCount,
       lowQualityCount,
       matchRate: Math.round(matchRate * 1000) / 1000,
+      validJobRate: Math.round(keptRate * 1000) / 1000,
       keptRate: Math.round(keptRate * 1000) / 1000,
+      duplicateRate: Math.round(duplicateRate * 1000) / 1000,
       lowQualityRate: Math.round(lowQualityRate * 1000) / 1000,
       history
     };
@@ -1557,6 +1758,7 @@ export async function collectJobs({ includeManual = true, persist = true, previo
   const sources = [
     ['Welo Global', collectWeloGlobal],
     ['RWS TrainAI', collectRws],
+    ['LILT Production', collectLilt],
     ['OneForma', collectOneForma],
     ['We Work Remotely', collectWeWorkRemotely],
     ['Jobicy', collectJobicy],
@@ -1630,7 +1832,10 @@ export async function collectJobs({ includeManual = true, persist = true, previo
       (job.source === source || (job.sources || []).includes(source))
       && isDefaultRecommendation(job)).length;
   }
-  const uniqueJobs = applySourceMetricsToJobs(carryRecentlyMissing(currentJobs, fallbackJobs, now), sourceMetrics)
+  const uniqueJobs = refreshTimeBasedEvidence(
+    applySourceMetricsToJobs(carryRecentlyMissing(currentJobs, fallbackJobs, now), sourceMetrics),
+    now
+  )
     .sort((a, b) => (b.score - a.score) || ((Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0)));
   const enrichedSourceStatus = sourceStatus.map((status) => ({
     ...status,
@@ -1642,9 +1847,15 @@ export async function collectJobs({ includeManual = true, persist = true, previo
     updatedAt: new Date(now).toISOString(),
     sourceStatus: enrichedSourceStatus,
     sourceMetrics,
+    recommendationPolicyVersion: 1,
     recommendationSummary: {
       count: uniqueJobs.filter(isDefaultRecommendation).length,
-      minExpected: 5,
+      baselineCount: fallbackFeed?.recommendationPolicyVersion === 1
+        ? Number(fallbackFeed?.recommendationSummary?.count || 0)
+        : null,
+      minExpected: fallbackFeed?.recommendationPolicyVersion === 1
+        ? Math.max(3, Math.ceil(Number(fallbackFeed?.recommendationSummary?.count || 0) * 0.5))
+        : 1,
       hardRequirementCount: uniqueJobs.filter((job) => isDefaultRecommendation(job) && job.requirementsStatus === 'hard_check').length
     },
     jobs: uniqueJobs
@@ -1679,5 +1890,7 @@ export {
   buildSourceMetrics,
   applySourceMetricsToJobs,
   keepInFeed,
-  isDefaultRecommendation
+  isDefaultRecommendation,
+  recommendationCollapseRisk,
+  refreshTimeBasedEvidence
 };

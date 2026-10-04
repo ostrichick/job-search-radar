@@ -1,13 +1,21 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { recommendationCollapseRisk } from './collect-jobs.mjs';
 
 const target = process.argv[2] || './data/jobs.json';
 const feed = JSON.parse(fs.readFileSync(target, 'utf8'));
+const baselineTarget = process.argv[3] || '';
+let baseline = null;
+if (baselineTarget && fs.existsSync(baselineTarget)) {
+  try { baseline = JSON.parse(fs.readFileSync(baselineTarget, 'utf8')); } catch { baseline = null; }
+}
 assert.ok(Array.isArray(feed.jobs) && feed.jobs.length > 0, 'feed must contain jobs');
 assert.ok(feed.sourceMetrics && typeof feed.sourceMetrics === 'object' && !Array.isArray(feed.sourceMetrics),
   'feed must persist sourceMetrics for long-term source quality tracking');
 assert.ok(feed.recommendationSummary && typeof feed.recommendationSummary === 'object',
   'feed must persist recommendationSummary');
+assert.ok(Number.isInteger(feed.recommendationPolicyVersion) && feed.recommendationPolicyVersion >= 1,
+  'feed must persist recommendationPolicyVersion');
 
 const ids = feed.jobs.map((job) => job.id);
 assert.equal(new Set(ids).size, ids.length, 'stable job ids must be unique');
@@ -92,6 +100,15 @@ assert.equal(feed.recommendationSummary.hardRequirementCount, 0,
 assert.equal(recommended.filter((job) => ['degraded', 'unstable'].includes(job.sourceReliabilityState)).length, 0,
   'recommendations must exclude sources with repeated reliability failures');
 
+const recommendationRegression = recommendationCollapseRisk(feed, baseline);
+if (recommendationRegression.collapse) {
+  const jobs = recommendationRegression.unexplainedLosses
+    .slice(0, 8)
+    .map(({ previous }) => `${previous.id}:${previous.title}`)
+    .join(', ');
+  assert.fail(`recommendation set collapsed from ${recommendationRegression.baselineCount} to ${recommendationRegression.currentCount} without source/content explanation: ${jobs}`);
+}
+
 for (const [source, metric] of Object.entries(feed.sourceMetrics)) {
   assert.equal(metric.source, source, `${source} source metric identity must be stable`);
   assert.ok(metric.kind, `${source} metric must retain source kind`);
@@ -104,6 +121,12 @@ for (const [source, metric] of Object.entries(feed.sourceMetrics)) {
   assert.ok(Number.isFinite(metric.rawCount) && metric.rawCount >= 0, `${source} rawCount must be non-negative`);
   assert.ok(Number.isFinite(metric.matchedCount) && metric.matchedCount >= 0, `${source} matchedCount must be non-negative`);
   assert.ok(Number.isFinite(metric.keptCount) && metric.keptCount >= 0, `${source} keptCount must be non-negative`);
+  assert.ok(Number.isFinite(metric.validJobRate) && metric.validJobRate >= 0 && metric.validJobRate <= 1,
+    `${source} validJobRate must be a ratio`);
+  assert.ok(Number.isFinite(metric.duplicateRate) && metric.duplicateRate >= 0 && metric.duplicateRate <= 1,
+    `${source} duplicateRate must be a ratio`);
+  assert.ok(Number.isFinite(metric.lowQualityRate) && metric.lowQualityRate >= 0 && metric.lowQualityRate <= 1,
+    `${source} lowQualityRate must be a ratio`);
   assert.ok(metric.keptCount <= metric.matchedCount || !metric.history.at(-1)?.ok,
     `${source} kept count cannot exceed matched count on successful collection`);
   if (['degraded', 'unstable'].includes(metric.reliabilityState)) {
