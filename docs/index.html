@@ -47,6 +47,18 @@
         </select>
       </div>
       <div class="field">
+        <label for="compensationFilter">보수 정보</label>
+        <select id="compensationFilter">
+          <option value="">전체</option>
+          <option value="amount">금액 공개</option>
+          <option value="hour">시급 공개</option>
+          <option value="salary">일·주·월·연봉 공개</option>
+          <option value="piece">건당·세트당</option>
+          <option value="basis_only">지급 방식만 공개</option>
+          <option value="undisclosed">금액 미공개</option>
+        </select>
+      </div>
+      <div class="field">
         <label for="statusFilter">내 상태</label>
         <select id="statusFilter">
           <option value="active">숨김 제외</option>
@@ -216,6 +228,11 @@
       <div class="decision-strip"><div class="decision-value"></div><div class="decision-unknown"></div></div>
       <h2 class="title"></h2>
       <p class="company"></p>
+      <div class="compensation" aria-label="보수 정보">
+        <span class="compensation-label">보수</span>
+        <strong class="compensation-value"></strong>
+        <span class="compensation-note"></span>
+      </div>
       <div class="meta"></div>
       <p class="description"></p>
       <div class="tags"></div>
@@ -233,6 +250,11 @@
   <dialog id="detailsDialog" class="details-dialog" aria-labelledby="detailsTitle">
     <div class="dialog-head"><h2 id="detailsTitle"></h2><button type="button" id="closeDetails" class="icon" aria-label="공고 상세 창 닫기">×</button></div>
     <p id="detailsCompany" class="details-company"></p>
+    <div id="detailsCompensation" class="details-compensation" aria-label="보수 정보">
+      <span class="compensation-label">보수</span>
+      <strong id="detailsCompensationValue" class="compensation-value"></strong>
+      <span id="detailsCompensationNote" class="compensation-note"></span>
+    </div>
     <div id="detailsMeta" class="meta"></div>
     <section class="trust-panel" aria-labelledby="trustHeading">
       <h3 id="trustHeading">검증과 판단 근거</h3>

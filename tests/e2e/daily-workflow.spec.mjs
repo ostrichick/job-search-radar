@@ -617,3 +617,58 @@ test('검증 이력이 새 피드로 교체되어도 이전 사건을 유지한�
   await expect(page.locator('#detailsHistory')).toContainText('원문 변경');
   await expect(page.locator('#detailsHistory')).toContainText('변경 없이 재검증');
 });
+
+test('보수는 카드·상세에서 우선 노출되고 공개 수준으로 바로 필터링할 수 있다', async ({ page }) => {
+  const amountJob = job({
+    id: 'job:salary-amount',
+    title: 'Korean AI Reviewer - Hourly Pay',
+    url: 'https://example.com/job/salary-amount'
+  });
+  const basisOnlyJob = job({
+    id: 'job:salary-basis',
+    title: 'Korean AI Reviewer - Rate Basis Only',
+    url: 'https://example.com/job/salary-basis',
+    salary: '금액 비공개 · 시간당 고정 단가',
+    salaryInfo: { raw: '', display: '금액 비공개 · 시간당 고정 단가', currency: '', min: null, max: null, period: 'hour', confidence: 'basis_only', paymentBasis: 'fixed_hourly' },
+    decisionUnknowns: ['급여·단가']
+  });
+  const undisclosedJob = job({
+    id: 'job:salary-none',
+    title: 'Korean AI Reviewer - Pay Undisclosed',
+    url: 'https://example.com/job/salary-none',
+    salary: '',
+    salaryInfo: { raw: '', display: '', currency: '', min: null, max: null, period: '', confidence: 'none', paymentBasis: '' },
+    decisionUnknowns: ['급여·단가']
+  });
+  await useFeed(page, () => feed([amountJob, basisOnlyJob, undisclosedJob]));
+  await page.goto('/');
+
+  const amountCard = page.locator('.job-card', { hasText: 'Hourly Pay' });
+  await expect(amountCard.locator('.compensation-value')).toHaveText('$10/시간');
+  await expect(amountCard.locator('.compensation')).not.toHaveClass(/unknown/);
+
+  const basisCard = page.locator('.job-card', { hasText: 'Rate Basis Only' });
+  await expect(basisCard.locator('.compensation-value')).toHaveText('금액 비공개 · 시간당 고정 단가');
+  await expect(basisCard.locator('.compensation-note')).toContainText('지급 방식만 확인됨');
+  await expect(basisCard.locator('.compensation')).toHaveClass(/limited/);
+
+  const undisclosedCard = page.locator('.job-card', { hasText: 'Pay Undisclosed' });
+  await expect(undisclosedCard.locator('.compensation-value')).toHaveText('금액 미공개');
+  await expect(undisclosedCard.locator('.compensation-note')).toContainText('원문에서 확인 필요');
+  await expect(undisclosedCard.locator('.compensation')).toHaveClass(/unknown/);
+
+  await amountCard.locator('.details').click();
+  await expect(page.locator('#detailsCompensationValue')).toHaveText('$10/시간');
+  await page.locator('#detailsDialog').evaluate((dialog) => dialog.close());
+
+  await page.locator('#compensationFilter').selectOption('amount');
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await expect(page.locator('.job-card .title')).toHaveText('Korean AI Reviewer - Hourly Pay');
+
+  await page.locator('#compensationFilter').selectOption('basis_only');
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await expect(page.locator('.job-card .title')).toHaveText('Korean AI Reviewer - Rate Basis Only');
+
+  await page.locator('#compensationFilter').selectOption('undisclosed');
+  await expect(page.locator('.job-card')).toHaveCount(2);
+});

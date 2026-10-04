@@ -33,7 +33,7 @@ const state = {
 };
 
 const $ = (id) => document.getElementById(id);
-const controls = ['query', 'source', 'category', 'remote', 'eligibility', 'ageFilter', 'listingFilter', 'sourceKindFilter', 'paymentFilter', 'requirementsFilter', 'minScore', 'sort', 'statusFilter'];
+const controls = ['query', 'source', 'category', 'remote', 'eligibility', 'compensationFilter', 'ageFilter', 'listingFilter', 'sourceKindFilter', 'paymentFilter', 'requirementsFilter', 'minScore', 'sort', 'statusFilter'];
 const advancedFilterDefaults = {
   category: '', remote: '', ageFilter: '', listingFilter: 'active',
   sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score'
@@ -204,6 +204,7 @@ function filteredJobs() {
   const category = $('category').value;
   const remote = $('remote').value;
   const eligibility = $('eligibility').value;
+  const compensationFilter = $('compensationFilter').value;
   const ageFilter = Number($('ageFilter').value || 0);
   const listingFilter = $('listingFilter').value;
   const sourceKindFilter = $('sourceKindFilter').value;
@@ -212,7 +213,7 @@ function filteredJobs() {
   const status = $('statusFilter').value;
   const minScore = Number($('minScore').value);
   let jobs = state.jobs.filter((job) => {
-    const haystack = [job.title, job.company, job.location, job.description, job.category, ...(job.tags || []), ...(job.matchedKeywords || [])].join(' ').toLowerCase();
+    const haystack = [job.title, job.company, job.location, job.description, job.category, salaryLabel(job), ...(job.tags || []), ...(job.matchedKeywords || [])].join(' ').toLowerCase();
     const jobState = state.jobStates[job.id] || '';
     const hidden = state.hiddenIds.has(job.id);
     if (q && !haystack.includes(q)) return false;
@@ -220,6 +221,7 @@ function filteredJobs() {
     if (category && job.category !== category) return false;
     if (eligibility === 'likely' && !['korea', 'worldwide'].includes(job.eligibilityCode)) return false;
     if (eligibility && eligibility !== 'likely' && job.eligibilityCode !== eligibility) return false;
+    if (!compensationMatches(job, compensationFilter)) return false;
     if (ageFilter) {
       const posted = Date.parse(job.postedAt);
       if (!posted || ((Date.now() - posted) / 86400000) > ageFilter) return false;
@@ -329,6 +331,44 @@ function hideWithUndo(job) {
 
 function salaryLabel(job) {
   return job.salaryInfo?.display || job.salary || '';
+}
+
+function salarySummary(job) {
+  const info = job.salaryInfo || {};
+  const value = salaryLabel(job);
+  const hasAmount = Number.isFinite(info.min) || Number.isFinite(info.max);
+  const notes = [];
+  if (info.confidence === 'regional_only') notes.push('지역 한정 금액 · 다른 지역은 확인 필요');
+  else if (info.confidence === 'basis_only') notes.push('금액 미공개 · 지급 방식만 확인됨');
+  else if (info.qualifier === 'maximum') notes.push('상한액');
+  else if (info.qualifier === 'approximate') notes.push('대략적 금액');
+  if (info.paymentBasis === 'per_task_equivalent') notes.push('건당 지급을 시간당으로 환산');
+  if (job.salaryMetadataConflict) notes.push('원문과 채용보드 메타데이터 불일치');
+  else if (job.salaryMetadataSuppressed) notes.push('채용보드 금액은 원문 미확인');
+  if (!value) notes.push('원문에서 확인 필요');
+  return {
+    value: value || '금액 미공개',
+    note: [...new Set(notes)].join(' · '),
+    hasAmount,
+    period: info.period || '',
+    confidence: info.confidence || 'none',
+    paymentBasis: info.paymentBasis || '',
+    limited: Boolean(value) && (!hasAmount || info.confidence === 'regional_only' || job.salaryMetadataConflict || job.salaryMetadataSuppressed),
+    unknown: !value
+  };
+}
+
+function compensationMatches(job, filter) {
+  if (!filter) return true;
+  const summary = salarySummary(job);
+  if (filter === 'amount') return summary.hasAmount;
+  if (filter === 'hour') return summary.hasAmount && summary.period === 'hour';
+  if (filter === 'salary') return summary.hasAmount && ['day', 'week', 'month', 'year'].includes(summary.period);
+  if (filter === 'piece') return ['project', 'episode', 'set'].includes(summary.period)
+    || ['per_task_equivalent', 'per_completed_set'].includes(summary.paymentBasis);
+  if (filter === 'basis_only') return summary.confidence === 'basis_only';
+  if (filter === 'undisclosed') return !summary.hasAmount;
+  return true;
 }
 
 function qualityClass(type, value) {
@@ -640,7 +680,12 @@ function openDetails(job) {
   renderStats();
   $('detailsTitle').textContent = job.title;
   $('detailsCompany').textContent = job.company;
-  $('detailsMeta').innerHTML = [job.location, job.type, job.eligibility, job.category, salaryLabel(job)].filter(Boolean).map((v) => `<span>${escapeHtml(v)}</span>`).join('');
+  const compensation = salarySummary(job);
+  $('detailsCompensation').classList.toggle('unknown', compensation.unknown);
+  $('detailsCompensation').classList.toggle('limited', compensation.limited);
+  $('detailsCompensationValue').textContent = compensation.value;
+  $('detailsCompensationNote').textContent = compensation.note;
+  $('detailsMeta').innerHTML = [job.location, job.type, job.eligibility, job.category].filter(Boolean).map((v) => `<span>${escapeHtml(v)}</span>`).join('');
   const payment = effectivePaymentEvidence(job);
   $('detailsTrust').innerHTML = [
     `<span class="${qualityClass('listing', job.listingStatus)}">${escapeHtml(job.listingLabel || '상태 확인 필요')}</span>`,
@@ -773,7 +818,13 @@ function render() {
     unknownLine.textContent = `미확인 · ${(job.decisionUnknowns || []).slice(0, 3).join(' · ') || '주요 미확인 항목 없음'}`;
     node.querySelector('.title').textContent = job.title;
     node.querySelector('.company').textContent = job.company;
-    const meta = [job.location, job.type, job.category, salaryLabel(job)].filter(Boolean);
+    const compensation = salarySummary(job);
+    const compensationNode = node.querySelector('.compensation');
+    compensationNode.classList.toggle('unknown', compensation.unknown);
+    compensationNode.classList.toggle('limited', compensation.limited);
+    node.querySelector('.compensation-value').textContent = compensation.value;
+    node.querySelector('.compensation-note').textContent = compensation.note;
+    const meta = [job.location, job.type, job.category].filter(Boolean);
     node.querySelector('.meta').innerHTML = meta.map((v) => `<span>${escapeHtml(v)}</span>`).join('');
     node.querySelector('.description').textContent = job.description || '상세 설명 없음';
     const tagValues = [...new Set([...(state.newIds.has(job.id) ? ['NEW'] : []), ...(job.duplicateCount > 1 ? [`중복 ${job.duplicateCount}개 통합`] : []), ...(job.fitWarning ? [job.fitWarning] : []), ...(job.matchedKeywords || []), ...(job.tags || [])])].slice(0, 6);
@@ -871,7 +922,7 @@ function applyBatch(action) {
 
 function resetFilters() {
   const defaults = {
-    query: '', source: '', category: '', remote: '', eligibility: 'likely', ageFilter: '',
+    query: '', source: '', category: '', remote: '', eligibility: 'likely', compensationFilter: '', ageFilter: '',
     listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20',
     sort: 'score', statusFilter: 'active'
   };
