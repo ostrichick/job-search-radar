@@ -86,8 +86,9 @@
             <label for="listingFilter">모집 상태</label>
             <select id="listingFilter">
               <option value="active" selected>현재 볼 공고</option>
-              <option value="verified_open">모집 확인됨</option>
-              <option value="current_feed">현재 피드</option>
+              <option value="verified_open">공식 ATS 모집 확인</option>
+              <option value="official_listed">공식 프로젝트 게시 확인</option>
+              <option value="current_feed">집계·채용보드 현재 피드</option>
               <option value="stale">오래된 공고</option>
               <option value="source_error">소스 확인 실패</option>
               <option value="archived_missing">현재 피드에서 사라짐</option>
@@ -115,8 +116,20 @@
               <option value="has_caution">주의 신호 있음</option>
               <option value="caution_repeated">반복 주의 신호</option>
               <option value="mixed_caution">상반된 신호</option>
+              <option value="caution_single">단일 주의 사례</option>
+              <option value="policy_only">공식 정책만 확인</option>
+              <option value="evidence_expired">근거 만료·재검토 필요</option>
               <option value="insufficient">근거 부족</option>
               <option value="not_applicable">지급 주체 아님</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="requirementsFilter">필수요건 확인</label>
+            <select id="requirementsFilter">
+              <option value="">전체</option>
+              <option value="clear">추가 하드요건 감지 없음</option>
+              <option value="routine_check">일반 요건 확인 필요</option>
+              <option value="hard_check">하드요건 확인 필요</option>
             </select>
           </div>
           <div class="field">
@@ -163,6 +176,7 @@
       </div>
       <p class="source-note">상세·원문 확인 또는 상태 변경 시 검토 완료로 기록됩니다.</p>
     </section>
+    <section id="sourceHealth" class="source-health" hidden aria-live="polite"></section>
 
     <section id="jobs" class="job-grid" aria-live="polite"></section>
     <section id="empty" class="empty" hidden>
@@ -197,7 +211,8 @@
         <div class="job-select-group"><label class="job-select-hit"><input class="job-select" type="checkbox"></label><div><span class="source"></span><span class="score"></span></div></div>
         <div class="mini-actions"><button class="favorite" type="button" aria-label="관심 공고">☆</button><button class="dismiss" type="button" aria-label="숨기기">×</button></div>
       </div>
-      <div class="quality-badges"><span class="listing-badge"></span><span class="eligibility-badge"></span><span class="trust-badge"></span><span class="payment-badge"></span></div>
+      <div class="quality-badges"><span class="listing-badge"></span><span class="eligibility-badge"></span><span class="trust-badge"></span><span class="payment-badge"></span><span class="requirements-badge"></span></div>
+      <div class="decision-strip"><div class="decision-value"></div><div class="decision-unknown"></div></div>
       <h2 class="title"></h2>
       <p class="company"></p>
       <div class="meta"></div>
@@ -221,6 +236,10 @@
     <section class="trust-panel" aria-labelledby="trustHeading">
       <h3 id="trustHeading">검증과 판단 근거</h3>
       <div id="detailsTrust" class="quality-badges"></div>
+      <div class="decision-callout">
+        <div><strong>지금 볼 이유</strong><p id="detailsDecisionValue"></p></div>
+        <div><strong>아직 미확인</strong><p id="detailsDecisionUnknown"></p></div>
+      </div>
       <div class="decision-evidence-grid">
         <article class="evidence-card">
           <strong>모집 확인</strong>

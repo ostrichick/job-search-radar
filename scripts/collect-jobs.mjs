@@ -8,6 +8,7 @@ const root = path.resolve(__dirname, '..');
 
 const profile = JSON.parse(await fs.readFile(path.join(root, 'config/search-profile.json'), 'utf8'));
 const sourceQuality = JSON.parse(await fs.readFile(path.join(root, 'config/source-quality.json'), 'utf8'));
+const paymentEvidencePolicy = JSON.parse(await fs.readFile(path.join(root, 'config/payment-evidence-policy.json'), 'utf8'));
 
 function repairMojibake(value) {
   const raw = String(value ?? '');
@@ -26,10 +27,12 @@ const foreignLanguageRe = /\b(english|spanish|portuguese|romanian|japanese|polis
 
 const sourceRank = { official_ats: 5, official_platform: 4, job_board: 3, aggregator: 2, manual: 1 };
 const isOfficialKind = (kind) => ['official_ats', 'official_platform'].includes(kind);
+const dayMs = 86400000;
 
 function sourceMeta(source) {
   return sourceQuality[source] ?? {
     kind: 'aggregator',
+    coverage: 'bounded_window',
     listingLabel: '공고 소스',
     paymentStatus: 'unknown',
     paymentLabel: '직접 확인 필요',
@@ -46,6 +49,116 @@ function sourceMeta(source) {
 function evidenceSnippet(value, max = 120) {
   const cleaned = text(value);
   return cleaned.length > max ? `${cleaned.slice(0, max - 1)}…` : cleaned;
+}
+
+function enrichPaymentSignal(signal, now = Date.now()) {
+  const checkedAtRaw = signal?.checkedAt || signal?.observedAt || '';
+  const checkedAt = Date.parse(checkedAtRaw);
+  const sourceReferenceRaw = signal?.type === 'review_aggregate'
+    ? (signal?.latestSourceAt || checkedAtRaw)
+    : signal?.type === 'community_report'
+      ? (signal?.publishedAt || '')
+      : checkedAtRaw;
+  const sourceReferenceAt = Date.parse(sourceReferenceRaw);
+  const maxAgeDays = Number(signal?.maxAgeDays
+    ?? paymentEvidencePolicy.signalMaxAgeDays?.[signal?.type]
+    ?? paymentEvidencePolicy.defaultMaxAgeDays
+    ?? 90);
+  const ageDays = Number.isFinite(sourceReferenceAt) ? Math.max(0, Math.floor((now - sourceReferenceAt) / dayMs)) : null;
+  const checkedAgeDays = Number.isFinite(checkedAt) ? Math.max(0, Math.floor((now - checkedAt) / dayMs)) : null;
+  const expiresAt = Number.isFinite(sourceReferenceAt)
+    ? new Date(sourceReferenceAt + maxAgeDays * dayMs).toISOString()
+    : '';
+  const agingRatio = Number(paymentEvidencePolicy.agingThresholdRatio ?? 0.75);
+  const freshness = ageDays === null
+    ? 'unknown'
+    : ageDays > maxAgeDays
+      ? 'expired'
+      : ageDays >= Math.floor(maxAgeDays * agingRatio)
+        ? 'aging'
+        : 'fresh';
+  return {
+    ...signal,
+    checkedAt: checkedAtRaw,
+    freshnessReferenceAt: sourceReferenceRaw,
+    maxAgeDays,
+    ageDays,
+    checkedAgeDays,
+    expiresAt,
+    freshness
+  };
+}
+
+function derivePaymentEvidence(meta, now = Date.now()) {
+  if (meta.paymentStatus === 'not_payer') {
+    return {
+      state: 'not_applicable',
+      label: '지급 주체 아님',
+      confidence: 'not_applicable',
+      freshness: 'not_applicable',
+      checkedAt: meta.reviewedAt || '',
+      nextReviewAt: '',
+      summary: meta.paymentSummary || '',
+      signals: []
+    };
+  }
+
+  const signals = (Array.isArray(meta.paymentSignals) ? meta.paymentSignals : [])
+    .map((signal) => enrichPaymentSignal(signal, now));
+  const current = signals.filter((signal) => !['expired', 'unknown'].includes(signal.freshness));
+  const expiredCount = signals.filter((signal) => signal.freshness === 'expired').length;
+  const hasRepeatedMixed = current.some((signal) => signal.direction === 'mixed' && signal.recurrence === 'repeated');
+  const hasRepeatedCaution = current.some((signal) => signal.direction === 'caution' && signal.recurrence === 'repeated');
+  const hasSingleCaution = current.some((signal) => signal.direction === 'caution' && signal.recurrence === 'single');
+  const hasPolicy = current.some((signal) => signal.type === 'official_policy');
+  let state = 'insufficient';
+  let label = '근거 부족';
+  let confidence = 'low';
+  if (!current.length && signals.length) {
+    state = 'evidence_expired';
+    label = '근거 만료·재검토 필요';
+  } else if (hasRepeatedMixed) {
+    state = 'mixed_caution';
+    label = '상반된 신호·반복 주의';
+    confidence = 'moderate';
+  } else if (hasRepeatedCaution) {
+    state = 'caution_repeated';
+    label = '반복 주의 신호';
+    confidence = 'moderate';
+  } else if (hasSingleCaution) {
+    state = 'caution_single';
+    label = '단일 주의 사례';
+    confidence = 'low';
+  } else if (hasPolicy) {
+    state = 'policy_only';
+    label = '공식 지급 정책 확인';
+    confidence = 'low';
+  }
+
+  const freshness = !signals.length
+    ? 'insufficient'
+    : !current.length
+      ? 'expired'
+      : expiredCount
+        ? 'mixed_age'
+        : current.some((signal) => signal.freshness === 'aging')
+          ? 'aging'
+          : 'fresh';
+  const futureExpiries = current.map((signal) => Date.parse(signal.expiresAt)).filter(Number.isFinite);
+  const nextReviewAt = futureExpiries.length ? new Date(Math.min(...futureExpiries)).toISOString() : '';
+  const summary = state === 'evidence_expired'
+    ? '기존 지급 평판 근거의 유효기간이 지나 현재 신뢰 신호로 사용하지 않습니다. 최신 근거 재검토가 필요합니다.'
+    : (meta.paymentSummary || '');
+  return {
+    state,
+    label,
+    confidence,
+    freshness,
+    checkedAt: meta.reviewedAt || '',
+    nextReviewAt,
+    summary,
+    signals
+  };
 }
 
 function decodeXml(value) {
@@ -93,10 +206,23 @@ function salaryContext(rawValue, description) {
 
 function extractSalary(rawValue, description = '') {
   const raw = salaryContext(rawValue, description);
-  if (!raw) return { raw: '', display: '', currency: '', min: null, max: null, period: '', confidence: 'none' };
+  if (!raw) {
+    const desc = lower(description);
+    if (/\bfixed hourly rate\b|\bcompensation\b[^.]{0,80}\bfixed hourly\b/.test(desc)) {
+      return { raw: '', display: '금액 비공개 · 시간당 고정 단가', currency: '', min: null, max: null, period: 'hour', confidence: 'basis_only', paymentBasis: 'fixed_hourly' };
+    }
+    if (/\bpaid per completed set\b|\bcompensation\b[^.]{0,100}\bper completed set\b/.test(desc)) {
+      return { raw: '', display: '금액 비공개 · 완료 세트당 지급', currency: '', min: null, max: null, period: 'set', confidence: 'basis_only', paymentBasis: 'per_completed_set' };
+    }
+    if (/\bpaid per (?:job|task|item)\b/.test(desc)) {
+      return { raw: '', display: '금액 비공개 · 건별 지급', currency: '', min: null, max: null, period: 'task', confidence: 'basis_only', paymentBasis: 'per_task' };
+    }
+    return { raw: '', display: '', currency: '', min: null, max: null, period: '', confidence: 'none', paymentBasis: '' };
+  }
   const normalizedRaw = lower(raw);
   const isMaximum = /\bup to\b/.test(normalizedRaw);
-  const isApproximate = /\b(?:approximately|approx\.?|about|around)\b/.test(normalizedRaw);
+  const moneyToken = '(?:USD|EUR|GBP|KRW|CAD|AUD|JPY|CHF|PLN|BRL|INR|SGD|HKD|AED|USDT|[$€£₩¥])';
+  const isApproximate = new RegExp(`\\b(?:approximately|approx\\.?|about|around)\\b(?=[^0-9$€£₩¥]{0,16}${moneyToken}?\\s*\\d)`, 'i').test(raw);
   const isPerTaskApproximation = /\bpaid per (?:job|task|item)\b/.test(normalizedRaw);
   const currencyMatch = raw.match(/\b(USD|EUR|GBP|KRW|CAD|AUD|JPY|CHF|PLN|BRL|INR|SGD|HKD|AED|USDT)\b|([$€£₩¥])/i);
   const currency = currencyMatch
@@ -197,7 +323,7 @@ function currentListingState(job) {
   const title = lower(job.title);
   const lead = lower(job._fullDescription || job.description).slice(0, 700);
   if (/applications?(?: and assessments?)? (?:are )?closed|no longer accepting applications|position has been filled/.test(combined)) {
-    return { code: 'expired', label: '종료 확인됨', stale: true, reason: '공고 본문에 모집 종료 문구가 확인됨', basis: 'closed_text' };
+    return { code: 'expired', label: '종료 확인됨', stale: true, reason: '공고 본문에 모집 종료 문구가 확인됨', basis: 'closed_text', verification: 'closed' };
   }
   const deadline = combined.match(/(?:application deadline|applications close|apply by)\s*:?[ ]*([a-z]+\s+\d{1,2}(?:,?\s+\d{4})?|\d{4}-\d{2}-\d{2})/i);
   if (deadline) {
@@ -205,7 +331,7 @@ function currentListingState(job) {
     if (!/\d{4}/.test(rawDate)) rawDate = `${rawDate} ${new Date().getFullYear()}`;
     const closeAt = Date.parse(rawDate);
     if (Number.isFinite(closeAt) && closeAt < Date.now()) {
-      return { code: 'expired', label: '종료 확인됨', stale: true, reason: `명시된 지원 마감일이 지남: ${deadline[1]}`, basis: 'deadline' };
+      return { code: 'expired', label: '종료 확인됨', stale: true, reason: `명시된 지원 마감일이 지남: ${deadline[1]}`, basis: 'deadline', verification: 'closed' };
     }
   }
   const explicitPool = /not an active job opening|not an immediate (?:job|position|opening)|인재 파이프라인|즉시 시작되는 포지션이 아닙니다/.test(lead);
@@ -216,16 +342,34 @@ function currentListingState(job) {
       label: '인재풀·즉시 모집 아님',
       stale: false,
       reason: explicitPool ? '본문 앞부분에 즉시 채용이 아님을 명시' : '제목이 인재풀·향후 기회 모집임',
-      basis: explicitPool ? 'pool_lead' : 'pool_title'
+      basis: explicitPool ? 'pool_lead' : 'pool_title',
+      verification: 'talent_pool'
     };
   }
   const ageDays = job.postedAt ? Math.floor((Date.now() - Date.parse(job.postedAt)) / 86400000) : null;
-  if (isOfficialKind(meta.kind)) {
-    return { code: 'verified_open', label: '모집 확인됨', stale: false, reason: '공식 ATS·프로젝트 플랫폼의 현재 공개 목록에서 수집됨', basis: 'official_feed' };
+  if (meta.kind === 'official_ats') {
+    return {
+      code: 'verified_open',
+      label: '공식 ATS 모집 확인',
+      stale: false,
+      reason: '회사 공식 ATS의 현재 공개 공고 API에서 해당 공고가 직접 확인됨',
+      basis: 'official_ats_feed',
+      verification: 'direct_open'
+    };
   }
-  if (meta.kind === 'manual') return { code: 'manual', label: '직접 확인 필요', stale: false, reason: '사용자가 직접 추가한 공고라 자동 모집 확인 근거가 없음', basis: 'manual' };
-  if (ageDays !== null && ageDays > 45) return { code: 'stale', label: '오래된 공고', stale: true, reason: `게시 후 ${ageDays}일 경과한 비공식 피드 공고`, basis: 'age' };
-  return { code: 'current_feed', label: '현재 피드', stale: false, reason: '현재 채용 보드·집계 피드에 존재하지만 고용주의 공식 모집 상태는 별도 확인 필요', basis: 'board_feed' };
+  if (meta.kind === 'official_platform') {
+    return {
+      code: 'official_listed',
+      label: '공식 프로젝트 게시 확인',
+      stale: false,
+      reason: '공식 프로젝트 플랫폼의 공개 API에서 게시 상태를 확인함. 실제 작업량·선발 가능성은 별도 확인 필요',
+      basis: 'official_platform_feed',
+      verification: 'official_listed'
+    };
+  }
+  if (meta.kind === 'manual') return { code: 'manual', label: '직접 확인 필요', stale: false, reason: '사용자가 직접 추가한 공고라 자동 모집 확인 근거가 없음', basis: 'manual', verification: 'manual' };
+  if (ageDays !== null && ageDays > 45) return { code: 'stale', label: '오래된 공고', stale: true, reason: `게시 후 ${ageDays}일 경과한 비공식 피드 공고`, basis: 'age', verification: 'intermediary' };
+  return { code: 'current_feed', label: '집계·채용보드 현재 피드', stale: false, reason: '현재 채용 보드·집계 피드에 존재하지만 고용주의 공식 모집 상태는 별도 확인 필요', basis: 'board_feed', verification: 'intermediary' };
 }
 
 function markPreservedSourceFailure(job) {
@@ -235,6 +379,7 @@ function markPreservedSourceFailure(job) {
     listingLabel: '소스 확인 실패',
     listingReason: '이번 수집에서 원천 소스를 확인하지 못해 이전 공고를 보존함',
     listingBasis: 'source_error',
+    listingVerification: 'source_error',
     stale: true,
     score: Math.max(0, Number(job.score || 0) - 20)
   };
@@ -371,6 +516,9 @@ function normalizeJob(raw) {
     _fullDescription: fullDescription,
     tags: Array.isArray(raw.tags) ? raw.tags.map(text).filter(Boolean).slice(0, 12) : [],
     countryCode: raw.countryCode || '',
+    sourceListingState: text(raw.sourceListingState),
+    sourceCreatedAt: raw.sourceCreatedAt ? new Date(raw.sourceCreatedAt).toISOString() : null,
+    sourceModifiedAt: raw.sourceModifiedAt ? new Date(raw.sourceModifiedAt).toISOString() : null,
     verifiedAt: new Date().toISOString()
   };
   job.category = classify(job);
@@ -383,15 +531,20 @@ function normalizeJob(raw) {
   if (!job.salary && job.salaryInfo.confidence === 'parsed') job.salary = job.salaryInfo.display;
   const quality = sourceMeta(job.source);
   job.sourceKind = quality.kind;
+  job.sourceCoverage = quality.coverage || 'unknown';
   job.sourceTrustLabel = quality.listingLabel;
   job.sourceOfficiality = isOfficialKind(quality.kind) ? 'official' : quality.kind === 'manual' ? 'manual' : 'intermediary';
   job.paymentStatus = quality.paymentStatus;
   job.paymentLabel = quality.paymentLabel;
-  job.paymentEvidenceState = quality.paymentEvidenceState || (quality.paymentStatus === 'not_payer' ? 'not_applicable' : 'insufficient');
-  job.paymentEvidenceLabel = quality.paymentEvidenceLabel || quality.paymentLabel || '근거 부족';
-  job.paymentConfidence = quality.paymentConfidence || 'low';
-  job.paymentSummary = quality.paymentSummary || '';
-  job.paymentSignals = Array.isArray(quality.paymentSignals) ? quality.paymentSignals : [];
+  const paymentEvidence = derivePaymentEvidence(quality);
+  job.paymentEvidenceState = paymentEvidence.state;
+  job.paymentEvidenceLabel = paymentEvidence.label;
+  job.paymentConfidence = paymentEvidence.confidence;
+  job.paymentEvidenceFreshness = paymentEvidence.freshness;
+  job.paymentEvidenceCheckedAt = paymentEvidence.checkedAt;
+  job.paymentEvidenceNextReviewAt = paymentEvidence.nextReviewAt;
+  job.paymentSummary = paymentEvidence.summary;
+  job.paymentSignals = paymentEvidence.signals;
   job.sourceSummary = quality.summary;
   job.sourceEvidence = quality.evidence;
   job.sourceReviewAt = quality.reviewedAt || '';
@@ -400,12 +553,27 @@ function normalizeJob(raw) {
   job.listingLabel = listing.label;
   job.listingBasis = listing.basis || '';
   job.listingReason = listing.reason || '';
+  job.listingVerification = listing.verification || '';
   job.listingCheckedAt = job.verifiedAt;
   job.listingEvidence = [{
-    type: isOfficialKind(quality.kind) ? 'official_listing' : quality.kind === 'manual' ? 'manual_listing' : 'source_listing',
-    label: isOfficialKind(quality.kind) ? '공식 공고 원문' : quality.kind === 'manual' ? '직접 추가 원문' : '수집된 공고 원문',
+    type: quality.kind === 'official_ats'
+      ? 'official_ats_listing'
+      : quality.kind === 'official_platform'
+        ? 'official_platform_listing'
+        : quality.kind === 'manual'
+          ? 'manual_listing'
+          : 'source_listing',
+    label: quality.kind === 'official_ats'
+      ? '공식 ATS 공고 원문'
+      : quality.kind === 'official_platform'
+        ? '공식 프로젝트 페이지'
+        : quality.kind === 'manual'
+          ? '직접 추가 원문'
+          : '수집된 공고 원문',
     url: job.url,
-    checkedAt: job.verifiedAt
+    checkedAt: job.verifiedAt,
+    sourceState: job.sourceListingState || '',
+    sourceModifiedAt: job.sourceModifiedAt || ''
   }];
   job.stale = listing.stale;
   Object.assign(job, scoreJob(job));
@@ -459,19 +627,100 @@ function normalizeJob(raw) {
     job.score = Math.min(job.score, 19);
   }
   const hardExperienceContext = fullDescription.match(/.{0,120}\bwith experience in\s+(?:annotation|content review|quality assurance|data operations)(?:[^.]{0,140})/i)?.[0] || '';
-  if (hardExperienceContext && !/\b(?:preferred|a plus|plus|advantage|nice to have|optional)\b/i.test(hardExperienceContext)) {
+  const verifiedCapabilities = new Set(profile.verifiedCapabilities || []);
+  const userHasAiQualityExperience = ['ai_evaluation', 'data_annotation', 'quality_review', 'rubric_qa']
+    .some((capability) => verifiedCapabilities.has(capability));
+  if (hardExperienceContext
+    && !userHasAiQualityExperience
+    && !/\b(?:preferred|a plus|plus|advantage|nice to have|optional)\b/i.test(hardExperienceContext)) {
     fitWarnings.push('관련 어노테이션·콘텐츠 검토·QA 실무 경험 요건 확인');
+    job.score = Math.min(job.score, 19);
+  }
+  if (/\b(?:software|frontend|backend|full[- ]?stack|web|mobile)?\s*(?:engineer|developer)\b/i.test(titleLower)) {
+    fitWarnings.push('개발 전문경력 요건 확인');
+    job.score = Math.min(job.score, 19);
+  }
+  if (/\b(?:copywriter|copywriting|content writer|marketing writer)\b/i.test(titleLower)) {
+    fitWarnings.push('전문 카피라이팅·콘텐츠 작성 경력요건 확인');
+    job.score = Math.min(job.score, 19);
+  }
+  if (/\b(?:accessibility|a11y|wcag)\b/i.test(`${titleLower} ${fullDescription.slice(0, 1200)}`)
+    && /\b(?:specialist|expert|engineer|developer|consultant|auditor|tester|testing|experience|required|must)\b/i.test(`${titleLower} ${fullDescription.slice(0, 1200)}`)) {
+    fitWarnings.push('접근성 전문경력·WCAG 실무요건 확인');
     job.score = Math.min(job.score, 19);
   }
   job.fitWarnings = [...new Set(fitWarnings)];
   job.fitWarning = job.fitWarnings.join(' · ');
+  const routineRequirements = [];
+  if (/\benglish proficiency\s*:?\s*(?:fluent|advanced)|\benglish\b[^.]{0,40}\b(?:b2|c1|c2)\b|\b(?:b2|c1|c2)\b[^.]{0,40}\benglish\b/i.test(fullDescription)) {
+    routineRequirements.push('영어 요구 수준 확인');
+  } else if (/\bstrong (?:level of )?written english\b|\bstrong written english\b/i.test(fullDescription)) {
+    routineRequirements.push('영어 문서 이해·작성 능력 확인');
+  }
+  if (/\b(?:microphone|headset)\b/i.test(fullDescription)
+    && !job.fitWarnings.some((warning) => /iOS|기기/.test(warning))) {
+    routineRequirements.push('마이크·헤드셋 등 작업 장비 확인');
+  }
+  if (/\b(?:laptop|personal computer|desktop|phone)\b/i.test(fullDescription)
+    && !job.fitWarnings.some((warning) => /iOS|기기/.test(warning))) {
+    routineRequirements.push('PC·노트북·휴대전화 등 작업 장비 확인');
+  }
+  if (/\bresident in korea\b|\bbased in korea\b|\bresid(?:e|ing) in south korea\b/i.test(fullDescription)) {
+    routineRequirements.push('한국 거주 요건 확인');
+  }
+  if (/\bwork on freelance projects in korea without any legal issues\b|\blegally authorized to work as an independent contractor\b/i.test(fullDescription)) {
+    routineRequirements.push('한국 내 프리랜서 활동 가능 여부 확인');
+  }
+  if (/\b(?:do not use|no)\b[^.]{0,60}\b(?:vpn|ip masking)\b|\bip masking programs?\b/i.test(fullDescription)) {
+    routineRequirements.push('VPN·IP 마스킹 사용 금지');
+  }
+  if (/\b(?:at least|minimum of|up to)\s+\d+\s*(?:billable )?hours? per (?:day|week)\b|\b\d+\s*hours?\s+to\s+\d+\s*hours? per week\b/i.test(fullDescription)) {
+    routineRequirements.push('주간·일일 시간 투입 요건 확인');
+  }
+  if (/\b(?:language certification tests?|required practice tasks?|certification is mandatory|required certifications?)\b/i.test(fullDescription)) {
+    routineRequirements.push('자격 테스트·사전 과제 통과 필요');
+  }
+  job.requirementChecks = [
+    ...job.fitWarnings.map((label) => ({ kind: 'hard', label })),
+    ...[...new Set(routineRequirements)].map((label) => ({ kind: 'routine', label }))
+  ];
+  job.requirementsStatus = job.fitWarnings.length
+    ? 'hard_check'
+    : routineRequirements.length
+      ? 'routine_check'
+      : 'clear';
+  job.requirementsLabel = job.requirementsStatus === 'hard_check'
+    ? '하드요건 확인 필요'
+    : job.requirementsStatus === 'routine_check'
+      ? '일반 요건 확인 필요'
+      : '추가 하드요건 감지 없음';
   job.fitReasons = [
     ...(job.matchedKeywords?.length ? [`일치 키워드: ${job.matchedKeywords.slice(0, 4).join(', ')}`] : []),
     ...(job.category !== '기타' ? [`관심 분야: ${job.category}`] : []),
     ...(['korea', 'worldwide'].includes(job.eligibilityCode) ? [`지원 범위: ${job.eligibility}`] : []),
-    ...(isOfficialKind(job.sourceKind) ? ['공식 모집원에서 현재 공고 확인'] : []),
+    ...(job.listingStatus === 'verified_open' ? ['공식 ATS에서 현재 모집 공고 확인'] : []),
+    ...(job.listingStatus === 'official_listed' ? ['공식 프로젝트 플랫폼에 현재 게시 확인'] : []),
     ...(job.remote ? ['원격 공고'] : [])
   ].slice(0, 6);
+  job.applyValueReasons = [
+    ...(job.listingStatus === 'verified_open' ? ['공식 ATS 모집 확인'] : []),
+    ...(job.listingStatus === 'official_listed' ? ['공식 프로젝트 게시 확인'] : []),
+    ...(job.listingStatus === 'current_feed' ? ['현재 외부 피드에 게시'] : []),
+    ...(job.eligibilityCode === 'korea' ? ['한국 지원 명시'] : []),
+    ...(job.eligibilityCode === 'worldwide' ? ['Worldwide 지원'] : []),
+    ...(job.remote ? ['원격'] : []),
+    ...(job.salaryInfo?.display ? [`급여 ${job.salaryInfo.display}`] : []),
+    ...(job.score >= 80 ? ['관심 업무와 강한 일치'] : job.score >= 40 ? ['관심 업무와 일치'] : [])
+  ].slice(0, 5);
+  job.decisionUnknowns = [
+    ...(job.listingStatus === 'official_listed' ? ['실제 작업량·선발 가능성'] : []),
+    ...(job.listingStatus === 'current_feed' ? ['고용주 공식 모집 상태'] : []),
+    ...(job.eligibilityCode === 'unknown' ? ['지원 가능 국가'] : []),
+    ...(!job.salaryInfo?.display ? ['급여·단가'] : []),
+    ...(['caution_repeated', 'mixed_caution', 'caution_single'].includes(job.paymentEvidenceState) ? ['지급 평판 주의 신호'] : []),
+    ...(job.paymentEvidenceState === 'evidence_expired' ? ['지급 신뢰 근거 만료'] : []),
+    ...job.requirementChecks.map((item) => item.label)
+  ].slice(0, 5);
   if (job.stale) job.score = Math.max(0, job.score - 15);
   if (job.listingStatus === 'talent_pool') job.score = Math.max(0, job.score - 45);
   if (job.listingStatus === 'expired') job.score = 0;
@@ -518,6 +767,8 @@ async function collectLeverBoard(site, source, company) {
       salary: '',
       url: j.hostedUrl,
       postedAt: j.createdAt ? new Date(j.createdAt).toISOString() : null,
+      sourceListingState: 'published',
+      sourceCreatedAt: j.createdAt ? new Date(j.createdAt).toISOString() : null,
       description,
       tags: [j.categories?.department, j.categories?.team, j.workplaceType].filter(Boolean),
       countryCode: j.country || ''
@@ -544,6 +795,11 @@ function oneFormaTerms(post, taxonomy) {
     .filter((term) => term?.taxonomy === taxonomy)
     .map((term) => text(term.name))
     .filter(Boolean);
+}
+
+function oneFormaSupportsKorean(post) {
+  const languages = oneFormaTerms(post, 'language');
+  return !languages.length || languages.some((language) => /korean|한국어/i.test(language));
 }
 
 function oneFormaCandidate(post) {
@@ -579,6 +835,13 @@ function oneFormaCandidate(post) {
     salary: '',
     url: post?.link,
     postedAt,
+    sourceListingState: post?.status || '',
+    sourceCreatedAt: postedAt,
+    sourceModifiedAt: post?.modified_gmt
+      ? new Date(`${post.modified_gmt}Z`).toISOString()
+      : post?.modified
+        ? new Date(post.modified).toISOString()
+        : null,
     description: text(post?.content?.rendered || post?.excerpt?.rendered),
     tags: [
       ...languages.filter((language) => /korean/i.test(language)),
@@ -595,6 +858,7 @@ async function collectOneForma() {
   const rows = await fetchJson('https://www.oneforma.com/wp-json/wp/v2/job?per_page=100&_embed=1');
   const collected = [];
   for (const post of Array.isArray(rows) ? rows : []) {
+    if (!oneFormaSupportsKorean(post)) continue;
     const candidate = oneFormaCandidate(post);
     if (!candidate.title || !candidate.url) continue;
     if (relevantToProfile(candidate)) collected.push(normalizeJob(candidate));
@@ -827,9 +1091,15 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
     '현지 근무/확인 필요': 'restricted'
   };
   for (const previous of previousJobs || []) {
-    const preserveForGrace = Number(previous.score || 0) > 0
-      || isOfficialKind(previous.sourceKind)
-      || previous.listingStatus === 'archived_missing';
+    const sourceSpecificRelevant = previous.source !== 'OneForma'
+      || (previous.tags || []).some((tag) => /korean|한국어/i.test(String(tag)));
+    const preserveForGrace = sourceSpecificRelevant
+      && relevantToProfile(previous)
+      && (
+        Number(previous.score || 0) > 0
+        || isOfficialKind(previous.sourceKind)
+        || previous.listingStatus === 'archived_missing'
+      );
     if (!preserveForGrace) continue;
     const previousUrl = lower(previous.url).replace(/[?#].*$/, '').replace(/\/$/, '');
     const aliases = [previous.id, ...(previous.legacyIds || [])].filter(Boolean);
@@ -837,6 +1107,7 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
     const missingSince = Date.parse(previous.missingSince || '') || now;
     if (now - missingSince > retentionMs) continue;
     const quality = sourceMeta(previous.source);
+    const paymentEvidence = derivePaymentEvidence(quality, now);
     const eligibilityCode = previous.eligibilityCode || legacyEligibilityMap[previous.eligibility] || 'unknown';
     const derivedEligibility = eligibilityFor(previous);
     const eligibilityBasis = previous.eligibilityBasis
@@ -852,15 +1123,19 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
       eligibilityBasis,
       eligibilityReason,
       sourceKind: previous.sourceKind || quality.kind,
+      sourceCoverage: previous.sourceCoverage || quality.coverage || 'unknown',
       sourceTrustLabel: previous.sourceTrustLabel || quality.listingLabel,
       sourceOfficiality: previous.sourceOfficiality || (isOfficialKind(quality.kind) ? 'official' : quality.kind === 'manual' ? 'manual' : 'intermediary'),
       paymentStatus: previous.paymentStatus || quality.paymentStatus,
       paymentLabel: previous.paymentLabel || quality.paymentLabel,
-      paymentEvidenceState: previous.paymentEvidenceState || quality.paymentEvidenceState || (quality.paymentStatus === 'not_payer' ? 'not_applicable' : 'insufficient'),
-      paymentEvidenceLabel: previous.paymentEvidenceLabel || quality.paymentEvidenceLabel || quality.paymentLabel || '근거 부족',
-      paymentConfidence: previous.paymentConfidence || quality.paymentConfidence || 'low',
-      paymentSummary: previous.paymentSummary || quality.paymentSummary || '',
-      paymentSignals: previous.paymentSignals || quality.paymentSignals || [],
+      paymentEvidenceState: paymentEvidence.state,
+      paymentEvidenceLabel: paymentEvidence.label,
+      paymentConfidence: paymentEvidence.confidence,
+      paymentEvidenceFreshness: paymentEvidence.freshness,
+      paymentEvidenceCheckedAt: paymentEvidence.checkedAt,
+      paymentEvidenceNextReviewAt: paymentEvidence.nextReviewAt,
+      paymentSummary: paymentEvidence.summary,
+      paymentSignals: paymentEvidence.signals,
       sourceSummary: previous.sourceSummary || quality.summary,
       sourceEvidence: previous.sourceEvidence || quality.evidence,
       sourceReviewAt: previous.sourceReviewAt || quality.reviewedAt || '',
@@ -868,7 +1143,10 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
       listingStatus: 'archived_missing',
       listingLabel: '현재 피드에서 사라짐',
       listingBasis: 'missing_from_feed',
-      listingReason: `현재 수집 피드에서 사라져 ${new Date(missingSince).toISOString()}부터 14일간 상태 보존 중`,
+      listingReason: (previous.sourceCoverage || quality.coverage) === 'bounded_window'
+        ? `현재 제한된 수집 창에서 보이지 않아 ${new Date(missingSince).toISOString()}부터 14일간 보존 중. 종료로 확인된 것은 아님`
+        : `현재 수집 피드에서 사라져 ${new Date(missingSince).toISOString()}부터 14일간 상태 보존 중. 종료로 확인된 것은 아님`,
+      listingVerification: 'historical_missing',
       listingCheckedAt: previous.listingCheckedAt || previous.verifiedAt || '',
       listingEvidence: previous.listingEvidence || [{ type: 'historical_listing', label: '마지막 확인 공고 원문', url: previous.url, checkedAt: previous.verifiedAt || '' }],
       stale: true,
@@ -914,6 +1192,10 @@ export async function collectJobs({ includeManual = true, persist = true, previo
     }
   }
   const uniqueJobs = carryRecentlyMissing(carryForwardLegacyIds(dedupe(jobs), fallbackJobs), fallbackJobs)
+    .filter((job) =>
+      (Number(job.score || 0) >= 10 || isOfficialKind(job.sourceKind))
+      || job.sourceKind === 'manual'
+      || ['source_error', 'archived_missing'].includes(job.listingStatus))
     .sort((a, b) => (b.score - a.score) || ((Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0)));
   const payload = { updatedAt: new Date().toISOString(), sourceStatus, jobs: uniqueJobs };
   if (persist) await fs.writeFile(path.join(root, 'data/jobs.json'), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
@@ -925,4 +1207,20 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   console.log(JSON.stringify({ updatedAt: payload.updatedAt, sourceStatus: payload.sourceStatus, jobs: payload.jobs.length }, null, 2));
 }
 
-export { eligibilityFor, extractSalary, relevantToProfile, currentListingState, markPreservedSourceFailure, normalizeJob, dedupe, carryForwardLegacyIds, carryRecentlyMissing, canonicalCompany, canonicalTitle, oneFormaCandidate };
+export {
+  eligibilityFor,
+  extractSalary,
+  relevantToProfile,
+  currentListingState,
+  markPreservedSourceFailure,
+  normalizeJob,
+  dedupe,
+  carryForwardLegacyIds,
+  carryRecentlyMissing,
+  canonicalCompany,
+  canonicalTitle,
+  oneFormaCandidate,
+  oneFormaSupportsKorean,
+  enrichPaymentSignal,
+  derivePaymentEvidence
+};

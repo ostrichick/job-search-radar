@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "defaultMaxAgeDays": 90,
+  "signalMaxAgeDays": {
+    "official_policy": 180,
+    "review_aggregate": 120,
+    "community_report": 90
+  },
+  "agingThresholdRatio": 0.75
+}

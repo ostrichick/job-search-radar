@@ -22,6 +22,7 @@ function job(overrides = {}) {
     eligibilityReason: '공고 위치에 한국이 명시됨: South Korea',
     salaryInfo: { raw: '$10/hour', display: '$10/시간', currency: 'USD', min: 10, max: 10, period: 'hour', confidence: 'parsed' },
     sourceKind: 'official_ats',
+    sourceCoverage: 'current_catalog',
     sourceTrustLabel: '공식 직접 채용',
     sourceOfficiality: 'official',
     sourceSummary: '공식 ATS의 현재 공개 공고입니다.',
@@ -33,10 +34,14 @@ function job(overrides = {}) {
     paymentEvidenceLabel: '반복 주의 신호',
     paymentConfidence: 'moderate',
     paymentSummary: '공개 리뷰 집계에 반복 주의 신호가 있습니다.',
-    paymentSignals: [{ type: 'review_aggregate', direction: 'caution', recurrence: 'repeated', observedAt: '2026-10-04', label: '리뷰 집계', url: 'https://example.com/reviews' }],
+    paymentEvidenceFreshness: 'fresh',
+    paymentEvidenceCheckedAt: '2026-10-04',
+    paymentEvidenceNextReviewAt: '2027-01-30T00:00:00.000Z',
+    paymentSignals: [{ type: 'review_aggregate', direction: 'caution', recurrence: 'repeated', checkedAt: '2026-10-04', latestSourceAt: '2026-10-02', freshness: 'fresh', maxAgeDays: 120, expiresAt: '2027-01-30T00:00:00.000Z', label: '리뷰 집계', url: 'https://example.com/reviews' }],
     listingStatus: 'verified_open',
     listingLabel: '모집 확인됨',
     listingBasis: 'official_feed',
+    listingVerification: 'direct_open',
     listingReason: '공식 ATS의 현재 공개 목록에서 수집됨',
     listingCheckedAt: now,
     listingEvidence: [{ type: 'official_listing', label: '공식 공고 원문', url: 'https://example.com/job/default', checkedAt: now }],
@@ -47,6 +52,11 @@ function job(overrides = {}) {
     fitReasons: ['일치 키워드: korean, ai data specialist', '지원 범위: 한국에서 지원 가능'],
     fitWarnings: [],
     fitWarning: '',
+    requirementChecks: [],
+    requirementsStatus: 'clear',
+    requirementsLabel: '추가 하드요건 감지 없음',
+    applyValueReasons: ['공식 ATS 모집 확인', '한국 지원 명시', '원격', '급여 $10/시간'],
+    decisionUnknowns: ['지급 평판 주의 신호'],
     legacyIds: ['raw:default'],
     sources: ['RWS TrainAI'],
     alternateUrls: [],
@@ -73,7 +83,17 @@ const defaultJobs = [
     url: 'https://example.com/job/oneforma',
     sourceKind: 'official_platform',
     sourceTrustLabel: '공식 프로젝트 플랫폼',
-    listingEvidence: [{ type: 'official_listing', label: '공식 공고 원문', url: 'https://example.com/job/oneforma' }],
+    listingStatus: 'official_listed',
+    listingLabel: '공식 프로젝트 게시 확인',
+    listingVerification: 'official_listed',
+    listingBasis: 'official_platform_feed',
+    listingReason: '공식 프로젝트 플랫폼의 공개 API에서 게시 상태를 확인함',
+    listingEvidence: [{ type: 'official_platform_listing', label: '공식 프로젝트 페이지', url: 'https://example.com/job/oneforma' }],
+    requirementChecks: [{ kind: 'routine', label: '작업 장비 확인' }],
+    requirementsStatus: 'routine_check',
+    requirementsLabel: '일반 요건 확인 필요',
+    applyValueReasons: ['공식 프로젝트 게시 확인', '한국 지원 명시'],
+    decisionUnknowns: ['실제 작업량·선발 가능성', '작업 장비 확인'],
     score: 82,
     legacyIds: ['raw:oneforma'],
     sources: ['OneForma']
@@ -93,12 +113,20 @@ const defaultJobs = [
     paymentEvidenceState: 'not_applicable',
     paymentEvidenceLabel: '지급 주체 아님',
     paymentSignals: [],
+    paymentEvidenceFreshness: 'not_applicable',
     eligibility: 'Worldwide',
     eligibilityCode: 'worldwide',
     eligibilityReason: 'Worldwide 지원 범위가 명시됨',
     listingStatus: 'current_feed',
     listingLabel: '현재 피드',
     listingReason: '현재 채용 보드 피드에 존재함',
+    listingVerification: 'intermediary',
+    sourceCoverage: 'bounded_window',
+    requirementChecks: [{ kind: 'hard', label: '전문 경력 확인' }],
+    requirementsStatus: 'hard_check',
+    requirementsLabel: '하드요건 확인 필요',
+    applyValueReasons: ['현재 외부 피드에 게시', 'Worldwide 지원'],
+    decisionUnknowns: ['고용주 공식 모집 상태', '전문 경력 확인'],
     score: 55,
     legacyIds: ['raw:worldwide'],
     sources: ['Remotive']
@@ -187,6 +215,8 @@ test('관심 공고가 피드에서 사라져도 archived snapshot으로 남는�
   current = feed(defaultJobs.slice(1));
   await page.reload();
   await page.selectOption('#statusFilter', 'saved');
+  await page.selectOption('#listingFilter', 'all');
+  await page.selectOption('#minScore', '0');
   await expect(page.locator('.job-card')).toHaveCount(1);
   await expect(page.locator('.title')).toHaveText('AI Data Specialist - Korean');
   await expect(page.locator('.listing-badge')).toHaveText('현재 피드에서 사라짐');
@@ -271,4 +301,93 @@ test('상태 백업/가져오기는 지원함 상태와 필터를 복원한다',
   await page.selectOption('#statusFilter', 'applied');
   await expect(page.locator('.job-card')).toHaveCount(1);
   await expect(page.locator('.title')).toHaveText('AI Data Specialist - Korean');
+});
+
+test('지원 가치·미확인·필수요건 상태를 카드와 상세에서 빠르게 확인한다', async ({ page }) => {
+  await useFeed(page);
+  await page.goto('/');
+  const rws = page.locator('.job-card').filter({ hasText: 'AI Data Specialist - Korean' });
+  await expect(rws.locator('.decision-value')).toContainText('공식 ATS 모집 확인');
+  await expect(rws.locator('.decision-unknown')).toContainText('지급 평판');
+  await expect(rws.locator('.requirements-badge')).toHaveAttribute('data-state', 'clear');
+
+  await page.selectOption('#requirementsFilter', 'routine_check');
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await expect(page.locator('.title')).toHaveText('Multilingual AI Quality Assurance Reviewer');
+  await page.locator('.details').click();
+  await expect(page.locator('#detailsDecisionValue')).toContainText('공식 프로젝트 게시 확인');
+  await expect(page.locator('#detailsDecisionUnknown')).toContainText('실제 작업량');
+  await expect(page.locator('#detailsFitWarnings')).toContainText('작업 장비');
+});
+
+test('내 상태와 검증 필터는 서로 독립적으로 교집합 적용된다', async ({ page }) => {
+  await useFeed(page);
+  await page.goto('/');
+  await page.locator('.job-card').filter({ hasText: 'AI Data Specialist - Korean' }).locator('.favorite').click();
+  await page.locator('.job-card').filter({ hasText: 'Korean Content Reviewer' }).locator('.favorite').click();
+  await page.selectOption('#statusFilter', 'saved');
+  await expect(page.locator('.job-card')).toHaveCount(2);
+  await page.selectOption('#listingFilter', 'verified_open');
+  await page.selectOption('#sourceKindFilter', 'official_ats');
+  await page.selectOption('#eligibility', 'korea');
+  await page.selectOption('#requirementsFilter', 'clear');
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await expect(page.locator('.title')).toHaveText('AI Data Specialist - Korean');
+});
+
+test('공식 ATS와 공식 플랫폼 게시를 구분하고 지급 근거 만료를 필터링한다', async ({ page }) => {
+  const expired = job({
+    id: 'job:expired-evidence',
+    title: 'Korean AI Reviewer - Evidence Expired',
+    url: 'https://example.com/job/expired-evidence',
+    paymentEvidenceState: 'evidence_expired',
+    paymentEvidenceLabel: '근거 만료·재검토 필요',
+    paymentEvidenceFreshness: 'expired',
+    paymentEvidenceNextReviewAt: '',
+    paymentSignals: [{ type: 'review_aggregate', direction: 'caution', recurrence: 'repeated', checkedAt: '2026-10-04', latestSourceAt: '2026-01-01', freshness: 'expired', maxAgeDays: 120, expiresAt: '2026-05-01T00:00:00.000Z', label: '오래된 리뷰', url: 'https://example.com/old-reviews' }]
+  });
+  await useFeed(page, () => feed([...defaultJobs, expired]));
+  await page.goto('/');
+  await page.selectOption('#listingFilter', 'official_listed');
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await expect(page.locator('.listing-badge')).toHaveAttribute('data-state', 'official_listed');
+  await page.selectOption('#listingFilter', 'all');
+  await page.selectOption('#paymentFilter', 'evidence_expired');
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await expect(page.locator('.payment-badge')).toHaveAttribute('data-freshness', 'expired');
+  await page.locator('.details').click();
+  await expect(page.locator('#detailsPaymentSummary')).toContainText('근거 만료');
+});
+
+test('부분 소스 실패를 별도 경고하고 보존 공고로 바로 이동한다', async ({ page }) => {
+  const preserved = job({
+    id: 'job:preserved-source-error',
+    source: 'OneForma',
+    title: 'Preserved Korean Reviewer',
+    url: 'https://example.com/job/preserved',
+    score: 0,
+    sourceKind: 'official_platform',
+    listingStatus: 'source_error',
+    listingLabel: '소스 확인 실패',
+    listingVerification: 'source_error',
+    listingReason: '이번 수집에서 원천 소스를 확인하지 못해 이전 공고를 보존함',
+    listingCheckedAt: '2026-10-03T06:00:00.000Z',
+    listingEvidence: [{ type: 'historical_listing', label: '마지막 확인 원문', url: 'https://example.com/job/preserved', checkedAt: '2026-10-03T06:00:00.000Z' }]
+  });
+  const partialFeed = {
+    ...feed([...defaultJobs, preserved]),
+    sourceStatus: [
+      { source: 'RWS TrainAI', ok: true, count: 1 },
+      { source: 'OneForma', ok: false, count: 0, preserved: 1, error: '503' }
+    ]
+  };
+  await useFeed(page, () => partialFeed);
+  await page.goto('/');
+  await expect(page.locator('#sourceHealth')).toBeVisible();
+  await expect(page.locator('#sourceHealth')).toContainText('OneForma');
+  await expect(page.locator('#showSourceErrors')).toContainText('보존 공고 1개');
+  await page.locator('#showSourceErrors').click();
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await expect(page.locator('.title')).toHaveText('Preserved Korean Reviewer');
+  await expect(page.locator('.listing-badge')).toHaveText('소스 확인 실패');
 });

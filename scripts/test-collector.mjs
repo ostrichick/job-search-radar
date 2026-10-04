@@ -1,5 +1,19 @@
 import assert from 'node:assert/strict';
-import { eligibilityFor, extractSalary, relevantToProfile, currentListingState, markPreservedSourceFailure, normalizeJob, dedupe, carryForwardLegacyIds, carryRecentlyMissing, oneFormaCandidate } from './collect-jobs.mjs';
+import {
+  eligibilityFor,
+  extractSalary,
+  relevantToProfile,
+  currentListingState,
+  markPreservedSourceFailure,
+  normalizeJob,
+  dedupe,
+  carryForwardLegacyIds,
+  carryRecentlyMissing,
+  oneFormaCandidate,
+  oneFormaSupportsKorean,
+  enrichPaymentSignal,
+  derivePaymentEvidence
+} from './collect-jobs.mjs';
 
 const remote = (location, description = '', countryCode = '') => ({ location, description, remote: true, countryCode });
 
@@ -63,6 +77,19 @@ const perJobApprox = extractSalary('', 'Salary: Paid per job – approximately $
 assert.equal(perJobApprox.display, '약 $11.5/시간 · 건당 지급 환산');
 assert.equal(perJobApprox.paymentBasis, 'per_task_equivalent');
 
+const unrelatedAbout = extractSalary('', 'Pay Rate: $13/hour. Are you passionate about language, technology, and data quality?');
+assert.equal(unrelatedAbout.display, '$13/시간');
+
+const fixedHourlyBasis = extractSalary('', 'Compensation is calculated at a fixed hourly rate. The amount depends on language and location.');
+assert.equal(fixedHourlyBasis.confidence, 'basis_only');
+assert.equal(fixedHourlyBasis.display, '금액 비공개 · 시간당 고정 단가');
+assert.equal(fixedHourlyBasis.paymentBasis, 'fixed_hourly');
+
+const perSetBasis = extractSalary('', 'Compensation is paid per completed set of reviewed and matched text.');
+assert.equal(perSetBasis.confidence, 'basis_only');
+assert.equal(perSetBasis.display, '금액 비공개 · 완료 세트당 지급');
+assert.equal(perSetBasis.paymentBasis, 'per_completed_set');
+
 assert.equal(relevantToProfile({ title: 'Video Reviewer', description: 'This project involves data annotation for AI training.', tags: [] }), true);
 assert.equal(relevantToProfile({ title: 'Senior Backend Engineer', description: 'Works with data and AI systems.', tags: [] }), false);
 
@@ -71,6 +98,11 @@ assert.equal(pool.code, 'talent_pool');
 
 const currentProject = currentListingState({ source: 'Welo Global', title: 'Generative AI Analyst | Korean (Korea)', description: 'Project Details. Commitment: 4 weeks. Pay Rate: $13/hour. Apply now. Join our database and become part of our growing community.', postedAt: new Date().toISOString() });
 assert.equal(currentProject.code, 'verified_open');
+assert.equal(currentProject.verification, 'direct_open');
+
+const officialPlatformProject = currentListingState({ source: 'OneForma', title: 'AI Reviewer', description: 'Apply through the platform.', postedAt: new Date().toISOString() });
+assert.equal(officialPlatformProject.code, 'official_listed');
+assert.equal(officialPlatformProject.verification, 'official_listed');
 
 const expired = currentListingState({ source: 'Remote OK', title: 'Reviewer', description: 'Applications are closed.', postedAt: new Date().toISOString() });
 assert.equal(expired.code, 'expired');
@@ -122,6 +154,17 @@ const withGracePeriod = carryRecentlyMissing([], [disappeared], now);
 assert.equal(withGracePeriod.length, 1);
 assert.equal(withGracePeriod[0].listingStatus, 'archived_missing');
 assert.equal(withGracePeriod[0].score, 0);
+const secondGraceCycle = carryRecentlyMissing([], withGracePeriod, now + 86400000);
+assert.equal(secondGraceCycle.length, 1, 'relevant archived_missing jobs must remain through subsequent grace-period collections');
+assert.equal(secondGraceCycle[0].listingStatus, 'archived_missing');
+const nonKoreanOneFormaMissing = carryRecentlyMissing([], [{
+  ...disappeared,
+  source: 'OneForma',
+  sourceKind: 'official_platform',
+  tags: ['English', 'Annotation'],
+  score: 30
+}], now);
+assert.equal(nonKoreanOneFormaMissing.length, 0, 'intentionally excluded non-Korean OneForma projects must not return through missing-job grace');
 const tooOld = carryRecentlyMissing([], [{ ...disappeared, missingSince: '2026-09-01T00:00:00Z' }], now);
 assert.equal(tooOld.length, 0, 'missing jobs must age out after the grace period');
 
@@ -152,11 +195,17 @@ assert.ok(oneFormaRaw.tags.includes('Korean'));
 const oneFormaJob = normalizeJob(oneFormaRaw);
 assert.equal(oneFormaJob.eligibilityCode, 'korea');
 assert.equal(oneFormaJob.sourceKind, 'official_platform');
-assert.equal(oneFormaJob.listingStatus, 'verified_open');
+assert.equal(oneFormaJob.listingStatus, 'official_listed');
 assert.ok(oneFormaJob.listingReason);
 assert.ok(oneFormaJob.eligibilityReason);
 assert.equal(oneFormaJob.sourceOfficiality, 'official');
 assert.ok(oneFormaJob.listingEvidence.some((item) => item.url === oneFormaJob.url));
+
+const nonKoreanOneFormaPost = structuredClone(oneFormaPost);
+nonKoreanOneFormaPost._embedded['wp:term'] = nonKoreanOneFormaPost._embedded['wp:term']
+  .map((group) => group.filter((term) => term.taxonomy !== 'language' || term.name !== 'Korean'));
+assert.equal(oneFormaSupportsKorean(nonKoreanOneFormaPost), false, 'OneForma projects with explicit non-Korean language lists must not enter the feed');
+assert.equal(oneFormaSupportsKorean(oneFormaPost), true);
 
 const translationRater = normalizeJob({
   ...base,
@@ -260,8 +309,8 @@ const hardRelatedExperience = normalizeJob({
   description: 'We are looking for detail-oriented professionals with experience in annotation, content review, quality assurance, or data operations to support AI projects.',
   tags: ['Korean', 'AI']
 });
-assert.ok(hardRelatedExperience.score < 20, 'explicit required related experience must not be assumed from adjacent user experience');
-assert.match(hardRelatedExperience.fitWarning, /실무 경험/);
+assert.ok(hardRelatedExperience.score >= 20, 'verified AI evaluation/annotation/QA capability must satisfy the matching experience requirement');
+assert.doesNotMatch(hardRelatedExperience.fitWarning, /실무 경험/);
 
 const preferredRelatedExperience = normalizeJob({
   ...base,
@@ -275,5 +324,110 @@ const preferredRelatedExperience = normalizeJob({
 });
 assert.ok(preferredRelatedExperience.score >= 20, 'preferred related experience must not become a hard blocker');
 assert.doesNotMatch(preferredRelatedExperience.fitWarning, /실무 경험/);
+
+const devRole = normalizeJob({
+  ...base,
+  id: 'developer-role',
+  source: 'Remote OK',
+  title: 'Korean Frontend Developer',
+  location: 'South Korea',
+  url: 'https://example.com/developer-role',
+  description: 'Build production React applications. 3 years of frontend development experience required.',
+  tags: ['Korean', 'Developer']
+});
+assert.ok(devRole.score < 20, 'software development roles must not rank as recommendations from Korean keyword overlap');
+assert.match(devRole.fitWarning, /개발 전문경력/);
+
+const copywriterRole = normalizeJob({
+  ...base,
+  id: 'copywriter-role',
+  source: 'Remote OK',
+  title: 'Korean Copywriter',
+  location: 'South Korea',
+  url: 'https://example.com/copywriter-role',
+  description: 'Professional marketing copywriting experience required.',
+  tags: ['Korean', 'Content']
+});
+assert.ok(copywriterRole.score < 20, 'professional copywriting roles must not rank as recommendations');
+assert.match(copywriterRole.fitWarning, /카피라이팅/);
+
+const accessibilityRole = normalizeJob({
+  ...base,
+  id: 'accessibility-role',
+  source: 'Remote OK',
+  title: 'Korean Accessibility Specialist',
+  location: 'South Korea',
+  url: 'https://example.com/accessibility-role',
+  description: 'WCAG audit experience required for accessibility testing.',
+  tags: ['Korean', 'Accessibility']
+});
+assert.ok(accessibilityRole.score < 20, 'accessibility specialist roles must not rank without verified accessibility expertise');
+assert.match(accessibilityRole.fitWarning, /접근성 전문경력/);
+
+const routineRequirement = normalizeJob({
+  ...base,
+  id: 'routine-requirement',
+  source: 'RWS TrainAI',
+  title: 'AI Data Specialist - Korean',
+  location: 'South Korea',
+  url: 'https://example.com/routine-requirement',
+  description: 'English Proficiency: Fluent or advanced proficiency in English (levels B2-C2). Native Korean required.',
+  tags: ['Korean', 'AI']
+});
+assert.equal(routineRequirement.requirementsStatus, 'routine_check');
+assert.match(routineRequirement.requirementChecks.map((item) => item.label).join(' '), /영어/);
+
+const practicalRequirements = normalizeJob({
+  ...base,
+  id: 'practical-requirements',
+  source: 'Welo Global',
+  title: 'Ads Quality Rater - Korean',
+  location: 'South Korea',
+  url: 'https://example.com/practical-requirements',
+  description: 'Resident in Korea. This job requires you to work on freelance projects in Korea without any legal issues. Please do not use IP masking programs (VPN, etc.).',
+  tags: ['Korean', 'Quality Rater']
+});
+assert.equal(practicalRequirements.requirementsStatus, 'routine_check');
+assert.match(practicalRequirements.requirementChecks.map((item) => item.label).join(' '), /한국 거주/);
+assert.match(practicalRequirements.requirementChecks.map((item) => item.label).join(' '), /프리랜서/);
+assert.match(practicalRequirements.requirementChecks.map((item) => item.label).join(' '), /VPN/);
+
+const freshSignal = enrichPaymentSignal(
+  { type: 'review_aggregate', checkedAt: '2026-10-04', latestSourceAt: '2026-10-02', direction: 'caution', recurrence: 'repeated' },
+  Date.parse('2026-11-01T00:00:00Z')
+);
+assert.equal(freshSignal.freshness, 'fresh');
+assert.ok(freshSignal.expiresAt);
+assert.equal(freshSignal.freshnessReferenceAt, '2026-10-02');
+
+const undatedCommunity = enrichPaymentSignal(
+  { type: 'community_report', checkedAt: '2026-10-04', direction: 'caution', recurrence: 'single' },
+  Date.parse('2026-10-04T00:00:00Z')
+);
+assert.equal(undatedCommunity.freshness, 'unknown', 'undated community anecdotes must not become fresh merely because they were rechecked today');
+assert.equal(undatedCommunity.expiresAt, '');
+
+const expiredEvidence = derivePaymentEvidence({
+  paymentStatus: 'caution',
+  reviewedAt: '2026-01-01',
+  paymentSummary: 'Old caution should not remain current forever.',
+  paymentSignals: [
+    { type: 'review_aggregate', direction: 'caution', recurrence: 'repeated', checkedAt: '2026-10-04', latestSourceAt: '2026-01-01' }
+  ]
+}, Date.parse('2026-10-04T00:00:00Z'));
+assert.equal(expiredEvidence.state, 'evidence_expired');
+assert.equal(expiredEvidence.freshness, 'expired');
+assert.match(expiredEvidence.label, /만료/);
+
+const mixedAgeEvidence = derivePaymentEvidence({
+  paymentStatus: 'caution',
+  reviewedAt: '2026-10-04',
+  paymentSignals: [
+    { type: 'official_policy', direction: 'neutral', recurrence: 'policy', checkedAt: '2026-10-04' },
+    { type: 'review_aggregate', direction: 'caution', recurrence: 'repeated', checkedAt: '2026-10-04', latestSourceAt: '2026-01-01' }
+  ]
+}, Date.parse('2026-10-04T00:00:00Z'));
+assert.equal(mixedAgeEvidence.state, 'policy_only', 'expired review caution must not remain a current caution when only policy evidence is fresh');
+assert.equal(mixedAgeEvidence.freshness, 'mixed_age');
 
 console.log('collector tests passed');

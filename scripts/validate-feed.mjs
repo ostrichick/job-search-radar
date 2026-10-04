@@ -15,16 +15,42 @@ for (const job of feed.jobs) {
   assert.ok(job.listingStatus, `${job.id} must have listingStatus`);
   assert.ok(job.listingReason, `${job.id} must explain listing status`);
   assert.ok(job.listingBasis, `${job.id} must identify listing evidence basis`);
+  assert.ok(job.listingVerification, `${job.id} must identify the strength of listing verification`);
+  assert.ok(job.sourceCoverage, `${job.id} must identify source coverage`);
   assert.ok(job.paymentEvidenceState, `${job.id} must separate payment evidence state from listing/source trust`);
   assert.ok(job.paymentEvidenceLabel, `${job.id} must have a user-readable payment evidence label`);
-  if (['official_ats', 'official_platform'].includes(job.sourceKind) && job.listingStatus === 'verified_open') {
+  assert.ok(job.paymentEvidenceFreshness, `${job.id} must expose payment evidence freshness`);
+  assert.ok(['clear', 'routine_check', 'hard_check'].includes(job.requirementsStatus), `${job.id} must expose requirements review state`);
+  assert.ok(job.requirementsLabel, `${job.id} must have a user-readable requirements label`);
+  if (job.sourceKind === 'official_ats' && !['talent_pool', 'expired', 'archived_missing', 'source_error'].includes(job.listingStatus)) {
+    assert.equal(job.listingStatus, 'verified_open', `${job.id} official ATS current listing must use verified_open`);
+  }
+  if (job.sourceKind === 'official_platform' && !['talent_pool', 'expired', 'archived_missing', 'source_error'].includes(job.listingStatus)) {
+    assert.equal(job.listingStatus, 'official_listed', `${job.id} official platform publication must not be conflated with direct ATS open status`);
+  }
+  if (['verified_open', 'official_listed'].includes(job.listingStatus)) {
     assert.ok(Array.isArray(job.listingEvidence) && job.listingEvidence.some((item) => item?.url === job.url),
       `${job.id} verified official listing must link directly to the checked posting`);
     assert.ok(job.listingCheckedAt || job.verifiedAt, `${job.id} verified official listing must include a check timestamp`);
   }
-  if (['caution_repeated', 'mixed_caution'].includes(job.paymentEvidenceState)) {
+  if (['caution_repeated', 'mixed_caution', 'caution_single', 'policy_only', 'evidence_expired'].includes(job.paymentEvidenceState)) {
     assert.ok(Array.isArray(job.paymentSignals) && job.paymentSignals.length > 0,
-      `${job.id} payment caution must have structured evidence signals`);
+      `${job.id} payment evidence state must have structured evidence signals`);
+    for (const signal of job.paymentSignals) {
+      assert.ok(signal.type, `${job.id} payment signal must have type`);
+      assert.ok(signal.url, `${job.id} payment signal must retain source URL`);
+      assert.ok(signal.checkedAt, `${job.id} payment signal must retain checkedAt`);
+      assert.ok(signal.freshness, `${job.id} payment signal must expose freshness`);
+      assert.ok(Number.isFinite(signal.maxAgeDays) && signal.maxAgeDays > 0, `${job.id} payment signal must have expiry policy`);
+      if (signal.freshness !== 'unknown') assert.ok(signal.expiresAt, `${job.id} dated payment signal must expose expiresAt`);
+      if (signal.type === 'review_aggregate') {
+        assert.ok(signal.latestSourceAt, `${job.id} review aggregate must retain latestSourceAt`);
+      }
+    }
+    if (job.paymentEvidenceState === 'evidence_expired') {
+      assert.ok(job.paymentSignals.every((signal) => ['expired', 'unknown'].includes(signal.freshness)),
+        `${job.id} expired payment evidence must not contain a current signal`);
+    }
   }
 }
 
@@ -35,6 +61,7 @@ const recommended = feed.jobs.filter((job) =>
 );
 assert.ok(recommended.length > 0, 'default recommendation set must not be empty');
 assert.equal(recommended.filter((job) => job.fitWarning).length, 0, 'default recommendations must not require unverified specialist credentials');
+assert.equal(recommended.filter((job) => job.requirementsStatus === 'hard_check').length, 0, 'default recommendations must not contain unresolved hard requirements');
 assert.equal(recommended.filter((job) => job.eligibilityCode === 'restricted').length, 0);
 
 const unanchored = feed.jobs.filter((job) => job.score > 5 && job.category === '기타' && !(job.matchedKeywords || []).length);
@@ -42,6 +69,18 @@ assert.equal(unanchored.length, 0, 'unanchored jobs must not receive meaningful 
 
 const fakeWorldwide = feed.jobs.filter((job) => job.eligibilityCode === 'worldwide' && /^remote$/i.test(job.location || ''));
 assert.equal(fakeWorldwide.length, 0, 'generic Remote location must not be treated as Worldwide');
+
+const zeroScoreNoise = feed.jobs.filter((job) =>
+  Number(job.score || 0) <= 0
+  && !['official_ats', 'official_platform', 'manual'].includes(job.sourceKind)
+  && !['source_error', 'archived_missing'].includes(job.listingStatus));
+assert.equal(zeroScoreNoise.length, 0, 'zero-score collected noise must not remain in the active feed');
+
+const lowScoreIntermediaryNoise = feed.jobs.filter((job) =>
+  Number(job.score || 0) < 10
+  && !['official_ats', 'official_platform', 'manual'].includes(job.sourceKind)
+  && !['source_error', 'archived_missing'].includes(job.listingStatus));
+assert.equal(lowScoreIntermediaryNoise.length, 0, 'very-low-score intermediary noise must not remain in the active feed');
 
 for (const job of feed.jobs.filter((job) => job.salaryInfo?.confidence === 'suspicious')) {
   assert.match(job.salaryInfo.display, /확인 필요/);
@@ -51,6 +90,7 @@ console.log(JSON.stringify({
   validatedJobs: feed.jobs.length,
   recommended: recommended.length,
   verifiedOpen: feed.jobs.filter((job) => job.listingStatus === 'verified_open').length,
+  officialListed: feed.jobs.filter((job) => job.listingStatus === 'official_listed').length,
   stale: feed.jobs.filter((job) => job.stale).length,
   mergedDuplicates: feed.jobs.filter((job) => job.duplicateCount > 1).length
 }, null, 2));

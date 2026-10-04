@@ -89,5 +89,11 @@
     "data",
     "content",
     "operations"
+  ],
+  "verifiedCapabilities": [
+    "ai_evaluation",
+    "data_annotation",
+    "quality_review",
+    "rubric_qa"
   ]
 }
