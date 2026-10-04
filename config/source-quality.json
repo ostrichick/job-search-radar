@@ -1,0 +1,77 @@
+{
+  "Welo Global": {
+    "kind": "official_ats",
+    "listingLabel": "공식 직접 채용",
+    "paymentStatus": "caution",
+    "paymentLabel": "지급 후기 주의",
+    "reviewedAt": "2026-10-04",
+    "summary": "Welo Global/Welocalize의 공식 Lever 채용 공고입니다. 최근 공개 후기에는 실제 지급 사례와 함께 지급·온보딩 관련 불만도 반복되어 계약·단가·정산 조건을 확인한 뒤 진행하는 편이 안전합니다.",
+    "evidence": [
+      {"label": "공식 채용", "url": "https://jobs.lever.co/weloglobal"},
+      {"label": "공개 후기", "url": "https://www.trustpilot.com/review/welocalize.com"},
+      {"label": "지급 경험 사례", "url": "https://www.reddit.com/r/Welocalize/comments/1s7r3xt/payment_doubt/"}
+    ]
+  },
+  "RWS TrainAI": {
+    "kind": "official_ats",
+    "listingLabel": "공식 직접 채용",
+    "paymentStatus": "caution",
+    "paymentLabel": "지급 후기 주의",
+    "reviewedAt": "2026-10-04",
+    "summary": "RWS의 공식 Lever TrainAI 채용 공고입니다. 일부 공고는 단가·지급수단을 명시하지만 최근 공개 후기에는 지급 지연·분쟁 사례도 있어 실제 계약 조건과 지급 일정을 확인해야 합니다.",
+    "evidence": [
+      {"label": "공식 채용", "url": "https://jobs.lever.co/rws"},
+      {"label": "공개 후기", "url": "https://www.trustpilot.com/review/www.rws.com"}
+    ]
+  },
+  "We Work Remotely": {
+    "kind": "job_board",
+    "listingLabel": "공개 공식 피드",
+    "paymentStatus": "not_payer",
+    "paymentLabel": "지급 주체 아님",
+    "summary": "We Work Remotely가 공개적으로 제공하는 RSS에서 가져옵니다. 채용 보드이므로 실제 계약·급여 지급은 각 고용주가 담당합니다.",
+    "evidence": [
+      {"label": "공개 RSS 안내", "url": "https://weworkremotely.com/remote-job-rss-feed"}
+    ]
+  },
+  "Jobicy": {
+    "kind": "aggregator",
+    "listingLabel": "공개 공고 피드",
+    "paymentStatus": "not_payer",
+    "paymentLabel": "지급 주체 아님",
+    "summary": "공개 원격 공고 API에서 가져오는 집계 공고입니다. 실제 모집 상태와 지급 조건은 원문 고용주에서 다시 확인해야 합니다.",
+    "evidence": []
+  },
+  "Remote OK": {
+    "kind": "job_board",
+    "listingLabel": "공개 공고 피드",
+    "paymentStatus": "not_payer",
+    "paymentLabel": "지급 주체 아님",
+    "summary": "Remote OK의 공개 JSON 피드에서 가져옵니다. 채용 보드이므로 실제 지급 주체는 공고의 고용주입니다.",
+    "evidence": [{"label": "공개 API", "url": "https://remoteok.com/api"}]
+  },
+  "Remotive": {
+    "kind": "job_board",
+    "listingLabel": "공개 공고 피드",
+    "paymentStatus": "not_payer",
+    "paymentLabel": "지급 주체 아님",
+    "summary": "Remotive의 공개 Remote Jobs API에서 가져옵니다. 실제 지급 주체는 각 고용주입니다.",
+    "evidence": [{"label": "공개 API", "url": "https://remotive.com/api/remote-jobs"}]
+  },
+  "Arbeitnow": {
+    "kind": "aggregator",
+    "listingLabel": "공개 공고 피드",
+    "paymentStatus": "not_payer",
+    "paymentLabel": "지급 주체 아님",
+    "summary": "Arbeitnow 공개 Job Board API에서 가져옵니다. 원문에서 현재 모집과 고용주 조건을 다시 확인해야 합니다.",
+    "evidence": [{"label": "공개 API", "url": "https://www.arbeitnow.com/api/job-board-api"}]
+  },
+  "직접 추가": {
+    "kind": "manual",
+    "listingLabel": "사용자 직접 추가",
+    "paymentStatus": "unknown",
+    "paymentLabel": "직접 확인 필요",
+    "summary": "사용자가 직접 추가한 공고입니다. 현재 모집 상태·지급 주체·후기는 원문에서 확인해야 합니다.",
+    "evidence": []
+  }
+}

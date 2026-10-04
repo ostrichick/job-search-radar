@@ -8,6 +8,9 @@
     "refresh": "node scripts/collect-jobs.mjs",
     "build:static": "node scripts/build-static.mjs",
     "build:pages": "node scripts/build-pages.mjs",
-    "check": "node --check public/app.js && node --check scripts/collect-jobs.mjs && node --check api/jobs.mjs && node --check api/refresh.mjs"
+    "test": "node scripts/test-collector.mjs && node scripts/test-state-rules.mjs",
+    "validate:feed": "node scripts/validate-feed.mjs",
+    "check:pages": "node scripts/check-pages-sync.mjs",
+    "check": "node --check public/app.js && node --check scripts/collect-jobs.mjs && node --check api/jobs.mjs && node --check api/refresh.mjs && npm test"
   }
 }

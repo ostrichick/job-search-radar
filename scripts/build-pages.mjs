@@ -8,15 +8,16 @@ const publicDir = path.join(root, 'public');
 const docsDir = path.join(root, 'docs');
 
 await fs.mkdir(docsDir, { recursive: true });
-for (const name of ['index.html', 'app.js', 'styles.css']) {
+for (const name of ['index.html', 'app.js', 'styles.css', 'state-rules.js']) {
   await fs.copyFile(path.join(publicDir, name), path.join(docsDir, name));
 }
 
-const payload = await collectJobs({ includeManual: false, persist: false });
 const feedPath = path.join(docsDir, 'jobs.json');
+let previous = null;
+try { previous = JSON.parse(await fs.readFile(feedPath, 'utf8')); } catch { previous = null; }
+const payload = await collectJobs({ includeManual: false, persist: false, previousJobs: previous?.jobs || [] });
 let shouldWriteFeed = true;
 try {
-  const previous = JSON.parse(await fs.readFile(feedPath, 'utf8'));
   const previousComparable = JSON.stringify({ sourceStatus: previous.sourceStatus, jobs: previous.jobs });
   const nextComparable = JSON.stringify({ sourceStatus: payload.sourceStatus, jobs: payload.jobs });
   shouldWriteFeed = previousComparable !== nextComparable;

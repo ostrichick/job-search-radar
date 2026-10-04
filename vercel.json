@@ -8,6 +8,7 @@
   "rewrites": [
     { "source": "/", "destination": "/public/index.html" },
     { "source": "/app.js", "destination": "/public/app.js" },
+    { "source": "/state-rules.js", "destination": "/public/state-rules.js" },
     { "source": "/styles.css", "destination": "/public/styles.css" }
   ]
 }

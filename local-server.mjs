@@ -38,7 +38,7 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === 'POST' && url.pathname === '/api/refresh') {
       const result = await collectJobs();
-      return send(res, 200, JSON.stringify({ updatedAt: result.updatedAt, sourceStatus: result.sourceStatus, jobs: result.jobs.length }));
+      return send(res, 200, JSON.stringify(result));
     }
 
     if (req.method === 'POST' && url.pathname === '/api/manual-jobs') {

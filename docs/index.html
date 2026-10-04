@@ -14,6 +14,9 @@
       <p class="lede">여러 플랫폼의 공고를 모아 검색하고, 관심·지원 상태까지 한곳에서 관리합니다.</p>
     </div>
     <div class="actions">
+      <button id="exportStateBtn" class="button secondary">상태 백업</button>
+      <button id="importStateBtn" class="button secondary">상태 가져오기</button>
+      <input id="importStateFile" type="file" accept="application/json,.json" hidden>
       <button id="addJobBtn" class="button secondary">공고 추가</button>
       <button id="refreshBtn" class="button primary">목록 새로고침</button>
     </div>
@@ -40,13 +43,18 @@
         <select id="remote">
           <option value="">전체</option>
           <option value="remote">원격</option>
-          <option value="korea">한국 명시</option>
-          <option value="worldwide">Worldwide/Anywhere</option>
         </select>
       </div>
       <div class="field">
         <label for="eligibility">지원 범위</label>
-        <select id="eligibility"><option value="">전체</option></select>
+        <select id="eligibility">
+          <option value="likely" selected>한국 / Worldwide</option>
+          <option value="">전체</option>
+          <option value="korea">한국에서 지원 가능</option>
+          <option value="worldwide">Worldwide</option>
+          <option value="restricted">특정 국가 제한</option>
+          <option value="unknown">확인 필요</option>
+        </select>
       </div>
       <div class="field">
         <label for="ageFilter">게시 시점</label>
@@ -58,10 +66,43 @@
         </select>
       </div>
       <div class="field">
+        <label for="listingFilter">모집 상태</label>
+        <select id="listingFilter">
+          <option value="active" selected>현재 볼 공고</option>
+          <option value="verified_open">모집 확인됨</option>
+          <option value="current_feed">현재 피드</option>
+          <option value="stale">오래된 공고</option>
+          <option value="source_error">소스 확인 실패</option>
+          <option value="archived_missing">현재 피드에서 사라짐</option>
+          <option value="talent_pool">인재풀</option>
+          <option value="expired">종료 확인</option>
+          <option value="all">전체</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="sourceKindFilter">출처 검증</label>
+        <select id="sourceKindFilter">
+          <option value="">전체</option>
+          <option value="official_ats">공식 직접 채용</option>
+          <option value="job_board">채용 보드</option>
+          <option value="aggregator">집계 피드</option>
+          <option value="manual">직접 추가</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="paymentFilter">지급·후기</label>
+        <select id="paymentFilter">
+          <option value="">전체</option>
+          <option value="exclude_caution">주의 후기 제외</option>
+          <option value="caution">주의 후기 있음</option>
+          <option value="not_payer">채용 보드/집계</option>
+        </select>
+      </div>
+      <div class="field">
         <label for="minScore">최소 적합도</label>
         <select id="minScore">
-          <option value="0" selected>전체</option>
-          <option value="20">추천 20+</option>
+          <option value="0">전체</option>
+          <option value="20" selected>추천 20+</option>
           <option value="40">40+</option>
           <option value="60">60+</option>
           <option value="80">80+</option>
@@ -92,6 +133,19 @@
       </div>
     </section>
 
+    <section id="batchBar" class="batch-bar" hidden aria-live="polite">
+      <label class="batch-select-all"><input id="selectVisible" type="checkbox"> 현재 표시 공고 선택</label>
+      <strong id="selectedCount">0개 선택</strong>
+      <div class="batch-actions">
+        <button id="batchFavorite" class="button compact">관심</button>
+        <button id="batchPlanned" class="button compact">지원 예정</button>
+        <button id="batchApplied" class="button compact">지원함</button>
+        <button id="batchReviewed" class="button compact">검토 완료</button>
+        <button id="batchHide" class="button compact">숨기기</button>
+        <button id="clearSelection" class="button compact secondary-light">선택 해제</button>
+      </div>
+    </section>
+
     <section class="result-head">
       <div>
         <strong id="resultCount">0개</strong>
@@ -101,15 +155,18 @@
     </section>
 
     <section id="jobs" class="job-grid" aria-live="polite"></section>
-    <section id="empty" class="empty" hidden>조건에 맞는 공고가 없습니다. 적합도나 필터를 낮춰보세요.</section>
+    <section id="empty" class="empty" hidden>
+      <p id="emptyMessage">조건에 맞는 공고가 없습니다.</p>
+      <div class="empty-actions"><button id="resetFilters" class="button secondary-light">필터 초기화</button><button id="retryLoad" class="button primary">다시 불러오기</button></div>
+    </section>
     <div class="load-more-wrap"><button id="loadMore" class="button secondary load-more" hidden>더 보기</button></div>
   </main>
 
-  <div id="toast" class="toast" hidden><span id="toastText"></span><button id="undoHide">되돌리기</button></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden><span id="toastText"></span><button id="undoHide">되돌리기</button></div>
 
   <dialog id="addDialog">
     <form id="addForm" method="dialog">
-      <div class="dialog-head"><h2>공고 직접 추가</h2><button type="button" id="closeDialog" class="icon">×</button></div>
+      <div class="dialog-head"><h2>공고 직접 추가</h2><button type="button" id="closeDialog" class="icon" aria-label="공고 추가 창 닫기">×</button></div>
       <p>LinkedIn·Indeed 등에서 발견한 공고를 한곳에서 관리할 때 사용합니다.</p>
       <div class="dialog-grid">
         <label>소스<input name="source" placeholder="LinkedIn, Indeed 등"></label>
@@ -127,9 +184,10 @@
   <template id="jobTemplate">
     <article class="job-card">
       <div class="job-top">
-        <div><span class="source"></span><span class="score"></span></div>
-        <div class="mini-actions"><button class="favorite" title="관심 공고">☆</button><button class="dismiss" title="숨기기">×</button></div>
+        <div class="job-select-group"><input class="job-select" type="checkbox"><div><span class="source"></span><span class="score"></span></div></div>
+        <div class="mini-actions"><button class="favorite" type="button" aria-label="관심 공고">☆</button><button class="dismiss" type="button" aria-label="숨기기">×</button></div>
       </div>
+      <div class="quality-badges"><span class="listing-badge"></span><span class="trust-badge"></span><span class="payment-badge"></span></div>
       <h2 class="title"></h2>
       <p class="company"></p>
       <div class="meta"></div>
@@ -147,11 +205,18 @@
   </template>
 
   <dialog id="detailsDialog" class="details-dialog">
-    <div class="dialog-head"><h2 id="detailsTitle"></h2><button type="button" id="closeDetails" class="icon">×</button></div>
+    <div class="dialog-head"><h2 id="detailsTitle"></h2><button type="button" id="closeDetails" class="icon" aria-label="공고 상세 창 닫기">×</button></div>
     <p id="detailsCompany" class="details-company"></p>
     <div id="detailsMeta" class="meta"></div>
+    <section class="trust-panel" aria-labelledby="trustHeading">
+      <h3 id="trustHeading">공고 확인 정보</h3>
+      <div id="detailsTrust" class="quality-badges"></div>
+      <p id="detailsSourceSummary"></p>
+      <div id="detailsEvidence" class="evidence-links"></div>
+      <p id="detailsVerifiedAt" class="verified-at"></p>
+    </section>
     <div id="detailsDescription" class="details-description"></div>
-    <div class="dialog-actions"><a id="detailsLink" class="button primary" target="_blank" rel="noopener noreferrer">원문 공고 보기 ↗</a></div>
+    <div class="dialog-actions details-actions"><button id="prevDetails" class="button secondary-light" type="button">← 이전</button><button id="nextDetails" class="button secondary-light" type="button">다음 →</button><a id="detailsLink" class="button primary" target="_blank" rel="noopener noreferrer">원문 공고 보기 ↗</a></div>
   </dialog>
   <script type="module" src="./app.js"></script>
 </body>
