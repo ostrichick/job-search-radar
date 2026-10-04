@@ -33,9 +33,19 @@ function sourceMeta(source) {
     listingLabel: '공고 소스',
     paymentStatus: 'unknown',
     paymentLabel: '직접 확인 필요',
+    paymentEvidenceState: 'insufficient',
+    paymentEvidenceLabel: '근거 부족',
+    paymentConfidence: 'low',
+    paymentSummary: '공개 지급 평판 근거가 충분하지 않습니다.',
+    paymentSignals: [],
     summary: '현재 모집 상태와 지급 조건을 원문에서 확인해야 합니다.',
     evidence: []
   };
+}
+
+function evidenceSnippet(value, max = 120) {
+  const cleaned = text(value);
+  return cleaned.length > max ? `${cleaned.slice(0, max - 1)}…` : cleaned;
 }
 
 function decodeXml(value) {
@@ -84,6 +94,10 @@ function salaryContext(rawValue, description) {
 function extractSalary(rawValue, description = '') {
   const raw = salaryContext(rawValue, description);
   if (!raw) return { raw: '', display: '', currency: '', min: null, max: null, period: '', confidence: 'none' };
+  const normalizedRaw = lower(raw);
+  const isMaximum = /\bup to\b/.test(normalizedRaw);
+  const isApproximate = /\b(?:approximately|approx\.?|about|around)\b/.test(normalizedRaw);
+  const isPerTaskApproximation = /\bpaid per (?:job|task|item)\b/.test(normalizedRaw);
   const currencyMatch = raw.match(/\b(USD|EUR|GBP|KRW|CAD|AUD|JPY|CHF|PLN|BRL|INR|SGD|HKD|AED|USDT)\b|([$€£₩¥])/i);
   const currency = currencyMatch
     ? ({ '$': 'USD', '€': 'EUR', '£': 'GBP', '₩': 'KRW', '¥': 'JPY' }[currencyMatch[0]] ?? currencyMatch[0].toUpperCase())
@@ -125,7 +139,21 @@ function extractSalary(rawValue, description = '') {
   const fmt = (value) => Number.isInteger(value) ? value.toLocaleString('en-US') : value.toLocaleString('en-US', { maximumFractionDigits: 2 });
   const range = max !== null && max !== min ? `${symbol}${fmt(min)}–${symbol}${fmt(max)}` : `${symbol}${fmt(min)}`;
   const periodLabel = { hour: '/시간', day: '/일', week: '/주', month: '/월', year: '/년', project: '/프로젝트', episode: '/에피소드' }[period] ?? '';
-  return { raw, display: periodLabel ? `${range}${periodLabel}` : `${range} · 주기 확인 필요`, currency, min, max, period, confidence: periodLabel ? 'parsed' : 'partial' };
+  let display = periodLabel ? `${range}${periodLabel}` : `${range} · 주기 확인 필요`;
+  if (isMaximum) display = `최대 ${display}`;
+  else if (isApproximate) display = `약 ${display}`;
+  if (isPerTaskApproximation && period === 'hour') display += ' · 건당 지급 환산';
+  return {
+    raw,
+    display,
+    currency,
+    min,
+    max,
+    period,
+    confidence: periodLabel ? 'parsed' : 'partial',
+    qualifier: isMaximum ? 'maximum' : isApproximate ? 'approximate' : '',
+    paymentBasis: isPerTaskApproximation ? 'per_task_equivalent' : ''
+  };
 }
 
 function canonicalCompany(value) {
@@ -169,25 +197,35 @@ function currentListingState(job) {
   const title = lower(job.title);
   const lead = lower(job._fullDescription || job.description).slice(0, 700);
   if (/applications?(?: and assessments?)? (?:are )?closed|no longer accepting applications|position has been filled/.test(combined)) {
-    return { code: 'expired', label: '종료 확인됨', stale: true };
+    return { code: 'expired', label: '종료 확인됨', stale: true, reason: '공고 본문에 모집 종료 문구가 확인됨', basis: 'closed_text' };
   }
   const deadline = combined.match(/(?:application deadline|applications close|apply by)\s*:?[ ]*([a-z]+\s+\d{1,2}(?:,?\s+\d{4})?|\d{4}-\d{2}-\d{2})/i);
   if (deadline) {
     let rawDate = deadline[1];
     if (!/\d{4}/.test(rawDate)) rawDate = `${rawDate} ${new Date().getFullYear()}`;
     const closeAt = Date.parse(rawDate);
-    if (Number.isFinite(closeAt) && closeAt < Date.now()) return { code: 'expired', label: '종료 확인됨', stale: true };
+    if (Number.isFinite(closeAt) && closeAt < Date.now()) {
+      return { code: 'expired', label: '종료 확인됨', stale: true, reason: `명시된 지원 마감일이 지남: ${deadline[1]}`, basis: 'deadline' };
+    }
   }
   const explicitPool = /not an active job opening|not an immediate (?:job|position|opening)|인재 파이프라인|즉시 시작되는 포지션이 아닙니다/.test(lead);
   const poolTitle = /talent pool|talent network|ai trainers network|future opportunities|pipeline of talent/.test(title);
   if (explicitPool || poolTitle) {
-    return { code: 'talent_pool', label: '인재풀·즉시 모집 아님', stale: false };
+    return {
+      code: 'talent_pool',
+      label: '인재풀·즉시 모집 아님',
+      stale: false,
+      reason: explicitPool ? '본문 앞부분에 즉시 채용이 아님을 명시' : '제목이 인재풀·향후 기회 모집임',
+      basis: explicitPool ? 'pool_lead' : 'pool_title'
+    };
   }
   const ageDays = job.postedAt ? Math.floor((Date.now() - Date.parse(job.postedAt)) / 86400000) : null;
-  if (isOfficialKind(meta.kind)) return { code: 'verified_open', label: '모집 확인됨', stale: false };
-  if (meta.kind === 'manual') return { code: 'manual', label: '직접 확인 필요', stale: false };
-  if (ageDays !== null && ageDays > 45) return { code: 'stale', label: '오래된 공고', stale: true };
-  return { code: 'current_feed', label: '현재 피드', stale: false };
+  if (isOfficialKind(meta.kind)) {
+    return { code: 'verified_open', label: '모집 확인됨', stale: false, reason: '공식 ATS·프로젝트 플랫폼의 현재 공개 목록에서 수집됨', basis: 'official_feed' };
+  }
+  if (meta.kind === 'manual') return { code: 'manual', label: '직접 확인 필요', stale: false, reason: '사용자가 직접 추가한 공고라 자동 모집 확인 근거가 없음', basis: 'manual' };
+  if (ageDays !== null && ageDays > 45) return { code: 'stale', label: '오래된 공고', stale: true, reason: `게시 후 ${ageDays}일 경과한 비공식 피드 공고`, basis: 'age' };
+  return { code: 'current_feed', label: '현재 피드', stale: false, reason: '현재 채용 보드·집계 피드에 존재하지만 고용주의 공식 모집 상태는 별도 확인 필요', basis: 'board_feed' };
 }
 
 function markPreservedSourceFailure(job) {
@@ -195,6 +233,8 @@ function markPreservedSourceFailure(job) {
     ...job,
     listingStatus: 'source_error',
     listingLabel: '소스 확인 실패',
+    listingReason: '이번 수집에서 원천 소스를 확인하지 못해 이전 공고를 보존함',
+    listingBasis: 'source_error',
     stale: true,
     score: Math.max(0, Number(job.score || 0) - 20)
   };
@@ -239,27 +279,38 @@ function classify(job) {
 
 function eligibilityFor(job) {
   const location = lower(job.location);
+  const locationRaw = evidenceSnippet(job.location || '위치 미상');
   const description = lower(job._fullDescription || job.description);
   const explicitLocationRestriction = description.match(/(?:must|should|currently)\s+(?:reside|live|be based|be located)\s+(?:in|within)\s+([^.;\n]{2,80})|(?:candidates?|applicants?)\s+(?:must|should)\s+(?:be\s+)?(?:based|located|resident)\s+(?:in|within)\s+([^.;\n]{2,80})|\blocation\s*:\s*([^.;\n]{2,80})/i);
-  const restrictionText = lower(explicitLocationRestriction?.slice(1).find(Boolean) || '');
-  if (job.countryCode === 'KR' || /south korea|republic of korea|\bkorea\b|seoul|한국/.test(location) || /south korea|republic of korea|\bkorea\b|seoul|한국/.test(restrictionText)) {
-    return { code: 'korea', label: '한국에서 지원 가능' };
+  const rawRestrictionText = lower(explicitLocationRestriction?.slice(1).find(Boolean) || '');
+  const restrictionText = /^remote\b/.test(rawRestrictionText)
+    && /\b(?:engagement|employment|job type|schedule|hours|compensation|pay|salary|requirements?)\s*:/.test(rawRestrictionText)
+    ? ''
+    : rawRestrictionText;
+  if (job.countryCode === 'KR') {
+    return { code: 'korea', label: '한국에서 지원 가능', basis: 'country_code', reason: '원천 데이터의 국가 코드가 KR로 명시됨' };
   }
-  if (restrictionText) return { code: 'restricted', label: '특정 국가 제한' };
-  if (/\b(anywhere in|within)\s+[a-z]/.test(location)) return { code: 'restricted', label: '특정 국가 제한' };
+  if (/south korea|republic of korea|\bkorea\b|seoul|한국/.test(location)) {
+    return { code: 'korea', label: '한국에서 지원 가능', basis: 'location', reason: `공고 위치에 한국이 명시됨: ${locationRaw}` };
+  }
+  if (/south korea|republic of korea|\bkorea\b|seoul|한국/.test(restrictionText)) {
+    return { code: 'korea', label: '한국에서 지원 가능', basis: 'restriction_text', reason: `거주·근무 제한 문구에 한국이 명시됨: ${evidenceSnippet(restrictionText)}` };
+  }
+  if (restrictionText) return { code: 'restricted', label: '특정 국가 제한', basis: 'restriction_text', reason: `거주·근무 제한 문구가 있음: ${evidenceSnippet(restrictionText)}` };
+  if (/\b(anywhere in|within)\s+[a-z]/.test(location)) return { code: 'restricted', label: '특정 국가 제한', basis: 'location', reason: `특정 지역 범위가 명시됨: ${locationRaw}` };
   if (/\b(worldwide|remote, worldwide|anywhere in the world|work from anywhere|globally)\b/.test(location)) {
-    return { code: 'worldwide', label: 'Worldwide' };
+    return { code: 'worldwide', label: 'Worldwide', basis: 'location', reason: `Worldwide/전 세계 지원 범위가 명시됨: ${locationRaw}` };
   }
   const restricted = /\b(usa|united states|us only|canada|uk|united kingdom|europe|eu|emea|apac|latam|mena|north america|south america|germany|france|australia|singapore|japan|india|philippines|mexico|brazil|spain|italy|netherlands|poland|romania)\b/;
   if (restricted.test(location)) {
-    return { code: 'restricted', label: '특정 국가 제한' };
+    return { code: 'restricted', label: '특정 국가 제한', basis: 'location', reason: `특정 국가·지역 위치가 명시됨: ${locationRaw}` };
   }
   if (job.remote) {
     const genericRemote = /^(?:remote(?:\s+job)?|home\s*office|homeoffice|remoto|anywhere|location independent|work from home|wfh|unknown|not specified|n\/?a|위치 미상)$/i;
-    if (genericRemote.test(location.trim())) return { code: 'unknown', label: '확인 필요' };
-    return { code: 'restricted', label: '특정 국가 제한' };
+    if (genericRemote.test(location.trim())) return { code: 'unknown', label: '확인 필요', basis: 'remote_unspecified', reason: '원격 표기만 있고 지원 가능한 국가 범위가 명시되지 않음' };
+    return { code: 'restricted', label: '특정 국가 제한', basis: 'location', reason: `원격이지만 위치가 특정 지역으로 표시됨: ${locationRaw}` };
   }
-  return { code: 'restricted', label: '특정 국가 제한' };
+  return { code: 'restricted', label: '특정 국가 제한', basis: 'onsite_location', reason: `원격이 아닌 특정 위치 공고: ${locationRaw}` };
 }
 
 function scoreJob(job) {
@@ -326,47 +377,101 @@ function normalizeJob(raw) {
   const eligibility = eligibilityFor(job);
   job.eligibility = eligibility.label;
   job.eligibilityCode = eligibility.code;
+  job.eligibilityBasis = eligibility.basis || '';
+  job.eligibilityReason = eligibility.reason || '';
   job.salaryInfo = extractSalary(job.salary, fullDescription);
   if (!job.salary && job.salaryInfo.confidence === 'parsed') job.salary = job.salaryInfo.display;
   const quality = sourceMeta(job.source);
   job.sourceKind = quality.kind;
   job.sourceTrustLabel = quality.listingLabel;
+  job.sourceOfficiality = isOfficialKind(quality.kind) ? 'official' : quality.kind === 'manual' ? 'manual' : 'intermediary';
   job.paymentStatus = quality.paymentStatus;
   job.paymentLabel = quality.paymentLabel;
+  job.paymentEvidenceState = quality.paymentEvidenceState || (quality.paymentStatus === 'not_payer' ? 'not_applicable' : 'insufficient');
+  job.paymentEvidenceLabel = quality.paymentEvidenceLabel || quality.paymentLabel || '근거 부족';
+  job.paymentConfidence = quality.paymentConfidence || 'low';
+  job.paymentSummary = quality.paymentSummary || '';
+  job.paymentSignals = Array.isArray(quality.paymentSignals) ? quality.paymentSignals : [];
   job.sourceSummary = quality.summary;
   job.sourceEvidence = quality.evidence;
   job.sourceReviewAt = quality.reviewedAt || '';
   const listing = currentListingState(job);
   job.listingStatus = listing.code;
   job.listingLabel = listing.label;
+  job.listingBasis = listing.basis || '';
+  job.listingReason = listing.reason || '';
+  job.listingCheckedAt = job.verifiedAt;
+  job.listingEvidence = [{
+    type: isOfficialKind(quality.kind) ? 'official_listing' : quality.kind === 'manual' ? 'manual_listing' : 'source_listing',
+    label: isOfficialKind(quality.kind) ? '공식 공고 원문' : quality.kind === 'manual' ? '직접 추가 원문' : '수집된 공고 원문',
+    url: job.url,
+    checkedAt: job.verifiedAt
+  }];
   job.stale = listing.stale;
   Object.assign(job, scoreJob(job));
   const titleLower = lower(job.title);
+  const fitWarnings = [];
   if (/\b(phd|doctorate|doctoral)\b|박사/.test(titleLower)) {
-    job.fitWarning = '박사급 전문요건 확인';
+    fitWarnings.push('박사급 전문요건 확인');
     job.score = Math.min(job.score, 10);
-  } else if (/\b(legal|medical|clinical|pharma|life ?sciences?|patent)\b/.test(titleLower)) {
-    job.fitWarning = '전문 분야 경력요건 확인';
+  }
+  if (/\b(legal|medical|clinical|pharma|life ?sciences?|patent)\b/.test(titleLower)) {
+    fitWarnings.push('전문 분야 경력요건 확인');
     job.score = Math.min(job.score, 19);
-  } else if (/\b(translator|translation)\b/.test(titleLower)) {
-    job.fitWarning = '번역 언어쌍·전문 번역 경험 확인';
+  }
+  const translationQualityContext = /\b(evaluator|rater|reviewer|annotator|annotation|quality)\b/.test(titleLower);
+  const translationMandatoryContext = evidenceSnippet(fullDescription, 4000).match(
+    /(?:looking for (?:candidates?|professionals?) with|must have|required|requirements?[^.]{0,80}|should have)[^.]{0,140}\b(?:translation background|translation experience|professional translation|translator experience)\b|\b(?:translation background|translation experience)\b[^.]{0,100}\b(?:required|mandatory|must|should)\b/i
+  )?.[0] || '';
+  const translationOptional = /\b(?:preferred|a plus|plus|advantage|nice to have|optional)\b/i.test(translationMandatoryContext)
+    || /\b(?:translation background|translation experience)\b[^.]{0,100}\b(?:preferred|a plus|plus|advantage|nice to have|optional)\b/i.test(fullDescription);
+  if (/\btranslator\b/.test(titleLower) && !translationQualityContext) {
+    fitWarnings.push('번역 언어쌍·전문 번역 경험 확인');
+    job.score = Math.min(job.score, 19);
+  } else if (/\btranslation\b/.test(titleLower) && translationMandatoryContext && !translationOptional) {
+    fitWarnings.push('번역 언어쌍·전문 번역 경험 확인');
     job.score = Math.min(job.score, 19);
   } else if (/\blinguist\b/.test(titleLower) && !/\b(evaluator|rater|annotator|annotation)\b/.test(titleLower)) {
-    job.fitWarning = '전문 번역·언어 경력요건 확인';
+    fitWarnings.push('전문 번역·언어 경력요건 확인');
     job.score = Math.min(job.score, 19);
-  } else if (/\bat least\s+1\s+year\b[\s\S]{0,100}\b(?:annotation|data labeling)\b|\b(?:annotation|data labeling)\b[\s\S]{0,100}\bat least\s+1\s+year\b/i.test(fullDescription)) {
-    job.fitWarning = '어노테이션·데이터 라벨링 1년 이상 경력 요건 확인';
-    job.score = Math.min(job.score, 19);
-  } else if (/\bprevious\s+(?:transcription|speech annotation)(?:\s+or\s+(?:transcription|speech annotation))?\s+experience\b|\bprevious\s+transcription\s+or\s+speech annotation\s+experience\b/i.test(fullDescription)) {
-    job.fitWarning = '전사·음성 어노테이션 실무 경력 요건 확인';
-    job.score = Math.min(job.score, 19);
-  } else if (/\b(?:living|lived|resid(?:e|ing)|based)\b[\s\S]{0,100}\b(?:at least|minimum of|for at least)\b[\s\S]{0,30}\b\d+\s*(?:years?|yrs?)\b/i.test(fullDescription)
-    || /\b\d+\s*(?:years?|yrs?)\b[\s\S]{0,60}\b(?:living|resid(?:e|ing)|based)\b/i.test(fullDescription)) {
-    job.fitWarning = '장기 거주 요건 확인';
-    job.score = Math.min(job.score, 19);
-  } else {
-    job.fitWarning = '';
   }
+  if (/\bat least\s+1\s+year\b[\s\S]{0,100}\b(?:annotation|data labeling)\b|\b(?:annotation|data labeling)\b[\s\S]{0,100}\bat least\s+1\s+year\b/i.test(fullDescription)) {
+    fitWarnings.push('어노테이션·데이터 라벨링 1년 이상 경력 요건 확인');
+    job.score = Math.min(job.score, 19);
+  }
+  if (/\bprevious\s+(?:transcription|speech annotation)(?:\s+or\s+(?:transcription|speech annotation))?\s+experience\b|\bprevious\s+transcription\s+or\s+speech annotation\s+experience\b/i.test(fullDescription)
+    && !/\b(?:preferred|advantage|plus|nice to have)\b[\s\S]{0,80}\b(?:transcription|speech annotation)\b|\b(?:transcription|speech annotation)\b[\s\S]{0,80}\b(?:preferred|advantage|plus|nice to have)\b/i.test(fullDescription)) {
+    fitWarnings.push('전사·음성 어노테이션 실무 경력 요건 확인');
+    job.score = Math.min(job.score, 19);
+  }
+  if (/\b(?:living|lived|resid(?:e|ing)|based)\b[\s\S]{0,100}\b(?:at least|minimum of|for at least)\b[\s\S]{0,30}\b\d+\s*(?:years?|yrs?)\b/i.test(fullDescription)
+    || /\b\d+\s*(?:years?|yrs?)\b[\s\S]{0,60}\b(?:living|resid(?:e|ing)|based)\b/i.test(fullDescription)
+    || /\b(?:have\s+)?lived\b[\s\S]{0,80}\b(?:for\s+)?several\s+years\b/i.test(fullDescription)) {
+    fitWarnings.push('장기 거주 요건 확인');
+    job.score = Math.min(job.score, 19);
+  }
+  if (/\benglish\s*:?\s*c1\b|\bc1\s+(?:level\s+)?(?:or|and)\s+(?:above|higher)\b/i.test(fullDescription)) {
+    fitWarnings.push('영어 C1 이상 요건 확인');
+    job.score = Math.min(job.score, 19);
+  }
+  if (/\bvalid apple id\b/i.test(fullDescription) && /\bios device\b/i.test(fullDescription)) {
+    fitWarnings.push('iOS 기기·Apple ID 요건 확인');
+    job.score = Math.min(job.score, 19);
+  }
+  const hardExperienceContext = fullDescription.match(/.{0,120}\bwith experience in\s+(?:annotation|content review|quality assurance|data operations)(?:[^.]{0,140})/i)?.[0] || '';
+  if (hardExperienceContext && !/\b(?:preferred|a plus|plus|advantage|nice to have|optional)\b/i.test(hardExperienceContext)) {
+    fitWarnings.push('관련 어노테이션·콘텐츠 검토·QA 실무 경험 요건 확인');
+    job.score = Math.min(job.score, 19);
+  }
+  job.fitWarnings = [...new Set(fitWarnings)];
+  job.fitWarning = job.fitWarnings.join(' · ');
+  job.fitReasons = [
+    ...(job.matchedKeywords?.length ? [`일치 키워드: ${job.matchedKeywords.slice(0, 4).join(', ')}`] : []),
+    ...(job.category !== '기타' ? [`관심 분야: ${job.category}`] : []),
+    ...(['korea', 'worldwide'].includes(job.eligibilityCode) ? [`지원 범위: ${job.eligibility}`] : []),
+    ...(isOfficialKind(job.sourceKind) ? ['공식 모집원에서 현재 공고 확인'] : []),
+    ...(job.remote ? ['원격 공고'] : [])
+  ].slice(0, 6);
   if (job.stale) job.score = Math.max(0, job.score - 15);
   if (job.listingStatus === 'talent_pool') job.score = Math.max(0, job.score - 45);
   if (job.listingStatus === 'expired') job.score = 0;
@@ -733,19 +838,39 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
     if (now - missingSince > retentionMs) continue;
     const quality = sourceMeta(previous.source);
     const eligibilityCode = previous.eligibilityCode || legacyEligibilityMap[previous.eligibility] || 'unknown';
+    const derivedEligibility = eligibilityFor(previous);
+    const eligibilityBasis = previous.eligibilityBasis
+      || (derivedEligibility.code === eligibilityCode ? derivedEligibility.basis : 'legacy_classification');
+    const eligibilityReason = previous.eligibilityReason
+      || (derivedEligibility.code === eligibilityCode
+        ? derivedEligibility.reason
+        : `이전 피드의 지원 범위 분류를 보존: ${previous.eligibility || eligibilityCode}`);
     carried.push({
       ...previous,
       eligibilityCode,
       eligibility: previous.eligibility || ({ korea: '한국에서 지원 가능', worldwide: 'Worldwide', restricted: '특정 국가 제한', unknown: '확인 필요' }[eligibilityCode]),
+      eligibilityBasis,
+      eligibilityReason,
       sourceKind: previous.sourceKind || quality.kind,
       sourceTrustLabel: previous.sourceTrustLabel || quality.listingLabel,
+      sourceOfficiality: previous.sourceOfficiality || (isOfficialKind(quality.kind) ? 'official' : quality.kind === 'manual' ? 'manual' : 'intermediary'),
       paymentStatus: previous.paymentStatus || quality.paymentStatus,
       paymentLabel: previous.paymentLabel || quality.paymentLabel,
+      paymentEvidenceState: previous.paymentEvidenceState || quality.paymentEvidenceState || (quality.paymentStatus === 'not_payer' ? 'not_applicable' : 'insufficient'),
+      paymentEvidenceLabel: previous.paymentEvidenceLabel || quality.paymentEvidenceLabel || quality.paymentLabel || '근거 부족',
+      paymentConfidence: previous.paymentConfidence || quality.paymentConfidence || 'low',
+      paymentSummary: previous.paymentSummary || quality.paymentSummary || '',
+      paymentSignals: previous.paymentSignals || quality.paymentSignals || [],
       sourceSummary: previous.sourceSummary || quality.summary,
       sourceEvidence: previous.sourceEvidence || quality.evidence,
+      sourceReviewAt: previous.sourceReviewAt || quality.reviewedAt || '',
       salaryInfo: previous.salaryInfo || extractSalary(previous.salary || '', previous.description || ''),
       listingStatus: 'archived_missing',
       listingLabel: '현재 피드에서 사라짐',
+      listingBasis: 'missing_from_feed',
+      listingReason: `현재 수집 피드에서 사라져 ${new Date(missingSince).toISOString()}부터 14일간 상태 보존 중`,
+      listingCheckedAt: previous.listingCheckedAt || previous.verifiedAt || '',
+      listingEvidence: previous.listingEvidence || [{ type: 'historical_listing', label: '마지막 확인 공고 원문', url: previous.url, checkedAt: previous.verifiedAt || '' }],
       stale: true,
       score: 0,
       missingSince: new Date(missingSince).toISOString()

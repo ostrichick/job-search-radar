@@ -3,15 +3,23 @@ import { eligibilityFor, extractSalary, relevantToProfile, currentListingState, 
 
 const remote = (location, description = '', countryCode = '') => ({ location, description, remote: true, countryCode });
 
-assert.deepEqual(eligibilityFor(remote('Remote')), { code: 'unknown', label: '확인 필요' });
-assert.deepEqual(eligibilityFor(remote('Anywhere in France')), { code: 'restricted', label: '특정 국가 제한' });
-assert.deepEqual(eligibilityFor(remote('Worldwide')), { code: 'worldwide', label: 'Worldwide' });
-assert.deepEqual(eligibilityFor(remote('Seoul', '', 'KR')), { code: 'korea', label: '한국에서 지원 가능' });
-assert.deepEqual(eligibilityFor(remote('Remote', 'Location: South Korea (Work from Home).')), { code: 'korea', label: '한국에서 지원 가능' });
-assert.deepEqual(eligibilityFor(remote('Remote', 'Candidates must reside in Germany.')), { code: 'restricted', label: '특정 국가 제한' });
-assert.deepEqual(eligibilityFor(remote('Hong Kong')), { code: 'restricted', label: '특정 국가 제한' });
-assert.deepEqual(eligibilityFor(remote('Sweden')), { code: 'restricted', label: '특정 국가 제한' });
-assert.deepEqual(eligibilityFor(remote('Greater Orlando')), { code: 'restricted', label: '특정 국가 제한' });
+for (const [input, code, label] of [
+  [remote('Remote'), 'unknown', '확인 필요'],
+  [remote('Anywhere in France'), 'restricted', '특정 국가 제한'],
+  [remote('Worldwide'), 'worldwide', 'Worldwide'],
+  [remote('Seoul', '', 'KR'), 'korea', '한국에서 지원 가능'],
+  [remote('Remote', 'Location: South Korea (Work from Home).'), 'korea', '한국에서 지원 가능'],
+  [remote('Remote', 'Candidates must reside in Germany.'), 'restricted', '특정 국가 제한'],
+  [remote('Hong Kong'), 'restricted', '특정 국가 제한'],
+  [remote('Sweden'), 'restricted', '특정 국가 제한'],
+  [remote('Greater Orlando'), 'restricted', '특정 국가 제한']
+]) {
+  const result = eligibilityFor(input);
+  assert.equal(result.code, code);
+  assert.equal(result.label, label);
+  assert.ok(result.reason, 'eligibility classification must include a user-readable reason');
+  assert.ok(result.basis, 'eligibility classification must include an evidence basis');
+}
 
 const hourly = extractSalary('', 'Pay Rate: $13/hour\nFlexible schedule.');
 assert.equal(hourly.currency, 'USD');
@@ -47,6 +55,14 @@ assert.equal(episodeRate.max, 120);
 assert.equal(episodeRate.period, 'episode');
 assert.equal(episodeRate.display, '€40–€120/에피소드');
 
+const upToHourly = extractSalary('', 'Pay: Up to 10 USD/hour.');
+assert.equal(upToHourly.display, '최대 $10/시간');
+assert.equal(upToHourly.qualifier, 'maximum');
+
+const perJobApprox = extractSalary('', 'Salary: Paid per job – approximately $11.5 per hour.');
+assert.equal(perJobApprox.display, '약 $11.5/시간 · 건당 지급 환산');
+assert.equal(perJobApprox.paymentBasis, 'per_task_equivalent');
+
 assert.equal(relevantToProfile({ title: 'Video Reviewer', description: 'This project involves data annotation for AI training.', tags: [] }), true);
 assert.equal(relevantToProfile({ title: 'Senior Backend Engineer', description: 'Works with data and AI systems.', tags: [] }), false);
 
@@ -61,6 +77,10 @@ assert.equal(expired.code, 'expired');
 
 const activeTalentDuty = currentListingState({ source: 'Remote OK', title: 'Founding Talent Partner', description: 'Own recruiting end to end and build a talent pool for future hiring needs.', postedAt: new Date().toISOString() });
 assert.equal(activeTalentDuty.code, 'current_feed');
+
+const remoteFieldBoundary = eligibilityFor(remote('Remote', 'Location: Remote Engagement: Independent Contractor | Project-Based'));
+assert.equal(remoteFieldBoundary.code, 'unknown', 'generic Remote location followed by another field label must not become a fake geography');
+assert.match(remoteFieldBoundary.reason, /국가 범위/);
 
 const preservedFailure = markPreservedSourceFailure({ listingStatus: 'verified_open', listingLabel: '모집 확인됨', stale: false, score: 100 });
 assert.equal(preservedFailure.listingStatus, 'source_error');
@@ -133,6 +153,10 @@ const oneFormaJob = normalizeJob(oneFormaRaw);
 assert.equal(oneFormaJob.eligibilityCode, 'korea');
 assert.equal(oneFormaJob.sourceKind, 'official_platform');
 assert.equal(oneFormaJob.listingStatus, 'verified_open');
+assert.ok(oneFormaJob.listingReason);
+assert.ok(oneFormaJob.eligibilityReason);
+assert.equal(oneFormaJob.sourceOfficiality, 'official');
+assert.ok(oneFormaJob.listingEvidence.some((item) => item.url === oneFormaJob.url));
 
 const translationRater = normalizeJob({
   ...base,
@@ -146,6 +170,19 @@ const translationRater = normalizeJob({
 });
 assert.ok(translationRater.score < 20, 'translation roles must not be default recommendations without verified translation qualifications');
 assert.match(translationRater.fitWarning, /번역/);
+
+const translationQualityPlus = normalizeJob({
+  ...base,
+  id: 'translation-quality-plus',
+  source: 'OneForma',
+  title: 'Paragraph-Level Translation Quality Rater',
+  location: 'Worldwide',
+  url: 'https://example.com/translation-quality-plus',
+  description: 'Requirements: Native speaker, attention to detail, computer and internet. Previous experience with translation quality review is a plus.',
+  tags: ['Korean', 'Worldwide', 'Quality Rater']
+});
+assert.ok(translationQualityPlus.score >= 20, 'translation quality evaluation must remain recommendable when translation experience is only a plus');
+assert.doesNotMatch(translationQualityPlus.fitWarning, /번역 언어쌍/);
 
 const residencyRequirement = normalizeJob({
   ...base,
@@ -185,5 +222,58 @@ const transcriptionExperience = normalizeJob({
 });
 assert.ok(transcriptionExperience.score < 20, 'required transcription experience must be treated as an unverified hard requirement');
 assert.match(transcriptionExperience.fitWarning, /전사/);
+
+const severalYearsResidence = normalizeJob({
+  ...base,
+  id: 'residency-several-years',
+  source: 'Remote OK',
+  title: 'AI Trainer Image QA Evaluator',
+  location: 'South Korea',
+  url: 'https://example.com/residency-several-years',
+  description: 'Applicants must currently reside in South Korea and have lived there for several years. English: C1 level or above.',
+  tags: ['AI Trainer', 'QA']
+});
+assert.ok(severalYearsResidence.score < 20, 'several-years residence and C1 hard requirements must not enter default recommendations');
+assert.match(severalYearsResidence.fitWarning, /장기 거주/);
+assert.match(severalYearsResidence.fitWarning, /C1/);
+
+const iosRequirement = normalizeJob({
+  ...base,
+  id: 'ios-requirement',
+  source: 'OneForma',
+  title: 'App Store And Music Search Evaluator',
+  location: 'South Korea',
+  url: 'https://example.com/ios-requirement',
+  description: 'Requirements: You have a valid Apple ID. You have an iOS Device. You are native or fluent in Korean.',
+  tags: ['Korean', 'Search Evaluator']
+});
+assert.ok(iosRequirement.score < 20, 'unverified Apple device requirements must not enter default recommendations');
+assert.match(iosRequirement.fitWarning, /iOS/);
+
+const hardRelatedExperience = normalizeJob({
+  ...base,
+  id: 'hard-related-experience',
+  source: 'Welo Global',
+  title: 'Generative AI Analyst | Korean (Korea)',
+  location: 'South Korea',
+  url: 'https://example.com/hard-related-experience',
+  description: 'We are looking for detail-oriented professionals with experience in annotation, content review, quality assurance, or data operations to support AI projects.',
+  tags: ['Korean', 'AI']
+});
+assert.ok(hardRelatedExperience.score < 20, 'explicit required related experience must not be assumed from adjacent user experience');
+assert.match(hardRelatedExperience.fitWarning, /실무 경험/);
+
+const preferredRelatedExperience = normalizeJob({
+  ...base,
+  id: 'preferred-related-experience',
+  source: 'OneForma',
+  title: 'Multilingual AI Quality Assurance Reviewer',
+  location: 'South Korea',
+  url: 'https://example.com/preferred-related-experience',
+  description: 'Preferred experience: experience in annotation, content review, quality assurance, or data operations is a plus.',
+  tags: ['Korean', 'AI Quality Assurance']
+});
+assert.ok(preferredRelatedExperience.score >= 20, 'preferred related experience must not become a hard blocker');
+assert.doesNotMatch(preferredRelatedExperience.fitWarning, /실무 경험/);
 
 console.log('collector tests passed');

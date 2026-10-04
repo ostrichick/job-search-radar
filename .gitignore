@@ -5,3 +5,5 @@ data/manual-jobs.json
 public/jobs.json
 dashboard*.png
 deployed*.png
+test-results/
+playwright-report/

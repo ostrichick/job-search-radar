@@ -8,6 +8,26 @@ assert.ok(Array.isArray(feed.jobs) && feed.jobs.length > 0, 'feed must contain j
 const ids = feed.jobs.map((job) => job.id);
 assert.equal(new Set(ids).size, ids.length, 'stable job ids must be unique');
 
+for (const job of feed.jobs) {
+  assert.ok(job.eligibilityCode, `${job.id} must have eligibilityCode`);
+  assert.ok(job.eligibilityReason, `${job.id} must explain eligibility classification`);
+  assert.ok(job.eligibilityBasis, `${job.id} must identify eligibility evidence basis`);
+  assert.ok(job.listingStatus, `${job.id} must have listingStatus`);
+  assert.ok(job.listingReason, `${job.id} must explain listing status`);
+  assert.ok(job.listingBasis, `${job.id} must identify listing evidence basis`);
+  assert.ok(job.paymentEvidenceState, `${job.id} must separate payment evidence state from listing/source trust`);
+  assert.ok(job.paymentEvidenceLabel, `${job.id} must have a user-readable payment evidence label`);
+  if (['official_ats', 'official_platform'].includes(job.sourceKind) && job.listingStatus === 'verified_open') {
+    assert.ok(Array.isArray(job.listingEvidence) && job.listingEvidence.some((item) => item?.url === job.url),
+      `${job.id} verified official listing must link directly to the checked posting`);
+    assert.ok(job.listingCheckedAt || job.verifiedAt, `${job.id} verified official listing must include a check timestamp`);
+  }
+  if (['caution_repeated', 'mixed_caution'].includes(job.paymentEvidenceState)) {
+    assert.ok(Array.isArray(job.paymentSignals) && job.paymentSignals.length > 0,
+      `${job.id} payment caution must have structured evidence signals`);
+  }
+}
+
 const recommended = feed.jobs.filter((job) =>
   job.score >= 20 &&
   ['korea', 'worldwide'].includes(job.eligibilityCode) &&

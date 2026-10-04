@@ -34,6 +34,10 @@ const state = {
 
 const $ = (id) => document.getElementById(id);
 const controls = ['query', 'source', 'category', 'remote', 'eligibility', 'ageFilter', 'listingFilter', 'sourceKindFilter', 'paymentFilter', 'minScore', 'sort', 'statusFilter'];
+const advancedFilterDefaults = {
+  category: '', remote: '', ageFilter: '', listingFilter: 'active',
+  sourceKindFilter: '', paymentFilter: '', minScore: '20', sort: 'score'
+};
 const savedFilters = JSON.parse(localStorage.getItem('jobFilters') || '{}');
 const filterSchemaVersion = Number(localStorage.getItem('jobFilterSchemaVersion') || 0);
 if (filterSchemaVersion < 3) {
@@ -53,10 +57,38 @@ if (filterSchemaVersion < 3) {
   localStorage.setItem('jobFilterSchemaVersion', '3');
   localStorage.setItem('jobFilters', JSON.stringify(savedFilters));
 }
+if (filterSchemaVersion < 4) {
+  if (savedFilters.paymentFilter === 'caution') savedFilters.paymentFilter = 'has_caution';
+  if (savedFilters.paymentFilter === 'not_payer') savedFilters.paymentFilter = 'not_applicable';
+  localStorage.setItem('jobFilterSchemaVersion', '4');
+  localStorage.setItem('jobFilters', JSON.stringify(savedFilters));
+}
+function updateAdvancedFilterSummary() {
+  const summary = $('advancedFiltersSummary');
+  if (!summary) return;
+  const active = Object.entries(advancedFilterDefaults)
+    .filter(([id, defaultValue]) => $(id) && $(id).value !== defaultValue)
+    .length;
+  summary.textContent = active ? `추가 필터 · ${active}개 적용` : '추가 필터';
+}
+
 for (const id of controls) {
   if (!['source', 'category'].includes(id) && savedFilters[id] !== undefined) $(id).value = savedFilters[id];
-  $(id).addEventListener('input', () => { state.visibleLimit = 60; state.selectedIds.clear(); persistFilters(); render(); });
+  $(id).addEventListener('input', () => {
+    state.visibleLimit = 60;
+    state.selectedIds.clear();
+    persistFilters();
+    updateAdvancedFilterSummary();
+    render();
+  });
 }
+const advancedFilters = $('advancedFilters');
+if (advancedFilters) {
+  const storedOpen = localStorage.getItem('jobAdvancedFiltersOpen');
+  advancedFilters.open = storedOpen === null ? !matchMedia('(max-width: 720px)').matches : storedOpen === 'true';
+  advancedFilters.addEventListener('toggle', () => localStorage.setItem('jobAdvancedFiltersOpen', String(advancedFilters.open)));
+}
+updateAdvancedFilterSummary();
 
 function formatDate(value) {
   if (!value) return '게시일 미상';
@@ -143,7 +175,7 @@ function snapshotJob(id) {
   const job = state.jobs.find((candidate) => candidate.id === id);
   if (!job || job.manual) return;
   const {
-    id: _id, description, sourceSummary, sourceEvidence, matchedKeywords, tags,
+    id: _id, description, sourceSummary, sourceEvidence, paymentSignals, listingEvidence, matchedKeywords, tags,
     alternateUrls, legacyIds, ...rest
   } = job;
   state.trackedJobs[id] = {
@@ -151,6 +183,8 @@ function snapshotJob(id) {
     description: String(description || '').slice(0, 500),
     sourceSummary: String(sourceSummary || '').slice(0, 300),
     sourceEvidence: Array.isArray(sourceEvidence) ? sourceEvidence.slice(0, 4) : [],
+    paymentSignals: Array.isArray(paymentSignals) ? paymentSignals.slice(0, 4) : [],
+    listingEvidence: Array.isArray(listingEvidence) ? listingEvidence.slice(0, 3) : [],
     matchedKeywords: Array.isArray(matchedKeywords) ? matchedKeywords.slice(0, 8) : [],
     tags: Array.isArray(tags) ? tags.slice(0, 8) : [],
     alternateUrls: Array.isArray(alternateUrls) ? alternateUrls.slice(0, 4) : [],
@@ -188,8 +222,10 @@ function filteredJobs() {
       if (listingFilter === 'active' && ['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus)) return false;
       if (listingFilter && listingFilter !== 'active' && listingFilter !== 'all' && job.listingStatus !== listingFilter) return false;
       if (sourceKindFilter && job.sourceKind !== sourceKindFilter) return false;
-      if (paymentFilter === 'exclude_caution' && job.paymentStatus === 'caution') return false;
-      if (paymentFilter && !['', 'exclude_caution'].includes(paymentFilter) && job.paymentStatus !== paymentFilter) return false;
+      const paymentEvidence = job.paymentEvidenceState || (job.paymentStatus === 'caution' ? 'caution_repeated' : job.paymentStatus === 'not_payer' ? 'not_applicable' : 'insufficient');
+      if (paymentFilter === 'exclude_caution' && ['caution_repeated', 'mixed_caution'].includes(paymentEvidence)) return false;
+      if (paymentFilter === 'has_caution' && !['caution_repeated', 'mixed_caution'].includes(paymentEvidence)) return false;
+      if (paymentFilter && !['', 'exclude_caution', 'has_caution'].includes(paymentFilter) && paymentEvidence !== paymentFilter) return false;
       if (job.score < minScore) return false;
     }
     if (status === 'active' && hidden) return false;
@@ -249,8 +285,26 @@ function setHidden(id, hidden) {
   render();
 }
 
+function captureHideState(ids) {
+  return ids.map((id) => ({
+    id,
+    hidden: state.hiddenIds.has(id),
+    reviewed: state.reviewedIds.has(id),
+    isNew: state.newIds.has(id)
+  }));
+}
+
+function restoreHideState(items = []) {
+  for (const item of items) {
+    if (!item?.id) continue;
+    item.hidden ? state.hiddenIds.add(item.id) : state.hiddenIds.delete(item.id);
+    item.reviewed ? state.reviewedIds.add(item.id) : state.reviewedIds.delete(item.id);
+    item.isNew ? state.newIds.add(item.id) : state.newIds.delete(item.id);
+  }
+}
+
 function hideWithUndo(job) {
-  state.lastHidden = { ids: [job.id] };
+  state.lastHidden = { items: captureHideState([job.id]) };
   setHidden(job.id, true);
   $('toastText').textContent = `${job.title} 공고를 숨겼습니다.`;
   $('undoHide').hidden = false;
@@ -273,8 +327,80 @@ function qualityClass(type, value) {
     if (value === 'talent_pool') return 'talent-pool';
   }
   if (type === 'trust' && ['official_ats', 'official_platform'].includes(value)) return 'official';
-  if (type === 'payment' && value === 'caution') return 'caution';
+  if (type === 'payment' && ['caution', 'caution_repeated', 'mixed_caution'].includes(value)) return 'caution';
+  if (type === 'payment' && value === 'insufficient') return 'unknown';
+  if (type === 'eligibility' && ['korea', 'worldwide'].includes(value)) return 'eligible';
+  if (type === 'eligibility' && value === 'restricted') return 'restricted';
   return '';
+}
+
+function paymentEvidenceState(job) {
+  return job.paymentEvidenceState
+    || (job.paymentStatus === 'caution' ? 'caution_repeated' : job.paymentStatus === 'not_payer' ? 'not_applicable' : 'insufficient');
+}
+
+function appendEvidenceLinks(container, evidenceItems = []) {
+  container.replaceChildren();
+  for (const evidence of evidenceItems) {
+    const href = safeExternalUrl(evidence?.url);
+    if (!href) continue;
+    const link = document.createElement('a');
+    link.href = href;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = `${evidence.label || '근거 열기'} ↗`;
+    container.append(link);
+  }
+}
+
+function renderPaymentSignals(job) {
+  const container = $('detailsPaymentSignals');
+  container.replaceChildren();
+  const labels = {
+    official_policy: '공식 정책',
+    review_aggregate: '리뷰 집계',
+    community_report: '커뮤니티 사례'
+  };
+  const recurrenceLabels = {
+    repeated: '반복 신호',
+    single: '단일 사례',
+    policy: '공식 문서'
+  };
+  for (const signal of job.paymentSignals || []) {
+    const row = document.createElement('div');
+    row.className = 'signal-item';
+    const meta = document.createElement('span');
+    meta.className = `signal-meta ${signal.direction === 'caution' || signal.direction === 'mixed' ? 'caution' : ''}`;
+    meta.textContent = [labels[signal.type] || signal.type, recurrenceLabels[signal.recurrence] || signal.recurrence, signal.observedAt].filter(Boolean).join(' · ');
+    const href = safeExternalUrl(signal.url);
+    if (href) {
+      const link = document.createElement('a');
+      link.href = href;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = signal.label || '근거 보기';
+      row.append(link);
+    } else {
+      const title = document.createElement('strong');
+      title.textContent = signal.label || '근거';
+      row.append(title);
+    }
+    row.append(meta);
+    if (signal.note) {
+      const note = document.createElement('small');
+      note.textContent = signal.note;
+      row.append(note);
+    }
+    container.append(row);
+  }
+  if (!container.childElementCount) {
+    const empty = document.createElement('span');
+    empty.className = 'signal-empty';
+    empty.textContent = job.paymentEvidenceState === 'not_applicable'
+      ? '이 소스는 지급 주체가 아닙니다. 고용주·프로젝트 원문에서 지급 조건을 확인하세요.'
+      : '구조화된 공개 지급 평판 근거가 충분하지 않습니다.';
+    container.append(empty);
+  }
 }
 
 function safeExternalUrl(value) {
@@ -298,21 +424,15 @@ function openDetails(job) {
   $('detailsMeta').innerHTML = [job.location, job.type, job.eligibility, job.category, salaryLabel(job)].filter(Boolean).map((v) => `<span>${escapeHtml(v)}</span>`).join('');
   $('detailsTrust').innerHTML = [
     `<span class="${qualityClass('listing', job.listingStatus)}">${escapeHtml(job.listingLabel || '상태 확인 필요')}</span>`,
+    `<span class="${qualityClass('eligibility', job.eligibilityCode)}">${escapeHtml(job.eligibility || '지원 범위 확인 필요')}</span>`,
     `<span class="${qualityClass('trust', job.sourceKind)}">${escapeHtml(job.sourceTrustLabel || job.source)}</span>`,
-    `<span class="${qualityClass('payment', job.paymentStatus)}">${escapeHtml(job.paymentLabel || '지급 조건 확인 필요')}</span>`
+    `<span class="${qualityClass('payment', paymentEvidenceState(job))}">${escapeHtml(job.paymentEvidenceLabel || job.paymentLabel || '지급 근거 확인 필요')}</span>`,
+    `<span>검토 우선순위 ${Number(job.score || 0)}</span>`
   ].join('');
+  $('detailsListingReason').textContent = job.listingReason || '현재 모집 상태의 자동 판정 근거가 없습니다.';
+  appendEvidenceLinks($('detailsListingEvidence'), job.listingEvidence || [{ label: '공고 원문', url: job.url }]);
   $('detailsSourceSummary').textContent = job.sourceSummary || '원문에서 모집 상태와 계약·지급 조건을 확인하세요.';
-  $('detailsEvidence').replaceChildren();
-  for (const evidence of job.sourceEvidence || []) {
-    const href = safeExternalUrl(evidence.url);
-    if (!href) continue;
-    const link = document.createElement('a');
-    link.href = href;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.textContent = `${evidence.label} ↗`;
-    $('detailsEvidence').append(link);
-  }
+  appendEvidenceLinks($('detailsEvidence'), job.sourceEvidence || []);
   for (const [index, url] of (job.alternateUrls || []).entries()) {
     const href = safeExternalUrl(url);
     if (!href) continue;
@@ -323,8 +443,20 @@ function openDetails(job) {
     link.textContent = `다른 출처 ${index + 1} ↗`;
     $('detailsEvidence').append(link);
   }
+  $('detailsPaymentSummary').textContent = job.paymentSummary || '공개 지급 평판 근거가 충분하지 않습니다. 실제 계약·정산 조건을 원문에서 확인하세요.';
+  renderPaymentSignals(job);
+  $('detailsEligibilityReason').textContent = job.eligibilityReason || '지원 가능 국가 범위의 자동 판정 근거가 없습니다.';
+  const fitReasonParts = [
+    `이 점수는 합격 가능성이 아니라 검토 우선순위 ${Number(job.score || 0)}점입니다.`,
+    ...(job.fitReasons || [])
+  ];
+  $('detailsFitReasons').textContent = fitReasonParts.join(' · ');
+  const warnings = job.fitWarnings?.length ? job.fitWarnings : (job.fitWarning ? [job.fitWarning] : []);
+  $('detailsFitWarnings').textContent = warnings.length ? `확인 필요: ${warnings.join(' · ')}` : '추가로 감점한 미검증 전문·장비·장기경력 요건 없음';
+  $('detailsFitWarnings').classList.toggle('has-warning', warnings.length > 0);
+  const checkedAt = job.listingCheckedAt || job.verifiedAt;
   const reviewNote = job.sourceReviewAt ? ` · 지급·평판 근거 검토: ${job.sourceReviewAt}` : '';
-  $('detailsVerifiedAt').textContent = job.verifiedAt ? `마지막 수집 확인: ${new Date(job.verifiedAt).toLocaleString('ko-KR')}${reviewNote}` : `확인 시각 미상${reviewNote}`;
+  $('detailsVerifiedAt').textContent = checkedAt ? `모집 소스 마지막 확인: ${new Date(checkedAt).toLocaleString('ko-KR')}${reviewNote}` : `모집 확인 시각 미상${reviewNote}`;
   $('detailsDescription').textContent = job.description || '상세 설명이 제공되지 않았습니다.';
   $('detailsLink').href = job.url;
   updateDetailNavigation();
@@ -356,9 +488,11 @@ function render() {
   const template = $('jobTemplate');
   for (const job of visibleJobs) {
     const node = template.content.cloneNode(true);
+    node.querySelector('.job-card').dataset.jobId = job.id;
     node.querySelector('.source').textContent = job.source;
     if ((job.sources || []).length > 1) node.querySelector('.source').textContent = `${job.source} +${job.sources.length - 1}`;
-    node.querySelector('.score').textContent = job.manual ? '직접 추가' : `적합도 ${job.score}`;
+    node.querySelector('.score').textContent = job.manual ? '직접 추가' : `검토 우선순위 ${job.score}`;
+    if (!job.manual) node.querySelector('.score').title = '합격 가능성이 아니라 먼저 확인할 순서를 위한 점수입니다.';
     const selection = node.querySelector('.job-select');
     selection.checked = state.selectedIds.has(job.id);
     selection.setAttribute('aria-label', `${job.title} 선택`);
@@ -372,12 +506,15 @@ function render() {
     const trustBadge = node.querySelector('.trust-badge');
     trustBadge.textContent = job.sourceTrustLabel || job.source;
     trustBadge.className = `trust-badge ${qualityClass('trust', job.sourceKind)}`;
+    const eligibilityBadge = node.querySelector('.eligibility-badge');
+    eligibilityBadge.textContent = job.eligibility || '지원 범위 확인 필요';
+    eligibilityBadge.className = `eligibility-badge ${qualityClass('eligibility', job.eligibilityCode)}`;
     const paymentBadge = node.querySelector('.payment-badge');
-    paymentBadge.textContent = job.paymentLabel || '지급 조건 확인 필요';
-    paymentBadge.className = `payment-badge ${qualityClass('payment', job.paymentStatus)}`;
+    paymentBadge.textContent = job.paymentEvidenceLabel || job.paymentLabel || '지급 근거 확인 필요';
+    paymentBadge.className = `payment-badge ${qualityClass('payment', paymentEvidenceState(job))}`;
     node.querySelector('.title').textContent = job.title;
     node.querySelector('.company').textContent = job.company;
-    const meta = [job.location, job.type, job.eligibility, job.category, salaryLabel(job)].filter(Boolean);
+    const meta = [job.location, job.type, job.category, salaryLabel(job)].filter(Boolean);
     node.querySelector('.meta').innerHTML = meta.map((v) => `<span>${escapeHtml(v)}</span>`).join('');
     node.querySelector('.description').textContent = job.description || '상세 설명 없음';
     const tagValues = [...new Set([...(state.newIds.has(job.id) ? ['NEW'] : []), ...(job.duplicateCount > 1 ? [`중복 ${job.duplicateCount}개 통합`] : []), ...(job.fitWarning ? [job.fitWarning] : []), ...(job.matchedKeywords || []), ...(job.tags || [])])].slice(0, 6);
@@ -407,6 +544,7 @@ function render() {
 
     const jobState = node.querySelector('.job-state');
     jobState.value = state.jobStates[job.id] || '';
+    jobState.setAttribute('aria-label', `${job.title} 지원 상태`);
     jobState.addEventListener('change', () => setJobState(job.id, jobState.value));
     const dismiss = node.querySelector('.dismiss');
     if (state.hiddenIds.has(job.id)) {
@@ -430,6 +568,7 @@ function updateBatchUI(visibleJobs = filteredJobs().slice(0, state.visibleLimit)
   const selected = [...state.selectedIds].filter((id) => state.jobs.some((job) => job.id === id));
   state.selectedIds = new Set(selected);
   $('batchBar').hidden = visibleJobs.length === 0;
+  $('batchBar').classList.toggle('collapse-hidden', visibleJobs.length === 0 && Boolean(state.meta));
   $('batchBar').classList.toggle('has-selection', selected.length > 0);
   $('selectedCount').textContent = `${selected.length}개 선택`;
   for (const id of ['batchFavorite', 'batchPlanned', 'batchApplied', 'batchReviewed', 'batchHide', 'clearSelection']) $(id).disabled = selected.length === 0;
@@ -444,6 +583,7 @@ function applyBatch(action) {
   state.selectedIds = new Set([...state.selectedIds].filter((id) => allowed.has(id)));
   if (!state.selectedIds.size) { render(); return; }
   const affectedIds = [...state.selectedIds];
+  const hideSnapshot = action === 'hide' ? captureHideState(affectedIds) : [];
   for (const id of affectedIds) {
     state.reviewedIds.add(id);
     state.newIds.delete(id);
@@ -457,7 +597,7 @@ function applyBatch(action) {
     for (const id of state.selectedIds) state.reviewedIds.add(id);
   }
   if (action === 'hide') {
-    state.lastHidden = { ids: affectedIds };
+    state.lastHidden = { items: hideSnapshot };
     $('toastText').textContent = `${affectedIds.length}개 공고를 숨겼습니다.`;
     $('undoHide').hidden = false;
     $('toast').hidden = false;
@@ -479,6 +619,7 @@ function resetFilters() {
   for (const [id, value] of Object.entries(defaults)) if ($(id)) $(id).value = value;
   state.visibleLimit = 60;
   persistFilters();
+  updateAdvancedFilterSummary();
   render();
 }
 
@@ -589,6 +730,7 @@ function updateDynamicFilters() {
     }
     state.dynamicFiltersInitialized = true;
   }
+  updateAdvancedFilterSummary();
 }
 
 function applyFeedData(data, detectNew = true) {
@@ -620,7 +762,8 @@ function applyFeedData(data, detectNew = true) {
 }
 
 async function fetchFeed() {
-  const candidates = ['/api/jobs', `./jobs.json?ts=${Date.now()}`];
+  const staticPages = location.hostname.endsWith('.github.io');
+  const candidates = staticPages ? [`./jobs.json?ts=${Date.now()}`] : ['/api/jobs', `./jobs.json?ts=${Date.now()}`];
   let lastError;
   for (const url of candidates) {
     try {
@@ -645,12 +788,16 @@ $('refreshBtn').addEventListener('click', async () => {
   button.textContent = '수집 중…';
   try {
     let data;
-    try {
-      const response = await fetch('/api/refresh', { method: 'POST', cache: 'no-store' });
-      if (!response.ok) throw new Error(`${response.status}`);
-      data = await response.json();
-    } catch {
+    if (location.hostname.endsWith('.github.io')) {
       data = await fetchFeed();
+    } else {
+      try {
+        const response = await fetch('/api/refresh', { method: 'POST', cache: 'no-store' });
+        if (!response.ok) throw new Error(`${response.status}`);
+        data = await response.json();
+      } catch {
+        data = await fetchFeed();
+      }
     }
     applyFeedData(data, true);
   } catch (error) {
@@ -722,7 +869,7 @@ $('batchHide').addEventListener('click', () => applyBatch('hide'));
 $('clearSelection').addEventListener('click', () => { state.selectedIds.clear(); render(); });
 $('undoHide').addEventListener('click', () => {
   if (!state.lastHidden) return;
-  for (const id of state.lastHidden.ids || []) state.hiddenIds.delete(id);
+  restoreHideState(state.lastHidden.items || []);
   state.lastHidden = null;
   clearTimeout(state.toastTimer);
   $('toast').hidden = true;
@@ -756,16 +903,31 @@ $('addForm').addEventListener('submit', (event) => {
     category: '직접 추가',
     eligibility: '확인 필요',
     eligibilityCode: 'unknown',
+    eligibilityBasis: 'manual',
+    eligibilityReason: '직접 추가 공고라 지원 가능한 국가 범위를 자동 검증하지 않음',
     listingStatus: 'manual',
     listingLabel: '직접 확인 필요',
+    listingBasis: 'manual',
+    listingReason: '사용자가 직접 추가한 공고라 원문에서 현재 모집 여부를 확인해야 함',
     sourceKind: 'manual',
     sourceTrustLabel: '사용자 직접 추가',
+    sourceOfficiality: 'manual',
     paymentStatus: 'unknown',
     paymentLabel: '직접 확인 필요',
+    paymentEvidenceState: 'insufficient',
+    paymentEvidenceLabel: '근거 부족',
+    paymentConfidence: 'low',
+    paymentSummary: '직접 추가 공고라 구조화된 공개 지급 평판 근거가 없습니다.',
+    paymentSignals: [],
     sourceSummary: '사용자가 직접 추가한 공고입니다. 원문에서 현재 모집과 지급 조건을 확인하세요.',
     sourceEvidence: [],
     salaryInfo: { raw: '', display: '', confidence: 'none' },
     verifiedAt: new Date().toISOString(),
+    listingCheckedAt: new Date().toISOString(),
+    listingEvidence: [{ type: 'manual_listing', label: '직접 추가 원문', url }],
+    fitReasons: ['사용자가 직접 검토 대상으로 추가함'],
+    fitWarnings: [],
+    fitWarning: '',
     score: 50,
     manual: true
   };

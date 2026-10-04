@@ -30,6 +30,8 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
       - run: npm run build:static
       - run: node scripts/validate-feed.mjs public/jobs.json
       - name: Persist refreshed feed baseline
