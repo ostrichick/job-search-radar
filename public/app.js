@@ -512,7 +512,8 @@ function renderVerificationHistory(job) {
     reappeared: '재등장',
     source_failed: '소스 확인 실패',
     source_recovered: '소스 복구',
-    evidence_freshness_changed: '근거 최신성 변경'
+    evidence_freshness_changed: '근거 최신성 변경',
+    evidence_state_changed: '지급 근거 상태 변경'
   };
   const history = Array.isArray(job.verificationHistory) ? job.verificationHistory.slice(-6).reverse() : [];
   summary.textContent = history.length

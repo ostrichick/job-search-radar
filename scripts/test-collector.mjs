@@ -614,6 +614,18 @@ const evidenceAgingHistory = reconcileVerificationHistory(
 )[0];
 assert.equal(evidenceAgingHistory.verificationHistory.at(-1).event, 'evidence_freshness_changed');
 
+const evidenceStateOnlyPrior = { ...historyFirst, paymentEvidenceFreshness: 'fresh', paymentEvidenceState: 'caution_repeated' };
+const evidenceStateOnlyCurrent = { ...historyUnchangedRaw, paymentEvidenceFreshness: 'fresh', paymentEvidenceState: 'mixed_caution' };
+const evidenceStateOnlyHistory = reconcileVerificationHistory(
+  [evidenceStateOnlyCurrent],
+  [evidenceStateOnlyPrior],
+  Date.parse('2026-10-08T00:00:00Z')
+)[0];
+assert.equal(evidenceStateOnlyHistory.verificationHistory.at(-1).event, 'evidence_state_changed');
+assert.equal(evidenceStateOnlyHistory.verificationHistory.at(-1).fromStatus, 'caution_repeated');
+assert.equal(evidenceStateOnlyHistory.verificationHistory.at(-1).toStatus, 'mixed_caution');
+assert.doesNotMatch(evidenceStateOnlyHistory.verificationHistory.at(-1).reason, /fresh → fresh/);
+
 const archivedEvidence = {
   ...historyFirst,
   source: 'Welo Global',
@@ -624,7 +636,8 @@ const archivedEvidence = {
 };
 const archivedAged = refreshTimeBasedEvidence([archivedEvidence], Date.parse('2027-01-10T00:00:00Z'))[0];
 assert.notEqual(archivedAged.paymentEvidenceFreshness, 'fresh');
-assert.equal(archivedAged.verificationHistory.at(-1).event, 'evidence_freshness_changed');
+assert.ok(archivedAged.verificationHistory.some((item) => item.event === 'evidence_freshness_changed'));
+assert.ok(archivedAged.verificationHistory.some((item) => item.event === 'evidence_state_changed'));
 const archivedAgedAgain = refreshTimeBasedEvidence([archivedAged], Date.parse('2027-01-10T12:00:00Z'))[0];
 assert.equal(archivedAgedAgain.verificationHistory.length, archivedAged.verificationHistory.length, 'unchanged carried evidence freshness must not append duplicate events');
 
@@ -637,7 +650,8 @@ const sourceErrorEvidence = {
 };
 const sourceErrorExpired = refreshTimeBasedEvidence([sourceErrorEvidence], Date.parse('2027-05-01T00:00:00Z'))[0];
 assert.equal(sourceErrorExpired.paymentEvidenceFreshness, 'expired');
-assert.equal(sourceErrorExpired.verificationHistory.at(-1).event, 'evidence_freshness_changed');
+assert.ok(sourceErrorExpired.verificationHistory.some((item) => item.event === 'evidence_freshness_changed'));
+assert.ok(sourceErrorExpired.verificationHistory.some((item) => item.event === 'evidence_state_changed'));
 
 const recommendationFixture = (index, overrides = {}) => ({
   id: `rec-${index}`,
@@ -669,12 +683,24 @@ const explainedRecommendations = {
   recommendationPolicyVersion: 1,
   jobs: baselineRecommendations.jobs.map((job, index) => index < 2 ? job : recommendationFixture(index, {
     listingStatus: 'archived_missing',
+    sourceCoverage: 'bounded_window',
     recommendationEligible: false,
     score: 0
   }))
 };
 assert.equal(recommendationCollapseRisk(explainedRecommendations, baselineRecommendations).collapse, false,
-  'explicit disappearance/source-state losses must not trip the recommendation regression guard');
+  'bounded-window disappearance must not trip the recommendation regression guard');
+const currentCatalogCollapse = {
+  recommendationPolicyVersion: 1,
+  jobs: baselineRecommendations.jobs.map((job, index) => index < 2 ? job : recommendationFixture(index, {
+    listingStatus: 'archived_missing',
+    sourceCoverage: 'current_catalog',
+    recommendationEligible: false,
+    score: 0
+  }))
+};
+assert.equal(recommendationCollapseRisk(currentCatalogCollapse, baselineRecommendations).collapse, true,
+  'healthy current-catalog disappearance must remain unexplained so collector regressions cannot silently collapse recommendations');
 
 const freshSignal = enrichPaymentSignal(
   { type: 'review_aggregate', checkedAt: '2026-10-04', latestSourceAt: '2026-10-02', direction: 'caution', recurrence: 'repeated' },

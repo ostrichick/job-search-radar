@@ -194,8 +194,7 @@ function reconcileVerificationHistory(jobs, previousJobs = [], now = Date.now())
       });
     }
     if (previous.paymentEvidenceFreshness
-      && (previous.paymentEvidenceFreshness !== job.paymentEvidenceFreshness
-        || previous.paymentEvidenceState !== job.paymentEvidenceState)) {
+      && previous.paymentEvidenceFreshness !== job.paymentEvidenceFreshness) {
       events.push({
         at: nowIso,
         event: 'evidence_freshness_changed',
@@ -203,6 +202,17 @@ function reconcileVerificationHistory(jobs, previousJobs = [], now = Date.now())
         toStatus: job.paymentEvidenceFreshness,
         fingerprint,
         reason: `지급 근거 최신성 변경: ${previous.paymentEvidenceFreshness} → ${job.paymentEvidenceFreshness}`
+      });
+    }
+    if (previous.paymentEvidenceState
+      && previous.paymentEvidenceState !== job.paymentEvidenceState) {
+      events.push({
+        at: nowIso,
+        event: 'evidence_state_changed',
+        fromStatus: previous.paymentEvidenceState,
+        toStatus: job.paymentEvidenceState,
+        fingerprint,
+        reason: `지급 근거 상태 변경: ${previous.paymentEvidenceState} → ${job.paymentEvidenceState}`
       });
     }
     if (previous.listingStatus !== job.listingStatus
@@ -231,7 +241,7 @@ function reconcileVerificationHistory(jobs, previousJobs = [], now = Date.now())
       });
     }
 
-    const primaryEvent = events.find((event) => ['reappeared', 'source_recovered', 'source_failed', 'content_changed', 'status_changed', 'evidence_freshness_changed'].includes(event.event));
+    const primaryEvent = events.find((event) => ['reappeared', 'source_recovered', 'source_failed', 'content_changed', 'status_changed', 'evidence_freshness_changed', 'evidence_state_changed'].includes(event.event));
     const verifiedCurrent = job.listingStatus !== 'source_error';
     return {
       ...job,
@@ -1574,7 +1584,8 @@ function recommendationCollapseRisk(feed, baseline) {
     .map((previous) => ({ previous, current: findCurrent(previous) }))
     .filter(({ current }) => !isDefaultRecommendation(current || {}));
   const explained = ({ current }) => Boolean(current) && (
-    ['source_error', 'archived_missing', 'talent_pool', 'expired', 'stale'].includes(current.listingStatus)
+    ['source_error', 'talent_pool', 'expired', 'stale'].includes(current.listingStatus)
+    || (current.listingStatus === 'archived_missing' && current.sourceCoverage === 'bounded_window')
     || ['degraded', 'unstable'].includes(current.sourceReliabilityState)
     || (current.lastChangeKind === 'content_changed'
       && (current.requirementsStatus === 'hard_check'
@@ -1605,8 +1616,7 @@ function refreshTimeBasedEvidence(jobs, now = Date.now()) {
     const previousFreshness = job.paymentEvidenceFreshness || '';
     const previousState = job.paymentEvidenceState || '';
     let verificationHistory = Array.isArray(job.verificationHistory) ? job.verificationHistory : [];
-    if (previousFreshness
-      && (previousFreshness !== paymentEvidence.freshness || previousState !== paymentEvidence.state)) {
+    if (previousFreshness && previousFreshness !== paymentEvidence.freshness) {
       verificationHistory = appendLimitedHistory(verificationHistory, {
         at: nowIso,
         event: 'evidence_freshness_changed',
@@ -1614,6 +1624,16 @@ function refreshTimeBasedEvidence(jobs, now = Date.now()) {
         toStatus: paymentEvidence.freshness,
         fingerprint: job.contentFingerprint || contentFingerprint(job),
         reason: `지급 근거 최신성 변경: ${previousFreshness} → ${paymentEvidence.freshness}`
+      });
+    }
+    if (previousState && previousState !== paymentEvidence.state) {
+      verificationHistory = appendLimitedHistory(verificationHistory, {
+        at: nowIso,
+        event: 'evidence_state_changed',
+        fromStatus: previousState,
+        toStatus: paymentEvidence.state,
+        fingerprint: job.contentFingerprint || contentFingerprint(job),
+        reason: `지급 근거 상태 변경: ${previousState} → ${paymentEvidence.state}`
       });
     }
     return {
