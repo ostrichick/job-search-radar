@@ -273,6 +273,8 @@ test('기본은 해외·원격이고 국내 탭에서 시도→시군구와 산�
 
   await page.locator('#marketDomestic').click();
   await expect(page.locator('#marketDomestic')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#sort')).toHaveValue('distance');
+  await expect(page.locator('.job-card').first().locator('.title')).toHaveText('Korean AI Data Reviewer - Jeonju');
   await expect(page.locator('#distanceReference')).toContainText('산정동');
   await expect(page.locator('#distanceReference')).toContainText('직선거리');
   await expect(page.locator('#domesticProvince')).toContainText('전북특별자치도');

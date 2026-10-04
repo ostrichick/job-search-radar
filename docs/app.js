@@ -45,7 +45,7 @@ const advancedFilterDefaults = {
 };
 const filterDefaults = {
   overseas_remote: { query: '', source: '', category: '', remote: '', eligibility: 'likely', domesticProvince: '', domesticLocality: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score', statusFilter: 'active' },
-  domestic: { query: '', source: '', category: '', remote: '', eligibility: '', domesticProvince: '', domesticLocality: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score', statusFilter: 'active' }
+  domestic: { query: '', source: '', category: '', remote: '', eligibility: '', domesticProvince: '', domesticLocality: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'distance', statusFilter: 'active' }
 };
 const legacySavedFilters = JSON.parse(localStorage.getItem('jobFilters') || '{}');
 const savedFiltersByMarket = JSON.parse(localStorage.getItem('jobFiltersByMarket') || '{}');
