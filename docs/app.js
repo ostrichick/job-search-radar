@@ -181,7 +181,7 @@ function snapshotJob(id) {
   if (!job || job.manual) return;
   const {
     id: _id, description, sourceSummary, sourceEvidence, paymentSignals, listingEvidence, matchedKeywords, tags,
-    alternateUrls, legacyIds, ...rest
+    alternateUrls, legacyIds, verificationHistory, ...rest
   } = job;
   state.trackedJobs[id] = {
     ...rest,
@@ -193,7 +193,8 @@ function snapshotJob(id) {
     matchedKeywords: Array.isArray(matchedKeywords) ? matchedKeywords.slice(0, 8) : [],
     tags: Array.isArray(tags) ? tags.slice(0, 8) : [],
     alternateUrls: Array.isArray(alternateUrls) ? alternateUrls.slice(0, 4) : [],
-    legacyIds: Array.isArray(legacyIds) ? legacyIds.slice(0, 8) : []
+    legacyIds: Array.isArray(legacyIds) ? legacyIds.slice(0, 8) : [],
+    verificationHistory: Array.isArray(verificationHistory) ? verificationHistory.slice(-8) : []
   };
 }
 
@@ -226,12 +227,13 @@ function filteredJobs() {
     if (listingFilter === 'active' && ['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus)) return false;
     if (listingFilter && listingFilter !== 'active' && listingFilter !== 'all' && job.listingStatus !== listingFilter) return false;
     if (sourceKindFilter && job.sourceKind !== sourceKindFilter) return false;
-    const paymentEvidence = job.paymentEvidenceState || (job.paymentStatus === 'caution' ? 'caution_repeated' : job.paymentStatus === 'not_payer' ? 'not_applicable' : 'insufficient');
+    const paymentEvidence = paymentEvidenceState(job);
     if (paymentFilter === 'exclude_caution' && ['caution_repeated', 'mixed_caution', 'caution_single'].includes(paymentEvidence)) return false;
     if (paymentFilter === 'has_caution' && !['caution_repeated', 'mixed_caution', 'caution_single'].includes(paymentEvidence)) return false;
     if (paymentFilter && !['', 'exclude_caution', 'has_caution'].includes(paymentFilter) && paymentEvidence !== paymentFilter) return false;
     if (requirementsFilter && (job.requirementsStatus || 'clear') !== requirementsFilter) return false;
     if (job.score < minScore) return false;
+    if (minScore >= 20 && job.recommendationEligible === false) return false;
     if (status === 'active' && hidden) return false;
     if (status === 'new' && !state.newIds.has(job.id)) return false;
     if (status === 'unreviewed' && state.reviewedIds.has(job.id)) return false;
@@ -251,16 +253,24 @@ function filteredJobs() {
     const aReviewed = state.reviewedIds.has(a.id) ? 1 : 0;
     const bReviewed = state.reviewedIds.has(b.id) ? 1 : 0;
     if (aReviewed !== bReviewed) return aReviewed - bReviewed;
-    return b.score - a.score || (Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0);
+    const scoreDiff = b.score - a.score;
+    if (scoreDiff) return scoreDiff;
+    const listingRank = { verified_open: 3, official_listed: 2, current_feed: 1 };
+    const listingDiff = (listingRank[b.listingStatus] || 0) - (listingRank[a.listingStatus] || 0);
+    if (listingDiff) return listingDiff;
+    const sourceRank = { strong: 3, mixed: 2, weak: 1, degraded: 0 };
+    const sourceDiff = (sourceRank[b.sourceQualityTier] || 0) - (sourceRank[a.sourceQualityTier] || 0);
+    if (sourceDiff) return sourceDiff;
+    return (Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0);
   });
   return jobs;
 }
 
 function renderStats() {
-  const recommended = state.jobs.filter((j) => !state.hiddenIds.has(j.id) && j.score >= 20 && ['korea', 'worldwide'].includes(j.eligibilityCode) && !['stale', 'source_error', 'talent_pool', 'expired'].includes(j.listingStatus)).length;
+  const recommended = state.jobs.filter((j) => !state.hiddenIds.has(j.id) && isRecommendedJob(j)).length;
   const saved = state.favorites.size;
   const planned = Object.values(state.jobStates).filter((v) => v === 'planned').length;
-  const unreviewed = state.jobs.filter((j) => !state.hiddenIds.has(j.id) && !state.reviewedIds.has(j.id) && j.score >= 20 && ['korea', 'worldwide'].includes(j.eligibilityCode) && !['stale', 'source_error', 'talent_pool', 'expired'].includes(j.listingStatus)).length;
+  const unreviewed = state.jobs.filter((j) => !state.hiddenIds.has(j.id) && !state.reviewedIds.has(j.id) && isRecommendedJob(j)).length;
   $('stats').innerHTML = [
     ['추천 공고', `${recommended}개`],
     ['관심 공고', `${saved}개`],
@@ -345,12 +355,81 @@ function qualityClass(type, value) {
   return '';
 }
 
+function effectiveSignalFreshness(signal, now = Date.now()) {
+  const expiresAt = Date.parse(signal?.expiresAt || '');
+  const maxAgeDays = Number(signal?.maxAgeDays || 0);
+  if (!Number.isFinite(expiresAt)) return signal?.freshness || 'unknown';
+  if (now > expiresAt) return 'expired';
+  if (maxAgeDays > 0) {
+    const windowMs = maxAgeDays * 86400000;
+    const referenceAt = expiresAt - windowMs;
+    const agingAt = referenceAt + windowMs * 0.75;
+    if (now >= agingAt) return 'aging';
+  }
+  return 'fresh';
+}
+
+function effectivePaymentEvidence(job, now = Date.now()) {
+  if (job.paymentStatus === 'not_payer' || job.paymentEvidenceState === 'not_applicable') {
+    return { state: 'not_applicable', label: '지급 주체 아님', freshness: 'not_applicable', nextReviewAt: '', signals: [] };
+  }
+  const signals = (job.paymentSignals || []).map((signal) => ({ ...signal, freshness: effectiveSignalFreshness(signal, now) }));
+  if (!signals.length) {
+    return {
+      state: job.paymentEvidenceState || 'insufficient',
+      label: job.paymentEvidenceLabel || '근거 부족',
+      freshness: job.paymentEvidenceFreshness || 'insufficient',
+      nextReviewAt: job.paymentEvidenceNextReviewAt || '',
+      signals
+    };
+  }
+  const current = signals.filter((signal) => !['expired', 'unknown'].includes(signal.freshness));
+  const expiredCount = signals.filter((signal) => signal.freshness === 'expired').length;
+  const hasRepeatedMixed = current.some((signal) => signal.direction === 'mixed' && signal.recurrence === 'repeated');
+  const hasRepeatedCaution = current.some((signal) => signal.direction === 'caution' && signal.recurrence === 'repeated');
+  const hasSingleCaution = current.some((signal) => signal.direction === 'caution' && signal.recurrence === 'single');
+  const hasPolicy = current.some((signal) => signal.type === 'official_policy');
+  let state = 'insufficient';
+  let label = '근거 부족';
+  if (!current.length) {
+    state = 'evidence_expired';
+    label = '근거 만료·재검토 필요';
+  } else if (hasRepeatedMixed) {
+    state = 'mixed_caution';
+    label = '상반된 신호·반복 주의';
+  } else if (hasRepeatedCaution) {
+    state = 'caution_repeated';
+    label = '반복 주의 신호';
+  } else if (hasSingleCaution) {
+    state = 'caution_single';
+    label = '단일 주의 사례';
+  } else if (hasPolicy) {
+    state = 'policy_only';
+    label = '공식 지급 정책 확인';
+  }
+  const freshness = !current.length
+    ? 'expired'
+    : expiredCount
+      ? 'mixed_age'
+      : current.some((signal) => signal.freshness === 'aging')
+        ? 'aging'
+        : 'fresh';
+  const expiries = current.map((signal) => Date.parse(signal.expiresAt || '')).filter(Number.isFinite);
+  return {
+    state,
+    label,
+    freshness,
+    nextReviewAt: expiries.length ? new Date(Math.min(...expiries)).toISOString() : '',
+    signals
+  };
+}
+
 function paymentEvidenceState(job) {
-  return job.paymentEvidenceState
-    || (job.paymentStatus === 'caution' ? 'caution_repeated' : job.paymentStatus === 'not_payer' ? 'not_applicable' : 'insufficient');
+  return effectivePaymentEvidence(job).state;
 }
 
 function paymentFreshnessLabel(job) {
+  const freshness = effectivePaymentEvidence(job).freshness;
   return {
     fresh: '근거 최신',
     aging: '재검토 시점 임박',
@@ -358,7 +437,87 @@ function paymentFreshnessLabel(job) {
     expired: '근거 만료',
     insufficient: '근거 부족',
     not_applicable: '해당 없음'
-  }[job.paymentEvidenceFreshness] || '최신성 미상';
+  }[freshness] || '최신성 미상';
+}
+
+function isRecommendedJob(job) {
+  return job.recommendationEligible !== false
+    && Number(job.score || 0) >= 20
+    && ['korea', 'worldwide'].includes(job.eligibilityCode)
+    && (job.requirementsStatus || 'clear') !== 'hard_check'
+    && !['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus);
+}
+
+function recentVerificationBadges(job, now = Date.now()) {
+  const badges = [];
+  const recent = (value, days = 7) => {
+    const at = Date.parse(value || '');
+    return Number.isFinite(at) && now - at <= days * 86400000;
+  };
+  const change = job.lastChangeKind;
+  if ((job.listingStatus === 'source_error' || change === 'source_failed') && recent(job.lastChangeAt || job.missingCheckedAt, 7)) {
+    badges.push({ state: 'source-failed', label: '소스 확인 실패' });
+  }
+  if (change === 'content_changed' && recent(job.lastChangeAt, 7)) badges.push({ state: 'changed', label: '원문 변경됨' });
+  if (change === 'reappeared' && recent(job.lastChangeAt, 7)) badges.push({ state: 'reappeared', label: '재등장' });
+  if (change === 'source_recovered' && recent(job.lastChangeAt, 7)) badges.push({ state: 'recovered', label: '소스 복구' });
+  const payment = effectivePaymentEvidence(job, now);
+  if (payment.freshness === 'aging') badges.push({ state: 'aging', label: '근거 만료 임박' });
+  if (payment.freshness === 'expired') badges.push({ state: 'expired', label: '지급 근거 만료' });
+  if ((job.requirementsStatus || 'clear') === 'hard_check') badges.push({ state: 'hard', label: '미확인 핵심요건' });
+  if (!badges.length && recent(job.lastVerifiedAt || job.listingCheckedAt || job.verifiedAt, 1)) {
+    badges.push({ state: 'recent', label: '최근 검증됨' });
+  }
+  return badges.slice(0, 3);
+}
+
+function renderVerificationBadges(container, job) {
+  container.replaceChildren();
+  for (const badge of recentVerificationBadges(job)) {
+    const span = document.createElement('span');
+    span.className = `verification-badge ${badge.state}`;
+    span.dataset.state = badge.state;
+    span.textContent = badge.label;
+    container.append(span);
+  }
+}
+
+function renderVerificationHistory(job) {
+  const container = $('detailsHistory');
+  const summary = $('detailsHistorySummary');
+  container.replaceChildren();
+  const eventLabels = {
+    first_seen: '처음 발견',
+    verified_unchanged: '변경 없이 재검증',
+    content_changed: '원문 변경',
+    status_changed: '모집 상태 변경',
+    disappeared: '원천에서 사라짐',
+    reappeared: '재등장',
+    source_failed: '소스 확인 실패',
+    source_recovered: '소스 복구',
+    evidence_freshness_changed: '근거 최신성 변경'
+  };
+  const history = Array.isArray(job.verificationHistory) ? job.verificationHistory.slice(-6).reverse() : [];
+  summary.textContent = history.length
+    ? `최근 ${history.length}개 검증 사건 · 최초 발견 ${job.firstSeenAt ? new Date(job.firstSeenAt).toLocaleDateString('ko-KR') : '미상'}`
+    : '아직 누적된 검증 이력이 없습니다.';
+  for (const item of history) {
+    const row = document.createElement('div');
+    row.className = 'history-item';
+    row.dataset.event = item.event || '';
+    const heading = document.createElement('strong');
+    heading.textContent = eventLabels[item.event] || item.event || '검증';
+    const meta = document.createElement('span');
+    const at = Date.parse(item.at || '');
+    meta.textContent = Number.isFinite(at) ? new Date(at).toLocaleString('ko-KR') : '시각 미상';
+    row.append(heading, meta);
+    if (item.reason) {
+      const reason = document.createElement('small');
+      reason.textContent = item.reason;
+      row.append(reason);
+    }
+    container.append(row);
+  }
 }
 
 function appendEvidenceLinks(container, evidenceItems = []) {
@@ -378,6 +537,7 @@ function appendEvidenceLinks(container, evidenceItems = []) {
 function renderPaymentSignals(job) {
   const container = $('detailsPaymentSignals');
   container.replaceChildren();
+  const payment = effectivePaymentEvidence(job);
   const labels = {
     official_policy: '공식 정책',
     review_aggregate: '리뷰 집계',
@@ -394,7 +554,7 @@ function renderPaymentSignals(job) {
     expired: '만료',
     unknown: '날짜 미상'
   };
-  for (const signal of job.paymentSignals || []) {
+  for (const signal of payment.signals || []) {
     const row = document.createElement('div');
     row.className = 'signal-item';
     const meta = document.createElement('span');
@@ -435,7 +595,7 @@ function renderPaymentSignals(job) {
   if (!container.childElementCount) {
     const empty = document.createElement('span');
     empty.className = 'signal-empty';
-    empty.textContent = job.paymentEvidenceState === 'not_applicable'
+    empty.textContent = payment.state === 'not_applicable'
       ? '이 소스는 지급 주체가 아닙니다. 고용주·프로젝트 원문에서 지급 조건을 확인하세요.'
       : '구조화된 공개 지급 평판 근거가 충분하지 않습니다.';
     container.append(empty);
@@ -461,11 +621,12 @@ function openDetails(job) {
   $('detailsTitle').textContent = job.title;
   $('detailsCompany').textContent = job.company;
   $('detailsMeta').innerHTML = [job.location, job.type, job.eligibility, job.category, salaryLabel(job)].filter(Boolean).map((v) => `<span>${escapeHtml(v)}</span>`).join('');
+  const payment = effectivePaymentEvidence(job);
   $('detailsTrust').innerHTML = [
     `<span class="${qualityClass('listing', job.listingStatus)}">${escapeHtml(job.listingLabel || '상태 확인 필요')}</span>`,
     `<span class="${qualityClass('eligibility', job.eligibilityCode)}">${escapeHtml(job.eligibility || '지원 범위 확인 필요')}</span>`,
     `<span class="${qualityClass('trust', job.sourceKind)}">${escapeHtml(job.sourceTrustLabel || job.source)}</span>`,
-    `<span class="${qualityClass('payment', paymentEvidenceState(job))}">${escapeHtml(job.paymentEvidenceLabel || job.paymentLabel || '지급 근거 확인 필요')}</span>`,
+    `<span class="${qualityClass('payment', payment.state)}">${escapeHtml(payment.label || job.paymentLabel || '지급 근거 확인 필요')}</span>`,
     `<span class="${qualityClass('requirements', job.requirementsStatus || 'clear')}">${escapeHtml(job.requirementsLabel || '필수요건 상태 미상')}</span>`,
     `<span>검토 우선순위 ${Number(job.score || 0)}</span>`
   ].join('');
@@ -478,6 +639,10 @@ function openDetails(job) {
   $('detailsListingReason').textContent = job.listingReason || '현재 모집 상태의 자동 판정 근거가 없습니다.';
   appendEvidenceLinks($('detailsListingEvidence'), job.listingEvidence || [{ label: '공고 원문', url: job.url }]);
   $('detailsSourceSummary').textContent = job.sourceSummary || '원문에서 모집 상태와 계약·지급 조건을 확인하세요.';
+  const sourceMetric = state.meta?.sourceMetrics?.[job.source];
+  $('detailsSourceHealth').textContent = sourceMetric
+    ? `소스 품질 ${sourceMetric.qualityTier || '미상'} · 최근 성공 ${Math.round(Number(sourceMetric.recentSuccessRate || 0) * 100)}% · 유효 ${sourceMetric.keptCount || 0}/${sourceMetric.matchedCount || 0} · 근거 갱신 ${sourceMetric.evidenceRefreshability || '미상'}`
+    : `소스 품질 ${job.sourceQualityTier || '미상'} · 근거 갱신 ${job.sourceEvidenceRefreshability || '미상'}`;
   appendEvidenceLinks($('detailsEvidence'), job.sourceEvidence || []);
   for (const [index, url] of (job.alternateUrls || []).entries()) {
     const href = safeExternalUrl(url);
@@ -490,10 +655,13 @@ function openDetails(job) {
     $('detailsEvidence').append(link);
   }
   const paymentFreshness = paymentFreshnessLabel(job);
-  const nextPaymentReview = job.paymentEvidenceNextReviewAt
-    ? ` · 다음 재검토 기준 ${new Date(job.paymentEvidenceNextReviewAt).toLocaleDateString('ko-KR')}`
+  const nextPaymentReview = payment.nextReviewAt
+    ? ` · 다음 재검토 기준 ${new Date(payment.nextReviewAt).toLocaleDateString('ko-KR')}`
     : '';
-  $('detailsPaymentSummary').textContent = `${job.paymentSummary || '공개 지급 평판 근거가 충분하지 않습니다. 실제 계약·정산 조건을 원문에서 확인하세요.'} · ${paymentFreshness}${nextPaymentReview}`;
+  const paymentSummary = payment.state === 'evidence_expired'
+    ? '기존 지급 평판 근거의 유효기간이 지나 최신 근거 재검토가 필요합니다.'
+    : (job.paymentSummary || '공개 지급 평판 근거가 충분하지 않습니다. 실제 계약·정산 조건을 원문에서 확인하세요.');
+  $('detailsPaymentSummary').textContent = `${paymentSummary} · ${paymentFreshness}${nextPaymentReview}`;
   renderPaymentSignals(job);
   $('detailsEligibilityReason').textContent = job.eligibilityReason || '지원 가능 국가 범위의 자동 판정 근거가 없습니다.';
   const fitReasonParts = [
@@ -513,6 +681,7 @@ function openDetails(job) {
     ? ` · 지급 근거 검토: ${job.paymentEvidenceCheckedAt || job.sourceReviewAt} (${paymentFreshness})`
     : '';
   $('detailsVerifiedAt').textContent = checkedAt ? `모집 소스 마지막 확인: ${new Date(checkedAt).toLocaleString('ko-KR')}${reviewNote}` : `모집 확인 시각 미상${reviewNote}`;
+  renderVerificationHistory(job);
   $('detailsDescription').textContent = job.description || '상세 설명이 제공되지 않았습니다.';
   $('detailsLink').href = job.url;
   updateDetailNavigation();
@@ -567,15 +736,17 @@ function render() {
     eligibilityBadge.textContent = job.eligibility || '지원 범위 확인 필요';
     eligibilityBadge.className = `eligibility-badge ${qualityClass('eligibility', job.eligibilityCode)}`;
     const paymentBadge = node.querySelector('.payment-badge');
-    paymentBadge.textContent = job.paymentEvidenceLabel || job.paymentLabel || '지급 근거 확인 필요';
-    paymentBadge.className = `payment-badge ${qualityClass('payment', paymentEvidenceState(job))}`;
-    paymentBadge.dataset.state = paymentEvidenceState(job);
-    paymentBadge.dataset.freshness = job.paymentEvidenceFreshness || '';
-    paymentBadge.title = `${paymentFreshnessLabel(job)}${job.paymentEvidenceNextReviewAt ? ` · 재검토 기준 ${new Date(job.paymentEvidenceNextReviewAt).toLocaleDateString('ko-KR')}` : ''}`;
+    const payment = effectivePaymentEvidence(job);
+    paymentBadge.textContent = payment.label || job.paymentLabel || '지급 근거 확인 필요';
+    paymentBadge.className = `payment-badge ${qualityClass('payment', payment.state)}`;
+    paymentBadge.dataset.state = payment.state;
+    paymentBadge.dataset.freshness = payment.freshness || '';
+    paymentBadge.title = `${paymentFreshnessLabel(job)}${payment.nextReviewAt ? ` · 재검토 기준 ${new Date(payment.nextReviewAt).toLocaleDateString('ko-KR')}` : ''}`;
     const requirementsBadge = node.querySelector('.requirements-badge');
     requirementsBadge.textContent = job.requirementsLabel || '필수요건 상태 미상';
     requirementsBadge.className = `requirements-badge ${qualityClass('requirements', job.requirementsStatus || 'clear')}`;
     requirementsBadge.dataset.state = job.requirementsStatus || 'clear';
+    renderVerificationBadges(node.querySelector('.verification-badges'), job);
     const valueLine = node.querySelector('.decision-value');
     valueLine.textContent = `지금 볼 이유 · ${(job.applyValueReasons || []).slice(0, 3).join(' · ') || '추가 근거 확인 필요'}`;
     const unknownLine = node.querySelector('.decision-unknown');
@@ -805,7 +976,10 @@ function renderSourceHealth(sourceStatus = []) {
   const panel = $('sourceHealth');
   if (!panel) return;
   const failed = (sourceStatus || []).filter((source) => !source.ok);
-  if (!failed.length) {
+  const sourceMetrics = state.meta?.sourceMetrics || {};
+  const qualityWarnings = Object.values(sourceMetrics).filter((metric) =>
+    ['weak'].includes(metric?.qualityTier) || ['unstable', 'degraded'].includes(metric?.reliabilityState));
+  if (!failed.length && !qualityWarnings.length) {
     panel.hidden = true;
     panel.replaceChildren();
     return;
@@ -813,9 +987,20 @@ function renderSourceHealth(sourceStatus = []) {
   const preserved = failed.reduce((sum, source) => sum + Number(source.preserved || 0), 0);
   const summary = document.createElement('div');
   const title = document.createElement('strong');
-  title.textContent = `일부 소스 확인 실패 · ${failed.length}개`;
+  title.textContent = failed.length
+    ? `일부 소스 확인 실패 · ${failed.length}개`
+    : `소스 품질 주의 · ${qualityWarnings.length}개`;
   const text = document.createElement('span');
-  text.textContent = failed.map((source) => `${source.source}${source.preserved ? ` · 이전 ${source.preserved}개 보존` : ''}`).join(' / ');
+  const failureText = failed.map((source) => `${source.source}${source.preserved ? ` · 이전 ${source.preserved}개 보존` : ''}`);
+  const qualityText = qualityWarnings
+    .filter((metric) => !failed.some((source) => source.source === metric.source))
+    .map((metric) => {
+      if (['unstable', 'degraded'].includes(metric.reliabilityState)) {
+        return `${metric.source} · 수집 신뢰 ${metric.reliabilityState}`;
+      }
+      return `${metric.source} · 유효 ${metric.keptCount || 0}/${metric.matchedCount || 0}`;
+    });
+  text.textContent = [...failureText, ...qualityText].join(' / ');
   summary.append(title, text);
   panel.replaceChildren(summary);
   if (preserved > 0) {

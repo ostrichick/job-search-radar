@@ -4,6 +4,10 @@ import fs from 'node:fs';
 const target = process.argv[2] || './data/jobs.json';
 const feed = JSON.parse(fs.readFileSync(target, 'utf8'));
 assert.ok(Array.isArray(feed.jobs) && feed.jobs.length > 0, 'feed must contain jobs');
+assert.ok(feed.sourceMetrics && typeof feed.sourceMetrics === 'object' && !Array.isArray(feed.sourceMetrics),
+  'feed must persist sourceMetrics for long-term source quality tracking');
+assert.ok(feed.recommendationSummary && typeof feed.recommendationSummary === 'object',
+  'feed must persist recommendationSummary');
 
 const ids = feed.jobs.map((job) => job.id);
 assert.equal(new Set(ids).size, ids.length, 'stable job ids must be unique');
@@ -17,11 +21,27 @@ for (const job of feed.jobs) {
   assert.ok(job.listingBasis, `${job.id} must identify listing evidence basis`);
   assert.ok(job.listingVerification, `${job.id} must identify the strength of listing verification`);
   assert.ok(job.sourceCoverage, `${job.id} must identify source coverage`);
+  assert.ok(job.sourceEvidenceRefreshability, `${job.id} must identify whether source evidence can be refreshed safely`);
+  assert.ok(job.sourceQualityTier, `${job.id} must retain source quality tier`);
+  assert.ok(job.sourceReliabilityState, `${job.id} must retain source reliability state`);
   assert.ok(job.paymentEvidenceState, `${job.id} must separate payment evidence state from listing/source trust`);
   assert.ok(job.paymentEvidenceLabel, `${job.id} must have a user-readable payment evidence label`);
   assert.ok(job.paymentEvidenceFreshness, `${job.id} must expose payment evidence freshness`);
   assert.ok(['clear', 'routine_check', 'hard_check'].includes(job.requirementsStatus), `${job.id} must expose requirements review state`);
   assert.ok(job.requirementsLabel, `${job.id} must have a user-readable requirements label`);
+  assert.ok(job.contentFingerprint, `${job.id} must have a content fingerprint`);
+  assert.ok(job.firstSeenAt, `${job.id} must retain firstSeenAt`);
+  assert.ok(job.lastVerifiedAt || job.listingStatus === 'archived_missing',
+    `${job.id} must retain last successful verification timestamp`);
+  assert.ok(Array.isArray(job.verificationHistory) && job.verificationHistory.length > 0,
+    `${job.id} must retain bounded verification history`);
+  assert.ok(job.verificationHistory.length <= 24, `${job.id} verification history must remain bounded`);
+  if (job.listingStatus === 'archived_missing') {
+    assert.ok(job.missingSince, `${job.id} missing listing must retain missingSince`);
+    assert.ok(job.missingCheckedAt, `${job.id} missing listing must record the latest missing check`);
+    assert.ok(job.verificationHistory.some((item) => item.event === 'disappeared'),
+      `${job.id} missing listing must explain when it disappeared`);
+  }
   if (job.sourceKind === 'official_ats' && !['talent_pool', 'expired', 'archived_missing', 'source_error'].includes(job.listingStatus)) {
     assert.equal(job.listingStatus, 'verified_open', `${job.id} official ATS current listing must use verified_open`);
   }
@@ -55,14 +75,41 @@ for (const job of feed.jobs) {
 }
 
 const recommended = feed.jobs.filter((job) =>
+  job.recommendationEligible !== false &&
   job.score >= 20 &&
   ['korea', 'worldwide'].includes(job.eligibilityCode) &&
+  job.requirementsStatus !== 'hard_check' &&
   !['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus)
 );
 assert.ok(recommended.length > 0, 'default recommendation set must not be empty');
 assert.equal(recommended.filter((job) => job.fitWarning).length, 0, 'default recommendations must not require unverified specialist credentials');
 assert.equal(recommended.filter((job) => job.requirementsStatus === 'hard_check').length, 0, 'default recommendations must not contain unresolved hard requirements');
 assert.equal(recommended.filter((job) => job.eligibilityCode === 'restricted').length, 0);
+assert.equal(feed.recommendationSummary.count, recommended.length,
+  'recommendationSummary must match the actual default recommendation contract');
+assert.equal(feed.recommendationSummary.hardRequirementCount, 0,
+  'recommendation summary must not include unresolved hard requirements');
+assert.equal(recommended.filter((job) => ['degraded', 'unstable'].includes(job.sourceReliabilityState)).length, 0,
+  'recommendations must exclude sources with repeated reliability failures');
+
+for (const [source, metric] of Object.entries(feed.sourceMetrics)) {
+  assert.equal(metric.source, source, `${source} source metric identity must be stable`);
+  assert.ok(metric.kind, `${source} metric must retain source kind`);
+  assert.ok(metric.coverage, `${source} metric must retain coverage`);
+  assert.ok(metric.evidenceRefreshability, `${source} metric must retain evidence refreshability`);
+  assert.ok(metric.qualityTier, `${source} metric must expose quality tier`);
+  assert.ok(metric.reliabilityState, `${source} metric must expose reliability state`);
+  assert.ok(Array.isArray(metric.history) && metric.history.length > 0, `${source} metric must retain recent history`);
+  assert.ok(metric.history.length <= 24, `${source} metric history must remain bounded`);
+  assert.ok(Number.isFinite(metric.rawCount) && metric.rawCount >= 0, `${source} rawCount must be non-negative`);
+  assert.ok(Number.isFinite(metric.matchedCount) && metric.matchedCount >= 0, `${source} matchedCount must be non-negative`);
+  assert.ok(Number.isFinite(metric.keptCount) && metric.keptCount >= 0, `${source} keptCount must be non-negative`);
+  assert.ok(metric.keptCount <= metric.matchedCount || !metric.history.at(-1)?.ok,
+    `${source} kept count cannot exceed matched count on successful collection`);
+  if (['degraded', 'unstable'].includes(metric.reliabilityState)) {
+    assert.equal(metric.recommendedCount, 0, `${source} unreliable source must not contribute default recommendations`);
+  }
+}
 
 const unanchored = feed.jobs.filter((job) => job.score > 5 && job.category === '기타' && !(job.matchedKeywords || []).length);
 assert.equal(unanchored.length, 0, 'unanchored jobs must not receive meaningful positive relevance');
@@ -91,6 +138,8 @@ console.log(JSON.stringify({
   recommended: recommended.length,
   verifiedOpen: feed.jobs.filter((job) => job.listingStatus === 'verified_open').length,
   officialListed: feed.jobs.filter((job) => job.listingStatus === 'official_listed').length,
+  sourceWarnings: Object.values(feed.sourceMetrics).filter((metric) =>
+    metric.qualityTier === 'weak' || ['degraded', 'unstable'].includes(metric.reliabilityState)).length,
   stale: feed.jobs.filter((job) => job.stale).length,
   mergedDuplicates: feed.jobs.filter((job) => job.duplicateCount > 1).length
 }, null, 2));

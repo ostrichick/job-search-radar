@@ -23,6 +23,11 @@ function job(overrides = {}) {
     salaryInfo: { raw: '$10/hour', display: '$10/시간', currency: 'USD', min: 10, max: 10, period: 'hour', confidence: 'parsed' },
     sourceKind: 'official_ats',
     sourceCoverage: 'current_catalog',
+    sourceEvidenceRefreshability: 'direct_api',
+    sourceQualityTier: 'strong',
+    sourceReliabilityState: 'reliable',
+    sourceRecentSuccessRate: 1,
+    recommendationEligible: true,
     sourceTrustLabel: '공식 직접 채용',
     sourceOfficiality: 'official',
     sourceSummary: '공식 ATS의 현재 공개 공고입니다.',
@@ -46,6 +51,14 @@ function job(overrides = {}) {
     listingCheckedAt: now,
     listingEvidence: [{ type: 'official_listing', label: '공식 공고 원문', url: 'https://example.com/job/default', checkedAt: now }],
     verifiedAt: now,
+    contentFingerprint: 'fixture-fingerprint',
+    firstSeenAt: '2026-10-01T06:00:00.000Z',
+    lastSeenAt: now,
+    lastVerifiedAt: now,
+    lastChangeKind: 'verified_unchanged',
+    lastChangeAt: now,
+    lastChangedFields: [],
+    verificationHistory: [{ at: now, event: 'verified_unchanged', fromStatus: 'verified_open', toStatus: 'verified_open', reason: '변경 없이 재검증됨' }],
     stale: false,
     score: 90,
     matchedKeywords: ['korean', 'ai data specialist'],
@@ -68,7 +81,16 @@ function job(overrides = {}) {
 function feed(jobs) {
   return {
     updatedAt: '2026-10-04T06:00:00.000Z',
-    sourceStatus: [{ source: 'RWS TrainAI', ok: true, count: jobs.length }],
+    sourceStatus: [{ source: 'RWS TrainAI', ok: true, count: jobs.length, qualityTier: 'strong', kept: jobs.length, recommended: jobs.filter((item) => item.recommendationEligible !== false).length }],
+    sourceMetrics: {
+      'RWS TrainAI': {
+        source: 'RWS TrainAI', kind: 'official_ats', officiality: 'official', coverage: 'current_catalog',
+        evidenceRefreshability: 'direct_api', qualityTier: 'strong', reliabilityState: 'reliable',
+        recentSuccessRate: 1, matchedCount: jobs.length, keptCount: jobs.length, recommendedCount: jobs.filter((item) => item.recommendationEligible !== false).length,
+        history: [{ at: '2026-10-04T06:00:00.000Z', ok: true, rawCount: jobs.length, matchedCount: jobs.length, keptCount: jobs.length }]
+      }
+    },
+    recommendationSummary: { count: jobs.filter((item) => item.recommendationEligible !== false && item.score >= 20 && item.requirementsStatus !== 'hard_check').length, minExpected: 5, hardRequirementCount: 0 },
     jobs
   };
 }
@@ -390,4 +412,137 @@ test('부분 소스 실패를 별도 경고하고 보존 공고로 바로 이동
   await expect(page.locator('.job-card')).toHaveCount(1);
   await expect(page.locator('.title')).toHaveText('Preserved Korean Reviewer');
   await expect(page.locator('.listing-badge')).toHaveText('소스 확인 실패');
+});
+
+test('최근 검증·원문 변경을 카드에서 구분하고 상세 이력을 확인한다', async ({ page }) => {
+  const changed = job({
+    id: 'job:changed',
+    title: 'Korean AI Reviewer - Updated',
+    url: 'https://example.com/job/changed',
+    lastChangeKind: 'content_changed',
+    lastChangeAt: '2026-10-04T06:00:00.000Z',
+    lastChangedFields: ['description', 'salary'],
+    verificationHistory: [
+      { at: '2026-10-01T06:00:00.000Z', event: 'first_seen', toStatus: 'verified_open', reason: '처음 수집됨' },
+      { at: '2026-10-04T06:00:00.000Z', event: 'content_changed', fromStatus: 'verified_open', toStatus: 'verified_open', reason: '원문 주요 필드 변경: description, salary' }
+    ]
+  });
+  await useFeed(page, () => feed([changed]));
+  await page.goto('/');
+  await expect(page.locator('.verification-badge[data-state="changed"]')).toHaveText('원문 변경됨');
+  await page.locator('.details').click();
+  await expect(page.locator('#detailsHistory')).toContainText('원문 변경');
+  await expect(page.locator('#detailsHistory')).toContainText('description, salary');
+});
+
+test('사라졌다 재등장한 공고를 별도 상태로 표시한다', async ({ page }) => {
+  const reappeared = job({
+    id: 'job:reappeared',
+    title: 'Korean Search Evaluator - Returned',
+    url: 'https://example.com/job/reappeared',
+    previousListingStatus: 'archived_missing',
+    lastChangeKind: 'reappeared',
+    lastChangeAt: '2026-10-04T06:00:00.000Z',
+    verificationHistory: [
+      { at: '2026-10-02T06:00:00.000Z', event: 'disappeared', fromStatus: 'verified_open', toStatus: 'archived_missing', reason: '원천에서 사라짐' },
+      { at: '2026-10-04T06:00:00.000Z', event: 'reappeared', fromStatus: 'archived_missing', toStatus: 'verified_open', reason: '원천에 다시 나타남' }
+    ]
+  });
+  await useFeed(page, () => feed([reappeared]));
+  await page.goto('/');
+  await expect(page.locator('.verification-badge[data-state="reappeared"]')).toHaveText('재등장');
+  await page.locator('.details').click();
+  await expect(page.locator('#detailsHistory')).toContainText('재등장');
+});
+
+test('근거 만료 임박은 저장된 오래된 freshness 값과 무관하게 현재 시각으로 재계산한다', async ({ page }) => {
+  const aging = job({
+    id: 'job:aging',
+    title: 'Korean Reviewer - Aging Evidence',
+    url: 'https://example.com/job/aging',
+    paymentEvidenceFreshness: 'fresh',
+    paymentEvidenceState: 'caution_repeated',
+    paymentSignals: [{
+      type: 'review_aggregate', direction: 'caution', recurrence: 'repeated',
+      checkedAt: '2026-10-04', latestSourceAt: '2026-06-22', freshnessReferenceAt: '2026-06-22',
+      freshness: 'fresh', maxAgeDays: 120, expiresAt: '2026-10-20T00:00:00.000Z',
+      label: '리뷰 집계', url: 'https://example.com/reviews-aging'
+    }]
+  });
+  await useFeed(page, () => feed([aging]));
+  await page.goto('/');
+  await expect(page.locator('.verification-badge[data-state="aging"]')).toHaveText('근거 만료 임박');
+  await expect(page.locator('.payment-badge')).toHaveAttribute('data-freshness', 'aging');
+});
+
+test('부분 소스 실패 후 복구 상태와 이력을 유지한다', async ({ page }) => {
+  let current = {
+    ...feed([job({
+      id: 'job:recover',
+      title: 'Korean Reviewer - Source Recovery',
+      url: 'https://example.com/job/recover',
+      listingStatus: 'source_error',
+      listingLabel: '소스 확인 실패',
+      recommendationEligible: false,
+      lastChangeKind: 'source_failed',
+      lastChangeAt: '2026-10-03T06:00:00.000Z',
+      verificationHistory: [{ at: '2026-10-03T06:00:00.000Z', event: 'source_failed', fromStatus: 'verified_open', toStatus: 'source_error', reason: '원천 소스 확인 실패' }]
+    })]),
+    sourceStatus: [{ source: 'RWS TrainAI', ok: false, count: 0, preserved: 1, error: '503' }]
+  };
+  await useFeed(page, () => current);
+  await page.goto('/');
+  await expect(page.locator('#sourceHealth')).toBeVisible();
+
+  current = feed([job({
+    id: 'job:recover',
+    title: 'Korean Reviewer - Source Recovery',
+    url: 'https://example.com/job/recover',
+    lastChangeKind: 'source_recovered',
+    lastChangeAt: '2026-10-04T06:00:00.000Z',
+    verificationHistory: [
+      { at: '2026-10-03T06:00:00.000Z', event: 'source_failed', fromStatus: 'verified_open', toStatus: 'source_error', reason: '원천 소스 확인 실패' },
+      { at: '2026-10-04T06:00:00.000Z', event: 'source_recovered', fromStatus: 'source_error', toStatus: 'verified_open', reason: '원천 수집 복구' }
+    ]
+  })]);
+  await page.reload();
+  await expect(page.locator('#sourceHealth')).toBeHidden();
+  await expect(page.locator('.verification-badge[data-state="recovered"]')).toHaveText('소스 복구');
+  await page.locator('.details').click();
+  await expect(page.locator('#detailsHistory')).toContainText('소스 복구');
+});
+
+test('추천 품질 게이트가 정상 후보 세트를 과도하게 축소하지 않는다', async ({ page }) => {
+  const good = Array.from({ length: 6 }, (_, index) => job({
+    id: `job:good-${index}`,
+    title: `Korean AI Evaluator ${index + 1}`,
+    url: `https://example.com/job/good-${index}`,
+    score: 60 + index
+  }));
+  const degraded = job({
+    id: 'job:degraded',
+    title: 'Korean AI Evaluator - Unreliable Source',
+    url: 'https://example.com/job/degraded',
+    source: 'Remotive',
+    sourceKind: 'job_board',
+    sourceQualityTier: 'mixed',
+    sourceReliabilityState: 'degraded',
+    recommendationEligible: false,
+    score: 95
+  });
+  const hard = job({
+    id: 'job:hard',
+    title: 'Korean Accessibility Specialist',
+    url: 'https://example.com/job/hard',
+    score: 95,
+    requirementsStatus: 'hard_check',
+    requirementsLabel: '하드요건 확인 필요',
+    recommendationEligible: false
+  });
+  await useFeed(page, () => feed([...good, degraded, hard]));
+  await page.goto('/');
+  await expect(page.locator('.job-card')).toHaveCount(6);
+  await expect(page.locator('#stats')).toContainText('6개');
+  await expect(page.locator('.title', { hasText: 'Unreliable Source' })).toHaveCount(0);
+  await expect(page.locator('.title', { hasText: 'Accessibility Specialist' })).toHaveCount(0);
 });

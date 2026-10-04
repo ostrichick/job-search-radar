@@ -28,11 +28,15 @@ const foreignLanguageRe = /\b(english|spanish|portuguese|romanian|japanese|polis
 const sourceRank = { official_ats: 5, official_platform: 4, job_board: 3, aggregator: 2, manual: 1 };
 const isOfficialKind = (kind) => ['official_ats', 'official_platform'].includes(kind);
 const dayMs = 86400000;
+const verificationHistoryLimit = 24;
+const sourceMetricHistoryLimit = 24;
+const verificationCheckpointMs = 7 * dayMs;
 
 function sourceMeta(source) {
   return sourceQuality[source] ?? {
     kind: 'aggregator',
     coverage: 'bounded_window',
+    evidenceRefreshability: 'unknown',
     listingLabel: '공고 소스',
     paymentStatus: 'unknown',
     paymentLabel: '직접 확인 필요',
@@ -44,6 +48,209 @@ function sourceMeta(source) {
     summary: '현재 모집 상태와 지급 조건을 원문에서 확인해야 합니다.',
     evidence: []
   };
+}
+
+function normalizedUrl(value) {
+  return lower(value).replace(/[?#].*$/, '').replace(/\/$/, '');
+}
+
+function appendLimitedHistory(history = [], event, limit = verificationHistoryLimit) {
+  const next = Array.isArray(history) ? [...history] : [];
+  if (event) {
+    const previous = next.at(-1);
+    const sameEvent = previous
+      && previous.event === event.event
+      && previous.at === event.at
+      && previous.fromStatus === event.fromStatus
+      && previous.toStatus === event.toStatus;
+    if (!sameEvent) next.push(event);
+  }
+  return next.slice(-limit);
+}
+
+function sourceContentSnapshot(job) {
+  return {
+    title: text(job.title),
+    company: text(job.company),
+    location: text(job.location),
+    type: text(job.type),
+    salary: text(job.salary),
+    description: text(job._fullDescription || job.description),
+    tags: Array.isArray(job.tags) ? job.tags.map(text).filter(Boolean).sort() : [],
+    countryCode: text(job.countryCode),
+    sourceListingState: text(job.sourceListingState)
+  };
+}
+
+function contentFingerprint(job) {
+  return crypto.createHash('sha256')
+    .update(JSON.stringify(sourceContentSnapshot(job)))
+    .digest('hex')
+    .slice(0, 20);
+}
+
+function changedSourceFields(previous, current) {
+  const a = sourceContentSnapshot(previous);
+  const b = sourceContentSnapshot(current);
+  return Object.keys(b).filter((key) => JSON.stringify(a[key]) !== JSON.stringify(b[key]));
+}
+
+function previousJobLookup(previousJobs = []) {
+  const byId = new Map();
+  const byUrl = new Map();
+  for (const job of previousJobs || []) {
+    for (const id of [job.id, ...(job.legacyIds || [])].filter(Boolean)) {
+      if (!byId.has(id)) byId.set(id, job);
+    }
+    for (const url of [job.url, ...(job.alternateUrls || [])].filter(Boolean)) {
+      const key = normalizedUrl(url);
+      if (key && !byUrl.has(key)) byUrl.set(key, job);
+    }
+  }
+  return { byId, byUrl };
+}
+
+function findPreviousJob(job, lookup) {
+  for (const id of [job.id, ...(job.legacyIds || [])].filter(Boolean)) {
+    if (lookup.byId.has(id)) return lookup.byId.get(id);
+  }
+  for (const url of [job.url, ...(job.alternateUrls || [])].filter(Boolean)) {
+    const previous = lookup.byUrl.get(normalizedUrl(url));
+    if (previous) return previous;
+  }
+  return null;
+}
+
+function reconcileVerificationHistory(jobs, previousJobs = [], now = Date.now()) {
+  const lookup = previousJobLookup(previousJobs);
+  const nowIso = new Date(now).toISOString();
+  return jobs.map((job) => {
+    const previous = findPreviousJob(job, lookup);
+    const fingerprint = job.contentFingerprint || contentFingerprint(job);
+    if (!previous) {
+      return {
+        ...job,
+        contentFingerprint: fingerprint,
+        firstSeenAt: job.firstSeenAt || nowIso,
+        lastSeenAt: nowIso,
+        lastVerifiedAt: nowIso,
+        lastChangeKind: 'first_seen',
+        lastChangeAt: nowIso,
+        lastChangedFields: [],
+        verificationHistory: appendLimitedHistory([], {
+          at: nowIso,
+          event: 'first_seen',
+          toStatus: job.listingStatus,
+          fingerprint,
+          reason: '처음 수집됨'
+        })
+      };
+    }
+
+    const hadPreviousFingerprint = Boolean(previous.contentFingerprint);
+    const previousFingerprint = previous.contentFingerprint || '';
+    const changedFields = hadPreviousFingerprint && previousFingerprint !== fingerprint
+      ? changedSourceFields(previous, job)
+      : [];
+    const events = [];
+    if (previous.listingStatus === 'archived_missing' && !['archived_missing', 'source_error'].includes(job.listingStatus)) {
+      events.push({
+        at: nowIso,
+        event: 'reappeared',
+        fromStatus: previous.listingStatus,
+        toStatus: job.listingStatus,
+        fingerprint,
+        reason: '이전 수집에서 사라졌던 공고가 원천에 다시 나타남'
+      });
+    } else if (previous.listingStatus === 'source_error' && job.listingStatus !== 'source_error') {
+      events.push({
+        at: nowIso,
+        event: 'source_recovered',
+        fromStatus: previous.listingStatus,
+        toStatus: job.listingStatus,
+        fingerprint,
+        reason: '이전 소스 확인 실패 후 원천 수집이 복구됨'
+      });
+    } else if (previous.listingStatus !== 'source_error' && job.listingStatus === 'source_error') {
+      events.push({
+        at: nowIso,
+        event: 'source_failed',
+        fromStatus: previous.listingStatus,
+        toStatus: job.listingStatus,
+        fingerprint,
+        reason: '이번 수집에서 원천 소스를 확인하지 못해 이전 검증 공고를 보존함'
+      });
+    }
+    if (changedFields.length) {
+      events.push({
+        at: nowIso,
+        event: 'content_changed',
+        fromStatus: previous.listingStatus,
+        toStatus: job.listingStatus,
+        fingerprint,
+        previousFingerprint,
+        changedFields,
+        reason: `원문 주요 필드 변경: ${changedFields.join(', ')}`
+      });
+    }
+    if (previous.paymentEvidenceFreshness
+      && (previous.paymentEvidenceFreshness !== job.paymentEvidenceFreshness
+        || previous.paymentEvidenceState !== job.paymentEvidenceState)) {
+      events.push({
+        at: nowIso,
+        event: 'evidence_freshness_changed',
+        fromStatus: previous.paymentEvidenceFreshness,
+        toStatus: job.paymentEvidenceFreshness,
+        fingerprint,
+        reason: `지급 근거 최신성 변경: ${previous.paymentEvidenceFreshness} → ${job.paymentEvidenceFreshness}`
+      });
+    }
+    if (previous.listingStatus !== job.listingStatus
+      && !events.some((event) => ['reappeared', 'source_recovered', 'source_failed'].includes(event.event))) {
+      events.push({
+        at: nowIso,
+        event: 'status_changed',
+        fromStatus: previous.listingStatus,
+        toStatus: job.listingStatus,
+        fingerprint,
+        reason: `모집 상태 변경: ${previous.listingStatus || 'unknown'} → ${job.listingStatus}`
+      });
+    }
+
+    let history = Array.isArray(previous.verificationHistory) ? previous.verificationHistory : [];
+    for (const event of events) history = appendLimitedHistory(history, event);
+    const lastHistoryAt = Date.parse(history.at(-1)?.at || '');
+    if (!events.length && (!Number.isFinite(lastHistoryAt) || now - lastHistoryAt >= verificationCheckpointMs)) {
+      history = appendLimitedHistory(history, {
+        at: nowIso,
+        event: 'verified_unchanged',
+        fromStatus: job.listingStatus,
+        toStatus: job.listingStatus,
+        fingerprint,
+        reason: '원문과 모집 상태의 의미 있는 변경 없이 재검증됨'
+      });
+    }
+
+    const primaryEvent = events.find((event) => ['reappeared', 'source_recovered', 'source_failed', 'content_changed', 'status_changed', 'evidence_freshness_changed'].includes(event.event));
+    const verifiedCurrent = job.listingStatus !== 'source_error';
+    return {
+      ...job,
+      contentFingerprint: fingerprint,
+      firstSeenAt: previous.firstSeenAt || previous.verifiedAt || previous.listingCheckedAt || nowIso,
+      lastSeenAt: verifiedCurrent ? nowIso : (previous.lastSeenAt || previous.lastVerifiedAt || previous.verifiedAt || previous.listingCheckedAt || ''),
+      lastVerifiedAt: verifiedCurrent ? nowIso : (previous.lastVerifiedAt || previous.verifiedAt || previous.listingCheckedAt || ''),
+      sourceFailureCheckedAt: job.listingStatus === 'source_error' ? nowIso : '',
+      missingSince: '',
+      missingCheckedAt: '',
+      previousListingStatus: previous.listingStatus || '',
+      lastContentChangeAt: changedFields.length ? nowIso : (previous.lastContentChangeAt || ''),
+      lastStateChangeAt: previous.listingStatus !== job.listingStatus ? nowIso : (previous.lastStateChangeAt || ''),
+      lastChangeKind: primaryEvent?.event || previous.lastChangeKind || 'verified_unchanged',
+      lastChangeAt: primaryEvent?.at || previous.lastChangeAt || previous.lastVerifiedAt || previous.verifiedAt || nowIso,
+      lastChangedFields: changedFields.length ? changedFields : (previous.lastChangedFields || []),
+      verificationHistory: history
+    };
+  });
 }
 
 function evidenceSnippet(value, max = 120) {
@@ -724,6 +931,7 @@ function normalizeJob(raw) {
   if (job.stale) job.score = Math.max(0, job.score - 15);
   if (job.listingStatus === 'talent_pool') job.score = Math.max(0, job.score - 45);
   if (job.listingStatus === 'expired') job.score = 0;
+  job.contentFingerprint = contentFingerprint(job);
   delete job._fullDescription;
   return job;
 }
@@ -746,9 +954,19 @@ async function fetchText(url, options = {}) {
   return response.text();
 }
 
+function sourceCollection(jobs, rawCount, extra = {}) {
+  return {
+    jobs,
+    rawCount: Number(rawCount || 0),
+    matchedCount: jobs.length,
+    ...extra
+  };
+}
+
 async function collectLeverBoard(site, source, company) {
   const rows = await fetchJson(`https://api.lever.co/v0/postings/${site}?mode=json`);
   const collected = [];
+  let profileMatchedCount = 0;
   for (const j of Array.isArray(rows) ? rows : []) {
     const location = Array.isArray(j.categories?.allLocations) && j.categories.allLocations.length
       ? j.categories.allLocations.join(' / ')
@@ -774,11 +992,12 @@ async function collectLeverBoard(site, source, company) {
       countryCode: j.country || ''
     };
     if (relevantToProfile(candidate)) {
+      profileMatchedCount += 1;
       const normalized = normalizeJob(candidate);
       if (['korea', 'worldwide', 'unknown'].includes(normalized.eligibilityCode)) collected.push(normalized);
     }
   }
-  return collected;
+  return sourceCollection(collected, Array.isArray(rows) ? rows.length : 0, { profileMatchedCount });
 }
 
 async function collectWeloGlobal() {
@@ -799,7 +1018,12 @@ function oneFormaTerms(post, taxonomy) {
 
 function oneFormaSupportsKorean(post) {
   const languages = oneFormaTerms(post, 'language');
-  return !languages.length || languages.some((language) => /korean|한국어/i.test(language));
+  if (!languages.length || languages.some((language) => /korean|한국어/i.test(language))) return true;
+  const countries = oneFormaTerms(post, 'country');
+  const content = lower(post?.content?.rendered || post?.excerpt?.rendered);
+  const koreaLocation = countries.some((country) => /south korea|korea republic/i.test(country));
+  const localLanguageRequirement = /native or (?:a )?fluent speaker of the language of the location|fluent speaker of the language of the location|language of the location where you are located/.test(content);
+  return koreaLocation && localLanguageRequirement;
 }
 
 function oneFormaCandidate(post) {
@@ -857,13 +1081,19 @@ function oneFormaCandidate(post) {
 async function collectOneForma() {
   const rows = await fetchJson('https://www.oneforma.com/wp-json/wp/v2/job?per_page=100&_embed=1');
   const collected = [];
+  let localeEligibleCount = 0;
+  let profileMatchedCount = 0;
   for (const post of Array.isArray(rows) ? rows : []) {
     if (!oneFormaSupportsKorean(post)) continue;
+    localeEligibleCount += 1;
     const candidate = oneFormaCandidate(post);
     if (!candidate.title || !candidate.url) continue;
-    if (relevantToProfile(candidate)) collected.push(normalizeJob(candidate));
+    if (relevantToProfile(candidate)) {
+      profileMatchedCount += 1;
+      collected.push(normalizeJob(candidate));
+    }
   }
-  return collected;
+  return sourceCollection(collected, Array.isArray(rows) ? rows.length : 0, { localeEligibleCount, profileMatchedCount });
 }
 
 async function collectWeWorkRemotely() {
@@ -892,12 +1122,13 @@ async function collectWeWorkRemotely() {
     };
     if (relevantToProfile(candidate)) collected.push(normalizeJob(candidate));
   }
-  return collected;
+  return sourceCollection(collected, blocks.length);
 }
 
 async function collectJobicy() {
   const data = await fetchJson('https://jobicy.com/api/v2/remote-jobs?count=200');
-  return (data.jobs ?? []).map((j) => ({
+  const rows = data.jobs ?? [];
+  const collected = rows.map((j) => ({
     id: `jobicy:${j.id}`,
     source: 'Jobicy',
     title: j.jobTitle,
@@ -911,11 +1142,13 @@ async function collectJobicy() {
     description: j.jobExcerpt || j.jobDescription,
     tags: [...(j.jobIndustry ?? []), j.jobLevel].filter(Boolean)
   })).filter(relevantToProfile).map(normalizeJob);
+  return sourceCollection(collected, rows.length);
 }
 
 async function collectRemoteOk() {
   const data = await fetchJson('https://remoteok.com/api');
-  return (Array.isArray(data) ? data : []).filter((j) => j?.position).map((j) => ({
+  const rows = (Array.isArray(data) ? data : []).filter((j) => j?.position);
+  const collected = rows.map((j) => ({
     id: `remoteok:${j.id}`,
     source: 'Remote OK',
     title: j.position,
@@ -929,11 +1162,13 @@ async function collectRemoteOk() {
     description: j.description,
     tags: j.tags
   })).filter(relevantToProfile).map(normalizeJob);
+  return sourceCollection(collected, rows.length);
 }
 
 async function collectRemotive() {
   const data = await fetchJson('https://remotive.com/api/remote-jobs?limit=200');
-  return (data.jobs ?? []).map((j) => ({
+  const rows = data.jobs ?? [];
+  const collected = rows.map((j) => ({
     id: `remotive:${j.id}`,
     source: 'Remotive',
     title: j.title,
@@ -947,13 +1182,16 @@ async function collectRemotive() {
     description: j.description,
     tags: [j.category]
   })).filter(relevantToProfile).map(normalizeJob);
+  return sourceCollection(collected, rows.length);
 }
 
 async function collectArbeitnow() {
   const all = [];
+  let rawCount = 0;
   for (let page = 1; page <= 3; page += 1) {
     const data = await fetchJson(`https://www.arbeitnow.com/api/job-board-api?page=${page}`);
     for (const j of data.data ?? []) {
+      rawCount += 1;
       const candidate = {
         id: `arbeitnow:${j.slug}`,
         source: 'Arbeitnow',
@@ -972,12 +1210,13 @@ async function collectArbeitnow() {
     }
     if (!data.links?.next) break;
   }
-  return all;
+  return sourceCollection(all, rawCount);
 }
 
 async function collectManual() {
   const items = JSON.parse(await fs.readFile(path.join(root, 'data/manual-jobs.json'), 'utf8'));
-  return items.map((j, index) => normalizeJob({ ...j, id: j.id || `manual:${index}`, source: j.source || '직접 추가' }));
+  const collected = items.map((j, index) => normalizeJob({ ...j, id: j.id || `manual:${index}`, source: j.source || '직접 추가' }));
+  return sourceCollection(collected, items.length);
 }
 
 function dedupe(jobs) {
@@ -1092,6 +1331,7 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
   };
   for (const previous of previousJobs || []) {
     const sourceSpecificRelevant = previous.source !== 'OneForma'
+      || previous.countryCode === 'KR'
       || (previous.tags || []).some((tag) => /korean|한국어/i.test(String(tag)));
     const preserveForGrace = sourceSpecificRelevant
       && relevantToProfile(previous)
@@ -1106,6 +1346,21 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
     if (aliases.some((id) => representedIds.has(id)) || (previousUrl && representedUrls.has(previousUrl))) continue;
     const missingSince = Date.parse(previous.missingSince || '') || now;
     if (now - missingSince > retentionMs) continue;
+    const nowIso = new Date(now).toISOString();
+    const wasMissing = previous.listingStatus === 'archived_missing';
+    let verificationHistory = Array.isArray(previous.verificationHistory) ? previous.verificationHistory : [];
+    if (!wasMissing) {
+      verificationHistory = appendLimitedHistory(verificationHistory, {
+        at: nowIso,
+        event: 'disappeared',
+        fromStatus: previous.listingStatus,
+        toStatus: 'archived_missing',
+        fingerprint: previous.contentFingerprint || contentFingerprint(previous),
+        reason: (previous.sourceCoverage || sourceMeta(previous.source).coverage) === 'bounded_window'
+          ? '제한된 수집 창에서 더 이상 보이지 않음. 종료로 확인된 것은 아님'
+          : '정상 수집된 원천 목록에서 더 이상 보이지 않음. 종료로 확인된 것은 아님'
+      });
+    }
     const quality = sourceMeta(previous.source);
     const paymentEvidence = derivePaymentEvidence(quality, now);
     const eligibilityCode = previous.eligibilityCode || legacyEligibilityMap[previous.eligibility] || 'unknown';
@@ -1149,15 +1404,156 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
       listingVerification: 'historical_missing',
       listingCheckedAt: previous.listingCheckedAt || previous.verifiedAt || '',
       listingEvidence: previous.listingEvidence || [{ type: 'historical_listing', label: '마지막 확인 공고 원문', url: previous.url, checkedAt: previous.verifiedAt || '' }],
+      firstSeenAt: previous.firstSeenAt || previous.verifiedAt || previous.listingCheckedAt || nowIso,
+      lastSeenAt: previous.lastSeenAt || previous.verifiedAt || previous.listingCheckedAt || '',
+      lastVerifiedAt: previous.lastVerifiedAt || previous.verifiedAt || previous.listingCheckedAt || '',
+      previousListingStatus: previous.listingStatus || '',
+      lastChangeKind: wasMissing ? (previous.lastChangeKind || 'disappeared') : 'disappeared',
+      lastChangeAt: wasMissing ? (previous.lastChangeAt || previous.missingSince || nowIso) : nowIso,
+      lastChangedFields: previous.lastChangedFields || [],
+      verificationHistory,
       stale: true,
       score: 0,
-      missingSince: new Date(missingSince).toISOString()
+      missingSince: new Date(missingSince).toISOString(),
+      missingCheckedAt: nowIso
     });
   }
   return carried;
 }
 
-export async function collectJobs({ includeManual = true, persist = true, previousJobs = null } = {}) {
+function keepInFeed(job) {
+  return (Number(job.score || 0) >= 10 || isOfficialKind(job.sourceKind))
+    || job.sourceKind === 'manual'
+    || ['source_error', 'archived_missing'].includes(job.listingStatus);
+}
+
+function isDefaultRecommendation(job) {
+  return job.recommendationEligible !== false
+    && Number(job.score || 0) >= 20
+    && ['korea', 'worldwide'].includes(job.eligibilityCode)
+    && job.requirementsStatus !== 'hard_check'
+    && !['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus);
+}
+
+function sourceQualityTier(meta, recentHistory, current) {
+  const history = [...recentHistory, current].filter(Boolean).slice(-sourceMetricHistoryLimit);
+  const attempts = history.length;
+  const successes = history.filter((item) => item.ok).length;
+  const successRate = attempts ? successes / attempts : 0;
+  const consecutiveFailures = history.slice().reverse().findIndex((item) => item.ok);
+  const failureStreak = consecutiveFailures === -1 ? attempts : consecutiveFailures;
+  if (isOfficialKind(meta.kind)) return failureStreak >= 2 ? 'degraded' : 'strong';
+  const lowQualityRate = Number(current?.lowQualityRate || 0);
+  const matchedCount = Number(current?.matchedCount || 0);
+  if ((attempts >= 4 && successRate < 0.75) || (matchedCount >= 3 && lowQualityRate >= 0.8)) return 'weak';
+  return 'mixed';
+}
+
+function sourceReliabilityState(meta, history) {
+  const attempts = history.length;
+  const successes = history.filter((item) => item.ok).length;
+  const successRate = attempts ? successes / attempts : 1;
+  let consecutiveFailures = 0;
+  for (const item of history.slice().reverse()) {
+    if (item.ok) break;
+    consecutiveFailures += 1;
+  }
+  if (consecutiveFailures >= 2) return 'degraded';
+  if (attempts >= 4 && successRate < 0.75) return 'unstable';
+  return isOfficialKind(meta.kind) ? 'reliable' : 'observed';
+}
+
+function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, keptJobs, previousSourceMetrics = {}, now = Date.now()) {
+  const nowIso = new Date(now).toISOString();
+  const metrics = {};
+  for (const source of sourceNames) {
+    const meta = sourceMeta(source);
+    const status = sourceStatus.find((item) => item.source === source) || { source, ok: false };
+    const run = sourceRuns.get(source) || {};
+    const rawCount = Number(run.rawCount || 0);
+    const matchedCount = Number(run.matchedCount || status.count || 0);
+    const uniqueMatchedCount = dedupedJobs.filter((job) => job.source === source || (job.sources || []).includes(source)).length;
+    const keptCount = keptJobs.filter((job) => job.source === source || (job.sources || []).includes(source)).length;
+    const recommendedCount = keptJobs.filter((job) =>
+      (job.source === source || (job.sources || []).includes(source))
+      && isDefaultRecommendation({ ...job, recommendationEligible: true })).length;
+    const duplicateCount = Math.max(0, matchedCount - uniqueMatchedCount);
+    const lowQualityCount = Math.max(0, uniqueMatchedCount - keptCount);
+    const matchRate = rawCount ? matchedCount / rawCount : 0;
+    const keptRate = matchedCount ? keptCount / matchedCount : 0;
+    const lowQualityRate = matchedCount ? lowQualityCount / matchedCount : 0;
+    const previous = previousSourceMetrics?.[source] || {};
+    const previousHistory = Array.isArray(previous.history) ? previous.history : [];
+    const historyEntry = {
+      at: nowIso,
+      ok: Boolean(status.ok),
+      rawCount,
+      matchedCount,
+      keptCount,
+      recommendedCount,
+      duplicateCount,
+      lowQualityCount,
+      ...(status.error ? { error: String(status.error).slice(0, 240) } : {})
+    };
+    const history = appendLimitedHistory(previousHistory, historyEntry, sourceMetricHistoryLimit);
+    const recentAttempts = history.length;
+    const recentSuccesses = history.filter((item) => item.ok).length;
+    let consecutiveFailures = 0;
+    for (const item of history.slice().reverse()) {
+      if (item.ok) break;
+      consecutiveFailures += 1;
+    }
+    const currentForTier = { ...historyEntry, lowQualityRate };
+    const qualityTier = sourceQualityTier(meta, history.slice(0, -1), currentForTier);
+    const reliabilityState = sourceReliabilityState(meta, history);
+    metrics[source] = {
+      source,
+      kind: meta.kind,
+      officiality: isOfficialKind(meta.kind) ? 'official' : meta.kind === 'manual' ? 'manual' : 'intermediary',
+      coverage: meta.coverage || 'unknown',
+      evidenceRefreshability: meta.evidenceRefreshability || 'unknown',
+      qualityTier,
+      reliabilityState,
+      lastAttemptAt: nowIso,
+      lastSuccessAt: status.ok ? nowIso : (previous.lastSuccessAt || ''),
+      lastFailureAt: status.ok ? (previous.lastFailureAt || '') : nowIso,
+      consecutiveFailures,
+      recentAttempts,
+      recentSuccessRate: recentAttempts ? Math.round((recentSuccesses / recentAttempts) * 1000) / 1000 : 0,
+      rawCount,
+      localeEligibleCount: Number(run.localeEligibleCount || 0),
+      profileMatchedCount: Number(run.profileMatchedCount ?? matchedCount),
+      matchedCount,
+      keptCount,
+      recommendedCount,
+      duplicateCount,
+      lowQualityCount,
+      matchRate: Math.round(matchRate * 1000) / 1000,
+      keptRate: Math.round(keptRate * 1000) / 1000,
+      lowQualityRate: Math.round(lowQualityRate * 1000) / 1000,
+      history
+    };
+  }
+  return metrics;
+}
+
+function applySourceMetricsToJobs(jobs, sourceMetrics = {}) {
+  return jobs.map((job) => {
+    const metric = sourceMetrics[job.source] || {};
+    const recommendationEligible = !['degraded', 'unstable'].includes(metric.reliabilityState)
+      && job.requirementsStatus !== 'hard_check';
+    return {
+      ...job,
+      sourceQualityTier: metric.qualityTier || (isOfficialKind(job.sourceKind) ? 'strong' : 'mixed'),
+      sourceReliabilityState: metric.reliabilityState || (isOfficialKind(job.sourceKind) ? 'reliable' : 'observed'),
+      sourceRecentSuccessRate: metric.recentSuccessRate ?? null,
+      sourceEvidenceRefreshability: metric.evidenceRefreshability || sourceMeta(job.source).evidenceRefreshability || 'unknown',
+      recommendationEligible
+    };
+  });
+}
+
+export async function collectJobs({ includeManual = true, persist = true, previousJobs = null, previousFeed = null } = {}) {
   const sources = [
     ['Welo Global', collectWeloGlobal],
     ['RWS TrainAI', collectRws],
@@ -1169,35 +1565,90 @@ export async function collectJobs({ includeManual = true, persist = true, previo
     ['Arbeitnow', collectArbeitnow]
   ];
   if (includeManual) sources.push(['직접 추가', collectManual]);
-  let fallbackJobs = Array.isArray(previousJobs) ? previousJobs : [];
-  if (!fallbackJobs.length && persist) {
+  let fallbackFeed = previousFeed && typeof previousFeed === 'object' ? previousFeed : null;
+  let fallbackJobs = Array.isArray(previousJobs)
+    ? previousJobs
+    : Array.isArray(fallbackFeed?.jobs)
+      ? fallbackFeed.jobs
+      : [];
+  if (!fallbackJobs.length) {
     try {
       const previous = JSON.parse(await fs.readFile(path.join(root, 'data/jobs.json'), 'utf8'));
       fallbackJobs = Array.isArray(previous.jobs) ? previous.jobs : [];
+      fallbackFeed = fallbackFeed || previous;
     } catch {
-      fallbackJobs = [];
+      if (persist) fallbackJobs = [];
     }
   }
+  const previousSourceMetrics = fallbackFeed?.sourceMetrics || {};
+  const now = Date.now();
   const jobs = [];
   const sourceStatus = [];
+  const sourceRuns = new Map();
   for (const [name, collector] of sources) {
     try {
-      const collected = await collector();
+      const result = await collector();
+      const collected = Array.isArray(result) ? result : (result?.jobs || []);
+      sourceRuns.set(name, {
+        rawCount: Number(result?.rawCount ?? collected.length),
+        matchedCount: Number(result?.matchedCount ?? collected.length),
+        localeEligibleCount: Number(result?.localeEligibleCount || 0),
+        profileMatchedCount: Number(result?.profileMatchedCount ?? collected.length)
+      });
       jobs.push(...collected);
-      sourceStatus.push({ source: name, ok: true, count: collected.length });
+      sourceStatus.push({
+        source: name,
+        ok: true,
+        count: collected.length,
+        rawCount: Number(result?.rawCount ?? collected.length)
+      });
     } catch (error) {
       const preserved = fallbackJobs.filter((job) => job.source === name).map(markPreservedSourceFailure);
       jobs.push(...preserved);
+      sourceRuns.set(name, { rawCount: 0, matchedCount: 0, localeEligibleCount: 0, profileMatchedCount: 0 });
       sourceStatus.push({ source: name, ok: false, count: 0, preserved: preserved.length, error: String(error.message ?? error) });
     }
   }
-  const uniqueJobs = carryRecentlyMissing(carryForwardLegacyIds(dedupe(jobs), fallbackJobs), fallbackJobs)
-    .filter((job) =>
-      (Number(job.score || 0) >= 10 || isOfficialKind(job.sourceKind))
-      || job.sourceKind === 'manual'
-      || ['source_error', 'archived_missing'].includes(job.listingStatus))
+  const deduped = carryForwardLegacyIds(dedupe(jobs), fallbackJobs);
+  const reconciled = reconcileVerificationHistory(deduped, fallbackJobs, now);
+  const keptCurrent = reconciled.filter(keepInFeed);
+  const sourceNames = sources.map(([name]) => name);
+  const sourceMetrics = buildSourceMetrics(
+    sourceNames,
+    sourceRuns,
+    sourceStatus,
+    reconciled,
+    keptCurrent,
+    previousSourceMetrics,
+    now
+  );
+  let currentJobs = applySourceMetricsToJobs(keptCurrent, sourceMetrics);
+  for (const source of sourceNames) {
+    const metric = sourceMetrics[source];
+    if (!metric) continue;
+    metric.recommendedCount = currentJobs.filter((job) =>
+      (job.source === source || (job.sources || []).includes(source))
+      && isDefaultRecommendation(job)).length;
+  }
+  const uniqueJobs = applySourceMetricsToJobs(carryRecentlyMissing(currentJobs, fallbackJobs, now), sourceMetrics)
     .sort((a, b) => (b.score - a.score) || ((Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0)));
-  const payload = { updatedAt: new Date().toISOString(), sourceStatus, jobs: uniqueJobs };
+  const enrichedSourceStatus = sourceStatus.map((status) => ({
+    ...status,
+    qualityTier: sourceMetrics[status.source]?.qualityTier || 'unknown',
+    kept: sourceMetrics[status.source]?.keptCount || 0,
+    recommended: sourceMetrics[status.source]?.recommendedCount || 0
+  }));
+  const payload = {
+    updatedAt: new Date(now).toISOString(),
+    sourceStatus: enrichedSourceStatus,
+    sourceMetrics,
+    recommendationSummary: {
+      count: uniqueJobs.filter(isDefaultRecommendation).length,
+      minExpected: 5,
+      hardRequirementCount: uniqueJobs.filter((job) => isDefaultRecommendation(job) && job.requirementsStatus === 'hard_check').length
+    },
+    jobs: uniqueJobs
+  };
   if (persist) await fs.writeFile(path.join(root, 'data/jobs.json'), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
   return payload;
 }
@@ -1222,5 +1673,11 @@ export {
   oneFormaCandidate,
   oneFormaSupportsKorean,
   enrichPaymentSignal,
-  derivePaymentEvidence
+  derivePaymentEvidence,
+  contentFingerprint,
+  reconcileVerificationHistory,
+  buildSourceMetrics,
+  applySourceMetricsToJobs,
+  keepInFeed,
+  isDefaultRecommendation
 };

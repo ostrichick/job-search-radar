@@ -2,6 +2,7 @@
   "Welo Global": {
     "kind": "official_ats",
     "coverage": "current_catalog",
+    "evidenceRefreshability": "direct_api",
     "listingLabel": "공식 직접 채용",
     "paymentStatus": "caution",
     "paymentLabel": "지급 후기 주의",
@@ -23,6 +24,7 @@
   "RWS TrainAI": {
     "kind": "official_ats",
     "coverage": "current_catalog",
+    "evidenceRefreshability": "direct_api",
     "listingLabel": "공식 직접 채용",
     "paymentStatus": "caution",
     "paymentLabel": "지급 후기 주의",
@@ -43,6 +45,7 @@
   "OneForma": {
     "kind": "official_platform",
     "coverage": "current_catalog",
+    "evidenceRefreshability": "official_rest_api",
     "listingLabel": "공식 프로젝트 플랫폼",
     "paymentStatus": "caution",
     "paymentLabel": "지급 후기 주의",
@@ -63,6 +66,7 @@
   "We Work Remotely": {
     "kind": "job_board",
     "coverage": "current_catalog",
+    "evidenceRefreshability": "official_rss",
     "listingLabel": "공개 공식 피드",
     "paymentStatus": "not_payer",
     "paymentLabel": "지급 주체 아님",
@@ -77,6 +81,7 @@
   "Jobicy": {
     "kind": "aggregator",
     "coverage": "bounded_window",
+    "evidenceRefreshability": "public_api",
     "listingLabel": "공개 공고 피드",
     "paymentStatus": "not_payer",
     "paymentLabel": "지급 주체 아님",
@@ -89,6 +94,7 @@
   "Remote OK": {
     "kind": "job_board",
     "coverage": "bounded_window",
+    "evidenceRefreshability": "public_api",
     "listingLabel": "공개 공고 피드",
     "paymentStatus": "not_payer",
     "paymentLabel": "지급 주체 아님",
@@ -101,6 +107,7 @@
   "Remotive": {
     "kind": "job_board",
     "coverage": "bounded_window",
+    "evidenceRefreshability": "public_api",
     "listingLabel": "공개 공고 피드",
     "paymentStatus": "not_payer",
     "paymentLabel": "지급 주체 아님",
@@ -113,6 +120,7 @@
   "Arbeitnow": {
     "kind": "aggregator",
     "coverage": "bounded_window",
+    "evidenceRefreshability": "public_api",
     "listingLabel": "공개 공고 피드",
     "paymentStatus": "not_payer",
     "paymentLabel": "지급 주체 아님",
@@ -125,6 +133,7 @@
   "직접 추가": {
     "kind": "manual",
     "coverage": "manual",
+    "evidenceRefreshability": "manual",
     "listingLabel": "사용자 직접 추가",
     "paymentStatus": "unknown",
     "paymentLabel": "직접 확인 필요",

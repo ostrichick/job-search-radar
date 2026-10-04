@@ -42,6 +42,10 @@ Welo Global/Welocalize, RWS, OneForma는 **공식 모집원 여부**와 **지급
 
 지급 근거에는 freshness/expiry 정책이 있습니다. 기본적으로 공식 정책은 180일, 리뷰 집계는 120일, 단일 커뮤니티 사례는 90일을 재검토 주기로 사용합니다. 리뷰 집계는 “마지막으로 페이지를 확인한 날짜”가 아니라 집계 안의 **최근 출처 날짜**를 freshness 기준으로 삼습니다. 근거가 만료되면 과거의 주의 신호를 현재 사실처럼 계속 표시하지 않고 `근거 만료·재검토 필요` 또는 현재 남아 있는 근거 수준으로 자동 재분류합니다. 정책은 `config/payment-evidence-policy.json`에서 관리합니다.
 
+각 공고는 새로고침 때 검증 결과를 단순 덮어쓰지 않습니다. 최초 발견, 원문 주요 필드 변경, 모집 상태 변경, 원천에서 사라짐, 재등장, 소스 확인 실패·복구, 지급 근거 freshness 변화와 7일 간격의 변경 없음 체크포인트를 `verificationHistory`에 최대 24개까지 보존합니다. `firstSeenAt / lastSeenAt / lastVerifiedAt / missingSince / missingCheckedAt / contentFingerprint`를 분리해 “마지막 성공 검증”과 “이번에 보이지 않음”을 혼동하지 않습니다. 카드에서는 최근 검증·원문 변경·재등장·근거 만료 임박·미확인 핵심요건만 짧게 표시하고 상세에서 최근 이력을 확인할 수 있습니다.
+
+소스 품질도 공고 적합도와 별개로 누적 측정합니다. 최근 성공률, 연속 실패, 원천 후보 수, 프로필 일치 수, 최종 유지 수, 중복·저품질 비율, 공식성, coverage, 근거 갱신 가능성을 `sourceMetrics`에 최근 24회까지 보존합니다. **저수율 소스라는 이유만으로 개별 좋은 공고를 자동 제외하지 않으며**, 반복적인 수집 실패로 reliability가 `unstable/degraded`가 된 경우에만 기본 추천 기여를 중단합니다. 저수율은 UI의 소스 품질 참고 정보와 동점 정렬에만 반영됩니다.
+
 상세 화면의 판단 근거는 다음 다섯 축을 섞지 않고 보여줍니다.
 
 - **모집 확인** — 현재 공고인지, 어떤 규칙으로 판정했는지, 마지막 확인 시각과 직접 공고 링크
@@ -55,7 +59,7 @@ Welo Global/Welocalize, RWS, OneForma는 **공식 모집원 여부**와 **지급
 
 - Vercel: `api/`의 서버리스 수집 API를 사용할 수 있는 보조 배포 구성이 남아 있습니다.
 - GitHub Pages가 현재 영구 서비스입니다. `.github/workflows/pages.yml`이 6시간마다 또는 `main` push/수동 실행 시 Node 24에서 테스트 → 최신 피드 생성 → 피드 검증 → 이전 피드 기준선 저장 → Pages artifact 배포를 수행합니다.
-- 배포 전에 단위 테스트와 영구 Playwright E2E를 모두 실행합니다. E2E는 결정론적 피드 fixture를 사용해 상태·필터·숨김 Undo·archived snapshot·상세 탐색·390px 레이아웃·빈/오류 복구·백업/가져오기를 회귀 방지합니다.
+- 배포 전에 단위 테스트와 영구 Playwright E2E를 모두 실행합니다. E2E는 결정론적 피드 fixture를 사용해 상태·필터·숨김 Undo·archived snapshot·상세 탐색·390px 레이아웃·빈/오류 복구·백업/가져오기뿐 아니라 검증 이력, 원문 변경, 사라짐→재등장, 부분 소스 실패→복구, 근거 expiry 재계산, 추천 세트 과도 축소를 회귀 방지합니다.
 - Pages 설정은 GitHub Actions(`build_type=workflow`) 방식입니다. 서버 측 실행이므로 개인 PC가 꺼져 있어도 갱신됩니다.
 - `docs/`는 더 이상 실제 Pages 배포 원본이 아니지만, `docs/jobs.json`은 마지막 검증 피드의 영속 기준선입니다. Actions는 새 `public/jobs.json` 검증 후 이를 `docs/jobs.json`에 자동 커밋해 다음 6시간 실행이 직전 피드에서 이어지도록 합니다. 그래서 stable ID 승계, 소스 장애 fallback, 14일 실종 공고 grace의 `missingSince`가 PC 없이도 연속성을 유지합니다. UI 사본은 `npm run build:pages`로 동기화합니다.
 - `scripts/publish-pages.ps1`과 Windows 작업 스케줄러 `JobSearchRadarRefresh`는 롤백용으로 남겨 두었으며 현재 작업은 **비활성화**되어 있습니다. Actions 장애가 확인될 때만 다시 켭니다.
@@ -70,6 +74,8 @@ Welo Global/Welocalize, RWS, OneForma는 **공식 모집원 여부**와 **지급
 - `모집 확인됨 / 현재 피드 / 오래된 공고 / 인재풀 / 종료 확인` 상태 필터
 - 수집 소스 오류 시 이전 공고를 `소스 확인 실패`로 보존하고, 추적 중인 공고가 피드에서 사라지면 `현재 피드에서 사라짐`으로 표시
 - 정상 수집 중 원천 피드에서 사라진 공고도 14일 동안 `현재 피드에서 사라짐` 상태로 보존한 뒤 자동 정리해, 관심·지원 상태를 다른 안정 ID로 옮기거나 백업할 시간을 확보
+- 최근 검증됨 / 원문 변경됨 / 재등장 / 소스 복구 / 근거 만료 임박 / 미확인 핵심요건 상태를 카드에서 빠르게 구분하고 상세에서 검증 이력 확인
+- 소스별 최근 성공률·유효 공고 비율·저품질 비율·공식성·coverage·근거 갱신 가능성을 누적 추적하고 이상 상태만 상단 소스 건강 배너에 표시
 - `공식 ATS 모집 확인 / 공식 프로젝트 게시 확인 / 집계·채용보드 현재 피드` 모집 상태 필터
 - `공식 직접 채용 / 공식 프로젝트 플랫폼 / 채용 보드 / 집계 피드` 출처 검증 필터
 - `반복 주의 신호 / 상반된 신호 / 단일 사례 / 공식 정책만 확인 / 근거 만료 / 근거 부족 / 지급 주체 아님` 지급 신뢰 근거 필터
@@ -97,4 +103,4 @@ node scripts/validate-feed.mjs docs/jobs.json
 npm run check:pages
 ```
 
-`scripts/validate-feed.mjs`는 ID 중복뿐 아니라 모든 공고의 지원범위 판정 근거, 모집 상태 판정 강도, 소스 coverage, 지급 신뢰 freshness/expiry, 필수요건 상태를 확인합니다. 공식 ATS 또는 공식 프로젝트 게시로 표시하는 공고는 마지막 확인 시각과 해당 공고의 직접 링크가 반드시 있어야 합니다. 비공식·집계 소스의 10점 미만 noise는 피드에 남지 않으며, OneForma처럼 지원 언어 taxonomy가 있는 프로젝트는 한국어가 실제 지원 언어일 때만 수집합니다.
+`scripts/validate-feed.mjs`는 ID 중복뿐 아니라 모든 공고의 지원범위 판정 근거, 모집 상태 판정 강도, 소스 coverage, 지급 신뢰 freshness/expiry, 필수요건 상태, content fingerprint, 검증 이력, sourceMetrics 지속성을 확인합니다. 공식 ATS 또는 공식 프로젝트 게시로 표시하는 공고는 마지막 확인 시각과 해당 공고의 직접 링크가 반드시 있어야 합니다. 비공식·집계 소스의 10점 미만 noise는 피드에 남지 않습니다. OneForma는 한국어 taxonomy를 우선 사용하되, South Korea가 명시되고 본문이 “해당 위치의 언어 native/fluent”를 직접 요구하는 프로젝트는 taxonomy 누락으로 버리지 않고 포함한 뒤 거주·경력 하드요건으로 추천 여부를 별도 판정합니다.

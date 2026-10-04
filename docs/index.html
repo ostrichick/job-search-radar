@@ -212,6 +212,7 @@
         <div class="mini-actions"><button class="favorite" type="button" aria-label="관심 공고">☆</button><button class="dismiss" type="button" aria-label="숨기기">×</button></div>
       </div>
       <div class="quality-badges"><span class="listing-badge"></span><span class="eligibility-badge"></span><span class="trust-badge"></span><span class="payment-badge"></span><span class="requirements-badge"></span></div>
+      <div class="verification-badges" aria-label="최근 검증 상태"></div>
       <div class="decision-strip"><div class="decision-value"></div><div class="decision-unknown"></div></div>
       <h2 class="title"></h2>
       <p class="company"></p>
@@ -249,6 +250,7 @@
         <article class="evidence-card">
           <strong>출처</strong>
           <p id="detailsSourceSummary"></p>
+          <p id="detailsSourceHealth" class="evidence-meta"></p>
           <div id="detailsEvidence" class="evidence-links"></div>
         </article>
         <article class="evidence-card">
@@ -264,6 +266,11 @@
           <strong>검토 우선순위</strong>
           <p id="detailsFitReasons"></p>
           <p id="detailsFitWarnings" class="fit-warning"></p>
+        </article>
+        <article class="evidence-card">
+          <strong>검증 이력</strong>
+          <p id="detailsHistorySummary"></p>
+          <div id="detailsHistory" class="history-list"></div>
         </article>
       </div>
       <p id="detailsVerifiedAt" class="verified-at"></p>

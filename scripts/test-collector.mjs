@@ -12,7 +12,11 @@ import {
   oneFormaCandidate,
   oneFormaSupportsKorean,
   enrichPaymentSignal,
-  derivePaymentEvidence
+  derivePaymentEvidence,
+  reconcileVerificationHistory,
+  buildSourceMetrics,
+  applySourceMetricsToJobs,
+  isDefaultRecommendation
 } from './collect-jobs.mjs';
 
 const remote = (location, description = '', countryCode = '') => ({ location, description, remote: true, countryCode });
@@ -207,6 +211,19 @@ nonKoreanOneFormaPost._embedded['wp:term'] = nonKoreanOneFormaPost._embedded['wp
 assert.equal(oneFormaSupportsKorean(nonKoreanOneFormaPost), false, 'OneForma projects with explicit non-Korean language lists must not enter the feed');
 assert.equal(oneFormaSupportsKorean(oneFormaPost), true);
 
+const koreanLocationLocalLanguagePost = structuredClone(nonKoreanOneFormaPost);
+koreanLocationLocalLanguagePost._embedded['wp:term'].push([
+  { taxonomy: 'country', name: 'South Korea' },
+  { taxonomy: 'language', name: 'English' },
+  { taxonomy: 'language', name: 'Spanish' }
+]);
+koreanLocationLocalLanguagePost.content.rendered = '<p>You are a native or a fluent speaker of the language of the location where you are located.</p>';
+assert.equal(
+  oneFormaSupportsKorean(koreanLocationLocalLanguagePost),
+  true,
+  'South Korea projects that explicitly require the local language must remain in recall even when language taxonomy omits Korean'
+);
+
 const translationRater = normalizeJob({
   ...base,
   id: 'translation-rater',
@@ -391,6 +408,154 @@ assert.equal(practicalRequirements.requirementsStatus, 'routine_check');
 assert.match(practicalRequirements.requirementChecks.map((item) => item.label).join(' '), /한국 거주/);
 assert.match(practicalRequirements.requirementChecks.map((item) => item.label).join(' '), /프리랜서/);
 assert.match(practicalRequirements.requirementChecks.map((item) => item.label).join(' '), /VPN/);
+
+const historyBase = normalizeJob({
+  ...base,
+  id: 'history-base',
+  source: 'Welo Global',
+  title: 'Korean AI Reviewer',
+  location: 'South Korea',
+  url: 'https://example.com/history',
+  description: 'Review Korean AI responses.',
+  tags: ['Korean', 'AI']
+});
+const historyFirst = reconcileVerificationHistory([historyBase], [], Date.parse('2026-10-01T00:00:00Z'))[0];
+assert.equal(historyFirst.lastChangeKind, 'first_seen');
+assert.equal(historyFirst.verificationHistory.at(-1).event, 'first_seen');
+
+const historyUnchangedRaw = normalizeJob({
+  ...base,
+  id: 'history-base',
+  source: 'Welo Global',
+  title: 'Korean AI Reviewer',
+  location: 'South Korea',
+  url: 'https://example.com/history',
+  description: 'Review Korean AI responses.',
+  tags: ['Korean', 'AI']
+});
+const historyUnchanged = reconcileVerificationHistory(
+  [historyUnchangedRaw],
+  [historyFirst],
+  Date.parse('2026-10-02T00:00:00Z')
+)[0];
+assert.equal(historyUnchanged.verificationHistory.length, 1, 'unchanged six-hour refreshes must not grow history indefinitely');
+
+const historyChangedRaw = normalizeJob({
+  ...base,
+  id: 'history-base',
+  source: 'Welo Global',
+  title: 'Korean AI Reviewer',
+  location: 'South Korea',
+  url: 'https://example.com/history',
+  description: 'Review Korean AI responses. Pay Rate: $15/hour.',
+  tags: ['Korean', 'AI']
+});
+const historyChanged = reconcileVerificationHistory(
+  [historyChangedRaw],
+  [historyUnchanged],
+  Date.parse('2026-10-03T00:00:00Z')
+)[0];
+assert.equal(historyChanged.lastChangeKind, 'content_changed');
+assert.ok(historyChanged.lastChangedFields.includes('description'));
+assert.equal(historyChanged.verificationHistory.at(-1).event, 'content_changed');
+
+const disappearedHistory = carryRecentlyMissing([], [historyChanged], Date.parse('2026-10-04T00:00:00Z'))[0];
+assert.equal(disappearedHistory.verificationHistory.at(-1).event, 'disappeared');
+assert.ok(disappearedHistory.missingCheckedAt);
+assert.equal(disappearedHistory.lastSeenAt, historyChanged.lastSeenAt, 'lastSeenAt must remain the last successful observation');
+
+const reappearedRaw = normalizeJob({
+  ...base,
+  id: 'history-base',
+  source: 'Welo Global',
+  title: 'Korean AI Reviewer',
+  location: 'South Korea',
+  url: 'https://example.com/history',
+  description: 'Review Korean AI responses. Pay Rate: $15/hour.',
+  tags: ['Korean', 'AI']
+});
+const reappeared = reconcileVerificationHistory(
+  [reappearedRaw],
+  [disappearedHistory],
+  Date.parse('2026-10-05T00:00:00Z')
+)[0];
+assert.equal(reappeared.lastChangeKind, 'reappeared');
+assert.equal(reappeared.verificationHistory.at(-1).event, 'reappeared');
+assert.equal(reappeared.missingSince, '');
+
+const failed = markPreservedSourceFailure(reappeared);
+const failedHistory = reconcileVerificationHistory(
+  [failed],
+  [reappeared],
+  Date.parse('2026-10-06T00:00:00Z')
+)[0];
+assert.equal(failedHistory.lastChangeKind, 'source_failed');
+assert.equal(failedHistory.lastSeenAt, reappeared.lastSeenAt, 'source failure must not pretend the posting was successfully seen again');
+assert.equal(failedHistory.lastVerifiedAt, reappeared.lastVerifiedAt, 'source failure must preserve the last successful verification timestamp');
+assert.ok(failedHistory.sourceFailureCheckedAt);
+const recovered = reconcileVerificationHistory(
+  [reappearedRaw],
+  [failedHistory],
+  Date.parse('2026-10-07T00:00:00Z')
+)[0];
+assert.equal(recovered.lastChangeKind, 'source_recovered');
+
+const sourceMetrics = buildSourceMetrics(
+  ['Welo Global', 'Remotive'],
+  new Map([
+    ['Welo Global', { rawCount: 100, matchedCount: 8, profileMatchedCount: 8 }],
+    ['Remotive', { rawCount: 100, matchedCount: 6, profileMatchedCount: 6 }]
+  ]),
+  [
+    { source: 'Welo Global', ok: true, count: 8 },
+    { source: 'Remotive', ok: true, count: 6 }
+  ],
+  [
+    ...Array.from({ length: 8 }, (_, index) => ({ ...historyBase, id: `welo-${index}`, source: 'Welo Global' })),
+    ...Array.from({ length: 6 }, (_, index) => ({ ...historyBase, id: `remotive-${index}`, source: 'Remotive', sourceKind: 'job_board' }))
+  ],
+  [
+    ...Array.from({ length: 8 }, (_, index) => ({ ...historyBase, id: `welo-${index}`, source: 'Welo Global' })),
+    { ...historyBase, id: 'remotive-0', source: 'Remotive', sourceKind: 'job_board' }
+  ],
+  {},
+  Date.parse('2026-10-04T00:00:00Z')
+);
+assert.equal(sourceMetrics['Welo Global'].qualityTier, 'strong');
+assert.equal(sourceMetrics.Remotive.qualityTier, 'weak', 'high low-quality ratio on an intermediary source must prevent it from degrading recommendations');
+const metricsApplied = applySourceMetricsToJobs([
+  { ...historyBase, source: 'Remotive', sourceKind: 'job_board', requirementsStatus: 'clear', score: 80, eligibilityCode: 'worldwide', listingStatus: 'current_feed' }
+], sourceMetrics)[0];
+assert.equal(metricsApplied.recommendationEligible, true, 'low source yield alone must not blanket-block an individually strong job');
+assert.equal(isDefaultRecommendation(metricsApplied), true);
+
+const failedSourceMetrics = buildSourceMetrics(
+  ['Remotive'],
+  new Map([['Remotive', { rawCount: 0, matchedCount: 0 }]]),
+  [{ source: 'Remotive', ok: false, count: 0, error: '503' }],
+  [],
+  [],
+  {
+    Remotive: {
+      history: [{ at: '2026-10-02T00:00:00.000Z', ok: false, rawCount: 0, matchedCount: 0, keptCount: 0, recommendedCount: 0, duplicateCount: 0, lowQualityCount: 0 }]
+    }
+  },
+  Date.parse('2026-10-04T00:00:00Z')
+);
+assert.equal(failedSourceMetrics.Remotive.reliabilityState, 'degraded');
+const failedMetricJob = applySourceMetricsToJobs([
+  { ...historyBase, source: 'Remotive', sourceKind: 'job_board', requirementsStatus: 'clear', score: 80, eligibilityCode: 'worldwide', listingStatus: 'current_feed' }
+], failedSourceMetrics)[0];
+assert.equal(failedMetricJob.recommendationEligible, false, 'repeated source failures must gate recommendations until the source recovers');
+
+const evidenceAgingPrior = { ...historyFirst, paymentEvidenceFreshness: 'fresh', paymentEvidenceState: 'mixed_caution' };
+const evidenceAgingCurrent = { ...historyUnchangedRaw, paymentEvidenceFreshness: 'aging', paymentEvidenceState: 'mixed_caution' };
+const evidenceAgingHistory = reconcileVerificationHistory(
+  [evidenceAgingCurrent],
+  [evidenceAgingPrior],
+  Date.parse('2026-10-08T00:00:00Z')
+)[0];
+assert.equal(evidenceAgingHistory.verificationHistory.at(-1).event, 'evidence_freshness_changed');
 
 const freshSignal = enrichPaymentSignal(
   { type: 'review_aggregate', checkedAt: '2026-10-04', latestSourceAt: '2026-10-02', direction: 'caution', recurrence: 'repeated' },
