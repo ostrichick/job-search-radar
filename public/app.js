@@ -274,7 +274,7 @@ $('refreshBtn').addEventListener('click', async () => {
     alert(error.message);
   } finally {
     button.disabled = false;
-    button.textContent = '새 공고 수집';
+    button.textContent = '목록 새로고침';
   }
 });
 

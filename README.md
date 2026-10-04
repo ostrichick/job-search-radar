@@ -2,6 +2,8 @@
 
 여러 공개 구인 피드와 직접 추가한 공고를 한 화면에서 검색·필터·정렬하는 개인용 대시보드입니다.
 
+웹 서비스: https://ostrichick.github.io/job-search-radar/
+
 ## 실행
 
 가장 간단한 방법은 `Start-Job-Dashboard.cmd`를 더블클릭하는 것입니다. 서버 창을 닫으면 대시보드도 종료됩니다.
@@ -35,6 +37,7 @@ LinkedIn과 Indeed는 직접 크롤링하지 않습니다. 두 플랫폼에서 �
 - Vercel: `api/`의 서버리스 수집 API를 사용합니다.
 - GitHub Pages: `npm run build:pages`가 최신 공고와 정적 UI를 `docs/`에 생성하며 `main/docs`를 영구 배포 대상으로 사용합니다.
 - `deployment/pages-workflow.yml.example`은 6시간 자동 수집·배포용 GitHub Actions 템플릿입니다. GitHub OAuth에 `workflow` 권한이 있는 환경에서 `.github/workflows/pages.yml`로 활성화할 수 있습니다.
+- 현재 Pages 배포는 `docs/jobs.json`에 포함된 마지막 수집 결과를 사용합니다. 자동 workflow가 활성화되기 전에는 `npm run build:pages` 후 `docs/` 변경을 push하면 최신 데이터로 갱신됩니다.
 - 관심 공고, 지원 상태, 숨김, 직접 추가 공고와 필터 설정은 사용자의 브라우저 `localStorage`에 저장됩니다.
 
 ## 기능
