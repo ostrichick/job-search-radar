@@ -3,12 +3,14 @@ name: Refresh jobs and deploy Pages
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - docs/jobs.json
   schedule:
     - cron: "17 */6 * * *"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -30,6 +32,24 @@ jobs:
       - run: npm run check
       - run: npm run build:static
       - run: node scripts/validate-feed.mjs public/jobs.json
+      - name: Persist refreshed feed baseline
+        shell: bash
+        run: |
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo "main moved during collection; skip baseline persistence"
+            exit 0
+          fi
+          cp public/jobs.json docs/jobs.json
+          git add docs/jobs.json
+          if git diff --cached --quiet -- docs/jobs.json; then
+            echo "No feed baseline changes to persist."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Refresh job feed $(date -u '+%Y-%m-%d %H:%M UTC') [skip ci]"
+          git push origin HEAD:main
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:

@@ -43,9 +43,9 @@ Welo Global/Welocalize, RWS, OneForma는 공식 모집원과 지급 평판을 �
 ## 웹 배포
 
 - Vercel: `api/`의 서버리스 수집 API를 사용할 수 있는 보조 배포 구성이 남아 있습니다.
-- GitHub Pages가 현재 영구 서비스입니다. `.github/workflows/pages.yml`이 6시간마다 또는 `main` push/수동 실행 시 Node 24에서 테스트 → 최신 피드 생성 → 피드 검증 → Pages artifact 배포를 수행합니다.
+- GitHub Pages가 현재 영구 서비스입니다. `.github/workflows/pages.yml`이 6시간마다 또는 `main` push/수동 실행 시 Node 24에서 테스트 → 최신 피드 생성 → 피드 검증 → 이전 피드 기준선 저장 → Pages artifact 배포를 수행합니다.
 - Pages 설정은 GitHub Actions(`build_type=workflow`) 방식입니다. 서버 측 실행이므로 개인 PC가 꺼져 있어도 갱신됩니다.
-- `docs/`는 더 이상 실제 Pages 배포 원본이 아니지만, `npm run build:pages`로 UI 동기화와 마지막 정상 피드 사본을 유지합니다. Actions의 정적 빌드는 이전 `public/jobs.json`이 없을 때 `docs/jobs.json`을 이전 피드로 사용해 stable ID 승계와 14일 실종 공고 grace를 이어갑니다.
+- `docs/`는 더 이상 실제 Pages 배포 원본이 아니지만, `docs/jobs.json`은 마지막 검증 피드의 영속 기준선입니다. Actions는 새 `public/jobs.json` 검증 후 이를 `docs/jobs.json`에 자동 커밋해 다음 6시간 실행이 직전 피드에서 이어지도록 합니다. 그래서 stable ID 승계, 소스 장애 fallback, 14일 실종 공고 grace의 `missingSince`가 PC 없이도 연속성을 유지합니다. UI 사본은 `npm run build:pages`로 동기화합니다.
 - `scripts/publish-pages.ps1`과 Windows 작업 스케줄러 `JobSearchRadarRefresh`는 롤백용으로 남겨 두었으며 현재 작업은 **비활성화**되어 있습니다. Actions 장애가 확인될 때만 다시 켭니다.
 - 관심 공고, 지원 상태, 숨김, 직접 추가 공고와 필터 설정은 사용자의 브라우저 `localStorage`에 저장됩니다.
 - 헤더의 **상태 백업 / 상태 가져오기**로 이 브라우저 상태를 버전이 있는 JSON 파일로 내보내고 다른 브라우저에 병합할 수 있습니다.
