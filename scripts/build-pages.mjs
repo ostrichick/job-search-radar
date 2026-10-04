@@ -13,6 +13,16 @@ for (const name of ['index.html', 'app.js', 'styles.css']) {
 }
 
 const payload = await collectJobs({ includeManual: false, persist: false });
-await fs.writeFile(path.join(docsDir, 'jobs.json'), `${JSON.stringify(payload)}\n`, 'utf8');
+const feedPath = path.join(docsDir, 'jobs.json');
+let shouldWriteFeed = true;
+try {
+  const previous = JSON.parse(await fs.readFile(feedPath, 'utf8'));
+  const previousComparable = JSON.stringify({ sourceStatus: previous.sourceStatus, jobs: previous.jobs });
+  const nextComparable = JSON.stringify({ sourceStatus: payload.sourceStatus, jobs: payload.jobs });
+  shouldWriteFeed = previousComparable !== nextComparable;
+} catch {
+  shouldWriteFeed = true;
+}
+if (shouldWriteFeed) await fs.writeFile(feedPath, `${JSON.stringify(payload)}\n`, 'utf8');
 await fs.writeFile(path.join(docsDir, '.nojekyll'), '', 'utf8');
-console.log(`GitHub Pages build complete: ${payload.jobs.length} jobs`);
+console.log(`GitHub Pages build complete: ${payload.jobs.length} jobs (${shouldWriteFeed ? 'feed updated' : 'no feed changes'})`);

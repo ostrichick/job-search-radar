@@ -38,6 +38,7 @@ LinkedIn과 Indeed는 직접 크롤링하지 않습니다. 두 플랫폼에서 �
 - GitHub Pages: `npm run build:pages`가 최신 공고와 정적 UI를 `docs/`에 생성하며 `main/docs`를 영구 배포 대상으로 사용합니다.
 - `deployment/pages-workflow.yml.example`은 6시간 자동 수집·배포용 GitHub Actions 템플릿입니다. GitHub OAuth에 `workflow` 권한이 있는 환경에서 `.github/workflows/pages.yml`로 활성화할 수 있습니다.
 - 현재 Pages 배포는 `docs/jobs.json`에 포함된 마지막 수집 결과를 사용합니다. 자동 workflow가 활성화되기 전에는 `npm run build:pages` 후 `docs/` 변경을 push하면 최신 데이터로 갱신됩니다.
+- Windows에서는 `scripts/publish-pages.ps1`이 수집 결과에 실제 변화가 있을 때만 `docs/`를 커밋·push하도록 준비되어 있습니다. 로컬 Task Scheduler로 6시간마다 실행하면 GitHub Actions 권한 없이도 Pages 피드를 자동 갱신할 수 있습니다.
 - 관심 공고, 지원 상태, 숨김, 직접 추가 공고와 필터 설정은 사용자의 브라우저 `localStorage`에 저장됩니다.
 
 ## 기능
