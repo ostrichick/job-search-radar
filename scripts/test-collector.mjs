@@ -92,6 +92,14 @@ assert.match(regionalOnlyPay.display, /미국 일부 주 기준/);
 assert.match(regionalOnlyPay.display, /\$15–\$25\/시간/);
 assert.match(regionalOnlyPay.display, /기타 지역 단가 확인/);
 
+const geographyAdjustedRange = extractSalary('', 'We offer a pay range of $6 to $65 per hour, with the exact rate determined after evaluating your experience, expertise, and geographic location. Final offer amounts may vary from the pay range listed above.');
+assert.equal(geographyAdjustedRange.display, '$6–$65/시간');
+assert.equal(geographyAdjustedRange.scope, 'geography_dependent');
+
+const countryAdjustedRate = extractSalary('', 'Rate: 10 USD per hour (rates vary per country. If you are based elsewhere, the rates will be different).');
+assert.equal(countryAdjustedRate.display, '$10/시간');
+assert.equal(countryAdjustedRate.scope, 'geography_dependent');
+
 const fixedHourlyBasis = extractSalary('', 'Compensation is calculated at a fixed hourly rate. The amount depends on language and location.');
 assert.equal(fixedHourlyBasis.confidence, 'basis_only');
 assert.equal(fixedHourlyBasis.display, '금액 비공개 · 시간당 고정 단가');

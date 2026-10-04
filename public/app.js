@@ -342,6 +342,7 @@ function salarySummary(job) {
   else if (info.confidence === 'basis_only') notes.push('금액 미공개 · 지급 방식만 확인됨');
   else if (info.qualifier === 'maximum') notes.push('상한액');
   else if (info.qualifier === 'approximate') notes.push('대략적 금액');
+  if (info.scope === 'geography_dependent') notes.push('지역·국가에 따라 실제 단가 변동');
   if (info.paymentBasis === 'per_task_equivalent') notes.push('건당 지급을 시간당으로 환산');
   if (job.salaryMetadataConflict) notes.push('원문과 채용보드 메타데이터 불일치');
   else if (job.salaryMetadataSuppressed) notes.push('채용보드 금액은 원문 미확인');

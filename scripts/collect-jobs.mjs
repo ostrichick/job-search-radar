@@ -529,10 +529,13 @@ function extractSalary(rawValue, description = '') {
     return { raw: '', display: '', currency: '', min: null, max: null, period: '', confidence: 'none', paymentBasis: '' };
   }
   const normalizedRaw = lower(raw);
+  const normalizedDescription = lower(description);
   const isMaximum = /\bup to\b/.test(normalizedRaw);
   const moneyToken = '(?:USD|EUR|GBP|KRW|CAD|AUD|JPY|CHF|PLN|BRL|INR|SGD|HKD|AED|USDT|[$€£₩¥])';
   const isApproximate = new RegExp(`\\b(?:approximately|approx\\.?|about|around)\\b(?=[^0-9$€£₩¥]{0,16}${moneyToken}?\\s*\\d)`, 'i').test(raw);
   const isPerTaskApproximation = /\bpaid per (?:job|task|item)\b/.test(normalizedRaw);
+  const geographyDependent = /\b(?:exact rate|pay rate|rate|rates|compensation)\b[^.]{0,160}\b(?:determined|vary|varies|differ|different)\b[^.]{0,120}\b(?:geographic location|country|location)\b/i.test(normalizedDescription)
+    || /\brates?\s+(?:vary|varies|differ)\s+(?:by|per)\s+(?:country|location)\b/i.test(normalizedDescription);
   const currencyMatch = raw.match(/\b(USD|EUR|GBP|KRW|CAD|AUD|JPY|CHF|PLN|BRL|INR|SGD|HKD|AED|USDT)\b|([$€£₩¥])/i);
   const currency = currencyMatch
     ? ({ '$': 'USD', '€': 'EUR', '£': 'GBP', '₩': 'KRW', '¥': 'JPY' }[currencyMatch[0]] ?? currencyMatch[0].toUpperCase())
@@ -587,7 +590,8 @@ function extractSalary(rawValue, description = '') {
     period,
     confidence: periodLabel ? 'parsed' : 'partial',
     qualifier: isMaximum ? 'maximum' : isApproximate ? 'approximate' : '',
-    paymentBasis: isPerTaskApproximation ? 'per_task_equivalent' : ''
+    paymentBasis: isPerTaskApproximation ? 'per_task_equivalent' : '',
+    scope: geographyDependent ? 'geography_dependent' : ''
   };
 }
 

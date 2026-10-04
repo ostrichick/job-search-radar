@@ -622,7 +622,8 @@ test('보수는 카드·상세에서 우선 노출되고 공개 수준으로 바
   const amountJob = job({
     id: 'job:salary-amount',
     title: 'Korean AI Reviewer - Hourly Pay',
-    url: 'https://example.com/job/salary-amount'
+    url: 'https://example.com/job/salary-amount',
+    salaryInfo: { raw: '$10/hour', display: '$10/시간', currency: 'USD', min: 10, max: 10, period: 'hour', confidence: 'parsed', scope: 'geography_dependent' }
   });
   const basisOnlyJob = job({
     id: 'job:salary-basis',
@@ -645,6 +646,7 @@ test('보수는 카드·상세에서 우선 노출되고 공개 수준으로 바
 
   const amountCard = page.locator('.job-card', { hasText: 'Hourly Pay' });
   await expect(amountCard.locator('.compensation-value')).toHaveText('$10/시간');
+  await expect(amountCard.locator('.compensation-note')).toContainText('지역·국가에 따라 실제 단가 변동');
   await expect(amountCard.locator('.compensation')).not.toHaveClass(/unknown/);
 
   const basisCard = page.locator('.job-card', { hasText: 'Rate Basis Only' });
@@ -659,6 +661,7 @@ test('보수는 카드·상세에서 우선 노출되고 공개 수준으로 바
 
   await amountCard.locator('.details').click();
   await expect(page.locator('#detailsCompensationValue')).toHaveText('$10/시간');
+  await expect(page.locator('#detailsCompensationNote')).toContainText('지역·국가에 따라 실제 단가 변동');
   await page.locator('#detailsDialog').evaluate((dialog) => dialog.close());
 
   await page.locator('#compensationFilter').selectOption('amount');
