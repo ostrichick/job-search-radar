@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>내 구인 공고 모음</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">DIGITAL NOMAD JOB RADAR</p>
+      <h1>내가 지원할 만한 공고만 한곳에서</h1>
+      <p class="lede">여러 플랫폼의 공고를 모아 검색하고, 관심·지원 상태까지 한곳에서 관리합니다.</p>
+    </div>
+    <div class="actions">
+      <button id="addJobBtn" class="button secondary">공고 추가</button>
+      <button id="refreshBtn" class="button primary">새 공고 수집</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="stats" id="stats"></section>
+
+    <section class="panel filters">
+      <div class="field search-field">
+        <label for="query">검색</label>
+        <input id="query" type="search" placeholder="직무, 회사, 키워드 검색">
+      </div>
+      <div class="field">
+        <label for="source">소스</label>
+        <select id="source"><option value="">전체</option></select>
+      </div>
+      <div class="field">
+        <label for="category">분야</label>
+        <select id="category"><option value="">전체</option></select>
+      </div>
+      <div class="field">
+        <label for="remote">근무 형태</label>
+        <select id="remote">
+          <option value="">전체</option>
+          <option value="remote">원격</option>
+          <option value="korea">한국 명시</option>
+          <option value="worldwide">Worldwide/Anywhere</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="eligibility">지원 범위</label>
+        <select id="eligibility"><option value="">전체</option></select>
+      </div>
+      <div class="field">
+        <label for="minScore">최소 적합도</label>
+        <select id="minScore">
+          <option value="0" selected>전체</option>
+          <option value="20">추천 20+</option>
+          <option value="40">40+</option>
+          <option value="60">60+</option>
+          <option value="80">80+</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="sort">정렬</label>
+        <select id="sort">
+          <option value="score">적합도 높은 순</option>
+          <option value="newest">최신 순</option>
+          <option value="oldest">오래된 순</option>
+          <option value="company">회사명</option>
+          <option value="title">직무명</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="statusFilter">내 상태</label>
+        <select id="statusFilter">
+          <option value="active">숨김 제외</option>
+          <option value="all">전체</option>
+          <option value="new">새 공고</option>
+          <option value="saved">관심 공고</option>
+          <option value="planned">지원 예정</option>
+          <option value="applied">지원함</option>
+          <option value="hidden">숨긴 공고</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="result-head">
+      <div>
+        <strong id="resultCount">0개</strong>
+        <span id="updatedAt"></span>
+      </div>
+      <p class="source-note">관심·지원·숨김 상태는 이 브라우저에 저장됩니다.</p>
+    </section>
+
+    <section id="jobs" class="job-grid" aria-live="polite"></section>
+    <section id="empty" class="empty" hidden>조건에 맞는 공고가 없습니다. 적합도나 필터를 낮춰보세요.</section>
+    <div class="load-more-wrap"><button id="loadMore" class="button secondary load-more" hidden>더 보기</button></div>
+  </main>
+
+  <div id="toast" class="toast" hidden><span id="toastText"></span><button id="undoHide">되돌리기</button></div>
+
+  <dialog id="addDialog">
+    <form id="addForm" method="dialog">
+      <div class="dialog-head"><h2>공고 직접 추가</h2><button type="button" id="closeDialog" class="icon">×</button></div>
+      <p>LinkedIn·Indeed 등에서 발견한 공고를 한곳에서 관리할 때 사용합니다.</p>
+      <div class="dialog-grid">
+        <label>소스<input name="source" placeholder="LinkedIn, Indeed 등"></label>
+        <label>직무명 *<input name="title" required></label>
+        <label>회사<input name="company"></label>
+        <label>위치<input name="location"></label>
+        <label class="wide">URL *<input name="url" type="url" required></label>
+        <label class="wide">설명<textarea name="description" rows="5"></textarea></label>
+        <label class="check wide"><input name="remote" type="checkbox"> 원격 공고</label>
+      </div>
+      <div class="dialog-actions"><button type="button" id="cancelDialog" class="button secondary">취소</button><button class="button primary" value="default">저장</button></div>
+    </form>
+  </dialog>
+
+  <template id="jobTemplate">
+    <article class="job-card">
+      <div class="job-top">
+        <div><span class="source"></span><span class="score"></span></div>
+        <div class="mini-actions"><button class="favorite" title="관심 공고">☆</button><button class="dismiss" title="숨기기">×</button></div>
+      </div>
+      <h2 class="title"></h2>
+      <p class="company"></p>
+      <div class="meta"></div>
+      <p class="description"></p>
+      <div class="tags"></div>
+      <div class="workflow-row">
+        <select class="job-state" aria-label="지원 상태">
+          <option value="">상태 없음</option>
+          <option value="planned">지원 예정</option>
+          <option value="applied">지원함</option>
+        </select>
+      </div>
+      <div class="card-footer"><span class="posted"></span><button class="details">상세 보기</button><a class="apply" target="_blank" rel="noopener noreferrer">원문 ↗</a></div>
+    </article>
+  </template>
+
+  <dialog id="detailsDialog" class="details-dialog">
+    <div class="dialog-head"><h2 id="detailsTitle"></h2><button type="button" id="closeDetails" class="icon">×</button></div>
+    <p id="detailsCompany" class="details-company"></p>
+    <div id="detailsMeta" class="meta"></div>
+    <div id="detailsDescription" class="details-description"></div>
+    <div class="dialog-actions"><a id="detailsLink" class="button primary" target="_blank" rel="noopener noreferrer">원문 공고 보기 ↗</a></div>
+  </dialog>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

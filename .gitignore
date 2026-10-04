@@ -1,0 +1,7 @@
+node_modules/
+.vercel/
+data/jobs.json
+data/manual-jobs.json
+public/jobs.json
+dashboard*.png
+deployed*.png

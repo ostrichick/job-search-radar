@@ -1,0 +1,12 @@
+{
+  "name": "digital-nomad-job-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node local-server.mjs",
+    "refresh": "node scripts/collect-jobs.mjs",
+    "build:static": "node scripts/build-static.mjs",
+    "check": "node --check public/app.js && node --check scripts/collect-jobs.mjs && node --check api/jobs.mjs && node --check api/refresh.mjs"
+  }
+}
