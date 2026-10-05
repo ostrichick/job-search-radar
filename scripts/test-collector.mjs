@@ -14,6 +14,7 @@ import {
   localCrossPlatformDuplicateKey,
   structuredLocalBoardCandidate,
   isJeonjuWanjuLocal,
+  localContinuityCandidates,
   parseWork24ListXml,
   work24Candidate,
   fallbackJobsForConfiguredSources,
@@ -183,7 +184,7 @@ const remoteOkRealChange = normalizeJob({
   description: '<p>Location: Remote</p><p>Review and annotate videos. Two years of prior annotation experience is required.</p><br/><br/>Please mention the word **IMPROVES** and tag RTM= when applying to show you read the job post completely (#RTM=). This is a beta feature to avoid spam applicants.'
 });
 assert.notEqual(remoteOkStableA.contentFingerprint, remoteOkRealChange.contentFingerprint, 'real Remote OK requirement changes must still change the source fingerprint');
-assert.equal(remoteOkStableA.contentFingerprintVersion, 2);
+assert.equal(remoteOkStableA.contentFingerprintVersion, 3);
 assert.ok(remoteOkStableA.sourceFieldFingerprints?.description);
 
 const longSourceA = normalizeJob({
@@ -208,7 +209,31 @@ const longSourceB = normalizeJob({
   tags: ['Korean', 'AI']
 });
 const longSourceChanged = reconcileVerificationHistory([longSourceB], [longSourceFirst], Date.parse('2026-10-02T00:00:00Z'))[0];
-assert.ok(longSourceChanged.lastChangedFields.includes('description'), 'v2 field hashes must detect source changes beyond the stored description preview');
+assert.ok(longSourceChanged.lastChangedFields.includes('description'), 'v3 field hashes must detect source changes beyond the stored description preview');
+
+const structuredLifecycleA = normalizeJob({
+  id: 'job:structured-lifecycle', source: '잡코리아', sourcePostingId: 'structured-lifecycle', platform: '잡코리아',
+  company: '전주 운영센터', title: '운영지원 사무원', location: '전북 전주시 덕진구 백제대로 1',
+  workAddress: '전북 전주시 덕진구 백제대로 1', workAddressEvidence: 'detail_structured',
+  locationEvidenceLevel: 'source_structured', remote: false, workplaceMode: 'onsite', type: '정규직',
+  salary: '월급 2,400,000원', salaryProvenance: 'source_structured', postedAt: '2026-10-01',
+  url: 'https://www.jobkorea.co.kr/Recruit/GI_Read/99999999', description: '사무 운영 지원', countryCode: 'KR',
+  experience: '경력무관', education: '학력무관', deadlineType: 'fixed', deadlineDate: '2026-10-10', deadlineLabel: '2026-10-10'
+});
+const structuredLifecycleFirst = reconcileVerificationHistory([structuredLifecycleA], [], Date.parse('2026-10-05T00:00:00Z'))[0];
+const structuredLifecycleB = normalizeJob({
+  ...structuredLifecycleA,
+  experience: '경력 1년 이상',
+  deadlineDate: '2026-10-12',
+  deadlineLabel: '2026-10-12'
+});
+const structuredLifecycleChanged = reconcileVerificationHistory(
+  [structuredLifecycleB], [structuredLifecycleFirst], Date.parse('2026-10-06T00:00:00Z')
+)[0];
+assert.ok(structuredLifecycleChanged.lastChangedFields.includes('experience'),
+  'structured experience changes must be recorded in lifecycle history');
+assert.ok(structuredLifecycleChanged.lastChangedFields.includes('deadlineDate'),
+  'structured deadline changes must be recorded in lifecycle history');
 
 const pool = currentListingState({ source: 'Welo Global', title: 'AI Trainers Network - Korean', description: 'This is not an active job opening.', postedAt: new Date().toISOString() });
 assert.equal(pool.code, 'talent_pool');
@@ -589,6 +614,33 @@ const jobKoreaDiscoveryFixture = jobKoreaSearchCandidates(`
 `);
 assert.deepEqual(jobKoreaDiscoveryFixture.map((item) => item.id), ['50071517']);
 
+const continuityPrevious = normalizeJob({
+  id: 'job:continuity-albamon', source: '알바몬', sourcePostingId: '119513955', platform: '알바몬',
+  company: '세라젬', title: '[전주효자점] 세라젬 웰카페 카페 아르바이트 모집',
+  location: '전북 전주시 완산구 홍산로 262', workAddress: '전북 전주시 완산구 홍산로 262',
+  workAddressEvidence: 'detail_structured', locationEvidenceLevel: 'source_structured',
+  remote: false, workplaceMode: 'onsite', type: '아르바이트', salary: '시급 10,320원',
+  postedAt: '2026-09-20', url: 'https://www.albamon.com/jobs/detail/119513955',
+  description: '카페 바리스타 상시모집', countryCode: 'KR', deadlineType: 'rolling', deadlineDate: '', deadlineLabel: '상시채용'
+});
+continuityPrevious.listingStatus = 'archived_missing';
+continuityPrevious.lastVerifiedAt = '2026-10-05T01:00:00.000Z';
+assert.deepEqual(
+  localContinuityCandidates('알바몬', [{ id: '119999999' }], [continuityPrevious]).map((job) => job.sourcePostingId),
+  ['119513955'],
+  'bounded search-window misses must be eligible for direct detail continuity verification'
+);
+assert.equal(
+  localContinuityCandidates('알바몬', [{ id: '119513955' }], [continuityPrevious]).length,
+  0,
+  'postings still discovered in the search window must not be redundantly continuity-probed'
+);
+assert.equal(
+  localContinuityCandidates('알바몬', [], [{ ...continuityPrevious, listingStatus: 'expired' }]).length,
+  0,
+  'confirmed expired postings must not be revived by continuity probes'
+);
+
 const jobKoreaListFallback = structuredLocalBoardCandidate(
   '잡코리아',
   '49741337',
@@ -655,6 +707,31 @@ assert.equal(jobKoreaFixture.experience, '경력무관');
 assert.equal(jobKoreaFixture.education, '학력무관');
 assert.equal(jobKoreaFixture.category, '사무·운영');
 assert.ok(jobKoreaFixture.score >= 20);
+
+const jobKoreaRollingSentinelFixture = structuredLocalBoardCandidate(
+  '잡코리아',
+  '50071517',
+  'https://www.jobkorea.co.kr/Recruit/GI_Read/50071517',
+  `<!doctype html><html><head><meta name="description" content="경력 : 경력무관, 학력 : 고졸 이상, 마감일 : 상시채용"></head><body>
+    <script type="application/ld+json">{
+      "@context":"https://schema.org","@type":"JobPosting",
+      "title":"[금호타이어/전주/신입가능] 전주지점 사무 담당자 채용",
+      "description":"경력무관 사무 담당자 채용",
+      "datePosted":"2026-09-29",
+      "validThrough":"2027-09-28T15:00",
+      "employmentType":["TEMPORARY"],
+      "experienceRequirements":"경력무관",
+      "educationRequirements":"고졸 이상",
+      "hiringOrganization":{"@type":"Organization","name":"㈜마루에이치알"},
+      "jobLocation":{"@type":"Place","address":{"@type":"PostalAddress","streetAddress":"전북 전주시 완산구 홍산남로 11-10 (효자동2가)"}}
+    }</script>
+    <main>접수기간 · 방법 시작일 2026.09.29(화) 마감일 : 상시채용</main>
+  </body></html>`
+);
+assert.equal(jobKoreaRollingSentinelFixture.deadlineType, 'rolling',
+  'visible JobKorea rolling status must override its one-year JSON-LD validThrough sentinel');
+assert.equal(jobKoreaRollingSentinelFixture.deadlineDate, '');
+assert.equal(jobKoreaRollingSentinelFixture.deadlineLabel, '상시채용');
 
 const lotAddressFixture = structuredLocalBoardCandidate(
   '잡코리아',

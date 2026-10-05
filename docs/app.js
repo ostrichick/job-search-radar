@@ -187,11 +187,35 @@ function currentFilterValues() {
   return Object.fromEntries(controls.map((id) => [id, $(id)?.value ?? '']));
 }
 
+function deadlineDaysRemaining(job, now = Date.now()) {
+  if (job.deadlineType !== 'fixed' || !job.deadlineDate) return null;
+  const closeAt = Date.parse(`${job.deadlineDate}T23:59:59+09:00`);
+  if (!Number.isFinite(closeAt)) return null;
+  return Math.ceil((closeAt - now) / 86400000);
+}
+
+function deadlinePriority(job, now = Date.now()) {
+  const days = deadlineDaysRemaining(job, now);
+  if (Number.isFinite(days)) {
+    if (days < 0) return -2;
+    if (days <= 3) return 4;
+    if (days <= 7) return 3;
+    if (days <= 14) return 2;
+    return 1;
+  }
+  if (job.deadlineType === 'rolling') return 0;
+  return -1;
+}
+
 function formatDeadline(job) {
   if (job.deadlineType === 'rolling') return job.deadlineLabel || '상시·채용시까지';
   if (job.deadlineDate) {
     const date = new Date(`${job.deadlineDate}T00:00:00+09:00`);
-    if (!Number.isNaN(date.getTime())) return `마감 ${date.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })}`;
+    if (!Number.isNaN(date.getTime())) {
+      const label = date.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' });
+      const days = deadlineDaysRemaining(job);
+      return Number.isFinite(days) && days >= 0 && days <= 3 ? `마감 임박 · ${label}` : `마감 ${label}`;
+    }
   }
   return job.deadlineLabel ? `마감 ${job.deadlineLabel}` : '';
 }
@@ -406,6 +430,7 @@ function filteredJobs() {
   });
   const sort = $('sort').value;
   jobs.sort((a, b) => {
+    let exactDistanceDiff = 0;
     if (sort === 'newest') return (Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0);
     if (sort === 'oldest') return (Date.parse(a.postedAt) || 0) - (Date.parse(b.postedAt) || 0);
     if (sort === 'company') return a.company.localeCompare(b.company, 'ko');
@@ -418,9 +443,14 @@ function filteredJobs() {
       if (bucketDiff) return bucketDiff;
       const aDistance = aSummary?.km;
       const bDistance = bSummary?.km;
-      const distanceDiff = (Number.isFinite(aDistance) ? aDistance : Number.POSITIVE_INFINITY)
+      const distanceBand = (distance) => !Number.isFinite(distance) ? Number.POSITIVE_INFINITY
+        : distance <= 10 ? 0
+          : distance <= 20 ? 1
+            : distance <= 40 ? 2 : 3;
+      const bandDiff = distanceBand(aDistance) - distanceBand(bDistance);
+      if (bandDiff) return bandDiff;
+      exactDistanceDiff = (Number.isFinite(aDistance) ? aDistance : Number.POSITIVE_INFINITY)
         - (Number.isFinite(bDistance) ? bDistance : Number.POSITIVE_INFINITY);
-      if (distanceDiff) return distanceDiff;
     }
     const aReviewed = state.reviewedIds.has(a.id) ? 1 : 0;
     const bReviewed = state.reviewedIds.has(b.id) ? 1 : 0;
@@ -439,6 +469,10 @@ function filteredJobs() {
     const requirementRank = { clear: 3, routine_check: 2, hard_check: 0 };
     const requirementDiff = (requirementRank[b.requirementsStatus] || 0) - (requirementRank[a.requirementsStatus] || 0);
     if (requirementDiff) return requirementDiff;
+    if (sort === 'distance') {
+      const deadlineDiff = deadlinePriority(b) - deadlinePriority(a);
+      if (deadlineDiff) return deadlineDiff;
+    }
     const compensationRank = (job) => {
       const summary = salarySummary(job);
       return summary.hasAmount ? 2 : summary.value !== '금액 미공개' ? 1 : 0;
@@ -452,6 +486,7 @@ function filteredJobs() {
     if (unknownDiff) return unknownDiff;
     const verificationDiff = (Date.parse(b.lastVerifiedAt) || 0) - (Date.parse(a.lastVerifiedAt) || 0);
     if (verificationDiff) return verificationDiff;
+    if (sort === 'distance' && exactDistanceDiff) return exactDistanceDiff;
     return (Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0);
   });
   return jobs;
@@ -1341,7 +1376,8 @@ function renderSourceHealth(sourceStatus = []) {
     || Number(source.accessRestrictedCount || 0) > 0
     || Number(source.listFallbackCount || 0) > 0
   ));
-  const recovered = (sourceStatus || []).filter((source) => source.ok && Number(source.detailRecoveredCount || 0) > 0);
+  const recovered = (sourceStatus || []).filter((source) => source.ok && (
+    Number(source.detailRecoveredCount || 0) > 0 || Number(source.continuityRecoveredCount || 0) > 0));
   const sourceMetrics = state.meta?.sourceMetrics || {};
   const qualityWarnings = Object.values(sourceMetrics).filter((metric) =>
     ['weak'].includes(metric?.qualityTier) || ['unstable', 'degraded'].includes(metric?.reliabilityState));
@@ -1368,7 +1404,12 @@ function renderSourceHealth(sourceStatus = []) {
     if (Number(source.listFallbackCount || 0) > 0) details.push(`상세 접근 제한 → 공개 목록 근거 ${Number(source.listFallbackCount)}건 유지`);
     return `${source.source} · ${details.join(' · ')}`;
   });
-  const recoveryText = recovered.map((source) => `${source.source} · 대체 상세 구조 ${Number(source.detailRecoveredCount)}건 복구`);
+  const recoveryText = recovered.map((source) => {
+    const details = [];
+    if (Number(source.detailRecoveredCount || 0) > 0) details.push(`대체 상세 구조 ${Number(source.detailRecoveredCount)}건 복구`);
+    if (Number(source.continuityRecoveredCount || 0) > 0) details.push(`검색창 이탈 ${Number(source.continuityRecoveredCount)}건 상세 재확인`);
+    return `${source.source} · ${details.join(' · ')}`;
+  });
   const qualityText = qualityWarnings
     .filter((metric) => !failed.some((source) => source.source === metric.source))
     .map((metric) => {

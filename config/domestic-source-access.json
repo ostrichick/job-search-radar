@@ -24,6 +24,27 @@
       "reason": "개인 의사결정용으로 공개 검색 결과와 상세 JobPosting 구조화 데이터/모집요강 텍스트를 사용한다. 로그인·CAPTCHA·차단 우회는 하지 않는다.",
       "collectionPath": "https://www.jobkorea.co.kr/Search/?stext={전주|완주} (후보 발견 전용) → /Recruit/GI_Read/{id} 상세 근무지로 전주·완주 최종 판정"
     },
+    "잡플래닛": {
+      "status": "blocked_public_access",
+      "publicHumanPages": false,
+      "automatedCollection": false,
+      "reason": "2026-10-05 전주 채용 공개 검색 URL의 무로그인 직접 요청이 HTTP 403을 반환했다. 로그인·차단 우회 없이 안정적인 공개 수집 경로를 확인하지 못했으므로 통합하지 않는다.",
+      "checkedPath": "https://www.jobplanet.co.kr/job/search?query=%EC%A0%84%EC%A3%BC"
+    },
+    "사람인": {
+      "status": "deferred_workplace_not_branch_verifiable",
+      "publicHumanPages": true,
+      "automatedCollection": false,
+      "reason": "전주·완주 지역 코드 목록과 상세는 로그인 없이 공개되지만, 실제 공고의 지역은 복수 시·군 단위로 노출되고 상세 지도 주소가 회사 본사 주소인 사례가 확인됐다. 같은 회사·역할의 실제 지점/근무지를 안전하게 판별할 수 없어 현재 cross-platform branch dedupe 계약을 만족하지 못하므로 보류한다.",
+      "checkedPath": "https://www.saramin.co.kr/zf_user/jobs/list/domestic?loc_cd=113130 → /zf_user/jobs/relay/view?rec_idx={id}"
+    },
+    "인크루트": {
+      "status": "deferred_workplace_not_branch_verifiable",
+      "publicHumanPages": true,
+      "automatedCollection": false,
+      "reason": "전주 키워드 공개 페이지는 로그인 없이 열리지만 이번 감사에서 전주·완주 실제 지점 근무지를 안정적으로 검증하는 공개 구조화 계약을 확보하지 못했다. 지역 타깃/복수 근무지 오탐을 피하기 위해 통합하지 않는다.",
+      "checkedPath": "https://job.incruit.com/jobdb_list/searchjob.asp?col=job&kw=%EC%A0%84%EC%A3%BC"
+    },
     "고용24": {
       "status": "ready_requires_auth_key",
       "publicHumanPages": true,

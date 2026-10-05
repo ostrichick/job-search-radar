@@ -82,13 +82,17 @@ for (const job of feed.jobs) {
   assert.ok(job.requirementsLabel, `${job.id} must have a user-readable requirements label`);
   assert.ok(job.contentFingerprint, `${job.id} must have a content fingerprint`);
   if (!['archived_missing', 'source_error'].includes(job.listingStatus)) {
-    assert.equal(job.contentFingerprintVersion, 2, `${job.id} current source fingerprint must use contract v2`);
+    assert.equal(job.contentFingerprintVersion, 3, `${job.id} current source fingerprint must use contract v3`);
     assert.ok(job.sourceFieldFingerprints && typeof job.sourceFieldFingerprints === 'object',
       `${job.id} current source fingerprint must retain per-field hashes`);
   }
   assert.ok(job.firstSeenAt, `${job.id} must retain firstSeenAt`);
   assert.ok(job.lastVerifiedAt || job.listingStatus === 'archived_missing',
     `${job.id} must retain last successful verification timestamp`);
+  if (!['archived_missing', 'source_error'].includes(job.listingStatus) && job.verifiedAt && job.lastVerifiedAt) {
+    assert.ok(Date.parse(job.lastVerifiedAt) >= Date.parse(job.verifiedAt),
+      `${job.id} lastVerifiedAt must not precede the source verification timestamp`);
+  }
   assert.ok(Array.isArray(job.verificationHistory) && job.verificationHistory.length > 0,
     `${job.id} must retain bounded verification history`);
   assert.ok(job.verificationHistory.length <= 24, `${job.id} verification history must remain bounded`);

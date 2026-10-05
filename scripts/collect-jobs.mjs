@@ -32,7 +32,7 @@ const dayMs = 86400000;
 const verificationHistoryLimit = 24;
 const sourceMetricHistoryLimit = 24;
 const verificationCheckpointMs = 7 * dayMs;
-const contentFingerprintVersion = 2;
+const contentFingerprintVersion = 3;
 const recommendationPolicyVersion = 2;
 const defaultLocationReference = Object.freeze({
   id: 'kr-jeonbuk-jeonju-deokjin-sanjeong',
@@ -289,10 +289,15 @@ function sourceContentSnapshot(job) {
     title: text(job.title),
     company: text(job.company),
     location: text(job.location),
+    workAddress: text(job.workAddress),
     type: text(job.type),
     // Only source-provided salary metadata belongs in the original-source fingerprint.
     // Parsed/display salary is derived from the description and can change when parser policy changes.
     salary: text(job.salaryMetadataRaw || ''),
+    experience: text(job.experience),
+    education: text(job.education),
+    deadlineType: text(job.deadlineType),
+    deadlineDate: text(job.deadlineDate),
     description: stableSourceDescription(job.source, job._fullDescription || job.description),
     tags: Array.isArray(job.tags) ? job.tags.map(text).filter(Boolean).sort() : [],
     countryCode: text(job.countryCode),
@@ -354,7 +359,7 @@ function rebaseLegacyContentHistory(history, job, nowIso, fingerprint) {
       fromStatus: `v${previousVersion || 1}`,
       toStatus: `v${contentFingerprintVersion}`,
       fingerprint,
-      reason: '원문 변경 판정 기준을 원시 소스 필드 기반 v2로 재설정함. 파생 급여 표시와 Remote OK 변동성 anti-spam footer는 원문 변경에서 제외함.'
+      reason: `원문 변경 판정 기준을 원시·구조화 소스 필드 기반 v${contentFingerprintVersion}로 재설정함. 파생 급여 표시와 Remote OK 변동성 anti-spam footer는 원문 변경에서 제외함.`
     }),
     rebased: true,
     reclassified
@@ -1034,7 +1039,7 @@ function localDetailError(code, message) {
 
 function koreanVisibleDeadline(value) {
   const plain = text(value);
-  if (/모집마감\s*(?:상시모집|상시채용)|\b상시(?:모집|채용)\b/.test(plain)) {
+  if (/(?:모집마감|마감일)\s*[:：]?\s*(?:상시모집|상시채용)|상시(?:모집|채용)/.test(plain)) {
     return { type: 'rolling', date: '', label: '상시채용' };
   }
   const fixed = plain.match(/(?:모집마감|마감일)\s*(20\d{2})[.\-/](\d{1,2})[.\-/](\d{1,2})/);
@@ -2293,6 +2298,17 @@ function isJeonjuWanjuLocal(job) {
     && ['전주시', '완주군'].includes(job?.domesticRegion?.city);
 }
 
+function localContinuityCandidates(source, discoveredCandidates = [], previousJobs = [], limit = 12) {
+  const discoveredIds = new Set((discoveredCandidates || []).map((candidate) => text(candidate?.id)).filter(Boolean));
+  return (previousJobs || [])
+    .filter((job) => job?.source === source)
+    .filter((job) => job?.sourcePostingId && !discoveredIds.has(text(job.sourcePostingId)))
+    .filter((job) => isJeonjuWanjuLocal(job))
+    .filter((job) => !['expired', 'talent_pool'].includes(job.listingStatus))
+    .sort((a, b) => (Date.parse(b.lastVerifiedAt || b.verifiedAt || '') || 0) - (Date.parse(a.lastVerifiedAt || a.verifiedAt || '') || 0))
+    .slice(0, Math.max(0, limit));
+}
+
 async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detailUrl, perSearchLimit = 30, previousJobs = [] }) {
   const candidates = [];
   const candidateIndexes = new Map();
@@ -2335,12 +2351,34 @@ async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detail
   });
   const successful = results.filter((result) => result?.ok && result.value).map((result) => result.value);
   if (!successful.length) throw new Error(source + ' public detail parsing failed for all discovered postings');
+  const continuityCandidates = localContinuityCandidates(source, candidates, previousJobs);
+  const continuityResults = await mapLimit(continuityCandidates, 3, async (previousJob) => {
+    const id = text(previousJob.sourcePostingId);
+    const url = detailUrl(id);
+    const html = await fetchText(url);
+    const recovered = structuredLocalBoardCandidate(source, id, url, html);
+    recovered._continuityRecovered = true;
+    return recovered;
+  });
+  const continuityRecovered = continuityResults
+    .filter((result) => result?.ok && result.value && isJeonjuWanjuLocal(result.value))
+    .map((result) => result.value);
+  const successfulIds = new Set(successful.map((job) => `${job.source}:${job.sourcePostingId}`));
+  for (const recovered of continuityRecovered) {
+    const key = `${recovered.source}:${recovered.sourcePostingId}`;
+    if (!successfulIds.has(key)) {
+      successful.push(recovered);
+      successfulIds.add(key);
+    }
+  }
   const detailRecoveredCount = successful.filter((job) => job._detailRecovered).length;
   const listFallbackCount = successful.filter((job) => job._listFallback).length;
+  const continuityRecoveredCount = successful.filter((job) => job._continuityRecovered).length;
   for (const job of successful) {
     delete job._detailRecovered;
     delete job._detailRecoveryKind;
     delete job._listFallback;
+    delete job._continuityRecovered;
   }
   const local = successful.filter(isJeonjuWanjuLocal);
   const matched = local.filter((job) => Number(job.score || 0) >= 10);
@@ -2348,20 +2386,22 @@ async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detail
   const accessRestrictedCount = results.filter((result) => !result?.ok && result?.error?.code === 'access_restricted').length;
   const detailFailureCount = results.filter((result) => !result?.ok
     && !['workplace_unverified', 'access_restricted'].includes(result?.error?.code)).length;
-  return sourceCollection(matched, candidates.length, {
+  return sourceCollection(matched, candidates.length + continuityCandidates.length, {
     localeEligibleCount: local.length,
     profileMatchedCount: matched.length,
     detailFailureCount,
     workplaceUnverifiedCount,
     accessRestrictedCount,
     listFallbackCount,
-    detailRecoveredCount
+    detailRecoveredCount,
+    continuityProbeCount: continuityCandidates.length,
+    continuityRecoveredCount
   });
 }
 
 const albamonSearchPages = Object.freeze([1, 2, 3, 4, 5, 6]);
 
-async function collectAlbamon() {
+async function collectAlbamon(previousJobs = []) {
   return collectStructuredLocalBoard({
     source: '알바몬',
     searchUrls: albamonSearchPages.map((page) => ({
@@ -2371,7 +2411,8 @@ async function collectAlbamon() {
     })),
     idRegex: /\/jobs\/detail\/(\d+)/gi,
     detailUrl: (id) => 'https://www.albamon.com/jobs/detail/' + id,
-    perSearchLimit: 48
+    perSearchLimit: 48,
+    previousJobs
   });
 }
 
@@ -2402,7 +2443,7 @@ async function collectAlba(previousJobs = []) {
   });
 }
 
-async function collectJobKorea() {
+async function collectJobKorea(previousJobs = []) {
   return collectStructuredLocalBoard({
     source: '잡코리아',
     searchUrls: ['%EC%A0%84%EC%A3%BC', '%EC%99%84%EC%A3%BC'].flatMap((term) => [
@@ -2412,7 +2453,8 @@ async function collectJobKorea() {
     ]),
     idRegex: /\/Recruit\/GI_Read\/(\d+)/gi,
     detailUrl: (id) => 'https://www.jobkorea.co.kr/Recruit/GI_Read/' + id,
-    perSearchLimit: 24
+    perSearchLimit: 24,
+    previousJobs
   });
 }
 
@@ -3434,6 +3476,8 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       accessRestrictedCount: Number(run.accessRestrictedCount || 0),
       listFallbackCount: Number(run.listFallbackCount || 0),
       detailRecoveredCount: Number(run.detailRecoveredCount || 0),
+      continuityProbeCount: Number(run.continuityProbeCount || 0),
+      continuityRecoveredCount: Number(run.continuityRecoveredCount || 0),
       ...(status.error ? { error: String(status.error).slice(0, 240) } : {})
     };
     const history = appendLimitedHistory(previousHistory, historyEntry, sourceMetricHistoryLimit);
@@ -3469,6 +3513,8 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       accessRestrictedCount: Number(run.accessRestrictedCount || 0),
       listFallbackCount: Number(run.listFallbackCount || 0),
       detailRecoveredCount: Number(run.detailRecoveredCount || 0),
+      continuityProbeCount: Number(run.continuityProbeCount || 0),
+      continuityRecoveredCount: Number(run.continuityRecoveredCount || 0),
       matchedCount,
       keptCount,
       recommendedCount,
@@ -3522,9 +3568,9 @@ export async function collectJobs({ includeManual = true, persist = true, previo
     ['LILT Production', collectLilt],
     ['Meridial', collectMeridial],
     ['OneForma', collectOneForma],
-    ['알바몬', collectAlbamon],
+    ['알바몬', () => collectAlbamon(fallbackJobs)],
     ['알바천국', () => collectAlba(fallbackJobs)],
-    ['잡코리아', collectJobKorea],
+    ['잡코리아', () => collectJobKorea(fallbackJobs)],
     ['We Work Remotely', collectWeWorkRemotely],
     ['Jobicy', collectJobicy],
     ['Remote OK', collectRemoteOk],
@@ -3550,7 +3596,6 @@ export async function collectJobs({ includeManual = true, persist = true, previo
   }
   const previousSourceMetrics = fallbackFeed?.sourceMetrics || {};
   const carryFallbackJobs = fallbackJobsForConfiguredSources(fallbackJobs, { work24Configured: Boolean(work24AuthKey) });
-  const now = Date.now();
   const jobs = [];
   const sourceStatus = [];
   const sourceRuns = new Map();
@@ -3567,7 +3612,9 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         workplaceUnverifiedCount: Number(result?.workplaceUnverifiedCount || 0),
         accessRestrictedCount: Number(result?.accessRestrictedCount || 0),
         listFallbackCount: Number(result?.listFallbackCount || 0),
-        detailRecoveredCount: Number(result?.detailRecoveredCount || 0)
+        detailRecoveredCount: Number(result?.detailRecoveredCount || 0),
+        continuityProbeCount: Number(result?.continuityProbeCount || 0),
+        continuityRecoveredCount: Number(result?.continuityRecoveredCount || 0)
       });
       jobs.push(...collected);
       sourceStatus.push({
@@ -3579,7 +3626,9 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         ...(result?.workplaceUnverifiedCount ? { workplaceUnverifiedCount: Number(result.workplaceUnverifiedCount) } : {}),
         ...(result?.accessRestrictedCount ? { accessRestrictedCount: Number(result.accessRestrictedCount) } : {}),
         ...(result?.listFallbackCount ? { listFallbackCount: Number(result.listFallbackCount) } : {}),
-        ...(result?.detailRecoveredCount ? { detailRecoveredCount: Number(result.detailRecoveredCount) } : {})
+        ...(result?.detailRecoveredCount ? { detailRecoveredCount: Number(result.detailRecoveredCount) } : {}),
+        ...(result?.continuityProbeCount ? { continuityProbeCount: Number(result.continuityProbeCount) } : {}),
+        ...(result?.continuityRecoveredCount ? { continuityRecoveredCount: Number(result.continuityRecoveredCount) } : {})
       });
     } catch (error) {
       const preserved = fallbackJobs.filter((job) => job.source === name).map(markPreservedSourceFailure);
@@ -3588,6 +3637,10 @@ export async function collectJobs({ includeManual = true, persist = true, previo
       sourceStatus.push({ source: name, ok: false, count: 0, preserved: preserved.length, error: String(error.message ?? error) });
     }
   }
+  // Use a collection-completion timestamp for lifecycle reconciliation. Individual
+  // jobs are verified while network collection is in progress, so a start timestamp
+  // would make lastVerifiedAt earlier than the job's own verifiedAt.
+  const now = Date.now();
   const deduped = carryForwardLegacyIds(dedupe(jobs), carryFallbackJobs);
   const reconciled = reconcileVerificationHistory(deduped, carryFallbackJobs, now);
   const keptCurrent = reconciled.filter(keepInFeed);
@@ -3664,6 +3717,7 @@ export {
   localCrossPlatformDuplicateKey,
   structuredLocalBoardCandidate,
   isJeonjuWanjuLocal,
+  localContinuityCandidates,
   parseWork24ListXml,
   work24Candidate,
   fallbackJobsForConfiguredSources,

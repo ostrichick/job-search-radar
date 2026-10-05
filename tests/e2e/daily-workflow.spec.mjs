@@ -393,7 +393,26 @@ test('전주·완주 로컬 기본 탐색은 출근형을 거리순으로 보고
 });
 
 test('거리 전체 보기에서는 근거리 출근형 → 주소 미확인 출근형 → 원격 순으로 정렬한다', async ({ page }) => {
-  await useFeed(page, () => feed([...work24LocalJobs, appierRemoteJob]));
+  const imminentDate = new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10);
+  const nearRolling = job({
+    ...work24LocalJobs[0],
+    id: 'job:near-rolling-retail',
+    title: '가까운 상시 매장 지원',
+    score: 35,
+    category: '일반·파트타임',
+    deadlineType: 'rolling', deadlineDate: '', deadlineLabel: '상시채용',
+    domesticRegion: { ...work24LocalJobs[0].domesticRegion, lat: 35.8500, lon: 127.1700 }
+  });
+  const fartherImminent = job({
+    ...work24LocalJobs[0],
+    id: 'job:farther-imminent-office',
+    title: '조금 더 먼 마감임박 사무 지원',
+    score: 35,
+    category: '사무·운영',
+    deadlineType: 'fixed', deadlineDate: imminentDate, deadlineLabel: imminentDate,
+    domesticRegion: { ...work24LocalJobs[0].domesticRegion, lat: 35.8900, lon: 127.1600 }
+  });
+  await useFeed(page, () => feed([nearRolling, fartherImminent, work24LocalJobs[2], appierRemoteJob]));
   await page.goto('/');
   await page.locator('#marketDomestic').click();
   await page.locator('#remote').selectOption('');
@@ -401,7 +420,8 @@ test('거리 전체 보기에서는 근거리 출근형 → 주소 미확인 출
   await page.locator('#domesticLocality').selectOption('');
 
   const titles = await page.locator('.job-card .title').allTextContents();
-  expect(titles).toEqual(['일반 사무원', '운영지원 사무원', '자료입력 보조', '[Part Time] AI Creative QC Reviewer, Korea']);
+  expect(titles).toEqual(['조금 더 먼 마감임박 사무 지원', '가까운 상시 매장 지원', '자료입력 보조', '[Part Time] AI Creative QC Reviewer, Korea']);
+  await expect(page.locator('.job-card').first().locator('.posted')).toContainText('마감 임박');
   await expect(page.locator('.job-card').last().locator('.distance-value')).toHaveText('원격 · 출근 거리 비해당');
 });
 
@@ -824,7 +844,7 @@ test('부분 소스 실패를 별도 경고하고 보존 공고로 바로 이동
     ...feed([...defaultJobs, preserved]),
     sourceStatus: [
       { source: 'RWS TrainAI', ok: true, count: 1 },
-      { source: '알바천국', ok: true, count: 7, workplaceUnverifiedCount: 2, accessRestrictedCount: 1, detailRecoveredCount: 2 },
+      { source: '알바천국', ok: true, count: 7, workplaceUnverifiedCount: 2, accessRestrictedCount: 1, detailRecoveredCount: 2, continuityRecoveredCount: 1 },
       { source: 'OneForma', ok: false, count: 0, preserved: 1, error: '503' }
     ]
   };
@@ -835,6 +855,7 @@ test('부분 소스 실패를 별도 경고하고 보존 공고로 바로 이동
   await expect(page.locator('#sourceHealth')).toContainText('근무지 확인 불가 2건 제외');
   await expect(page.locator('#sourceHealth')).toContainText('로그인·연령 인증 필요 1건 제외');
   await expect(page.locator('#sourceHealth')).toContainText('대체 상세 구조 2건 복구');
+  await expect(page.locator('#sourceHealth')).toContainText('검색창 이탈 1건 상세 재확인');
   await expect(page.locator('#showSourceErrors')).toContainText('보존 공고 1개');
   await page.locator('#showSourceErrors').click();
   await expect(page.locator('.job-card')).toHaveCount(1);
