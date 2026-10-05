@@ -725,6 +725,8 @@ test('collector 병합으로 ID가 바뀌어도 legacyIds가 관심·지원·숨
     }));
   });
   await page.goto('/');
+  await expect.poll(async () => page.evaluate(() => JSON.parse(localStorage.getItem('jobFavorites') || '[]')))
+    .toContain('job:merged-local-planned');
 
   const migrated = await page.evaluate(() => ({
     favorites: JSON.parse(localStorage.getItem('jobFavorites') || '[]'),
