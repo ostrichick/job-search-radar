@@ -263,6 +263,48 @@
     "summary": "Arbeitnow 공개 Job Board API에서 가져오는 집계 공고입니다. 고용주의 공식 모집원 여부는 원문에서 별도 확인해야 합니다.",
     "evidence": [{"type": "official_feed", "label": "공개 API", "url": "https://www.arbeitnow.com/api/job-board-api"}]
   },
+  "알바몬": {
+    "kind": "job_board",
+    "coverage": "bounded_window",
+    "evidenceRefreshability": "public_html_structured_data",
+    "listingLabel": "알바몬 공개 공고",
+    "paymentStatus": "not_payer",
+    "paymentLabel": "지급 주체 아님",
+    "paymentEvidenceState": "not_applicable",
+    "paymentEvidenceLabel": "지급 주체 아님",
+    "paymentConfidence": "not_applicable",
+    "reviewedAt": "2026-10-05",
+    "summary": "로그인 없이 공개된 알바몬 전북 지역 페이지에서 공고 ID를 찾고, 각 상세 페이지의 JobPosting 구조화 데이터로 실제 근무지가 전주·완주인지 다시 확인합니다.",
+    "evidence": [{"type": "public_page", "label": "알바몬 전북 지역 채용정보", "url": "https://www.albamon.com/jobs/area/home?areas=M000"}]
+  },
+  "알바천국": {
+    "kind": "job_board",
+    "coverage": "bounded_window",
+    "evidenceRefreshability": "public_html_structured_data",
+    "listingLabel": "알바천국 공개 공고",
+    "paymentStatus": "not_payer",
+    "paymentLabel": "지급 주체 아님",
+    "paymentEvidenceState": "not_applicable",
+    "paymentEvidenceLabel": "지급 주체 아님",
+    "paymentConfidence": "not_applicable",
+    "reviewedAt": "2026-10-05",
+    "summary": "로그인 없이 공개된 알바천국 검색 결과에서 공고 ID를 찾고, 상세 페이지의 JobPosting 구조화 데이터로 실제 근무지가 전주·완주인지 검증합니다.",
+    "evidence": [{"type": "public_page", "label": "알바천국 공개 검색", "url": "https://www.alba.co.kr/search/Search?wsSrchWord=%EC%A0%84%EC%A3%BC"}]
+  },
+  "잡코리아": {
+    "kind": "job_board",
+    "coverage": "bounded_window",
+    "evidenceRefreshability": "public_html_structured_data",
+    "listingLabel": "잡코리아 공개 공고",
+    "paymentStatus": "not_payer",
+    "paymentLabel": "지급 주체 아님",
+    "paymentEvidenceState": "not_applicable",
+    "paymentEvidenceLabel": "지급 주체 아님",
+    "paymentConfidence": "not_applicable",
+    "reviewedAt": "2026-10-05",
+    "summary": "로그인 없이 공개된 잡코리아 검색 결과에서 공고 ID를 찾고, 상세 페이지의 JobPosting 구조화 데이터와 공개 모집요강 텍스트로 실제 근무지·급여·마감을 확인합니다.",
+    "evidence": [{"type": "public_page", "label": "잡코리아 공개 검색", "url": "https://www.jobkorea.co.kr/Search/?stext=%EC%A0%84%EC%A3%BC"}]
+  },
   "고용24": {
     "kind": "official_government",
     "coverage": "current_catalog",

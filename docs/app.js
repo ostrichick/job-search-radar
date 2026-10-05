@@ -1335,10 +1335,11 @@ function renderSourceHealth(sourceStatus = []) {
   const panel = $('sourceHealth');
   if (!panel) return;
   const failed = (sourceStatus || []).filter((source) => !source.ok);
+  const partial = (sourceStatus || []).filter((source) => source.ok && Number(source.detailFailureCount || 0) > 0);
   const sourceMetrics = state.meta?.sourceMetrics || {};
   const qualityWarnings = Object.values(sourceMetrics).filter((metric) =>
     ['weak'].includes(metric?.qualityTier) || ['unstable', 'degraded'].includes(metric?.reliabilityState));
-  if (!failed.length && !qualityWarnings.length) {
+  if (!failed.length && !partial.length && !qualityWarnings.length) {
     panel.hidden = true;
     panel.replaceChildren();
     return;
@@ -1348,9 +1349,12 @@ function renderSourceHealth(sourceStatus = []) {
   const title = document.createElement('strong');
   title.textContent = failed.length
     ? `일부 소스 확인 실패 · ${failed.length}개`
+    : partial.length
+      ? `일부 상세 확인 실패 · ${partial.length}개 소스`
     : `소스 품질 주의 · ${qualityWarnings.length}개`;
   const text = document.createElement('span');
   const failureText = failed.map((source) => `${source.source}${source.preserved ? ` · 이전 ${source.preserved}개 보존` : ''}`);
+  const partialText = partial.map((source) => `${source.source} · 상세 ${Number(source.detailFailureCount)}건 실패`);
   const qualityText = qualityWarnings
     .filter((metric) => !failed.some((source) => source.source === metric.source))
     .map((metric) => {
@@ -1359,7 +1363,7 @@ function renderSourceHealth(sourceStatus = []) {
       }
       return `${metric.source} · 유효 ${metric.keptCount || 0}/${metric.matchedCount || 0} · 노이즈 ${Math.round(Number(metric.noiseRate || 0) * 100)}%`;
     });
-  text.textContent = [...failureText, ...qualityText].join(' / ');
+  text.textContent = [...failureText, ...partialText, ...qualityText].join(' / ');
   summary.append(title, text);
   panel.replaceChildren(summary);
   if (preserved > 0) {

@@ -29,6 +29,7 @@ assert.ok(!feed.domesticProvinceOptions.includes('광주광역시') && !feed.dom
 
 const ids = feed.jobs.map((job) => job.id);
 assert.equal(new Set(ids).size, ids.length, 'stable job ids must be unique');
+const localBoardSources = new Set(['알바몬', '알바천국', '잡코리아']);
 
 for (const job of feed.jobs) {
   assert.ok(['remote', 'hybrid', 'onsite', 'unknown'].includes(job.workplaceMode), `${job.id} workplaceMode must use the canonical enum`);
@@ -117,6 +118,23 @@ for (const job of feed.jobs) {
     assert.ok(job.workAddress && job.domesticRegion?.evidenceLevel === 'source_structured', `${job.id} Work24 must retain structured workplace evidence`);
     assert.match(job.url || '', /^https:\/\/www\.work24\.go\.kr\/wk\/a\/b\/1500\/empDetailAuthView\.do\?wantedAuthNo=/, `${job.id} Work24 must link to the mandated detail page`);
     assert.ok(['fixed', 'rolling', 'unknown', ''].includes(job.deadlineType || ''), `${job.id} Work24 deadline type must be structured`);
+  }
+  if (localBoardSources.has(job.source)) {
+    assert.equal(job.sourceKind, 'job_board', `${job.id} Korean public platform must keep job-board intermediary semantics`);
+    assert.ok(job.sourcePostingId && job.platform === job.source, `${job.id} Korean public platform must retain stable platform posting identity`);
+    assert.ok(job.workAddress && job.domesticRegion?.evidenceLevel === 'source_structured',
+      `${job.id} Korean public platform must retain structured workplace evidence from the detail page`);
+    assert.equal(job.remote, false, `${job.id} commute-local platform row must not be remote`);
+    assert.equal(job.domesticRegion?.province, '전북특별자치도', `${job.id} commute-local platform row must be in Jeonbuk`);
+    assert.ok(['전주시', '완주군'].includes(job.domesticRegion?.city), `${job.id} commute-local platform row must be in Jeonju or Wanju`);
+    assert.doesNotMatch(`${job.title || ''} ${job.description || ''}`, /전국\s*(?:채용|모집|근무|지역|대상)|전국채용/,
+      `${job.id} nationwide posting must not be retained as a local commute job`);
+    const expectedUrl = {
+      '알바몬': /^https:\/\/www\.albamon\.com\/jobs\/detail\/\d+/,
+      '알바천국': /^https:\/\/www\.alba\.co\.kr\/job\/Detail\?adid=\d+/,
+      '잡코리아': /^https:\/\/www\.jobkorea\.co\.kr\/Recruit\/GI_Read\/\d+/
+    }[job.source];
+    assert.match(job.url || '', expectedUrl, `${job.id} must link to the public source detail page`);
   }
   if (['caution_repeated', 'mixed_caution', 'caution_single', 'policy_only', 'evidence_expired'].includes(job.paymentEvidenceState)) {
     assert.ok(Array.isArray(job.paymentSignals) && job.paymentSignals.length > 0,
