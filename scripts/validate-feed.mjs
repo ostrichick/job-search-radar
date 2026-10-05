@@ -36,7 +36,14 @@ for (const job of feed.jobs) {
   assert.equal(Boolean(job.remote), job.workplaceMode === 'remote', `${job.id} remote boolean must agree with canonical workplaceMode`);
   assert.ok(Array.isArray(job.marketScopes) && job.marketScopes.length > 0, `${job.id} must declare at least one market scope`);
   assert.ok(job.marketScopes.every((scope) => ['overseas_remote', 'domestic'].includes(scope)), `${job.id} market scopes must use the supported contract`);
+  if (job.workplaceMode === 'remote') {
+    assert.deepEqual(job.marketScopes, ['overseas_remote'],
+      `${job.id} fully remote work must stay in the overseas/remote market even when Korea is an eligibility region`);
+    assert.equal(job.domesticRegion, null,
+      `${job.id} fully remote work must not expose eligibility geography as a domestic workplace`);
+  }
   if (job.marketScopes.includes('domestic')) {
+    assert.notEqual(job.workplaceMode, 'remote', `${job.id} domestic discovery must represent an onsite/hybrid workplace`);
     assert.ok(job.domesticRegion && typeof job.domesticRegion === 'object', `${job.id} domestic discovery requires structured region evidence`);
     assert.equal(job.domesticRegion.country, '대한민국', `${job.id} domestic region must resolve to Korea`);
     assert.ok(job.domesticRegion.evidenceLevel, `${job.id} domestic region must explain its evidence level`);

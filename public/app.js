@@ -47,6 +47,26 @@ const filterDefaults = {
   overseas_remote: { query: '', source: '', category: '', remote: '', eligibility: 'likely', domesticProvince: '', domesticLocality: '', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score', statusFilter: 'active' },
   domestic: { query: '', source: '', category: '', remote: 'local', eligibility: '', domesticProvince: '전북특별자치도', domesticLocality: '전주·완주', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'distance', statusFilter: 'active' }
 };
+const currentFilterSchemaVersion = 8;
+const legacyDomesticFilterDefaults = [
+  { query: '', source: '', category: '', remote: '', eligibility: '', domesticProvince: '', domesticLocality: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score', statusFilter: 'active' },
+  { query: '', source: '', category: '', remote: '', eligibility: '', domesticProvince: '', domesticLocality: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'distance', statusFilter: 'active' },
+  { query: '', source: '', category: '', remote: '', eligibility: '', domesticProvince: '', domesticLocality: '', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score', statusFilter: 'active' },
+  { query: '', source: '', category: '', remote: '', eligibility: '', domesticProvince: '', domesticLocality: '', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'distance', statusFilter: 'active' }
+];
+function exactFilterState(value, expected) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const valueKeys = Object.keys(value).sort();
+  const expectedKeys = Object.keys(expected).sort();
+  return valueKeys.length === expectedKeys.length
+    && valueKeys.every((key, index) => key === expectedKeys[index] && value[key] === expected[key]);
+}
+function migrateDomesticFilterState(value, fromSchemaVersion = 0) {
+  if (Number(fromSchemaVersion || 0) >= currentFilterSchemaVersion) return value;
+  return legacyDomesticFilterDefaults.some((legacy) => exactFilterState(value, legacy))
+    ? { ...filterDefaults.domestic }
+    : value;
+}
 const legacySavedFilters = JSON.parse(localStorage.getItem('jobFilters') || '{}');
 const savedFiltersByMarket = JSON.parse(localStorage.getItem('jobFiltersByMarket') || '{}');
 const filterSchemaVersion = Number(localStorage.getItem('jobFilterSchemaVersion') || 0);
@@ -95,6 +115,14 @@ if (filterSchemaVersion < 7) {
   localStorage.setItem('jobFiltersByMarket', JSON.stringify(savedFiltersByMarket));
   localStorage.setItem('jobFilterSchemaVersion', '7');
 }
+if (filterSchemaVersion < currentFilterSchemaVersion) {
+  if (savedFiltersByMarket.domestic && typeof savedFiltersByMarket.domestic === 'object') {
+    savedFiltersByMarket.domestic = migrateDomesticFilterState(savedFiltersByMarket.domestic, filterSchemaVersion);
+    if (state.marketTab === 'domestic') localStorage.setItem('jobFilters', JSON.stringify(savedFiltersByMarket.domestic));
+  }
+  localStorage.setItem('jobFiltersByMarket', JSON.stringify(savedFiltersByMarket));
+  localStorage.setItem('jobFilterSchemaVersion', String(currentFilterSchemaVersion));
+}
 if (!savedFiltersByMarket.overseas_remote) savedFiltersByMarket.overseas_remote = { ...legacySavedFilters };
 const savedFilters = { ...filterDefaults[state.marketTab], ...(savedFiltersByMarket[state.marketTab] || {}) };
 function updateAdvancedFilterSummary() {
@@ -117,6 +145,7 @@ for (const id of controls) {
     }
     if (id === 'domesticLocality') updateDomesticNeighborhoodOptions('');
     persistFilters();
+    updateDynamicFilters();
     updateAdvancedFilterSummary();
     render();
   });
@@ -328,6 +357,84 @@ function domesticLocalityMatches(region = {}, value = '') {
   return region.locality === value || region.city === value || region.district === value;
 }
 
+function jobMatchesFilters(job, values = currentFilterValues(), { market = state.marketTab, ignore = [] } = {}) {
+  const skipped = ignore instanceof Set ? ignore : new Set(ignore);
+  if (!jobMarketScopes(job).includes(market)) return false;
+  const region = job.domesticRegion || {};
+  const value = (id) => String(values[id] ?? filterDefaults[market]?.[id] ?? '');
+  const q = value('query').trim().toLowerCase();
+  const source = value('source');
+  const category = value('category');
+  const remote = value('remote');
+  const eligibility = value('eligibility');
+  const domesticProvince = value('domesticProvince');
+  const domesticLocality = value('domesticLocality');
+  const domesticNeighborhood = value('domesticNeighborhood');
+  const compensationFilter = value('compensationFilter');
+  const ageFilter = Number(value('ageFilter') || 0);
+  const listingFilter = value('listingFilter');
+  const sourceKindFilter = value('sourceKindFilter');
+  const paymentFilter = value('paymentFilter');
+  const requirementsFilter = value('requirementsFilter');
+  const status = value('statusFilter');
+  const minScore = Number(value('minScore') || 0);
+  const haystack = [job.title, job.company, job.location, region.label, region.province, region.locality, job.description, job.category, salaryLabel(job), ...(job.tags || []), ...(job.matchedKeywords || [])].join(' ').toLowerCase();
+  const jobState = state.jobStates[job.id] || '';
+  const hidden = state.hiddenIds.has(job.id);
+  if (!skipped.has('query') && q && !haystack.includes(q)) return false;
+  if (!skipped.has('source') && source && job.source !== source && !(job.sources || []).includes(source)) return false;
+  if (!skipped.has('category') && category && job.category !== category) return false;
+  if (market === 'overseas_remote' && !skipped.has('eligibility')) {
+    if (eligibility === 'likely' && !['korea', 'worldwide'].includes(job.eligibilityCode)) return false;
+    if (eligibility && eligibility !== 'likely' && job.eligibilityCode !== eligibility) return false;
+  }
+  if (market === 'domestic') {
+    if (!skipped.has('domesticProvince') && domesticProvince && region.province !== domesticProvince) return false;
+    if (!skipped.has('domesticLocality') && !domesticLocalityMatches(region, domesticLocality)) return false;
+    if (!skipped.has('domesticNeighborhood') && domesticNeighborhood && region.neighborhood !== domesticNeighborhood) return false;
+  }
+  if (!skipped.has('compensationFilter') && !compensationMatches(job, compensationFilter)) return false;
+  if (!skipped.has('ageFilter') && ageFilter) {
+    const posted = Date.parse(job.postedAt);
+    if (!posted || ((Date.now() - posted) / 86400000) > ageFilter) return false;
+  }
+  if (!skipped.has('listingFilter')) {
+    if (listingFilter === 'active' && ['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus)) return false;
+    if (listingFilter && listingFilter !== 'active' && listingFilter !== 'all' && job.listingStatus !== listingFilter) return false;
+  }
+  if (!skipped.has('sourceKindFilter') && sourceKindFilter && job.sourceKind !== sourceKindFilter) return false;
+  if (!skipped.has('paymentFilter')) {
+    const paymentEvidence = paymentEvidenceState(job);
+    if (paymentFilter === 'exclude_caution' && ['caution_repeated', 'mixed_caution', 'caution_single'].includes(paymentEvidence)) return false;
+    if (paymentFilter === 'has_caution' && !['caution_repeated', 'mixed_caution', 'caution_single'].includes(paymentEvidence)) return false;
+    if (paymentFilter && !['', 'exclude_caution', 'has_caution'].includes(paymentFilter) && paymentEvidence !== paymentFilter) return false;
+  }
+  if (!skipped.has('requirementsFilter') && requirementsFilter && (job.requirementsStatus || 'clear') !== requirementsFilter) return false;
+  if (!skipped.has('minScore')) {
+    if (job.score < minScore) return false;
+    if (minScore >= 20 && job.recommendationEligible === false) return false;
+  }
+  if (!skipped.has('statusFilter')) {
+    if (status === 'active' && hidden) return false;
+    if (status === 'new' && !state.newIds.has(job.id)) return false;
+    if (status === 'unreviewed' && state.reviewedIds.has(job.id)) return false;
+    if (status === 'saved' && !state.favorites.has(job.id)) return false;
+    if (status === 'planned' && jobState !== 'planned') return false;
+    if (status === 'applied' && jobState !== 'applied') return false;
+    if (status === 'hidden' && !hidden) return false;
+  }
+  if (!skipped.has('remote')) {
+    if (remote === 'remote' && !job.remote) return false;
+    if (remote === 'local' && job.remote) return false;
+  }
+  return true;
+}
+
+function matchingJobs(options = {}) {
+  const values = options.values || currentFilterValues();
+  return state.jobs.filter((job) => jobMatchesFilters(job, values, options));
+}
+
 function workplaceModeLabel(job) {
   return ({ remote: '원격', hybrid: '하이브리드', onsite: '출근' })[job.workplaceMode] || '';
 }
@@ -379,67 +486,9 @@ function snapshotJob(id) {
 }
 
 function filteredJobs() {
-  const q = $('query').value.trim().toLowerCase();
-  const source = $('source').value;
-  const category = $('category').value;
-  const remote = $('remote').value;
-  const eligibility = $('eligibility').value;
-  const domesticProvince = $('domesticProvince').value;
-  const domesticLocality = $('domesticLocality').value;
-  const domesticNeighborhood = $('domesticNeighborhood').value;
-  const compensationFilter = $('compensationFilter').value;
-  const ageFilter = Number($('ageFilter').value || 0);
-  const listingFilter = $('listingFilter').value;
-  const sourceKindFilter = $('sourceKindFilter').value;
-  const paymentFilter = $('paymentFilter').value;
-  const requirementsFilter = $('requirementsFilter').value;
-  const status = $('statusFilter').value;
-  const minScore = Number($('minScore').value);
-  let jobs = state.jobs.filter((job) => {
-    if (!jobMarketScopes(job).includes(state.marketTab)) return false;
-    const region = job.domesticRegion || {};
-    const haystack = [job.title, job.company, job.location, region.label, region.province, region.locality, job.description, job.category, salaryLabel(job), ...(job.tags || []), ...(job.matchedKeywords || [])].join(' ').toLowerCase();
-    const jobState = state.jobStates[job.id] || '';
-    const hidden = state.hiddenIds.has(job.id);
-    if (q && !haystack.includes(q)) return false;
-    if (source && job.source !== source && !(job.sources || []).includes(source)) return false;
-    if (category && job.category !== category) return false;
-    if (state.marketTab === 'overseas_remote') {
-      if (eligibility === 'likely' && !['korea', 'worldwide'].includes(job.eligibilityCode)) return false;
-      if (eligibility && eligibility !== 'likely' && job.eligibilityCode !== eligibility) return false;
-    }
-    if (state.marketTab === 'domestic') {
-      if (domesticProvince && region.province !== domesticProvince) return false;
-      if (!domesticLocalityMatches(region, domesticLocality)) return false;
-      if (domesticNeighborhood && region.neighborhood !== domesticNeighborhood) return false;
-    }
-    if (!compensationMatches(job, compensationFilter)) return false;
-    if (ageFilter) {
-      const posted = Date.parse(job.postedAt);
-      if (!posted || ((Date.now() - posted) / 86400000) > ageFilter) return false;
-    }
-    if (listingFilter === 'active' && ['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus)) return false;
-    if (listingFilter && listingFilter !== 'active' && listingFilter !== 'all' && job.listingStatus !== listingFilter) return false;
-    if (sourceKindFilter && job.sourceKind !== sourceKindFilter) return false;
-    const paymentEvidence = paymentEvidenceState(job);
-    if (paymentFilter === 'exclude_caution' && ['caution_repeated', 'mixed_caution', 'caution_single'].includes(paymentEvidence)) return false;
-    if (paymentFilter === 'has_caution' && !['caution_repeated', 'mixed_caution', 'caution_single'].includes(paymentEvidence)) return false;
-    if (paymentFilter && !['', 'exclude_caution', 'has_caution'].includes(paymentFilter) && paymentEvidence !== paymentFilter) return false;
-    if (requirementsFilter && (job.requirementsStatus || 'clear') !== requirementsFilter) return false;
-    if (job.score < minScore) return false;
-    if (minScore >= 20 && job.recommendationEligible === false) return false;
-    if (status === 'active' && hidden) return false;
-    if (status === 'new' && !state.newIds.has(job.id)) return false;
-    if (status === 'unreviewed' && state.reviewedIds.has(job.id)) return false;
-    if (status === 'saved' && !state.favorites.has(job.id)) return false;
-    if (status === 'planned' && jobState !== 'planned') return false;
-    if (status === 'applied' && jobState !== 'applied') return false;
-    if (status === 'hidden' && !hidden) return false;
-    if (remote === 'remote' && !job.remote) return false;
-    if (remote === 'local' && job.remote) return false;
-    return true;
-  });
-  const sort = $('sort').value;
+  const values = currentFilterValues();
+  let jobs = matchingJobs({ values });
+  const sort = values.sort;
   jobs.sort((a, b) => {
     let exactDistanceDiff = 0;
     if (sort === 'newest') return (Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0);
@@ -499,13 +548,12 @@ function filteredJobs() {
   return jobs;
 }
 
-function renderStats() {
-  const marketJobs = state.jobs.filter((job) => jobMarketScopes(job).includes(state.marketTab));
-  const marketIds = new Set(marketJobs.map((job) => job.id));
-  const recommended = marketJobs.filter((j) => !state.hiddenIds.has(j.id) && isRecommendedJob(j)).length;
-  const saved = [...state.favorites].filter((id) => marketIds.has(id)).length;
-  const planned = Object.entries(state.jobStates).filter(([id, value]) => marketIds.has(id) && value === 'planned').length;
-  const unreviewed = marketJobs.filter((j) => !state.hiddenIds.has(j.id) && !state.reviewedIds.has(j.id) && isRecommendedJob(j)).length;
+function renderStats(filtered = matchingJobs()) {
+  const filteredIds = new Set(filtered.map((job) => job.id));
+  const recommended = filtered.filter((job) => isRecommendedJob(job)).length;
+  const saved = [...state.favorites].filter((id) => filteredIds.has(id)).length;
+  const planned = Object.entries(state.jobStates).filter(([id, value]) => filteredIds.has(id) && value === 'planned').length;
+  const unreviewed = filtered.filter((job) => !state.reviewedIds.has(job.id) && isRecommendedJob(job)).length;
   $('stats').innerHTML = [
     ['추천 공고', `${recommended}개`],
     ['관심 공고', `${saved}개`],
@@ -1025,6 +1073,7 @@ function moveDetails(direction) {
 
 function render() {
   const jobs = filteredJobs();
+  renderStats(jobs);
   const visibleJobs = jobs.slice(0, state.visibleLimit);
   $('resultCount').textContent = jobs.length > visibleJobs.length ? `${jobs.length}개 중 ${visibleJobs.length}개 표시` : `${jobs.length}개 공고`;
   $('empty').hidden = jobs.length > 0;
@@ -1215,6 +1264,7 @@ function resetFilters() {
   updateDomesticNeighborhoodOptions();
   state.visibleLimit = 60;
   persistFilters();
+  updateDynamicFilters();
   updateAdvancedFilterSummary();
   render();
 }
@@ -1224,6 +1274,7 @@ function exportState() {
   const payload = {
     schema: 'job-search-radar-state',
     version: 2,
+    filterSchemaVersion: currentFilterSchemaVersion,
     exportedAt: new Date().toISOString(),
     favorites: [...state.favorites],
     jobStates: state.jobStates,
@@ -1256,6 +1307,7 @@ function mergeArraySet(target, values) {
 async function importState(file) {
   const payload = JSON.parse(await file.text());
   if (payload?.schema !== 'job-search-radar-state' || ![1, 2].includes(payload?.version)) throw new Error('지원하지 않는 백업 파일입니다.');
+  const importedFilterSchemaVersion = Number(payload.filterSchemaVersion || 0);
   mergeArraySet(state.favorites, payload.favorites);
   mergeArraySet(state.hiddenIds, payload.hiddenIds);
   mergeArraySet(state.reviewedIds, payload.reviewedIds);
@@ -1286,7 +1338,10 @@ async function importState(file) {
   if (payload.filtersByMarket && typeof payload.filtersByMarket === 'object' && !Array.isArray(payload.filtersByMarket)) {
     for (const market of ['overseas_remote', 'domestic']) {
       if (payload.filtersByMarket[market] && typeof payload.filtersByMarket[market] === 'object') {
-        savedFiltersByMarket[market] = { ...filterDefaults[market], ...payload.filtersByMarket[market] };
+        const importedFilters = market === 'domestic'
+          ? migrateDomesticFilterState(payload.filtersByMarket[market], importedFilterSchemaVersion)
+          : payload.filtersByMarket[market];
+        savedFiltersByMarket[market] = { ...filterDefaults[market], ...importedFilters };
         if (market === 'domestic') {
           savedFiltersByMarket[market].domesticProvince = normalizeDomesticProvinceFilter(savedFiltersByMarket[market].domesticProvince);
         }
@@ -1295,6 +1350,7 @@ async function importState(file) {
   } else if (payload.filters && typeof payload.filters === 'object') {
     savedFiltersByMarket.overseas_remote = { ...filterDefaults.overseas_remote, ...payload.filters };
   }
+  localStorage.setItem('jobFilterSchemaVersion', String(currentFilterSchemaVersion));
   if (['overseas_remote', 'domestic'].includes(payload.marketTab)) state.marketTab = payload.marketTab;
   localStorage.setItem('jobMarketTab', state.marketTab);
   mergeJobs();
@@ -1326,49 +1382,65 @@ function fillSelect(id, values) {
   select.value = current;
 }
 
-function updateDomesticLocalityOptions(preferred = null) {
+function updateDomesticLocalityOptions(preferred = null, values = currentFilterValues()) {
   const province = $('domesticProvince')?.value || '';
   const desired = preferred ?? $('domesticLocality').value;
-  const regions = state.jobs
-    .filter((job) => jobMarketScopes(job).includes('domestic'))
-    .filter((job) => !province || job.domesticRegion?.province === province)
+  const regions = matchingJobs({
+    market: 'domestic',
+    values: { ...values, domesticProvince: province },
+    ignore: ['domesticLocality', 'domesticNeighborhood']
+  })
     .map((job) => job.domesticRegion || {});
-  const values = regions.flatMap((region) => [region.city, region.locality]).filter(Boolean);
-  if (province === '전북특별자치도') values.unshift('전주·완주');
-  fillSelect('domesticLocality', desired ? [...values, desired] : values);
+  const localityValues = regions.flatMap((region) => [region.city, region.locality]).filter(Boolean);
+  if (province === '전북특별자치도' && regions.some((region) => ['전주시', '완주군'].includes(region.city))) localityValues.unshift('전주·완주');
+  fillSelect('domesticLocality', desired ? [...localityValues, desired] : localityValues);
   if (desired && [...$('domesticLocality').options].some((option) => option.value === desired)) $('domesticLocality').value = desired;
 }
 
-function updateDomesticNeighborhoodOptions(preferred = null) {
+function updateDomesticNeighborhoodOptions(preferred = null, values = currentFilterValues()) {
   const province = $('domesticProvince')?.value || '';
   const locality = $('domesticLocality')?.value || '';
   const desired = preferred ?? $('domesticNeighborhood').value;
-  const values = state.jobs
-    .filter((job) => jobMarketScopes(job).includes('domestic'))
+  const neighborhoodValues = matchingJobs({
+    market: 'domestic',
+    values: { ...values, domesticProvince: province, domesticLocality: locality },
+    ignore: ['domesticNeighborhood']
+  })
     .map((job) => job.domesticRegion || {})
-    .filter((region) => !province || region.province === province)
-    .filter((region) => domesticLocalityMatches(region, locality))
     .map((region) => region.neighborhood)
     .filter(Boolean);
-  fillSelect('domesticNeighborhood', desired ? [...values, desired] : values);
+  fillSelect('domesticNeighborhood', desired ? [...neighborhoodValues, desired] : neighborhoodValues);
   if (desired && [...$('domesticNeighborhood').options].some((option) => option.value === desired)) $('domesticNeighborhood').value = desired;
 }
 
 function updateDynamicFilters(forceSaved = false) {
-  const marketJobs = state.jobs.filter((job) => jobMarketScopes(job).includes(state.marketTab));
-  const desired = { ...filterDefaults[state.marketTab], ...(savedFiltersByMarket[state.marketTab] || {}) };
-  fillSelect('source', marketJobs.flatMap((job) => job.sources?.length ? job.sources : [job.source]));
-  fillSelect('category', marketJobs.map((job) => job.category));
+  const desired = forceSaved || !state.dynamicFiltersInitialized
+    ? { ...filterDefaults[state.marketTab], ...(savedFiltersByMarket[state.marketTab] || {}) }
+    : currentFilterValues();
+  const values = { ...currentFilterValues(), ...desired };
+  const sourceJobs = matchingJobs({ values, ignore: ['source'] });
+  const categoryJobs = matchingJobs({ values, ignore: ['category'] });
+  fillSelect('source', [...sourceJobs.flatMap((job) => job.sources?.length ? job.sources : [job.source]), desired.source].filter(Boolean));
+  fillSelect('category', [...categoryJobs.map((job) => job.category), desired.category].filter(Boolean));
   if (state.marketTab === 'domestic') {
+    const provinceJobs = matchingJobs({
+      market: 'domestic',
+      values,
+      ignore: ['domesticProvince', 'domesticLocality', 'domesticNeighborhood']
+    });
     const feedProvinceOptions = Array.isArray(state.meta?.domesticProvinceOptions) && state.meta.domesticProvinceOptions.length
       ? state.meta.domesticProvinceOptions
       : fallbackDomesticProvinceOptions;
-    fillSelect('domesticProvince', [...feedProvinceOptions, ...marketJobs.map((job) => job.domesticRegion?.province).filter(Boolean)]);
+    fillSelect('domesticProvince', [
+      ...feedProvinceOptions,
+      ...provinceJobs.map((job) => job.domesticRegion?.province).filter(Boolean),
+      desired.domesticProvince
+    ].filter(Boolean));
     if ((forceSaved || !state.dynamicFiltersInitialized) && desired.domesticProvince && [...$('domesticProvince').options].some((option) => option.value === desired.domesticProvince)) {
       $('domesticProvince').value = desired.domesticProvince;
     }
-    updateDomesticLocalityOptions((forceSaved || !state.dynamicFiltersInitialized) ? desired.domesticLocality : null);
-    updateDomesticNeighborhoodOptions((forceSaved || !state.dynamicFiltersInitialized) ? desired.domesticNeighborhood : null);
+    updateDomesticLocalityOptions((forceSaved || !state.dynamicFiltersInitialized) ? desired.domesticLocality : null, values);
+    updateDomesticNeighborhoodOptions((forceSaved || !state.dynamicFiltersInitialized) ? desired.domesticNeighborhood : null, values);
   } else {
     $('domesticProvince').value = '';
     updateDomesticLocalityOptions('');
@@ -1455,6 +1527,7 @@ function renderSourceHealth(sourceStatus = []) {
       $('requirementsFilter').value = '';
       $('statusFilter').value = 'all';
       persistFilters();
+      updateDynamicFilters();
       updateAdvancedFilterSummary();
       render();
     });

@@ -128,6 +128,12 @@ function normalizeWorkplaceMode(value, remoteFallback = false) {
 }
 
 function domesticRegionFor(job) {
+  const workplaceMode = normalizeWorkplaceMode(job.workplaceMode, Boolean(job.remote));
+  // A remote job can be eligible for people in Korea without having a Korean
+  // commute/workplace location. Keep that support geography in eligibility*
+  // fields and reserve domesticRegion for an actual onsite/hybrid workplace.
+  if (workplaceMode === 'remote') return null;
+
   const location = text(job.workAddress || job.location);
   const lowerLocation = lower(location);
   const multiCountry = /\+\s*\d+\s*개\s*국가|\bworld\s*wide\b|\bworldwide\b|\bremote\s*-\s*europe\b|\b(?:china|japan|united states|canada|united kingdom|singapore|germany|france|brazil|india)\b/.test(lowerLocation.replace(/south korea|republic of korea/g, ''));
@@ -221,11 +227,11 @@ function marketSegmentFor(job) {
 }
 
 function marketScopesFor(job) {
+  const workplaceMode = normalizeWorkplaceMode(job.workplaceMode, Boolean(job.remote));
+  if (workplaceMode === 'remote') return ['overseas_remote'];
+
   const domesticRegion = job.domesticRegion || domesticRegionFor(job);
-  const scopes = [];
-  if (job.remote || !domesticRegion) scopes.push('overseas_remote');
-  if (domesticRegion) scopes.push('domestic');
-  return [...new Set(scopes)];
+  return domesticRegion ? ['domestic'] : ['overseas_remote'];
 }
 
 function sourceMeta(source) {
@@ -3632,9 +3638,11 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
     const carriedWorkplaceMode = normalizeWorkplaceMode(previous.workplaceMode, Boolean(previous.remote));
     const carriedRemote = carriedWorkplaceMode === 'remote';
     const recalculatedDomesticRegion = domesticRegionFor({ ...previous, remote: carriedRemote, workplaceMode: carriedWorkplaceMode });
-    const carriedDomesticRegion = recalculatedDomesticRegion
-      ? { ...(previous.domesticRegion || {}), ...recalculatedDomesticRegion }
-      : previous.domesticRegion || null;
+    const carriedDomesticRegion = carriedWorkplaceMode === 'remote'
+      ? null
+      : recalculatedDomesticRegion
+        ? { ...(previous.domesticRegion || {}), ...recalculatedDomesticRegion }
+        : previous.domesticRegion || null;
     const carriedMarketScopes = marketScopesFor({ ...previous, remote: carriedRemote, workplaceMode: carriedWorkplaceMode, domesticRegion: carriedDomesticRegion });
     const carriedWorkAddressEvidence = legacyLocalWorkAddressEvidence(previous);
     carried.push({

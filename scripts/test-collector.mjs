@@ -314,8 +314,9 @@ const base = {
   type: 'Remote', salary: '', postedAt: new Date().toISOString(), description: '', tags: [], countryCode: ''
 };
 const koreaRemoteMarket = normalizeJob({ ...base, id: 'market-korea-remote', location: 'Seoul', countryCode: 'KR', url: 'https://example.com/market-korea-remote' });
-assert.deepEqual(koreaRemoteMarket.marketScopes, ['overseas_remote', 'domestic'], 'Korea-targeted remote work must remain in the default overseas/remote view and also be discoverable domestically');
-assert.equal(koreaRemoteMarket.domesticRegion.province, '서울특별시');
+assert.deepEqual(koreaRemoteMarket.marketScopes, ['overseas_remote'], 'Korea-targeted remote work must stay in the overseas/remote market unless it has a real commute workplace');
+assert.equal(koreaRemoteMarket.domesticRegion, null, 'remote eligibility geography must not masquerade as a domestic workplace');
+assert.equal(koreaRemoteMarket.eligibilityCode, 'korea', 'Korea eligibility must remain available independently from workplace geography');
 const multiCountryRemoteMarket = normalizeJob({ ...base, id: 'market-multi-country', location: 'South Korea + 14개 국가', countryCode: 'KR', url: 'https://example.com/market-multi-country' });
 assert.deepEqual(multiCountryRemoteMarket.marketScopes, ['overseas_remote'], 'multi-country remote projects must not masquerade as a domestic workplace listing');
 assert.equal(multiCountryRemoteMarket.domesticRegion, null);
@@ -1095,7 +1096,9 @@ assert.equal(
 const normalizedRemoteMode = normalizeJob({ ...base, id: 'mode-remote', remote: false, workplaceMode: 'Remote', location: 'South Korea', countryCode: 'KR', url: 'https://example.com/mode-remote' });
 assert.equal(normalizedRemoteMode.workplaceMode, 'remote');
 assert.equal(normalizedRemoteMode.remote, true);
-assert.deepEqual(normalizedRemoteMode.marketScopes, ['overseas_remote', 'domestic']);
+assert.deepEqual(normalizedRemoteMode.marketScopes, ['overseas_remote']);
+assert.equal(normalizedRemoteMode.domesticRegion, null);
+assert.equal(normalizedRemoteMode.eligibilityCode, 'korea');
 const normalizedHybridMode = normalizeJob({ ...base, id: 'mode-hybrid', remote: true, workplaceMode: 'Hybrid', location: 'Seoul', countryCode: 'KR', url: 'https://example.com/mode-hybrid' });
 assert.equal(normalizedHybridMode.workplaceMode, 'hybrid');
 assert.equal(normalizedHybridMode.remote, false, 'hybrid must not masquerade as fully remote');
@@ -1344,6 +1347,26 @@ assert.ok(withGracePeriod[0].contentFingerprint, 'legacy carried jobs must retai
 const secondGraceCycle = carryRecentlyMissing([], withGracePeriod, now + 86400000);
 assert.equal(secondGraceCycle.length, 1, 'relevant archived_missing jobs must remain through subsequent grace-period collections');
 assert.equal(secondGraceCycle[0].listingStatus, 'archived_missing');
+const legacyRemoteMissing = carryRecentlyMissing([], [{
+  ...disappeared,
+  id: 'job:legacy-remote-domestic-scope',
+  location: 'Seoul, South Korea',
+  countryCode: 'KR',
+  remote: true,
+  workplaceMode: 'remote',
+  domesticRegion: {
+    country: '대한민국',
+    province: '서울특별시',
+    precision: 'city',
+    evidenceLevel: 'source_text'
+  },
+  marketScopes: ['overseas_remote', 'domestic'],
+  marketSegment: 'overseas_remote'
+}], now)[0];
+assert.equal(legacyRemoteMissing.domesticRegion, null,
+  'archived remote rows must drop legacy domestic workplace geography during carry-forward');
+assert.deepEqual(legacyRemoteMissing.marketScopes, ['overseas_remote'],
+  'archived remote rows must be reclassified to the overseas/remote market');
 const legacyLocalMissing = carryRecentlyMissing([], [{
   ...disappeared,
   id: 'job:legacy-local-missing',
@@ -1717,8 +1740,9 @@ assert.equal(appierCreativeQc.sourceKind, 'official_ats');
 assert.equal(appierCreativeQc.category, 'AI 평가·어노테이션');
 assert.equal(appierCreativeQc.workplaceMode, 'remote');
 assert.equal(appierCreativeQc.remote, true);
-assert.deepEqual(appierCreativeQc.marketScopes, ['overseas_remote', 'domestic']);
-assert.equal(appierCreativeQc.domesticRegion.province, '서울특별시');
+assert.deepEqual(appierCreativeQc.marketScopes, ['overseas_remote']);
+assert.equal(appierCreativeQc.domesticRegion, null);
+assert.equal(appierCreativeQc.eligibilityCode, 'korea');
 assert.equal(appierCreativeQc.salaryInfo.currency, 'KRW');
 assert.equal(appierCreativeQc.salaryInfo.min, 10320);
 assert.equal(appierCreativeQc.salaryInfo.period, 'hour');
@@ -1762,7 +1786,9 @@ const tsmgCoordinator = normalizeJob({
 assert.equal(tsmgCoordinator.category, '커뮤니티·운영');
 assert.equal(tsmgCoordinator.requirementsStatus, 'routine_check');
 assert.equal(tsmgCoordinator.remote, true);
-assert.deepEqual(tsmgCoordinator.marketScopes, ['overseas_remote', 'domestic']);
+assert.deepEqual(tsmgCoordinator.marketScopes, ['overseas_remote']);
+assert.equal(tsmgCoordinator.domesticRegion, null);
+assert.equal(tsmgCoordinator.eligibilityCode, 'korea');
 assert.ok(tsmgCoordinator.score >= 20, 'preferred-only coordination experience must not be promoted to a hard requirement');
 assert.doesNotMatch(tsmgCoordinator.fitWarning, /coordination|training|경력/);
 

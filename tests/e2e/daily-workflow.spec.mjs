@@ -106,6 +106,20 @@ function feed(jobs) {
   };
 }
 
+function legacyDomesticFilterDefaults(sort = 'distance') {
+  return {
+    query: '', source: '', category: '', remote: '', eligibility: '',
+    domesticProvince: '', domesticLocality: '',
+    compensationFilter: '', ageFilter: '', listingFilter: 'active',
+    sourceKindFilter: '', paymentFilter: '', requirementsFilter: '',
+    minScore: '20', sort, statusFilter: 'active'
+  };
+}
+
+function reserializedLegacyDomesticFilterDefaults(sort = 'distance') {
+  return { ...legacyDomesticFilterDefaults(sort), domesticNeighborhood: '' };
+}
+
 const defaultJobs = [
   job(),
   job({
@@ -184,8 +198,8 @@ const domesticJobs = [
   job({
     id: 'job:seoul-remote-domestic', source: 'RWS TrainAI', company: 'RWS', title: 'Korean Remote Evaluator - Seoul',
     location: 'Seoul', remote: true, workplaceMode: 'remote', type: 'Freelance', url: 'https://example.com/job/seoul-remote-domestic', score: 80,
-    marketScopes: ['overseas_remote', 'domestic'], marketSegment: 'overseas_remote',
-    domesticRegion: { country: '대한민국', province: '서울특별시', city: '', district: '', neighborhood: '', locality: '', label: '서울특별시', evidenceLevel: 'source_location_text', lat: 37.5666791, lon: 126.9782914, coordinatePrecision: 'city', coordinateSource: 'OpenStreetMap Nominatim' }
+    marketScopes: ['overseas_remote'], marketSegment: 'overseas_remote',
+    domesticRegion: null
   })
 ];
 
@@ -193,16 +207,17 @@ const appierRemoteJob = job({
   id: 'job:appier-remote', source: 'Appier', company: 'Appier', title: '[Part Time] AI Creative QC Reviewer, Korea',
   location: 'Seoul, South Korea', remote: true, workplaceMode: 'remote', type: 'Part Time',
   url: 'https://example.com/job/appier-remote', eligibilityCode: 'korea', eligibility: '한국에서 지원 가능', score: 42,
-  marketScopes: ['overseas_remote', 'domestic'], marketSegment: 'overseas_remote',
+  marketScopes: ['overseas_remote'], marketSegment: 'overseas_remote',
   salary: '₩10,320/시간', salaryInfo: { raw: '시급 10,320원', display: '₩10,320/시간', currency: 'KRW', min: 10320, max: 10320, period: 'hour', confidence: 'parsed' },
   requirementsStatus: 'routine_check', requirementsLabel: '일반 요건 확인 필요',
-  domesticRegion: { country: '대한민국', province: '서울특별시', city: '', district: '', neighborhood: '', locality: '', label: '서울특별시', precision: 'city', evidenceLevel: 'source_structured', lat: 37.5666791, lon: 126.9782914, coordinatePrecision: 'city', coordinateSource: 'OpenStreetMap Nominatim' }
+  domesticRegion: null
 });
 
 const gangnamHybridJob = job({
   id: 'job:gangnam-hybrid', source: 'Channel Corp', company: 'Channel Corp', title: 'Domestic Data Operations - Gangnam',
   location: 'Gangnam District, Seoul', remote: false, workplaceMode: 'hybrid', type: 'Full time',
   url: 'https://example.com/job/gangnam-hybrid', eligibilityCode: 'korea', eligibility: '한국에서 지원 가능', score: 55,
+  sources: ['Channel Corp'],
   marketScopes: ['domestic'], marketSegment: 'domestic',
   domesticRegion: { country: '대한민국', province: '서울특별시', city: '', district: '강남구', neighborhood: '', locality: '강남구', label: '서울특별시 강남구', precision: 'district', evidenceLevel: 'source_structured', lat: 37.5177, lon: 127.0473, coordinatePrecision: 'district', coordinateSource: 'OpenStreetMap Nominatim' }
 });
@@ -332,7 +347,7 @@ test('기본은 해외·원격이고 국내 탭에서 시도→시군구와 산�
   await expect(page.locator('#detailsDistanceValue')).toContainText('지역 기준 직선거리 약 0km');
 });
 
-test('국내 거리 근거가 부족하거나 원격이면 정밀 거리를 만들지 않는다', async ({ page }) => {
+test('국내 거리 근거가 부족하면 정밀 거리를 만들지 않고 글로벌 원격은 국내에서 제외한다', async ({ page }) => {
   await useFeed(page, () => feed(domesticJobs));
   await page.goto('/');
   await page.locator('#marketDomestic').click();
@@ -343,10 +358,10 @@ test('국내 거리 근거가 부족하거나 원격이면 정밀 거리를 만�
   await page.locator('#domesticProvince').selectOption('');
   await page.locator('#domesticLocality').selectOption('');
   const remote = page.locator('.job-card').filter({ hasText: 'Korean Remote Evaluator - Seoul' });
-  await expect(remote.locator('.distance-value')).toHaveText('원격 · 출근 거리 비해당');
+  await expect(remote).toHaveCount(0);
 });
 
-test('국내 원격과 하이브리드는 근무형태에 맞는 거리 근거를 보여준다', async ({ page }) => {
+test('한국 대상 글로벌 원격은 국내에서 제외하고 국내 하이브리드는 거리 근거를 보여준다', async ({ page }) => {
   await useFeed(page, () => feed([appierRemoteJob, gangnamHybridJob]));
   await page.goto('/');
   await page.locator('#marketDomestic').click();
@@ -355,8 +370,7 @@ test('국내 원격과 하이브리드는 근무형태에 맞는 거리 근거�
   await page.locator('#domesticLocality').selectOption('');
 
   const appier = page.locator('.job-card').filter({ hasText: 'AI Creative QC Reviewer' });
-  await expect(appier.locator('.meta')).toContainText('원격');
-  await expect(appier.locator('.distance-value')).toHaveText('원격 · 출근 거리 비해당');
+  await expect(appier).toHaveCount(0);
 
   const gangnam = page.locator('.job-card').filter({ hasText: 'Domestic Data Operations - Gangnam' });
   await expect(gangnam.locator('.distance-note')).toContainText('서울특별시 강남구 기준');
@@ -392,7 +406,7 @@ test('전주·완주 로컬 기본 탐색은 출근형을 거리순으로 보고
   await expect(page.locator('#work24Attribution')).toContainText('정보출처: 고용24');
 });
 
-test('거리 전체 보기에서는 근거리 출근형 → 주소 미확인 출근형 → 원격 순으로 정렬한다', async ({ page }) => {
+test('국내 거리 전체 보기에서는 글로벌 원격을 제외하고 국내 근무지만 거리순으로 정렬한다', async ({ page }) => {
   const imminentDate = new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10);
   const nearRolling = job({
     ...work24LocalJobs[0],
@@ -420,9 +434,9 @@ test('거리 전체 보기에서는 근거리 출근형 → 주소 미확인 출
   await page.locator('#domesticLocality').selectOption('');
 
   const titles = await page.locator('.job-card .title').allTextContents();
-  expect(titles).toEqual(['조금 더 먼 마감임박 사무 지원', '가까운 상시 매장 지원', '자료입력 보조', '[Part Time] AI Creative QC Reviewer, Korea']);
+  expect(titles).toEqual(['조금 더 먼 마감임박 사무 지원', '가까운 상시 매장 지원', '자료입력 보조']);
   await expect(page.locator('.job-card').first().locator('.posted')).toContainText('마감 임박');
-  await expect(page.locator('.job-card').last().locator('.distance-value')).toHaveText('원격 · 출근 거리 비해당');
+  await expect(page.locator('.job-card').filter({ hasText: 'AI Creative QC Reviewer' })).toHaveCount(0);
 });
 
 test('지역 중심점 거리는 보수적 밴드로 정렬하고 지원 판단 메타를 카드와 상세에 노출한다', async ({ page }) => {
@@ -541,6 +555,222 @@ test('2026 행정구역 변경 전 저장한 광주·전남 필터는 통합특�
   await expect(page.locator('#marketDomestic')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('#domesticProvince')).toHaveValue('전남광주통합특별시');
   await expect(page.locator('#domesticProvince')).not.toContainText('전라남도');
+});
+
+for (const legacySort of ['score', 'distance']) {
+  test(`v7 국내 과거 기본값(${legacySort})은 새 전주·완주 기본값으로 한 번만 마이그레이션된다`, async ({ page }) => {
+    const legacyFilters = legacyDomesticFilterDefaults(legacySort);
+    await page.addInitScript(({ filters }) => {
+      localStorage.setItem('jobMarketTab', 'domestic');
+      localStorage.setItem('jobFilterSchemaVersion', '7');
+      localStorage.setItem('jobFiltersByMarket', JSON.stringify({ domestic: filters }));
+    }, { filters: legacyFilters });
+    await useFeed(page, () => feed([...defaultJobs, ...domesticJobs, ...work24LocalJobs]));
+    await page.goto('/');
+
+    await expect(page.locator('#remote')).toHaveValue('local');
+    await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
+    await expect(page.locator('#domesticLocality')).toHaveValue('전주·완주');
+    await expect(page.locator('#sort')).toHaveValue('distance');
+    const migrated = await page.evaluate(() => ({
+      version: localStorage.getItem('jobFilterSchemaVersion'),
+      domestic: JSON.parse(localStorage.getItem('jobFiltersByMarket') || '{}').domestic
+    }));
+    expect(migrated.version).toBe('8');
+    expect(migrated.domestic).toMatchObject({
+      remote: 'local',
+      domesticProvince: '전북특별자치도',
+      domesticLocality: '전주·완주',
+      domesticNeighborhood: '',
+      sort: 'distance'
+    });
+
+    await page.reload();
+    await expect(page.locator('#remote')).toHaveValue('local');
+    await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
+    await expect(page.locator('#domesticLocality')).toHaveValue('전주·완주');
+  });
+}
+
+for (const legacySort of ['score', 'distance']) {
+  test(`v7 재직렬화 국내 과거 기본값(${legacySort})도 새 기본값으로 마이그레이션된다`, async ({ page }) => {
+    const legacyFilters = reserializedLegacyDomesticFilterDefaults(legacySort);
+    await page.addInitScript(({ filters }) => {
+      localStorage.setItem('jobMarketTab', 'domestic');
+      localStorage.setItem('jobFilterSchemaVersion', '7');
+      localStorage.setItem('jobFiltersByMarket', JSON.stringify({ domestic: filters }));
+    }, { filters: legacyFilters });
+    await useFeed(page, () => feed([...defaultJobs, ...domesticJobs, ...work24LocalJobs]));
+    await page.goto('/');
+
+    await expect(page.locator('#remote')).toHaveValue('local');
+    await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
+    await expect(page.locator('#domesticLocality')).toHaveValue('전주·완주');
+    await expect(page.locator('#sort')).toHaveValue('distance');
+  });
+}
+
+test('v7 국내 필터가 과거 기본값과 조금이라도 다르면 사용자 설정을 보존한다', async ({ page }) => {
+  const customFilters = { ...legacyDomesticFilterDefaults('distance'), query: 'Jeonju' };
+  await page.addInitScript(({ filters }) => {
+    localStorage.setItem('jobMarketTab', 'domestic');
+    localStorage.setItem('jobFilterSchemaVersion', '7');
+    localStorage.setItem('jobFiltersByMarket', JSON.stringify({ domestic: filters }));
+  }, { filters: customFilters });
+  await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
+  await page.goto('/');
+
+  await expect(page.locator('#query')).toHaveValue('Jeonju');
+  await expect(page.locator('#remote')).toHaveValue('');
+  await expect(page.locator('#domesticProvince')).toHaveValue('');
+  await expect(page.locator('#domesticLocality')).toHaveValue('');
+  await expect(page.locator('#sort')).toHaveValue('distance');
+  const stored = await page.evaluate(() => ({
+    version: localStorage.getItem('jobFilterSchemaVersion'),
+    domestic: JSON.parse(localStorage.getItem('jobFiltersByMarket') || '{}').domestic
+  }));
+  expect(stored.version).toBe('8');
+  expect(stored.domestic).toEqual(customFilters);
+});
+
+test('구형 백업의 정확한 국내 기본값도 import 시 같은 v8 마이그레이션을 적용한다', async ({ page }) => {
+  await useFeed(page, () => feed([...defaultJobs, ...domesticJobs, ...work24LocalJobs]));
+  await page.goto('/');
+  const legacyBackup = {
+    schema: 'job-search-radar-state',
+    version: 2,
+    marketTab: 'domestic',
+    favorites: [],
+    jobStates: {},
+    hiddenIds: [],
+    reviewedIds: [],
+    newIds: [],
+    manualJobs: [],
+    trackedJobs: {},
+    knownJobIds: [],
+    filtersByMarket: {
+      domestic: legacyDomesticFilterDefaults('score')
+    }
+  };
+  await page.locator('#importStateFile').setInputFiles({
+    name: 'legacy-filter-backup.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(legacyBackup))
+  });
+  await expect(page.locator('#toastText')).toContainText('백업 상태를 현재 데이터에 병합했습니다');
+  await expect(page.locator('#marketDomestic')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#remote')).toHaveValue('local');
+  await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
+  await expect(page.locator('#domesticLocality')).toHaveValue('전주·완주');
+  await expect(page.locator('#sort')).toHaveValue('distance');
+});
+
+test('구형 백업의 재직렬화된 국내 기본값도 import 시 같은 v8 마이그레이션을 적용한다', async ({ page }) => {
+  await useFeed(page, () => feed([...defaultJobs, ...domesticJobs, ...work24LocalJobs]));
+  await page.goto('/');
+  const legacyBackup = {
+    schema: 'job-search-radar-state',
+    version: 2,
+    marketTab: 'domestic',
+    favorites: [],
+    jobStates: {},
+    hiddenIds: [],
+    reviewedIds: [],
+    newIds: [],
+    manualJobs: [],
+    trackedJobs: {},
+    knownJobIds: [],
+    filtersByMarket: {
+      domestic: reserializedLegacyDomesticFilterDefaults('distance')
+    }
+  };
+  await page.locator('#importStateFile').setInputFiles({
+    name: 'legacy-reserialized-filter-backup.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(legacyBackup))
+  });
+  await expect(page.locator('#toastText')).toContainText('백업 상태를 현재 데이터에 병합했습니다');
+  await expect(page.locator('#remote')).toHaveValue('local');
+  await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
+  await expect(page.locator('#domesticLocality')).toHaveValue('전주·완주');
+  await expect(page.locator('#sort')).toHaveValue('distance');
+});
+
+test('구형 국내 필터의 null 값은 exact 기본값으로 간주하지 않는다', async ({ page }) => {
+  const customFilters = { ...legacyDomesticFilterDefaults('distance'), query: null };
+  await page.addInitScript(({ filters }) => {
+    localStorage.setItem('jobMarketTab', 'domestic');
+    localStorage.setItem('jobFilterSchemaVersion', '7');
+    localStorage.setItem('jobFiltersByMarket', JSON.stringify({ domestic: filters }));
+  }, { filters: customFilters });
+  await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
+  await page.goto('/');
+
+  const stored = await page.evaluate(() => ({
+    version: localStorage.getItem('jobFilterSchemaVersion'),
+    domestic: JSON.parse(localStorage.getItem('jobFiltersByMarket') || '{}').domestic
+  }));
+  expect(stored.version).toBe('8');
+  expect(stored.domestic.query).toBeNull();
+  expect(stored.domestic.remote).toBe('');
+  expect(stored.domestic.domesticProvince).toBe('');
+  expect(stored.domestic.domesticLocality).toBe('');
+});
+
+test('구형 백업의 사용자 수정 국내 필터는 import 시 그대로 보존한다', async ({ page }) => {
+  await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
+  await page.goto('/');
+  const customFilters = { ...legacyDomesticFilterDefaults('distance'), query: 'Jeonju' };
+  const legacyBackup = {
+    schema: 'job-search-radar-state',
+    version: 2,
+    marketTab: 'domestic',
+    favorites: [],
+    jobStates: {},
+    hiddenIds: [],
+    reviewedIds: [],
+    newIds: [],
+    manualJobs: [],
+    trackedJobs: {},
+    knownJobIds: [],
+    filtersByMarket: { domestic: customFilters }
+  };
+  await page.locator('#importStateFile').setInputFiles({
+    name: 'legacy-custom-filter-backup.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(legacyBackup))
+  });
+  await expect(page.locator('#toastText')).toContainText('백업 상태를 현재 데이터에 병합했습니다');
+  await expect(page.locator('#query')).toHaveValue('Jeonju');
+  await expect(page.locator('#remote')).toHaveValue('');
+  await expect(page.locator('#domesticProvince')).toHaveValue('');
+  await expect(page.locator('#domesticLocality')).toHaveValue('');
+  await expect(page.locator('#sort')).toHaveValue('distance');
+});
+
+test('국내 통계와 동적 옵션은 실제 활성 필터 결과와 같은 공고 집합을 사용한다', async ({ page }) => {
+  await useFeed(page, () => feed([domesticJobs[0], domesticJobs[1], gangnamHybridJob, appierRemoteJob]));
+  await page.goto('/');
+  await page.locator('#marketDomestic').click();
+
+  await expect(page.locator('.job-card')).toHaveCount(2);
+  await expect(page.locator('#resultCount')).toHaveText('2개 공고');
+  await expect(page.locator('#stats .stat').filter({ hasText: '추천 공고' }).locator('strong')).toHaveText('2개');
+  await expect(page.locator('#source')).not.toContainText('Appier');
+
+  await page.locator('#domesticProvince').selectOption('서울특별시');
+  await expect(page.locator('#domesticLocality')).toContainText('강남구');
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await expect(page.locator('.title')).toHaveText('Domestic Data Operations - Gangnam');
+  await expect(page.locator('#resultCount')).toHaveText('1개 공고');
+  await expect(page.locator('#stats .stat').filter({ hasText: '추천 공고' }).locator('strong')).toHaveText('1개');
+  await expect(page.locator('#source')).toContainText('Channel Corp');
+  await expect(page.locator('#source')).not.toContainText('Appier');
+
+  await page.locator('#query').fill('존재하지 않는 검색어');
+  await expect(page.locator('.job-card')).toHaveCount(0);
+  await expect(page.locator('#resultCount')).toHaveText('0개 공고');
+  await expect(page.locator('#stats .stat').filter({ hasText: '추천 공고' }).locator('strong')).toHaveText('0개');
 });
 
 test('상태와 동적 소스 필터가 reload 후 유지된다', async ({ page }) => {
