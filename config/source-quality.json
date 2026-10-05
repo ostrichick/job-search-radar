@@ -305,6 +305,20 @@
     "summary": "로그인 없이 공개된 잡코리아 검색 결과에서 공고 ID를 찾고, 상세 페이지의 JobPosting 구조화 데이터와 공개 모집요강 텍스트로 실제 근무지·급여·마감을 확인합니다.",
     "evidence": [{"type": "public_page", "label": "잡코리아 공개 검색", "url": "https://www.jobkorea.co.kr/Search/?stext=%EC%A0%84%EC%A3%BC"}]
   },
+  "사람인": {
+    "kind": "job_board",
+    "coverage": "bounded_window",
+    "evidenceRefreshability": "public_html",
+    "listingLabel": "사람인 공개 공고",
+    "paymentStatus": "not_payer",
+    "paymentLabel": "지급 주체 아님",
+    "paymentEvidenceState": "not_applicable",
+    "paymentEvidenceLabel": "지급 주체 아님",
+    "paymentConfidence": "not_applicable",
+    "reviewedAt": "2026-10-05",
+    "summary": "로그인 없이 공개된 사람인 전주·완주 지역 최신 공고 목록에서 공고 ID를 찾고, 각 상세 페이지의 공개 HTML에서 실제 근무지 주소·근무조건·마감을 다시 확인합니다.",
+    "evidence": [{"type": "public_page", "label": "사람인 전주 지역 채용정보", "url": "https://www.saramin.co.kr/zf_user/jobs/list/domestic?loc_cd=113130%2C113140&sort=RD&type=domestic"}]
+  },
   "고용24": {
     "kind": "official_government",
     "coverage": "current_catalog",

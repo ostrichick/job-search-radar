@@ -11,6 +11,8 @@ import {
   albaRegionListCandidates,
   albaSearchListCandidates,
   jobKoreaSearchCandidates,
+  saraminAreaListCandidates,
+  saraminHtmlJobPosting,
   localCrossPlatformDuplicateKey,
   structuredLocalBoardCandidate,
   collectStructuredLocalBoard,
@@ -718,6 +720,64 @@ assert.deepEqual(
 );
 assert.deepEqual(localCompensationNotes('급여 시급 11,465원 (면접 후 결정)'), ['급여 면접 후 결정']);
 
+const saraminListFixture = `<!doctype html><html><body>
+  <div id="rec-55201442" class="list_item effect"><div class="box_item">
+    <div class="col company_nm"><a class="str_tit">GT인더스트리</a></div>
+    <div class="col notification_info"><div class="job_tit"><a class="str_tit" title="GT안전 · 철물건재 사무직 직원 채용모집"><span>GT안전 · 철물건재 사무직 직원 채용모집</span></a></div></div>
+    <div class="col recruit_info"><ul><li><p class="work_place">전북 완주군</p></li><li><p class="career">경력무관 · 정규직</p></li><li><p class="education">고졸↑</p></li></ul></div>
+    <div class="col support_info"><p class="support_detail"><span class="date">~11.04(수)</span></p></div>
+  </div></div>
+  <div id="rec-99999999" class="list_item"><div class="job_tit"><a title="전국 원격 사무직"><span>전국 원격 사무직</span></a></div><p class="work_place">전국</p></div>
+</body></html>`;
+assert.deepEqual(saraminAreaListCandidates(saraminListFixture), [{
+  id: '55201442',
+  title: 'GT안전 · 철물건재 사무직 직원 채용모집',
+  company: 'GT인더스트리',
+  listLocation: '전북 완주군',
+  careerType: '경력무관 · 정규직',
+  education: '고졸↑',
+  deadlineLabel: '~11.04(수)',
+  evidence: 'public_area_list'
+}]);
+
+const saraminDetailFixture = `<!doctype html><html><body>
+  <div class="jv_header"><a class="company" title="GT인더스트리">GT인더스트리</a><h1 class="tit_job">GT안전 · 철물건재 사무직 직원 채용모집</h1></div>
+  <main>핵심 정보 경력 경력무관(신입포함) 학력 고교졸업 이상 근무형태 정규직 수습기간 1개월 급여 면접 후 결정 출퇴근 시간 07:00~18:00 근무지역 전북 완주군
+  상세요강 [주요업무] 거래처 전화 응대 및 주문 확인 [지원자격] 컴퓨터 기본 사용 가능자 [우대사항] - 경리 및 사무업무 경험자 - 고객응대 경험 있으신 분 [근무조건] - 근무형태 : 정규직(수습기간 1개월) - 근무요일/시간 : (월~금) 오전 9:00 ~ 오후 18:00 - 근무지역 : 전북 - 완주군 용진읍 - 급여 : 면접 후 협의 [전형절차] 서류전형
+  근무지위치 (55353) 전북 완주군 용진읍 용흥리 770-7 지도 보기 접수기간 및 방법 시작일 2026.10.05 07:00 마감일 2026.11.04 23:59</main>
+</body></html>`;
+const saraminPosting = saraminHtmlJobPosting(saraminDetailFixture, {});
+assert.equal(saraminPosting.hiringOrganization.name, 'GT인더스트리');
+assert.equal(saraminPosting.jobLocation.address.streetAddress, '전북 완주군 용진읍 용흥리 770-7');
+assert.equal(saraminPosting.employmentType, '정규직');
+assert.equal(saraminPosting._workSchedule, '(월~금) 오전 9:00 ~ 오후 18:00');
+assert.deepEqual(saraminPosting._preferredConditions, ['경리 및 사무업무 경험자', '고객응대 경험 있으신 분']);
+const saraminLocal = structuredLocalBoardCandidate(
+  '사람인',
+  '55201442',
+  'https://www.saramin.co.kr/zf_user/jobs/view?rec_idx=55201442',
+  saraminDetailFixture,
+  saraminAreaListCandidates(saraminListFixture)[0]
+);
+assert.equal(saraminLocal.workAddress, '전북 완주군 용진읍 용흥리 770-7');
+assert.equal(saraminLocal.workAddressEvidence, 'detail_html');
+assert.equal(saraminLocal.domesticRegion.city, '완주군');
+assert.equal(saraminLocal.domesticRegion.neighborhood, '용진읍');
+assert.equal(saraminLocal.domesticRegion.precision, 'address');
+assert.equal(saraminLocal.type, '정규직');
+assert.equal(saraminLocal.experience, '경력무관(신입포함)');
+assert.equal(saraminLocal.education, '고교졸업 이상');
+assert.equal(saraminLocal.deadlineType, 'fixed');
+assert.equal(saraminLocal.deadlineDate, '2026-11-04');
+assert.equal(saraminLocal.workSchedule, '(월~금) 오전 9:00 ~ 오후 18:00');
+assert.deepEqual(saraminLocal.preferredConditions, ['경리 및 사무업무 경험자', '고객응대 경험 있으신 분']);
+assert.deepEqual(saraminLocal.compensationNotes, ['급여 면접 후 결정', '수습기간 조건 확인']);
+
+const saraminNoWorkplace = saraminDetailFixture.replace('근무지위치 (55353) 전북 완주군 용진읍 용흥리 770-7 지도 보기', '근무지위치 근무지 협의 지도 보기');
+assert.throws(() => structuredLocalBoardCandidate(
+  '사람인', '55201443', 'https://www.saramin.co.kr/zf_user/jobs/view?rec_idx=55201443', saraminNoWorkplace, {}
+), /missing verifiable workplace address/, 'Saramin rows without a verified local workplace must fail closed');
+
 const collapseFixturePrevious = Array.from({ length: 30 }, (_, index) => {
   const id = String(90000000 + index);
   const job = normalizeJob({
@@ -1191,6 +1251,46 @@ const mergedSameBranchRoleDifferentPay = dedupe([sameBranchRoleDifferentPayA, sa
 assert.equal(mergedSameBranchRoleDifferentPay.length, 1,
   'same company, same exact branch and same role must merge even when boards expose different pay ranges');
 assert.deepEqual(new Set(mergedSameBranchRoleDifferentPay[0].sources), new Set(['알바몬', '잡코리아']));
+const sameBranchExperienceSuffixSaramin = normalizeJob({
+  ...sameBranchRoleDifferentPayA,
+  id: 'saramin-same-branch-research',
+  source: '사람인',
+  platform: '사람인',
+  company: '하이즈복합재산업(주)',
+  title: '우주사업(위성/발사체)연구개발 엔지니어 및 연구행정 채용',
+  workAddress: '전북 완주군 봉동읍 과학로 961 하이즈복합재산업주식회사',
+  location: '전북 완주군 봉동읍 과학로 961 하이즈복합재산업주식회사',
+  salary: '',
+  type: '정규직',
+  deadlineType: 'fixed',
+  deadlineDate: '2026-11-02',
+  deadlineLabel: '2026-11-02',
+  url: 'https://www.saramin.co.kr/zf_user/jobs/view?rec_idx=55197839'
+});
+const sameBranchExperienceSuffixJobKorea = normalizeJob({
+  ...sameBranchExperienceSuffixSaramin,
+  id: 'jobkorea-same-branch-research',
+  source: '잡코리아',
+  platform: '잡코리아',
+  company: '하이즈복합재산업㈜',
+  title: '우주사업(위성/발사체)연구개발 엔지니어 및 연구행정 신입/경력 채용',
+  workAddress: '전북 완주군 봉동읍 과학로 961 (둔산리, 하이즈복합재산업주식회사)',
+  location: '전북 완주군 봉동읍 과학로 961 (둔산리, 하이즈복합재산업주식회사)',
+  url: 'https://www.jobkorea.co.kr/Recruit/GI_Read/50104340'
+});
+const mergedExperienceSuffixBoards = dedupe([sameBranchExperienceSuffixSaramin, sameBranchExperienceSuffixJobKorea]);
+assert.equal(mergedExperienceSuffixBoards.length, 1,
+  'same exact branch and role must merge across Saramin and JobKorea when only entry/career title qualifiers differ');
+assert.deepEqual(new Set(mergedExperienceSuffixBoards[0].sources), new Set(['사람인', '잡코리아']));
+const sameCompanyRoleDifferentBranch = normalizeJob({
+  ...sameBranchExperienceSuffixSaramin,
+  id: 'saramin-different-branch-research',
+  workAddress: '전북 완주군 봉동읍 과학로 886',
+  location: '전북 완주군 봉동읍 과학로 886',
+  url: 'https://www.saramin.co.kr/zf_user/jobs/view?rec_idx=55197840'
+});
+assert.equal(dedupe([sameCompanyRoleDifferentBranch, sameBranchExperienceSuffixJobKorea]).length, 2,
+  'same company and role at a different exact branch address must never merge');
 const cafeBaristaCrossBoard = normalizeJob({
   ...albamonOfficeCrossBoard,
   id: 'cafe-barista-cross-board',
