@@ -6,6 +6,11 @@ import {
   marketScopesFor,
   eligibilityFor,
   extractSalary,
+  albamonSearchPages,
+  albamonListCandidates,
+  albaRegionListCandidates,
+  albaSearchListCandidates,
+  jobKoreaSearchCandidates,
   localCrossPlatformDuplicateKey,
   structuredLocalBoardCandidate,
   isJeonjuWanjuLocal,
@@ -30,6 +35,9 @@ import {
   recommendationCollapseRisk,
   refreshTimeBasedEvidence
 } from './collect-jobs.mjs';
+
+assert.deepEqual(albamonSearchPages, [1, 2, 3, 4, 5, 6],
+  'Albamon local discovery must include page 6 because useful Jeonju/Wanju postings can move beyond the first five pages');
 
 const remote = (location, description = '', countryCode = '') => ({ location, description, remote: true, countryCode });
 
@@ -443,6 +451,148 @@ assert.equal(albaFixture.category, '일반·파트타임');
 assert.equal(albaFixture.deadlineType, 'rolling');
 assert.ok(albaFixture.score >= 20);
 
+const albaLegacyFixture = structuredLocalBoardCandidate(
+  '알바천국',
+  '147089190',
+  'https://www.alba.co.kr/job/Detail?adid=147089190',
+  `<!doctype html><html><body>
+    <div class="detail-primary__company">롯데리아 완주삼례점</div>
+    <h2 class="detail-primary__title">롯데리아 완주삼례점 아르바이트생 모집</h2>
+    <dl>
+      <dt class="detail-summary__title">시급</dt>
+      <dd class="detail-summary__data">10,320원</dd>
+      <dt>모집마감</dt><dd>2026.10.05(월)</dd>
+      <dt>학력</dt><dd>학력무관</dd>
+    </dl>
+    <p class="workplace-addr__text">전북 완주군 삼례읍 삼례로 376&nbsp;롯데리아 완주삼례점</p>
+  </body></html>`
+);
+assert.equal(albaLegacyFixture.company, '롯데리아 완주삼례점');
+assert.equal(albaLegacyFixture.domesticRegion.city, '완주군');
+assert.equal(albaLegacyFixture.domesticRegion.neighborhood, '삼례읍');
+assert.equal(albaLegacyFixture.workAddressEvidence, 'detail_html');
+assert.equal(albaLegacyFixture.salaryInfo.min, 10320);
+assert.equal(albaLegacyFixture.salaryInfo.period, 'hour');
+assert.equal(albaLegacyFixture.deadlineType, 'fixed');
+assert.equal(albaLegacyFixture.deadlineDate, '2026-10-05');
+assert.equal(albaLegacyFixture.education, '학력무관');
+assert.equal(albaLegacyFixture.category, '일반·파트타임');
+
+assert.throws(
+  () => structuredLocalBoardCandidate(
+    '알바천국',
+    '147297027',
+    'https://www.alba.co.kr/job/Detail?adid=147297027',
+    `<script>alert('요청하신 공고 열람은 로그인이 필요한 서비스입니다.');location.href='https://sign.alba.co.kr/policy/AdultCert.asp';</script>`
+  ),
+  (error) => error?.code === 'access_restricted',
+  'login/age-gated Alba details must be explicitly excluded instead of counted as parser breakage'
+);
+
+const albaNormalPageWithPolicyLinkFixture = structuredLocalBoardCandidate(
+  '알바천국',
+  '147241300-policy-link',
+  'https://www.alba.co.kr/job/Detail?adid=147241300',
+  '<!doctype html><html><body>'
+    + '<a href="https://sign.alba.co.kr/policy/AdultCert.asp">성인인증 안내</a>'
+    + '<script type="application/ld+json">{'
+    + '"@context":"https://schema.org","@type":"JobPosting",'
+    + '"title":"[다이소]완주봉동점 직원/파트 모집합니다.",'
+    + '"hiringOrganization":{"@type":"Organization","name":"다이소 완주봉동점"},'
+    + '"jobLocation":{"@type":"Place","address":{"@type":"PostalAddress","streetAddress":"전북특별자치도 완주군 봉동읍 과학로 1001"}},'
+    + '"baseSalary":{"@type":"MonetaryAmount","currency":"KRW","value":{"@type":"QuantitativeValue","value":10320,"unitText":"HOUR"}},'
+    + '"employmentType":["PART_TIME"],"description":"매장관리 파트타임"'
+    + '}</script><main>모집마감 상시모집 학력 학력무관</main>'
+    + '</body></html>'
+);
+assert.equal(albaNormalPageWithPolicyLinkFixture.domesticRegion.city, '완주군',
+  'normal Alba details may contain policy links and must not be mistaken for the access-restricted response');
+
+const albamonDiscoveryFixture = albamonListCandidates(`<!doctype html><html><body>
+  <script id="__NEXT_DATA__" type="application/json">{
+    "props":{"pageProps":{"dehydratedState":{"queries":[{"state":{"data":{"base":{"normal":{"collection":[
+      {"recruitNo":119516821,"recruitTitle":"금호타이어 전주지점 사무보조 채용","companyName":"금호타이어 전주지점","workplaceAddress":"전북 전주시 완산구 홍산남로 11-10","workplaceArea":"전북 전주시 완산구","payType":{"description":"월급"},"pay":"2,709,783원","closingDateWithDDay":"2026-10-07"},
+      {"recruitNo":119550405,"recruitTitle":"대전 택배상하차","companyName":"대전터미널","workplaceAddress":"대전 유성구 대정로 68","workplaceArea":"전북 전주시 덕진구","payType":{"description":"일급"},"pay":"198,000원","closingDateWithDDay":"상시모집"},
+      {"recruitNo":118509047,"recruitTitle":"[전국채용] 쿠팡배송기사님 모집","companyName":"쿠팡CLS","workplaceAddress":"전북 완주군 봉동읍 완주산단2로 282-22","workplaceArea":"전북 완주군","payType":{"description":"연봉"},"pay":"45,300,000원","closingDateWithDDay":"상시모집"}
+    ]}}}}}]}}}}
+  </script>
+</body></html>`);
+assert.deepEqual(albamonDiscoveryFixture.map((item) => item.id), ['119516821'],
+  'Albamon discovery must prefer the actual workplace address and exclude nationwide/local-targeting false positives');
+assert.equal(albamonDiscoveryFixture[0].workAddress, '전북 전주시 완산구 홍산남로 11-10');
+
+const albaRegionDiscoveryFixture = albaRegionListCandidates(`<ul>
+  <li data-imid="147232622"><a href="/job/Detail?adid=147232622"><span class="title">전주사무실 개통실직원모집</span><span class="local">전북 전주시 완산구</span></a></li>
+  <li data-imid="147000001"><a href="/job/Detail?adid=147000001"><span class="title">서울 매장 알바</span><span class="local">서울 강남구</span></a></li>
+</ul>`);
+assert.deepEqual(albaRegionDiscoveryFixture.map((item) => item.id), ['147232622']);
+
+const albaSearchDiscoveryFixture = albaSearchListCandidates(`
+  <ul>
+    <li class="job-list__row" data-imid="147089098">
+      <a class="job-list__link info" href="/job/Detail?adid=147089098&listmenucd=SEARCH">
+        <span class="job-list__company">롯데리아 <em class="point-color1">완주</em>삼례점<span class="job-list__area">전북 <em class="point-color1">완주</em>군 삼례읍</span></span>
+        <span class="job-list__subject">롯데리아 <em class="point-color1">완주</em>삼례점 아르바이트생 모집</span>
+        <span class="job-list__deadline">2026.10.05 마감</span>
+      </a>
+      <div class="job-list__col pay"><span class="payIcon hour">시급</span><strong class="job-list__number">10,320</strong></div>
+      <div class="job-list__col regDate">2026.09.22</div>
+    </li>
+    <li class="job-list__row" data-imid="147000002">
+      <a class="job-list__link info" href="/job/Detail?adid=147000002&listmenucd=SEARCH">
+        <span class="job-list__company">서울카페<span class="job-list__area">서울 강남구</span></span>
+        <span class="job-list__subject">서울 카페 스텝</span>
+      </a>
+    </li>
+  </ul>
+`);
+assert.deepEqual(albaSearchDiscoveryFixture.map((item) => item.id), ['147089098']);
+assert.equal(albaSearchDiscoveryFixture[0].company, '롯데리아 완주삼례점',
+  'highlight tags in Alba keyword search must not split company names or Korean admin units');
+assert.equal(albaSearchDiscoveryFixture[0].listLocation, '전북 완주군 삼례읍');
+assert.equal(albaSearchDiscoveryFixture[0].salaryRaw, '시급 10,320원');
+assert.equal(albaSearchDiscoveryFixture[0].deadlineLabel, '2026.10.05 마감');
+
+const jobKoreaDiscoveryFixture = jobKoreaSearchCandidates(`
+  <div data-sentry-component="CardJob"><a href="/Recruit/GI_Read/50071517"><div data-sentry-component="Title"><span>[금호타이어/전주] 전주지점 사무 담당자 채용</span></div><i class="emoji--basicemoji-place2"></i><span>전북 전주시</span></a></div>
+  <div data-sentry-component="CardJob"><a href="/Recruit/GI_Read/50067792"><div data-sentry-component="Title"><span>쿠팡 운영지원</span></div><i class="emoji--basicemoji-place2"></i><span>경기 고양시 외 14</span></a></div>
+  <div data-sentry-component="CardJob"><a href="/Recruit/GI_Read/49789921"><div data-sentry-component="Title"><span>[전국채용] 쿠팡배송기사 모집</span></div><i class="emoji--basicemoji-place2"></i><span>전북 전주시</span></a></div>
+`);
+assert.deepEqual(jobKoreaDiscoveryFixture.map((item) => item.id), ['50071517']);
+
+const jobKoreaListFallback = structuredLocalBoardCandidate(
+  '잡코리아',
+  '49741337',
+  'https://www.jobkorea.co.kr/Recruit/GI_Read/49741337',
+  `<!doctype html><html><body><script type="application/ld+json">{
+    "@context":"https://schema.org","@type":"JobPosting",
+    "title":"쿠팡CLS 현장사무직(인사/행정/급여 담당자)채용",
+    "hiringOrganization":{"@type":"Organization","name":"쿠팡로지스틱스서비스(유)"},
+    "employmentType":["CONTRACTOR"],"experienceRequirements":"경력무관","educationRequirements":"학력무관",
+    "description":"완주지역 현장사무직 채용"
+  }</script></body></html>`,
+  { listLocation: '전북 완주군', title: '쿠팡CLS 현장사무직(인사/행정/급여 담당자)채용' }
+);
+assert.equal(jobKoreaListFallback.workAddress, '전북 완주군');
+assert.equal(jobKoreaListFallback.workAddressEvidence, 'search_card');
+assert.equal(jobKoreaListFallback.domesticRegion.precision, 'city');
+
+assert.throws(
+  () => structuredLocalBoardCandidate(
+    '잡코리아',
+    '50067792',
+    'https://www.jobkorea.co.kr/Recruit/GI_Read/50067792',
+    `<!doctype html><html><body><script type="application/ld+json">{
+      "@context":"https://schema.org","@type":"JobPosting",
+      "title":"물류 현장 운영 지원","hiringOrganization":{"@type":"Organization","name":"쿠팡"},
+      "description":"근무지 및 근무조에 따라 상이"
+    }</script><main>근무지 및 근무조에 따라 상이</main></body></html>`,
+    { listLocation: '전북 전주시', title: '물류 현장 운영 지원' }
+  ),
+  (error) => error?.code === 'workplace_unverified',
+  'a local-looking search card must not override detail evidence that the actual workplace varies'
+);
+
 const jobKoreaFixture = structuredLocalBoardCandidate(
   '잡코리아',
   '50102892',
@@ -463,7 +613,7 @@ const jobKoreaFixture = structuredLocalBoardCandidate(
       "baseSalary":{"@type":"MonetaryAmount","currency":"KRW","value":{"@type":"QuantitativeValue","value":114650000,"unitText":"HOUR"}},
       "identifier":{"@type":"PropertyValue","name":"JobKorea","value":"50102892"}
     }</script>
-    <main>모집요강 고용형태 계약직 급여 시급 11,465원 (면접 후 결정) 근무지주소 전북 전주시 완산구 팔달로 204 (경원동3가, 신한은행) 지원자격 경력 경력무관 학력 학력무관 접수기간 · 방법 시작일 2026.10.02(금) 마감일 2026.11.01(일)</main>
+    <main>모집요강 고용형태 계약직 급여 시급 11,465원 (면접 후 결정) 근무지주소 전북 전주시 완산구 팔달로 204 (경원동3가, 신한은행) 지원자격 경력 경력무관 학력 학력무관 로그인 하고 비슷한 조건의 AI추천공고를 확인해 보세요! TOP 궁금해요 접수기간 · 방법 시작일 2026.10.02(금) 마감일 2026.11.01(일)</main>
   </body></html>`
 );
 assert.equal(jobKoreaFixture.domesticRegion.city, '전주시');
@@ -695,6 +845,31 @@ assert.equal(mergedCrossBoardOffice.length, 1, 'same local role on different boa
 assert.deepEqual(new Set(mergedCrossBoardOffice[0].sources), new Set(['알바몬', '알바천국']));
 assert.ok(mergedCrossBoardOffice[0].legacyIds.includes('alba-office-cross-board') || mergedCrossBoardOffice[0].legacyIds.includes('albamon-office-cross-board'),
   'cross-board merge must retain the secondary stable/raw identity for saved user state migration');
+const sameBranchRoleDifferentPayA = normalizeJob({
+  ...albamonOfficeCrossBoard,
+  id: 'same-branch-role-pay-a',
+  source: '알바몬',
+  platform: '알바몬',
+  company: '쿠우쿠우 전주 효자점',
+  title: '쿠우쿠우 전주효자점 주방, 홀 직원 구합니다.',
+  workAddress: '전북특별자치도 전주시 완산구 용머리로 45 쿠우쿠우전주효자점',
+  location: '전북특별자치도 전주시 완산구 용머리로 45 쿠우쿠우전주효자점',
+  salary: '월급 3,200,000원',
+  url: 'https://www.albamon.com/jobs/detail/119541551'
+});
+const sameBranchRoleDifferentPayB = normalizeJob({
+  ...sameBranchRoleDifferentPayA,
+  id: 'same-branch-role-pay-b',
+  source: '잡코리아',
+  platform: '잡코리아',
+  title: '쿠우쿠우 전주효자점 주방,홀 직원 모집합니다',
+  salary: '월급 3,200,000원~4,000,000원',
+  url: 'https://www.jobkorea.co.kr/Recruit/GI_Read/50024173'
+});
+const mergedSameBranchRoleDifferentPay = dedupe([sameBranchRoleDifferentPayA, sameBranchRoleDifferentPayB]);
+assert.equal(mergedSameBranchRoleDifferentPay.length, 1,
+  'same company, same exact branch and same role must merge even when boards expose different pay ranges');
+assert.deepEqual(new Set(mergedSameBranchRoleDifferentPay[0].sources), new Set(['알바몬', '잡코리아']));
 const cafeBaristaCrossBoard = normalizeJob({
   ...albamonOfficeCrossBoard,
   id: 'cafe-barista-cross-board',

@@ -124,6 +124,11 @@ for (const job of feed.jobs) {
     assert.ok(job.sourcePostingId && job.platform === job.source, `${job.id} Korean public platform must retain stable platform posting identity`);
     assert.ok(job.workAddress && job.domesticRegion?.evidenceLevel === 'source_structured',
       `${job.id} Korean public platform must retain structured workplace evidence from the detail page`);
+    assert.ok(['detail_structured', 'detail_html', 'embedded_list', 'search_card', 'public_list'].includes(job.workAddressEvidence || ''),
+      `${job.id} Korean public platform must identify how workplace evidence was obtained`);
+    if (['search_card', 'public_list'].includes(job.workAddressEvidence)) {
+      assert.notEqual(job.domesticRegion?.precision, 'address', `${job.id} list-level locality fallback must not claim exact address precision`);
+    }
     assert.equal(job.remote, false, `${job.id} commute-local platform row must not be remote`);
     assert.equal(job.domesticRegion?.province, '전북특별자치도', `${job.id} commute-local platform row must be in Jeonbuk`);
     assert.ok(['전주시', '완주군'].includes(job.domesticRegion?.city), `${job.id} commute-local platform row must be in Jeonju or Wanju`);

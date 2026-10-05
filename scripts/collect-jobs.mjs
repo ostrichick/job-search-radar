@@ -740,7 +740,16 @@ async function mapLimit(items, concurrency, mapper) {
 }
 
 function schemaEmploymentType(value) {
-  const labels = { FULL_TIME: '정규직', PART_TIME: '아르바이트', CONTRACTOR: '계약직', TEMPORARY: '파견·임시직', INTERN: '인턴' };
+  const labels = {
+    FULL_TIME: '정규직',
+    PART_TIME: '아르바이트',
+    CONTRACTOR: '계약직',
+    TEMPORARY: '파견·임시직',
+    INTERN: '인턴',
+    FREELANCER: '프리랜서',
+    FREE_LANCER: '프리랜서',
+    OTHER: '기타'
+  };
   return (Array.isArray(value) ? value : [value]).map((item) => labels[text(item)] || text(item)).filter(Boolean).join(', ') || '미상';
 }
 
@@ -1017,6 +1026,243 @@ function canonicalTitle(value) {
     .trim();
 }
 
+function localDetailError(code, message) {
+  const error = new Error(message);
+  error.code = code;
+  return error;
+}
+
+function koreanVisibleDeadline(value) {
+  const plain = text(value);
+  if (/모집마감\s*(?:상시모집|상시채용)|\b상시(?:모집|채용)\b/.test(plain)) {
+    return { type: 'rolling', date: '', label: '상시채용' };
+  }
+  const fixed = plain.match(/(?:모집마감|마감일)\s*(20\d{2})[.\-/](\d{1,2})[.\-/](\d{1,2})/);
+  if (!fixed) return null;
+  const date = [fixed[1], fixed[2].padStart(2, '0'), fixed[3].padStart(2, '0')].join('-');
+  return { type: 'fixed', date, label: date };
+}
+
+function htmlClassValue(html, className) {
+  const escaped = className.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = String(html || '').match(new RegExp(`<[^>]+class=["'][^"']*${escaped}[^"']*["'][^>]*>([\\s\\S]*?)<\\/[^>]+>`, 'i'));
+  return match ? htmlPlainText(match[1]) : '';
+}
+
+function albaLegacyDefinition(html, label) {
+  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = String(html || '').match(new RegExp(`<dt[^>]*>\\s*${escaped}\\s*<\\/dt>\\s*<dd[^>]*>([\\s\\S]*?)<\\/dd>`, 'i'));
+  return match ? htmlPlainText(match[1]) : '';
+}
+
+function salaryPostingFromKorean(label, amountText) {
+  const unit = ({ 시급: 'HOUR', 일급: 'DAY', 주급: 'WEEK', 월급: 'MONTH', 연봉: 'YEAR' })[text(label)];
+  const amount = Number(text(amountText).replace(/[^0-9.]/g, ''));
+  if (!unit || !Number.isFinite(amount) || amount <= 0) return null;
+  return {
+    '@type': 'MonetaryAmount',
+    currency: 'KRW',
+    value: { '@type': 'QuantitativeValue', value: amount, unitText: unit }
+  };
+}
+
+function albaLegacyJobPosting(html) {
+  const company = htmlClassValue(html, 'detail-primary__company');
+  const title = htmlClassValue(html, 'detail-primary__title');
+  const address = htmlClassValue(html, 'workplace-addr__text')
+    || text(decodeHtml(String(html || '').match(/<input[^>]+id=["']strContents["'][^>]+value=["']([^"']+)["']/i)?.[1] || ''));
+  if (!company || !title || !address) return null;
+  const summaryPairs = [...String(html || '').matchAll(/<dt[^>]+class=["'][^"']*detail-summary__title[^"']*["'][^>]*>([\s\S]*?)<\/dt>\s*<dd[^>]+class=["'][^"']*detail-summary__data[^"']*["'][^>]*>([\s\S]*?)<\/dd>/gi)]
+    .map((match) => [htmlPlainText(match[1]), htmlPlainText(match[2])]);
+  const pay = summaryPairs.find(([label]) => /^(?:시급|일급|주급|월급|연봉)$/.test(label));
+  const education = albaLegacyDefinition(html, '학력');
+  const experience = albaLegacyDefinition(html, '경력');
+  const employmentType = /아르바이트|알바/.test(title) ? 'PART_TIME' : '';
+  return {
+    '@type': 'JobPosting',
+    title,
+    hiringOrganization: { '@type': 'Organization', name: company },
+    jobLocation: { '@type': 'Place', address: { '@type': 'PostalAddress', streetAddress: address } },
+    ...(pay ? { baseSalary: salaryPostingFromKorean(pay[0], pay[1]) } : {}),
+    ...(employmentType ? { employmentType } : {}),
+    ...(education ? { educationRequirements: education } : {}),
+    ...(experience ? { experienceRequirements: experience } : {}),
+    description: [title, company, education && `학력 ${education}`, experience && `경력 ${experience}`].filter(Boolean).join(' · '),
+    _fallbackFormat: 'alba_legacy_html'
+  };
+}
+
+function localAddressText(value) {
+  const raw = text(value);
+  return /(?:전북특별자치도|전라북도|전북)?\s*전주시(?:\s|$)|(?:전북특별자치도|전라북도|전북)?\s*완주군(?:\s|$)/.test(raw);
+}
+
+function exactSingleLocalListLocation(value) {
+  const raw = text(value);
+  if (!raw || /외\s*\d+|전국|재택|원격/.test(raw)) return false;
+  return /^(?:전북특별자치도|전라북도|전북)\s+(?:전주시|완주군)(?:\s+(?:완산구|덕진구|[가-힣0-9]+(?:읍|면|동(?:\d+가)?)))?$/.test(raw);
+}
+
+function detailContradictsListLocation(plainText) {
+  return /근무지(?:역|주소|장소)?[^.\n]{0,80}(?:상이|협의|변경|배정)|근무지\s*및\s*근무조[^.\n]{0,80}상이|전국\s*(?:채용|모집|근무|지역|대상)|재택근무|원격근무/.test(plainText);
+}
+
+function albamonListCandidates(html) {
+  const nextData = nextDataJson(html);
+  const root = nextData?.props?.pageProps?.dehydratedState?.queries?.[0]?.state?.data;
+  if (!root) return [];
+  const rows = [];
+  const visitedArrays = new Set();
+  const walk = (value) => {
+    if (!value || typeof value !== 'object') return;
+    if (Array.isArray(value)) {
+      if (value.length && value[0] && typeof value[0] === 'object' && 'recruitNo' in value[0] && 'workplaceAddress' in value[0]) {
+        if (!visitedArrays.has(value)) {
+          visitedArrays.add(value);
+          rows.push(...value);
+        }
+        return;
+      }
+      for (const item of value) walk(item);
+      return;
+    }
+    for (const item of Object.values(value)) walk(item);
+  };
+  walk(root);
+  const candidates = [];
+  const seen = new Set();
+  const seenRoleAtAddress = new Set();
+  for (const row of rows) {
+    const id = text(row?.recruitNo);
+    const title = text(row?.recruitTitle);
+    const company = text(row?.companyName);
+    const workAddress = text(row?.workplaceAddress);
+    if (!id || seen.has(id) || !localAddressText(workAddress)) continue;
+    if (/전국\s*(?:채용|모집|근무|지역|대상)|전국채용|재택근무|원격근무/.test(title)) continue;
+    const roleKey = [canonicalLocalCompany(company), canonicalTitle(title), canonicalDomesticAddress(workAddress)].join('::');
+    if (roleKey && seenRoleAtAddress.has(roleKey)) continue;
+    seen.add(id);
+    if (roleKey) seenRoleAtAddress.add(roleKey);
+    const payLabel = text(row?.payType?.description);
+    const pay = text(row?.pay);
+    candidates.push({
+      id,
+      title,
+      company,
+      workAddress,
+      listLocation: text(row?.workplaceArea),
+      salaryRaw: payLabel && pay ? `${payLabel} ${pay}` : '',
+      deadlineLabel: text(row?.closingDateWithDDay || row?.closingDate),
+      postedAt: text(row?.postedDate),
+      evidence: 'embedded_list'
+    });
+  }
+  return candidates;
+}
+
+function albaRegionListCandidates(html) {
+  const candidates = [];
+  const seen = new Set();
+  for (const part of String(html || '').split(/data-imid=["']/i).slice(1)) {
+    const id = text(part.match(/^(\d+)/)?.[1]);
+    if (!id || seen.has(id)) continue;
+    const detailId = text(part.match(/\/job\/Detail\?[^"'<>]*?adid=(\d+)/i)?.[1]);
+    if (detailId !== id) continue;
+    const location = htmlPlainText(
+      part.match(/<span[^>]+class=["'][^"']*job-list__area[^"']*["'][^>]*>([\s\S]*?)<\/span>/i)?.[1]
+      || part.match(/<(?:p|span)[^>]+class=["'][^"']*(?:goods-banner__local|\blocal\b)[^"']*["'][^>]*>([\s\S]*?)<\/(?:p|span)>/i)?.[1]
+      || part.match(/<td[^>]+class=["'][^"']*\blocal\b[^"']*["'][^>]*>([\s\S]*?)<\/td>/i)?.[1]
+      || ''
+    );
+    if (!/^(?:전북특별자치도|전라북도|전북)\s+(?:전주시|완주군)(?:\s|$)/.test(location)) continue;
+    const title = htmlPlainText(
+      part.match(/<span[^>]+class=["'][^"']*job-list__subject[^"']*["'][^>]*>([\s\S]*?)<\/span>/i)?.[1]
+      || part.match(/<p[^>]+class=["'][^"']*goods-banner__title[^"']*["'][^>]*>([\s\S]*?)<\/p>/i)?.[1]
+      || part.match(/<span[^>]+class=["'][^"']*\btitle\b[^"']*["'][^>]*>\s*<span[^>]*>([\s\S]*?)<\/span>/i)?.[1]
+      || ''
+    );
+    if (/전국\s*(?:채용|모집|근무|지역|대상)|전국채용|재택근무|원격근무/.test(title)) continue;
+    const companyHtml = part.match(/<span[^>]+class=["'][^"']*job-list__company[^"']*["'][^>]*>([\s\S]*?)<\/span>\s*<\/span>/i)?.[1]
+      || part.match(/<p[^>]+class=["'][^"']*goods-banner__company[^"']*["'][^>]*>([\s\S]*?)<\/p>/i)?.[1]
+      || part.match(/<span[^>]+class=["'][^"']*\bcompany\b[^"']*["'][^>]*>([\s\S]*?)<\/span>/i)?.[1]
+      || '';
+    let company = htmlPlainText(String(companyHtml).replace(/<span[^>]+class=["'][^"']*job-list__area[^"']*["'][^>]*>[\s\S]*?<\/span>/i, ''));
+    if (location && company.endsWith(location)) company = company.slice(0, -location.length).trim();
+    const payLabel = htmlPlainText(part.match(/<span[^>]+class=["'][^"']*payIcon[^"']*["'][^>]*>([\s\S]*?)<\/span>/i)?.[1] || '');
+    const payAmount = htmlPlainText(
+      part.match(/<(?:strong|span)[^>]+class=["'][^"']*(?:job-list__number|\bnumber\b)[^"']*["'][^>]*>([\s\S]*?)<\/(?:strong|span)>/i)?.[1]
+      || ''
+    );
+    const deadlineLabel = htmlPlainText(part.match(/<span[^>]+class=["'][^"']*job-list__deadline[^"']*["'][^>]*>([\s\S]*?)<\/span>/i)?.[1] || '');
+    const postedAt = text(part.match(/<div[^>]+class=["'][^"']*job-list__col\s+regDate[^"']*["'][^>]*>\s*(20\d{2}\.\d{2}\.\d{2})/i)?.[1] || '');
+    seen.add(id);
+    candidates.push({
+      id,
+      title,
+      company,
+      listLocation: location,
+      salaryRaw: payLabel && payAmount ? payLabel + ' ' + payAmount + '원' : '',
+      deadlineLabel,
+      postedAt,
+      evidence: 'public_list'
+    });
+  }
+  return candidates;
+}
+
+function albaSearchListCandidates(html) {
+  const candidates = [];
+  const seen = new Set();
+  const listText = (value) => htmlPlainText(String(value || '').replace(/<\/?em\b[^>]*>/gi, ''));
+  for (const match of String(html || '').matchAll(/<li[^>]+class=["'][^"']*job-list__row[^"']*["'][^>]+data-imid=["'](\d+)["'][^>]*>([\s\S]*?)<\/li>/gi)) {
+    const id = text(match[1]);
+    const part = match[2];
+    if (!id || seen.has(id)) continue;
+    const detailId = text(part.match(/\/job\/Detail\?[^"'<>]*?adid=(\d+)/i)?.[1]);
+    if (detailId !== id) continue;
+    const location = listText(part.match(/<span[^>]+class=["'][^"']*job-list__area[^"']*["'][^>]*>([\s\S]*?)<\/span>/i)?.[1] || '');
+    if (!/^(?:전북특별자치도|전라북도|전북)\s+(?:전주시|완주군)(?:\s|$)/.test(location)) continue;
+    const title = listText(part.match(/<span[^>]+class=["'][^"']*job-list__subject[^"']*["'][^>]*>([\s\S]*?)<\/span>/i)?.[1] || '');
+    if (!title || /전국\s*(?:채용|모집|근무|지역|대상)|전국채용|재택근무|원격근무/.test(title)) continue;
+    const companyHtml = part.match(/<span[^>]+class=["'][^"']*job-list__company[^"']*["'][^>]*>([\s\S]*?)<\/span>\s*<\/span>/i)?.[1] || '';
+    let company = listText(companyHtml);
+    if (location && company.endsWith(location)) company = company.slice(0, -location.length).trim();
+    const payLabel = htmlPlainText(part.match(/<span[^>]+class=["'][^"']*payIcon[^"']*["'][^>]*>([\s\S]*?)<\/span>/i)?.[1] || '');
+    const payAmount = htmlPlainText(part.match(/<strong[^>]+class=["'][^"']*job-list__number[^"']*["'][^>]*>([\s\S]*?)<\/strong>/i)?.[1] || '');
+    const deadlineLabel = htmlPlainText(part.match(/<span[^>]+class=["'][^"']*job-list__deadline[^"']*["'][^>]*>([\s\S]*?)<\/span>/i)?.[1] || '');
+    const postedAt = text(part.match(/<div[^>]+class=["'][^"']*job-list__col\s+regDate[^"']*["'][^>]*>\s*(20\d{2}\.\d{2}\.\d{2})/i)?.[1] || '');
+    if (!company) continue;
+    seen.add(id);
+    candidates.push({
+      id,
+      title,
+      company,
+      listLocation: location,
+      salaryRaw: payLabel && payAmount ? payLabel + ' ' + payAmount + '원' : '',
+      deadlineLabel,
+      postedAt,
+      evidence: 'public_search_list'
+    });
+  }
+  return candidates;
+}
+
+function jobKoreaSearchCandidates(html) {
+  const candidates = [];
+  const seen = new Set();
+  for (const part of String(html || '').split('data-sentry-component="CardJob"').slice(1)) {
+    const id = text(part.match(/\/Recruit\/GI_Read\/(\d+)/i)?.[1]);
+    if (!id || seen.has(id)) continue;
+    const title = htmlPlainText(part.match(/data-sentry-component="Title"[\s\S]{0,1200}?<span[^>]*>([\s\S]*?)<\/span>/i)?.[1] || '');
+    const location = htmlPlainText(part.match(/emoji--basicemoji-place2[\s\S]{0,1000}?<span[^>]*>([\s\S]*?)<\/span>/i)?.[1] || '');
+    if (!exactSingleLocalListLocation(location)) continue;
+    if (/전국\s*(?:채용|모집|근무|지역|대상)|전국채용|재택근무|원격근무/.test(title)) continue;
+    seen.add(id);
+    candidates.push({ id, title, listLocation: location, evidence: 'search_card' });
+  }
+  return candidates;
+}
+
 function canonicalLocalCompany(value) {
   const normalized = lower(value)
     .replace(/㈜|\((?:주|유)\)|주식회사|유한회사/g, ' ')
@@ -1073,6 +1319,17 @@ function localCrossPlatformDuplicateKey(job) {
   return [company, address, category, salaryKey].join('::');
 }
 
+function localCrossPlatformGroupKey(job) {
+  if (!localDomesticBoardSources.has(job?.source)) return '';
+  const region = job.domesticRegion || domesticRegionFor(job);
+  if (region?.precision !== 'address') return '';
+  const address = canonicalDomesticAddress(job.workAddress || job.location);
+  const company = canonicalLocalCompany(job.company);
+  const category = text(job.category);
+  if (!address || !company || !category || category === '기타') return '';
+  return [company, address, category].join('::');
+}
+
 function localRoleKeywords(job) {
   const title = lower(job?.title);
   const keywords = [
@@ -1083,7 +1340,29 @@ function localRoleKeywords(job) {
   return new Set(keywords.filter((keyword) => title.includes(keyword)));
 }
 
+function canonicalLocalRoleTitle(job) {
+  return canonicalDedupeTitle(job)
+    .replace(/(?:채용|모집(?:합니다)?|구합니다|구함|직원|사원|정직원)/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function localCrossPlatformDuplicateCompatible(a, b) {
+  const regionA = a.domesticRegion || domesticRegionFor(a);
+  const regionB = b.domesticRegion || domesticRegionFor(b);
+  if (regionA?.precision === 'address' && regionB?.precision === 'address') {
+    const addressA = canonicalDomesticAddress(a.workAddress || a.location);
+    const addressB = canonicalDomesticAddress(b.workAddress || b.location);
+    const companyA = canonicalLocalCompany(a.company);
+    const companyB = canonicalLocalCompany(b.company);
+    const categoryA = text(a.category);
+    const categoryB = text(b.category);
+    if (addressA && addressA === addressB && companyA && companyA === companyB && categoryA && categoryA === categoryB && categoryA !== '기타') {
+      const roleA = canonicalLocalRoleTitle(a);
+      const roleB = canonicalLocalRoleTitle(b);
+      if (roleA && roleA === roleB) return true;
+    }
+  }
   const keyA = localCrossPlatformDuplicateKey(a);
   const keyB = localCrossPlatformDuplicateKey(b);
   if (!keyA || keyA !== keyB) return false;
@@ -1195,6 +1474,18 @@ function currentListingState(job) {
     };
   }
   if (meta.kind === 'manual') return { code: 'manual', label: '직접 확인 필요', stale: false, reason: '사용자가 직접 추가한 공고라 자동 모집 확인 근거가 없음', basis: 'manual', verification: 'manual' };
+  if (localDomesticBoardSources.has(job.source) && ['public_list', 'public_list_cached_detail'].includes(job.sourceListingState)) {
+    return {
+      code: 'current_feed',
+      label: job.sourceListingState === 'public_list_cached_detail' ? '공개 목록 확인·상세 일부 이전값' : '공개 목록 공고 확인',
+      stale: false,
+      reason: job.sourceListingState === 'public_list_cached_detail'
+        ? '이번 수집에서 공개 검색·지역 목록에 해당 공고가 확인됐고, 상세 접근 제한으로 근무지·경력 등 일부 필드는 마지막 상세 확인값을 유지함'
+        : '이번 수집에서 공개 검색·지역 목록에 해당 공고가 확인됐지만 상세 페이지는 접근 제한으로 확인하지 못함',
+      basis: job.sourceListingState === 'public_list_cached_detail' ? 'public_search_list_cached_detail' : 'public_search_list',
+      verification: 'intermediary'
+    };
+  }
   if (localDomesticBoardSources.has(job.source) && job.sourceListingState === 'public_detail') {
     return {
       code: 'current_feed',
@@ -1248,10 +1539,10 @@ function classify(job) {
   const title = lower(job.title);
   if (job.source === 'Channel Corp' && /\bdata analyst\b/i.test(title)) return '조사·데이터';
   if (job.source === 'TSMG' && /^team coordinator$/i.test(title)) return '커뮤니티·운영';
-  if (localDomesticBoardSources.has(job.source) && /(?:사무(?:원|보조)?|행정|총무|운영지원|자료입력|전산입력|접수|원무|고객(?:응대|상담)|매장관리|컨시어지)/.test(title)) {
+  if (localDomesticBoardSources.has(job.source) && /(?:사무(?:담당|직|원|보조)?|행정|총무|운영(?:지원|관리|담당)|(?:센터|프로그램|공간)\s*운영|자료입력|전산입력|접수|원무|고객(?:관리|응대|상담|센터)|cs\b|인바운드|매장관리|컨시어지|프론트|예약관리|서류검토|검수|모니터링|콘텐츠\s*(?:검수|리뷰))/.test(title)) {
     return '사무·운영';
   }
-  if (localDomesticBoardSources.has(job.source) && /(?:매장(?:운영|보조)|카페|바리스타|판매(?:원|보조)?|계산원|안내(?:원|보조)?|홀서빙|주방보조|포장(?:원|보조)?|파트타임|(?:직원\s*[/·&]\s*)?파트(?:\s|모집|$)|아르바이트|스태프)/.test(title)) {
+  if (localDomesticBoardSources.has(job.source) && /(?:매장(?:운영|보조)|카페|바리스타|판매(?:원|보조)?|계산원|안내(?:원|보조)?|홀(?:서빙|직원)|주방(?:보조|직원)?|포장(?:원|보조)?|미화|카트|하우스키핑|식음료|f&b|파트타임|(?:직원\s*[/·&]\s*)?파트(?:\s|모집|$)|아르바이트|스태프)/.test(title)) {
     return '일반·파트타임';
   }
   const rules = [
@@ -1372,6 +1663,7 @@ function normalizeJob(raw) {
     sourcePostingId: text(raw.sourcePostingId || raw.id),
     platform: text(raw.platform || raw.source),
     workAddress: text(raw.workAddress),
+    workAddressEvidence: text(raw.workAddressEvidence),
     experience: text(raw.experience),
     education: text(raw.education),
     deadlineType: text(raw.deadlineType),
@@ -1623,7 +1915,7 @@ function normalizeJob(raw) {
       fitWarnings.push(`경력 요건 확인: ${evidenceSnippet(job.experience, 80)}`);
       job.score = Math.min(job.score, 19);
     }
-    const specialistTitle = /간호사|간호조무사|요양보호사|사회복지사|약사|의사|치위생사|물리치료사|작업치료사|용접|전기기사|산업기사|건축기사|토목기사|개발자|엔지니어|팀장|부장급/.test(title)
+    const specialistTitle = /간호사|간호조무사|요양보호사|사회복지사|약사|의사|치위생사|물리치료사|작업치료사|용접|전기기사|산업기사|건축기사|토목기사|개발자|엔지니어|팀장|본부장|부장급|지게차운전원|헤어디자이너|트레이너|(?:학원\s*)?강사|설치기사/.test(title)
       || (/지게차/.test(title) && !/지게차\s*(?:시급|수당|우대|가능|별도)/.test(title));
     if (specialistTitle) {
       fitWarnings.push('전문 자격·기술 경력 요건 확인');
@@ -1802,67 +2094,184 @@ function localPlatformSalary(source, posting, plainText) {
 }
 
 function localPlatformDeadline(source, posting, plainText) {
-  if (/모집마감\s*(?:상시모집|상시채용)|\b상시채용\b/.test(plainText)) {
-    return { type: 'rolling', date: '', label: '상시채용' };
-  }
-  if (source === '잡코리아') {
-    const fixed = plainText.match(/마감일\s*(20\d{2})\.(\d{1,2})\.(\d{1,2})/);
-    if (fixed) {
-      const date = [fixed[1], fixed[2].padStart(2, '0'), fixed[3].padStart(2, '0')].join('-');
-      return { type: 'fixed', date, label: date };
-    }
-  }
+  const visible = koreanVisibleDeadline(plainText);
+  if (visible) return visible;
   return fixedDeadline(posting?.validThrough);
 }
 
-function structuredLocalBoardCandidate(source, sourcePostingId, url, html) {
-  const posting = jsonLdJobPostings(html)[0];
-  if (!posting) throw new Error(source + ' detail missing JobPosting JSON-LD: ' + sourcePostingId);
-  const plainText = htmlPlainText(html);
+function deadlineFromListHint(hint) {
+  const raw = text(hint?.deadlineLabel);
+  if (!raw) return null;
+  if (/상시(?:모집|채용)/.test(raw)) return { type: 'rolling', date: '', label: '상시채용' };
+  const match = raw.match(/(20\d{2})[.\-/](\d{1,2})[.\-/](\d{1,2})/);
+  if (!match) return null;
+  const date = [match[1], match[2].padStart(2, '0'), match[3].padStart(2, '0')].join('-');
+  return { type: 'fixed', date, label: date };
+}
+
+function cleanQualificationText(value) {
+  let normalized = text(value);
+  normalized = normalized.split(/\s+(?:로그인\s+하고|TOP\b|궁금해요|AI추천공고|비슷한\s+조건의)/)[0].trim();
+  if (/^(?:채용\s*상세요강|지원자격|상세요강)$/.test(normalized)) return '';
+  return normalized;
+}
+
+function moreSpecificQualification(primary, body) {
+  const sourceValue = cleanQualificationText(primary);
+  const bodyValue = cleanQualificationText(body);
+  if (!bodyValue) return sourceValue;
+  if (!sourceValue) return bodyValue;
+  if (bodyValue.startsWith(sourceValue)) {
+    const suffix = bodyValue.slice(sourceValue.length).trim();
+    if (!/^(?:무관|\(?\d+\s*(?:년|개월)|이상|이하|고졸|초대졸|대졸|석사|박사)/.test(suffix)) return sourceValue;
+  }
+  const sourceGeneric = /^(?:경력|신입|신입·경력|신입\/경력|학력무관|무관)$/.test(sourceValue);
+  const bodySpecific = /\d+\s*(?:년|개월)|이상|이하|고졸|초대졸|대졸|석사|박사|경력무관/.test(bodyValue);
+  return sourceGeneric && bodySpecific ? bodyValue : sourceValue;
+}
+
+function listHintJobPosting(hint) {
+  if (!hint?.title || !hint?.company || !hint?.workAddress) return null;
+  const salaryMatch = text(hint.salaryRaw).match(/^(시급|일급|주급|월급|연봉)\s+([0-9][0-9,.]*)\s*원?/);
+  return {
+    '@type': 'JobPosting',
+    title: hint.title,
+    hiringOrganization: { '@type': 'Organization', name: hint.company },
+    jobLocation: { '@type': 'Place', address: { '@type': 'PostalAddress', streetAddress: hint.workAddress } },
+    ...(salaryMatch ? { baseSalary: salaryPostingFromKorean(salaryMatch[1], salaryMatch[2]) } : {}),
+    ...(hint.postedAt && !Number.isNaN(Date.parse(hint.postedAt)) ? { datePosted: hint.postedAt } : {}),
+    description: hint.title,
+    _fallbackFormat: 'public_list_embedded'
+  };
+}
+
+function previousAlbaJobForCandidate(previousJobs, sourcePostingId) {
+  const rawId = '알바천국:' + sourcePostingId;
+  return (previousJobs || []).find((job) =>
+    (job?.source === '알바천국' || (job?.sources || []).includes('알바천국'))
+    && (job?.sourcePostingId === sourcePostingId || (job?.legacyIds || []).includes(rawId))
+    && job?.workAddress
+    && isJeonjuWanjuLocal(job)
+  ) || null;
+}
+
+function albaPublicListFallbackCandidate(sourcePostingId, url, hint = {}, previousJob = null) {
+  const title = text(hint.title);
+  const company = text(hint.company);
+  const workAddress = text(previousJob?.workAddress);
+  if (!previousJob || !title || !company || !localAddressText(workAddress)) return null;
+  if (/전국\s*(?:채용|모집|근무|지역|대상)|전국채용|재택근무|원격근무/.test(title)) return null;
+  const listDeadline = deadlineFromListHint(hint) || { type: '', date: '', label: '' };
+  const rawPostedAt = text(hint.postedAt);
+  const postedAt = /^20\d{2}\.\d{2}\.\d{2}$/.test(rawPostedAt) ? rawPostedAt.replace(/\./g, '-') : rawPostedAt;
+  const normalized = normalizeJob({
+    id: '알바천국:' + sourcePostingId,
+    sourcePostingId,
+    platform: '알바천국',
+    source: '알바천국',
+    company,
+    title,
+    location: workAddress,
+    workAddress,
+    remote: false,
+    workplaceMode: 'onsite',
+    type: text(previousJob.type) || '미상',
+    salary: text(hint.salaryRaw) || text(previousJob.salaryMetadataRaw || previousJob.salary),
+    salaryProvenance: hint.salaryRaw ? 'source_list' : (previousJob.salaryProvenance || 'none'),
+    url,
+    postedAt: postedAt && !Number.isNaN(Date.parse(postedAt)) ? postedAt : previousJob.postedAt,
+    sourceListingState: 'public_list_cached_detail',
+    description: previousJob._fullDescription || previousJob.description || title,
+    tags: previousJob.tags || [],
+    countryCode: 'KR',
+    locationEvidenceLevel: 'source_structured',
+    workAddressEvidence: previousJob.workAddressEvidence || 'detail_structured',
+    experience: previousJob.experience || '',
+    education: previousJob.education || '',
+    deadlineType: listDeadline.type || previousJob.deadlineType || '',
+    deadlineDate: listDeadline.date || previousJob.deadlineDate || '',
+    deadlineLabel: listDeadline.label || previousJob.deadlineLabel || ''
+  });
+  normalized.sourceListLocation = text(hint.listLocation);
+  normalized.workAddressVerifiedAt = previousJob.lastVerifiedAt || previousJob.verifiedAt || previousJob.listingCheckedAt || '';
+  normalized._listFallback = true;
+  return normalized;
+}
+
+function structuredLocalBoardCandidate(source, sourcePostingId, url, html, listHint = {}) {
+  const rawHtml = String(html || '');
+  if (
+    source === '알바천국'
+    && rawHtml.length < 5000
+    && /요청하신 공고 열람은 로그인이 필요한 서비스입니다|location\.href\s*=\s*['\"][^'\"]*(?:AdultCert|LoginGate)\.asp/i.test(rawHtml)
+  ) {
+    throw localDetailError('access_restricted', source + ' detail requires login or age verification: ' + sourcePostingId);
+  }
+  const plainText = htmlPlainText(rawHtml);
+  const detailPosting = jsonLdJobPostings(html)[0] || null;
+  const posting = detailPosting
+    || (source === '알바천국' ? albaLegacyJobPosting(html) : null)
+    || (source === '알바몬' ? listHintJobPosting(listHint) : null);
+  if (!posting) throw localDetailError('detail_structure', source + ' detail missing supported JobPosting structure: ' + sourcePostingId);
   const nextData = source === '알바몬' ? nextDataJson(html) : null;
   const albamonView = nextData?.props?.pageProps?.data?.viewData || null;
-  const workAddress = schemaAddress(posting);
-  if (!workAddress) throw new Error(source + ' detail missing workplace address: ' + sourcePostingId);
+  let workAddress = schemaAddress(posting);
+  let workAddressEvidence = posting?._fallbackFormat === 'alba_legacy_html'
+    ? 'detail_html'
+    : posting?._fallbackFormat === 'public_list_embedded'
+      ? 'embedded_list'
+      : 'detail_structured';
+  if (!workAddress && listHint?.workAddress && localAddressText(listHint.workAddress)) {
+    workAddress = text(listHint.workAddress);
+    workAddressEvidence = 'embedded_list';
+  }
+  if (!workAddress && exactSingleLocalListLocation(listHint?.listLocation) && !detailContradictsListLocation(plainText)) {
+    workAddress = text(listHint.listLocation);
+    workAddressEvidence = 'search_card';
+  }
+  if (!workAddress) throw localDetailError('workplace_unverified', source + ' detail missing verifiable workplace address: ' + sourcePostingId);
   const deadline = localPlatformDeadline(source, posting, plainText);
-  const bodyExperience = text(plainText.match(/(?:지원자격\s*)?경력\s+(.{1,45}?)(?=\s학력|\s접수기간|\s급여|\s근무지역|$)/)?.[1]);
-  const bodyEducation = text(plainText.match(/학력\s+(.{1,45}?)(?=\s접수기간|\s급여|\s근무지역|\s우대|\s스킬|$)/)?.[1]);
-  const experience = (source === '잡코리아' && bodyExperience)
-    ? bodyExperience
-    : text(decodeHtml(posting.experienceRequirements)) || bodyExperience;
-  const education = (source === '잡코리아' && bodyEducation)
-    ? bodyEducation
-    : text(decodeHtml(posting.educationRequirements)) || bodyEducation;
-  const description = htmlPlainText(posting.description || '');
-  const title = text(decodeHtml(posting.title));
+  const listDeadline = deadlineFromListHint(listHint);
+  const finalDeadline = deadline.type ? deadline : (listDeadline || deadline);
+  const bodyExperience = cleanQualificationText(plainText.match(/(?:지원자격\s*)?경력\s+(.{1,65}?)(?=\s학력|\s접수기간|\s급여|\s근무지역|\s로그인|\sTOP\b|$)/)?.[1]);
+  const bodyEducation = cleanQualificationText(plainText.match(/학력\s+(.{1,65}?)(?=\s접수기간|\s급여|\s근무지역|\s우대|\s스킬|\s로그인|\sTOP\b|$)/)?.[1]);
+  const experience = moreSpecificQualification(decodeHtml(posting.experienceRequirements), bodyExperience);
+  const education = moreSpecificQualification(decodeHtml(posting.educationRequirements), bodyEducation);
+  const description = htmlPlainText(posting.description || '') || text(listHint?.title);
+  const title = text(decodeHtml(posting.title || listHint?.title));
   const remote = /재택근무|재택\b|원격근무|원격\b/.test(title + ' ' + description);
   const candidate = {
     id: source.toLowerCase() + ':' + sourcePostingId,
     sourcePostingId,
     platform: source,
     source,
-    company: text(decodeHtml(albamonView?.companyName || posting?.hiringOrganization?.name)) || '회사 미상',
+    company: text(decodeHtml(albamonView?.companyName || posting?.hiringOrganization?.name || listHint?.company)) || '회사 미상',
     title,
     location: workAddress,
     workAddress,
     remote,
     workplaceMode: remote ? 'remote' : 'onsite',
     type: schemaEmploymentType(posting.employmentType),
-    salary: localPlatformSalary(source, posting, plainText),
+    salary: localPlatformSalary(source, posting, plainText) || text(listHint?.salaryRaw),
     salaryProvenance: 'source_structured',
     url,
-    postedAt: posting.datePosted || null,
+    postedAt: posting.datePosted || (listHint?.postedAt && !Number.isNaN(Date.parse(listHint.postedAt)) ? listHint.postedAt : null),
     sourceListingState: 'public_detail',
     description,
     tags: [],
     countryCode: 'KR',
     locationEvidenceLevel: 'source_structured',
+    workAddressEvidence,
     experience,
     education,
-    deadlineType: deadline.type,
-    deadlineDate: deadline.date,
-    deadlineLabel: deadline.label
+    deadlineType: finalDeadline.type,
+    deadlineDate: finalDeadline.date,
+    deadlineLabel: finalDeadline.label
   };
-  return normalizeJob(candidate);
+  const normalized = normalizeJob(candidate);
+  normalized._detailRecovered = Boolean(posting?._fallbackFormat);
+  normalized._detailRecoveryKind = posting?._fallbackFormat || '';
+  return normalized;
 }
 
 function isJeonjuWanjuLocal(job) {
@@ -1873,64 +2282,123 @@ function isJeonjuWanjuLocal(job) {
     && ['전주시', '완주군'].includes(job?.domesticRegion?.city);
 }
 
-async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detailUrl, perSearchLimit = 30 }) {
-  const ids = [];
-  const seen = new Set();
-  for (const searchUrl of searchUrls) {
-    const html = await fetchText(searchUrl);
-    for (const id of uniqueIds(html, idRegex, perSearchLimit)) {
-      if (seen.has(id)) continue;
-      seen.add(id);
-      ids.push(id);
+async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detailUrl, perSearchLimit = 30, previousJobs = [] }) {
+  const candidates = [];
+  const candidateIndexes = new Map();
+  for (const searchSpec of searchUrls) {
+    const spec = typeof searchSpec === 'string' ? { url: searchSpec } : searchSpec;
+    const html = await fetchText(spec.url);
+    const discovered = typeof spec.discover === 'function'
+      ? spec.discover(html).slice(0, spec.limit || perSearchLimit)
+      : uniqueIds(html, idRegex, spec.limit || perSearchLimit).map((id) => ({ id }));
+    for (const candidate of discovered) {
+      const id = text(candidate?.id);
+      if (!id) continue;
+      if (candidateIndexes.has(id)) {
+        const index = candidateIndexes.get(id);
+        candidates[index] = {
+          ...candidates[index],
+          ...Object.fromEntries(Object.entries(candidate || {}).filter(([, value]) => value !== '' && value !== null && value !== undefined)),
+          id
+        };
+        continue;
+      }
+      candidateIndexes.set(id, candidates.length);
+      candidates.push({ ...candidate, id });
     }
   }
-  if (!ids.length) throw new Error(source + ' public search returned no posting ids');
-  const results = await mapLimit(ids, 4, async (id) => {
-    const url = detailUrl(id);
-    const html = await fetchText(url);
-    return structuredLocalBoardCandidate(source, id, url, html);
+  if (!candidates.length) throw new Error(source + ' public search returned no posting ids');
+  const results = await mapLimit(candidates, 4, async (candidate) => {
+    const url = detailUrl(candidate.id);
+    try {
+      const html = await fetchText(url);
+      return structuredLocalBoardCandidate(source, candidate.id, url, html, candidate);
+    } catch (error) {
+      if (source === '알바천국' && error?.code === 'access_restricted') {
+        const previousJob = previousAlbaJobForCandidate(previousJobs, candidate.id);
+        const fallback = albaPublicListFallbackCandidate(candidate.id, url, candidate, previousJob);
+        if (fallback) return fallback;
+      }
+      throw error;
+    }
   });
   const successful = results.filter((result) => result?.ok && result.value).map((result) => result.value);
   if (!successful.length) throw new Error(source + ' public detail parsing failed for all discovered postings');
+  const detailRecoveredCount = successful.filter((job) => job._detailRecovered).length;
+  const listFallbackCount = successful.filter((job) => job._listFallback).length;
+  for (const job of successful) {
+    delete job._detailRecovered;
+    delete job._detailRecoveryKind;
+    delete job._listFallback;
+  }
   const local = successful.filter(isJeonjuWanjuLocal);
   const matched = local.filter((job) => Number(job.score || 0) >= 10);
-  return sourceCollection(matched, ids.length, {
+  const workplaceUnverifiedCount = results.filter((result) => !result?.ok && result?.error?.code === 'workplace_unverified').length;
+  const accessRestrictedCount = results.filter((result) => !result?.ok && result?.error?.code === 'access_restricted').length;
+  const detailFailureCount = results.filter((result) => !result?.ok
+    && !['workplace_unverified', 'access_restricted'].includes(result?.error?.code)).length;
+  return sourceCollection(matched, candidates.length, {
     localeEligibleCount: local.length,
     profileMatchedCount: matched.length,
-    detailFailureCount: results.filter((result) => !result?.ok).length
+    detailFailureCount,
+    workplaceUnverifiedCount,
+    accessRestrictedCount,
+    listFallbackCount,
+    detailRecoveredCount
   });
 }
+
+const albamonSearchPages = Object.freeze([1, 2, 3, 4, 5, 6]);
 
 async function collectAlbamon() {
   return collectStructuredLocalBoard({
     source: '알바몬',
-    searchUrls: ['https://www.albamon.com/jobs/area/home?areas=M000'],
+    searchUrls: albamonSearchPages.map((page) => ({
+      url: 'https://www.albamon.com/jobs/area/home?areas=M000&page=' + page,
+      discover: albamonListCandidates,
+      limit: 40
+    })),
     idRegex: /\/jobs\/detail\/(\d+)/gi,
     detailUrl: (id) => 'https://www.albamon.com/jobs/detail/' + id,
     perSearchLimit: 48
   });
 }
 
-async function collectAlba() {
+async function collectAlba(previousJobs = []) {
   return collectStructuredLocalBoard({
     source: '알바천국',
     searchUrls: [
-      'https://www.alba.co.kr/search/Search?wsSrchWord=%EC%A0%84%EC%A3%BC',
-      'https://www.alba.co.kr/search/Search?wsSrchWord=%EC%99%84%EC%A3%BC'
+      {
+        url: 'https://www.alba.co.kr/search/Search?wsSrchWord=%EC%A0%84%EC%A3%BC',
+        discover: albaSearchListCandidates,
+        limit: 40
+      },
+      {
+        url: 'https://www.alba.co.kr/search/Search?wsSrchWord=%EC%99%84%EC%A3%BC',
+        discover: albaSearchListCandidates,
+        limit: 40
+      },
+      {
+        url: 'https://www.alba.co.kr/job/area/MainLocal?viewtype=L&sidocd=063',
+        discover: albaRegionListCandidates,
+        limit: 40
+      }
     ],
     idRegex: /\/job\/Detail\?[^"'<>]*?\badid=(\d+)/gi,
     detailUrl: (id) => 'https://www.alba.co.kr/job/Detail?adid=' + id,
-    perSearchLimit: 28
+    perSearchLimit: 28,
+    previousJobs
   });
 }
 
 async function collectJobKorea() {
   return collectStructuredLocalBoard({
     source: '잡코리아',
-    searchUrls: [
-      'https://www.jobkorea.co.kr/Search/?stext=%EC%A0%84%EC%A3%BC',
-      'https://www.jobkorea.co.kr/Search/?stext=%EC%99%84%EC%A3%BC'
-    ],
+    searchUrls: ['%EC%A0%84%EC%A3%BC', '%EC%99%84%EC%A3%BC'].flatMap((term) => [
+      { url: 'https://www.jobkorea.co.kr/Search/?stext=' + term, discover: jobKoreaSearchCandidates, limit: 30 },
+      { url: 'https://www.jobkorea.co.kr/Search/?stext=' + term + '&Page_No=2', discover: jobKoreaSearchCandidates, limit: 30 },
+      { url: 'https://www.jobkorea.co.kr/Search/?stext=' + term + '&Page_No=3', discover: jobKoreaSearchCandidates, limit: 30 }
+    ]),
     idRegex: /\/Recruit\/GI_Read\/(\d+)/gi,
     detailUrl: (id) => 'https://www.jobkorea.co.kr/Recruit/GI_Read/' + id,
     perSearchLimit: 24
@@ -2558,7 +3026,7 @@ function dedupe(jobs) {
   const crossPlatformGroups = new Map();
   const passthrough = [];
   for (const job of merged) {
-    const key = localCrossPlatformDuplicateKey(job);
+    const key = localCrossPlatformGroupKey(job);
     if (!key) {
       passthrough.push(job);
       continue;
@@ -2948,6 +3416,11 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       duplicateCount,
       lowQualityCount,
       noiseCount,
+      detailFailureCount: Number(run.detailFailureCount || 0),
+      workplaceUnverifiedCount: Number(run.workplaceUnverifiedCount || 0),
+      accessRestrictedCount: Number(run.accessRestrictedCount || 0),
+      listFallbackCount: Number(run.listFallbackCount || 0),
+      detailRecoveredCount: Number(run.detailRecoveredCount || 0),
       ...(status.error ? { error: String(status.error).slice(0, 240) } : {})
     };
     const history = appendLimitedHistory(previousHistory, historyEntry, sourceMetricHistoryLimit);
@@ -2978,6 +3451,11 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       rawCount,
       localeEligibleCount: Number(run.localeEligibleCount || 0),
       profileMatchedCount: Number(run.profileMatchedCount ?? matchedCount),
+      detailFailureCount: Number(run.detailFailureCount || 0),
+      workplaceUnverifiedCount: Number(run.workplaceUnverifiedCount || 0),
+      accessRestrictedCount: Number(run.accessRestrictedCount || 0),
+      listFallbackCount: Number(run.listFallbackCount || 0),
+      detailRecoveredCount: Number(run.detailRecoveredCount || 0),
       matchedCount,
       keptCount,
       recommendedCount,
@@ -3032,7 +3510,7 @@ export async function collectJobs({ includeManual = true, persist = true, previo
     ['Meridial', collectMeridial],
     ['OneForma', collectOneForma],
     ['알바몬', collectAlbamon],
-    ['알바천국', collectAlba],
+    ['알바천국', () => collectAlba(fallbackJobs)],
     ['잡코리아', collectJobKorea],
     ['We Work Remotely', collectWeWorkRemotely],
     ['Jobicy', collectJobicy],
@@ -3072,7 +3550,11 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         matchedCount: Number(result?.matchedCount ?? collected.length),
         localeEligibleCount: Number(result?.localeEligibleCount || 0),
         profileMatchedCount: Number(result?.profileMatchedCount ?? collected.length),
-        detailFailureCount: Number(result?.detailFailureCount || 0)
+        detailFailureCount: Number(result?.detailFailureCount || 0),
+        workplaceUnverifiedCount: Number(result?.workplaceUnverifiedCount || 0),
+        accessRestrictedCount: Number(result?.accessRestrictedCount || 0),
+        listFallbackCount: Number(result?.listFallbackCount || 0),
+        detailRecoveredCount: Number(result?.detailRecoveredCount || 0)
       });
       jobs.push(...collected);
       sourceStatus.push({
@@ -3080,7 +3562,11 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         ok: true,
         count: collected.length,
         rawCount: Number(result?.rawCount ?? collected.length),
-        ...(result?.detailFailureCount ? { detailFailureCount: Number(result.detailFailureCount) } : {})
+        ...(result?.detailFailureCount ? { detailFailureCount: Number(result.detailFailureCount) } : {}),
+        ...(result?.workplaceUnverifiedCount ? { workplaceUnverifiedCount: Number(result.workplaceUnverifiedCount) } : {}),
+        ...(result?.accessRestrictedCount ? { accessRestrictedCount: Number(result.accessRestrictedCount) } : {}),
+        ...(result?.listFallbackCount ? { listFallbackCount: Number(result.listFallbackCount) } : {}),
+        ...(result?.detailRecoveredCount ? { detailRecoveredCount: Number(result.detailRecoveredCount) } : {})
       });
     } catch (error) {
       const preserved = fallbackJobs.filter((job) => job.source === name).map(markPreservedSourceFailure);
@@ -3157,6 +3643,11 @@ export {
   marketSegmentFor,
   eligibilityFor,
   extractSalary,
+  albamonSearchPages,
+  albamonListCandidates,
+  albaRegionListCandidates,
+  albaSearchListCandidates,
+  jobKoreaSearchCandidates,
   localCrossPlatformDuplicateKey,
   structuredLocalBoardCandidate,
   isJeonjuWanjuLocal,

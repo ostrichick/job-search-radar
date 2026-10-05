@@ -1335,7 +1335,13 @@ function renderSourceHealth(sourceStatus = []) {
   const panel = $('sourceHealth');
   if (!panel) return;
   const failed = (sourceStatus || []).filter((source) => !source.ok);
-  const partial = (sourceStatus || []).filter((source) => source.ok && Number(source.detailFailureCount || 0) > 0);
+  const partial = (sourceStatus || []).filter((source) => source.ok && (
+    Number(source.detailFailureCount || 0) > 0
+    || Number(source.workplaceUnverifiedCount || 0) > 0
+    || Number(source.accessRestrictedCount || 0) > 0
+    || Number(source.listFallbackCount || 0) > 0
+  ));
+  const recovered = (sourceStatus || []).filter((source) => source.ok && Number(source.detailRecoveredCount || 0) > 0);
   const sourceMetrics = state.meta?.sourceMetrics || {};
   const qualityWarnings = Object.values(sourceMetrics).filter((metric) =>
     ['weak'].includes(metric?.qualityTier) || ['unstable', 'degraded'].includes(metric?.reliabilityState));
@@ -1350,11 +1356,19 @@ function renderSourceHealth(sourceStatus = []) {
   title.textContent = failed.length
     ? `일부 소스 확인 실패 · ${failed.length}개`
     : partial.length
-      ? `일부 상세 확인 실패 · ${partial.length}개 소스`
-    : `소스 품질 주의 · ${qualityWarnings.length}개`;
+      ? `일부 상세 확인 제약 · ${partial.length}개 소스`
+      : `소스 품질 주의 · ${qualityWarnings.length}개`;
   const text = document.createElement('span');
   const failureText = failed.map((source) => `${source.source}${source.preserved ? ` · 이전 ${source.preserved}개 보존` : ''}`);
-  const partialText = partial.map((source) => `${source.source} · 상세 ${Number(source.detailFailureCount)}건 실패`);
+  const partialText = partial.map((source) => {
+    const details = [];
+    if (Number(source.detailFailureCount || 0) > 0) details.push(`상세 파싱·응답 실패 ${Number(source.detailFailureCount)}건`);
+    if (Number(source.workplaceUnverifiedCount || 0) > 0) details.push(`근무지 확인 불가 ${Number(source.workplaceUnverifiedCount)}건 제외`);
+    if (Number(source.accessRestrictedCount || 0) > 0) details.push(`로그인·연령 인증 필요 ${Number(source.accessRestrictedCount)}건 제외`);
+    if (Number(source.listFallbackCount || 0) > 0) details.push(`상세 접근 제한 → 공개 목록 근거 ${Number(source.listFallbackCount)}건 유지`);
+    return `${source.source} · ${details.join(' · ')}`;
+  });
+  const recoveryText = recovered.map((source) => `${source.source} · 대체 상세 구조 ${Number(source.detailRecoveredCount)}건 복구`);
   const qualityText = qualityWarnings
     .filter((metric) => !failed.some((source) => source.source === metric.source))
     .map((metric) => {
@@ -1363,7 +1377,7 @@ function renderSourceHealth(sourceStatus = []) {
       }
       return `${metric.source} · 유효 ${metric.keptCount || 0}/${metric.matchedCount || 0} · 노이즈 ${Math.round(Number(metric.noiseRate || 0) * 100)}%`;
     });
-  text.textContent = [...failureText, ...partialText, ...qualityText].join(' / ');
+  text.textContent = [...failureText, ...partialText, ...recoveryText, ...qualityText].join(' / ');
   summary.append(title, text);
   panel.replaceChildren(summary);
   if (preserved > 0) {

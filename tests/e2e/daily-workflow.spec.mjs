@@ -699,6 +699,54 @@ test('상태 백업/가져오기는 지원함 상태와 필터를 복원한다',
   await expect(page.locator('.title')).toHaveText('AI Data Specialist - Korean');
 });
 
+test('collector 병합으로 ID가 바뀌어도 legacyIds가 관심·지원·숨김 상태를 새 ID로 승계한다', async ({ page }) => {
+  const planned = job({
+    id: 'job:merged-local-planned',
+    title: '완주 현장 사무 운영 지원',
+    legacyIds: ['job:old-local-planned', '알바몬:117809753'],
+    sources: ['알바몬', '알바천국']
+  });
+  const applied = job({
+    id: 'job:merged-local-applied',
+    title: '전주 고객센터 운영 지원',
+    legacyIds: ['job:old-local-applied', '잡코리아:50071517'],
+    sources: ['잡코리아']
+  });
+  await useFeed(page, () => feed([planned, applied]));
+  await page.addInitScript(() => {
+    localStorage.setItem('jobFavorites', JSON.stringify(['job:old-local-planned']));
+    localStorage.setItem('jobHidden', JSON.stringify(['job:old-local-planned']));
+    localStorage.setItem('jobStates', JSON.stringify({ 'job:old-local-planned': 'planned', 'job:old-local-applied': 'applied' }));
+    localStorage.setItem('reviewedJobIds', JSON.stringify(['job:old-local-planned']));
+    localStorage.setItem('knownJobIds', JSON.stringify(['job:old-local-planned', 'job:old-local-applied']));
+    localStorage.setItem('trackedJobs', JSON.stringify({
+      'job:old-local-planned': { id: 'job:old-local-planned', title: 'old planned snapshot' },
+      'job:old-local-applied': { id: 'job:old-local-applied', title: 'old applied snapshot' }
+    }));
+  });
+  await page.goto('/');
+
+  const migrated = await page.evaluate(() => ({
+    favorites: JSON.parse(localStorage.getItem('jobFavorites') || '[]'),
+    hidden: JSON.parse(localStorage.getItem('jobHidden') || '[]'),
+    states: JSON.parse(localStorage.getItem('jobStates') || '{}'),
+    reviewed: JSON.parse(localStorage.getItem('reviewedJobIds') || '[]'),
+    known: JSON.parse(localStorage.getItem('knownJobIds') || '[]'),
+    tracked: JSON.parse(localStorage.getItem('trackedJobs') || '{}')
+  }));
+  expect(migrated.favorites).toContain('job:merged-local-planned');
+  expect(migrated.hidden).toContain('job:merged-local-planned');
+  expect(migrated.states['job:merged-local-planned']).toBe('planned');
+  expect(migrated.states['job:merged-local-applied']).toBe('applied');
+  expect(migrated.reviewed).toContain('job:merged-local-planned');
+  expect(migrated.known).toEqual(expect.arrayContaining(['job:merged-local-planned', 'job:merged-local-applied']));
+  expect(migrated.tracked['job:merged-local-planned']).toBeTruthy();
+  expect(migrated.tracked['job:merged-local-applied']).toBeTruthy();
+  expect(migrated.favorites).not.toContain('job:old-local-planned');
+  expect(migrated.states['job:old-local-planned']).toBeUndefined();
+  expect(migrated.states['job:old-local-applied']).toBeUndefined();
+});
+
 test('지원 가치·미확인·필수요건 상태를 카드와 상세에서 빠르게 확인한다', async ({ page }) => {
   await useFeed(page);
   await page.goto('/');
@@ -774,6 +822,7 @@ test('부분 소스 실패를 별도 경고하고 보존 공고로 바로 이동
     ...feed([...defaultJobs, preserved]),
     sourceStatus: [
       { source: 'RWS TrainAI', ok: true, count: 1 },
+      { source: '알바천국', ok: true, count: 7, workplaceUnverifiedCount: 2, accessRestrictedCount: 1, detailRecoveredCount: 2 },
       { source: 'OneForma', ok: false, count: 0, preserved: 1, error: '503' }
     ]
   };
@@ -781,6 +830,9 @@ test('부분 소스 실패를 별도 경고하고 보존 공고로 바로 이동
   await page.goto('/');
   await expect(page.locator('#sourceHealth')).toBeVisible();
   await expect(page.locator('#sourceHealth')).toContainText('OneForma');
+  await expect(page.locator('#sourceHealth')).toContainText('근무지 확인 불가 2건 제외');
+  await expect(page.locator('#sourceHealth')).toContainText('로그인·연령 인증 필요 1건 제외');
+  await expect(page.locator('#sourceHealth')).toContainText('대체 상세 구조 2건 복구');
   await expect(page.locator('#showSourceErrors')).toContainText('보존 공고 1개');
   await page.locator('#showSourceErrors').click();
   await expect(page.locator('.job-card')).toHaveCount(1);
