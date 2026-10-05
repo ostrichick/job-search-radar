@@ -13,8 +13,15 @@ import {
   jobKoreaSearchCandidates,
   localCrossPlatformDuplicateKey,
   structuredLocalBoardCandidate,
+  collectStructuredLocalBoard,
   isJeonjuWanjuLocal,
   localContinuityCandidates,
+  localDiscoveryCollapseState,
+  localPreferredConditions,
+  localMandatoryQualification,
+  extractLocalWorkSchedule,
+  extractLocalWorkPeriod,
+  localCompensationNotes,
   parseWork24ListXml,
   work24Candidate,
   fallbackJobsForConfiguredSources,
@@ -641,6 +648,192 @@ assert.equal(
   'confirmed expired postings must not be revived by continuity probes'
 );
 
+const preferredLocal = normalizeJob({
+  id: 'local:preferred-license',
+  source: '알바몬',
+  sourcePostingId: 'preferred-license',
+  platform: '알바몬',
+  company: '테스트카페',
+  title: '카페 아르바이트',
+  location: '전북 전주시 완산구 효자동',
+  workAddress: '전북 전주시 완산구 효자동',
+  workAddressEvidence: 'detail_structured',
+  locationEvidenceLevel: 'source_structured',
+  remote: false,
+  workplaceMode: 'onsite',
+  type: '아르바이트',
+  salary: '시급 10,320원',
+  salaryProvenance: 'source_structured',
+  url: 'https://example.com/preferred-license',
+  description: '근무요일 : 주5일 근무시간 : 09:00~18:00 복리후생 : 주휴수당, 중식 제공 우대조건:업무관련자격증소지,유사업무경험우대',
+  countryCode: 'KR',
+  sourceListingState: 'public_detail'
+});
+assert.equal(preferredLocal.requirementsStatus, 'clear', 'preferred certificates must not become a blocking requirement');
+assert.doesNotMatch(preferredLocal.decisionUnknowns.join(' '), /자격·면허/, 'preferred certificates must not create a fake unknown requirement');
+assert.deepEqual(preferredLocal.preferredConditions, ['업무관련자격증소지', '유사업무경험우대']);
+assert.equal(preferredLocal.workSchedule, '주5일 · 09:00~18:00');
+assert.deepEqual(preferredLocal.compensationNotes, ['주휴수당', '식사 지원']);
+
+const mandatoryLocal = normalizeJob({
+  ...preferredLocal,
+  id: 'local:mandatory-license',
+  sourcePostingId: 'mandatory-license',
+  title: '배송 지원',
+  description: '자격요건: 1종 보통 운전면허 소지 필수 우대사항: 인근거주자 근무요일: 주5일 근무시간: 09:00~18:00',
+  mandatoryQualification: '1종 보통 운전면허 소지 필수'
+});
+assert.equal(mandatoryLocal.requirementsStatus, 'hard_check', 'explicitly mandatory licenses must remain a hard requirement');
+assert.match(mandatoryLocal.requirementChecks.map((item) => item.label).join(' '), /필수 자격·면허/);
+
+const entryLevelManager = normalizeJob({
+  ...preferredLocal,
+  id: 'local:entry-level-manager',
+  sourcePostingId: '119502832',
+  title: '[전북지역] 전북센터 운영 본부장 모집',
+  experience: '신입',
+  description: '초보가능 근무기간 1년이상 우대조건:차량소지,운전가능,유사업무경험우대'
+});
+assert.notEqual(entryLevelManager.requirementsStatus, 'hard_check',
+  'managerial title alone must not hard-block a posting that explicitly accepts entry-level applicants');
+assert.doesNotMatch(entryLevelManager.requirementChecks.map((item) => item.label).join(' '), /전문 자격·기술 경력/,
+  '본부장 token must not override explicit 신입/초보가능 source evidence');
+
+assert.equal(localMandatoryQualification('우대조건: 업무관련자격증소지, 유사업무경험우대'), '');
+assert.match(localMandatoryQualification('필수조건: 자동차운전면허 소지 필수 우대사항: 인근거주자'), /운전면허/);
+assert.deepEqual(localPreferredConditions('우대사항: 동종업계 경력자, 장기근무 가능자 복리후생: 연차'), ['동종업계 경력자', '장기근무 가능자']);
+assert.deepEqual(
+  localPreferredConditions('우대사항: 기본우대 유관업무 경험자(인턴, 알바), 유관업무 경력자 접수방법: 온라인지원 로그인 하고 확인'),
+  ['기본우대 유관업무 경험자(인턴/ 알바)', '유관업무 경력자']
+);
+assert.equal(extractLocalWorkSchedule('근무일시 주 5일(월~금) 08:30~17:30 근무지역 전북 전주시'), '주 5일 · 08:30~17:30');
+assert.equal(extractLocalWorkSchedule('근무시간 주 5일 (월~금) 08:30 ~ 16:30 근무지주소 전북 전주시'), '주 5일 · 08:30 ~ 16:30');
+assert.equal(extractLocalWorkSchedule('근무요일 : 주5일(로테이션 근무) 근무시간 : 09:00~22:00 (로테이션)'), '주5일 · 09:00~22:00 · 로테이션');
+assert.equal(extractLocalWorkPeriod('고용형태 계약직(근무기간 24개월) 급여 연봉 3,000만원'), '24개월');
+assert.equal(extractLocalWorkPeriod('근무기간 : 6개월~1년 근무요일 : 주5일'), '6개월~1년');
+assert.deepEqual(localCompensationNotes('급여 면접시 추가협의 가능 복리후생: 주휴수당, 식비(식사) 지원, 성과급'), ['급여 추가 협의 가능', '주휴수당', '식사 지원', '성과급']);
+assert.deepEqual(
+  localCompensationNotes('생산직 급여 : 기본급여 약222만원,잔업/특근 포함 250~300만원 지게차 시급 : 13,000원'),
+  ['생산직 기본급여 약222만원,잔업/특근 포함 250~300만원', '지게차 시급 13,000원']
+);
+assert.deepEqual(localCompensationNotes('급여 시급 11,465원 (면접 후 결정)'), ['급여 면접 후 결정']);
+
+const collapseFixturePrevious = Array.from({ length: 30 }, (_, index) => {
+  const id = String(90000000 + index);
+  const job = normalizeJob({
+    id: `jobkorea:${id}`,
+    source: '잡코리아',
+    sourcePostingId: id,
+    platform: '잡코리아',
+    company: '테스트회사',
+    title: '사무보조',
+    location: '전북 전주시 완산구 효자동',
+    workAddress: '전북 전주시 완산구 효자동',
+    workAddressEvidence: 'detail_structured',
+    locationEvidenceLevel: 'source_structured',
+    remote: false,
+    workplaceMode: 'onsite',
+    type: '계약직',
+    salary: '월급 2,500,000원',
+    salaryProvenance: 'source_structured',
+    url: `https://example.test/detail/${id}`,
+    description: '전주시 사무보조 모집',
+    countryCode: 'KR',
+    sourceListingState: 'public_detail'
+  });
+  job.lastVerifiedAt = '2026-10-05T03:00:00.000Z';
+  return job;
+});
+const collapsedDiscovery = collapseFixturePrevious.slice(0, 3).map((job) => ({ id: job.sourcePostingId }));
+const collapseState = localDiscoveryCollapseState('잡코리아', collapsedDiscovery, collapseFixturePrevious);
+assert.equal(collapseState.suspected, true);
+assert.equal(collapseState.referenceCount, 30);
+assert.equal(collapseState.discoveredCount, 3);
+assert.equal(collapseState.overlapCount, 3);
+
+const originalFetch = globalThis.fetch;
+const localBoardHtml = (id) => `<!doctype html><html><body>
+  <script type="application/ld+json">{
+    "@context":"https://schema.org","@type":"JobPosting",
+    "title":"사무보조","hiringOrganization":{"@type":"Organization","name":"테스트회사"},
+    "jobLocation":{"@type":"Place","address":{"@type":"PostalAddress","streetAddress":"전북 전주시 완산구 효자동"}},
+    "employmentType":"CONTRACTOR","datePosted":"2026-10-01",
+    "description":"사무보조 근무일시 주 5일(월~금) 09:00~18:00"
+  }</script>
+  <main>근무일시 주 5일(월~금) 09:00~18:00 근무지역 전북 전주시 완산구 효자동</main>
+</body></html>`;
+const responseFixture = (body, status = 200) => ({
+  ok: status >= 200 && status < 300,
+  status,
+  statusText: status === 200 ? 'OK' : 'Server Error',
+  text: async () => body
+});
+try {
+  globalThis.fetch = async (url) => {
+    if (String(url).endsWith('/search')) return responseFixture('<html>search</html>');
+    const id = String(url).split('/').at(-1);
+    return responseFixture(localBoardHtml(id));
+  };
+  const recoveredCollapse = await collectStructuredLocalBoard({
+    source: '잡코리아',
+    searchUrls: [{ url: 'https://example.test/search', discover: () => collapsedDiscovery }],
+    idRegex: /detail\/(\d+)/g,
+    detailUrl: (id) => `https://example.test/detail/${id}`,
+    previousJobs: collapseFixturePrevious
+  });
+  assert.equal(recoveredCollapse.discoveredCount, 3);
+  assert.equal(recoveredCollapse.continuityProbeCount, 27, 'suspected discovery collapse must directly verify every missing previous local posting');
+  assert.equal(recoveredCollapse.continuityRecoveredCount, 27);
+  assert.equal(recoveredCollapse.jobs.filter((job) => job.listingStatus === 'current_feed').length, 30);
+
+  const missingTerminalId = collapseFixturePrevious.at(-1).sourcePostingId;
+  globalThis.fetch = async (url) => {
+    if (String(url).endsWith('/search')) return responseFixture('<html>search</html>');
+    const id = String(url).split('/').at(-1);
+    return id === missingTerminalId
+      ? responseFixture('', 404)
+      : responseFixture(localBoardHtml(id));
+  };
+  const terminalContinuity = await collectStructuredLocalBoard({
+    source: '잡코리아',
+    searchUrls: [{
+      url: 'https://example.test/search',
+      discover: () => collapseFixturePrevious.slice(0, -1).map((job) => ({ id: job.sourcePostingId }))
+    }],
+    idRegex: /detail\/(\d+)/g,
+    detailUrl: (id) => `https://example.test/detail/${id}`,
+    previousJobs: collapseFixturePrevious
+  });
+  assert.equal(terminalContinuity.continuityTerminalCount, 1);
+  assert.equal(terminalContinuity.jobs.find((job) => job.sourcePostingId === missingTerminalId)?.listingStatus, 'expired',
+    'HTTP 404/410 continuity evidence must be distinguished from a transient source failure');
+  assert.equal(terminalContinuity.jobs.find((job) => job.sourcePostingId === missingTerminalId)?.listingBasis, 'detail_http_terminal');
+
+  globalThis.fetch = async (url) => {
+    if (String(url).endsWith('/search')) return responseFixture('<html>search</html>');
+    const id = String(url).split('/').at(-1);
+    return Number(id) === Number(collapseFixturePrevious[0].sourcePostingId)
+      ? responseFixture(localBoardHtml(id))
+      : responseFixture('', 500);
+  };
+  await assert.rejects(
+    collectStructuredLocalBoard({
+      source: '잡코리아',
+      searchUrls: [{
+        url: 'https://example.test/search',
+        discover: () => collapseFixturePrevious.map((job) => ({ id: job.sourcePostingId }))
+      }],
+      idRegex: /detail\/(\d+)/g,
+      detailUrl: (id) => `https://example.test/detail/${id}`,
+      previousJobs: collapseFixturePrevious
+    }),
+    /detail parsing collapsed/,
+    'one surviving detail page must not make a catastrophic parser collapse look healthy'
+  );
+} finally {
+  globalThis.fetch = originalFetch;
+}
+
 const jobKoreaListFallback = structuredLocalBoardCandidate(
   '잡코리아',
   '49741337',
@@ -657,6 +850,28 @@ const jobKoreaListFallback = structuredLocalBoardCandidate(
 assert.equal(jobKoreaListFallback.workAddress, '전북 완주군');
 assert.equal(jobKoreaListFallback.workAddressEvidence, 'search_card');
 assert.equal(jobKoreaListFallback.domesticRegion.precision, 'city');
+
+const jobKoreaHybridDeadline = structuredLocalBoardCandidate(
+  '잡코리아',
+  '50049917',
+  'https://www.jobkorea.co.kr/Recruit/GI_Read/50049917',
+  `<!doctype html><html><body>
+    <script type="application/ld+json">{
+      "@context":"https://schema.org","@type":"JobPosting",
+      "title":"카페 바리스타","hiringOrganization":{"@type":"Organization","name":"테스트카페"},
+      "jobLocation":{"@type":"Place","address":{"@type":"PostalAddress","streetAddress":"전북 전주시 완산구 효자동"}},
+      "employmentType":"PART_TIME","validThrough":"2026-10-07T23:59:59+09:00",
+      "description":"카페 바리스타 채용"
+    }</script>
+    <script>self.__next_f.push([1,"recruitment:{\\\"closeOnHire\\\":true}"])</script>
+    <main>고용형태 계약직(근무기간 6개월) 근무시간 주 5일 (월~금) 08:30 ~ 16:30 근무지주소 전북 전주시 완산구 효자동</main>
+  </body></html>`
+);
+assert.equal(jobKoreaHybridDeadline.deadlineType, 'fixed');
+assert.equal(jobKoreaHybridDeadline.deadlineDate, '2026-10-07');
+assert.equal(jobKoreaHybridDeadline.deadlineCloseOnHire, true, 'JobKorea fixed deadlines must retain 채용 시 조기마감 semantics');
+assert.equal(jobKoreaHybridDeadline.workSchedule, '주 5일 · 08:30 ~ 16:30');
+assert.equal(jobKoreaHybridDeadline.workPeriod, '6개월');
 
 assert.throws(
   () => structuredLocalBoardCandidate(
@@ -1898,6 +2113,7 @@ const recommendationFixture = (index, overrides = {}) => ({
   id: `rec-${index}`,
   url: `https://example.com/rec-${index}`,
   title: `Korean AI Evaluator ${index}`,
+  source: 'Source A',
   score: 70,
   recommendationEligible: true,
   eligibilityCode: 'korea',
@@ -1929,8 +2145,8 @@ const explainedRecommendations = {
     score: 0
   }))
 };
-assert.equal(recommendationCollapseRisk(explainedRecommendations, baselineRecommendations).collapse, false,
-  'bounded-window disappearance must not trip the recommendation regression guard');
+assert.equal(recommendationCollapseRisk(explainedRecommendations, baselineRecommendations).collapse, true,
+  'catastrophic bounded-window disappearance must remain guarded at the source level instead of being auto-explained');
 const currentCatalogCollapse = {
   recommendationPolicyVersion: 2,
   jobs: baselineRecommendations.jobs.map((job, index) => index < 2 ? job : recommendationFixture(index, {
@@ -1942,6 +2158,24 @@ const currentCatalogCollapse = {
 };
 assert.equal(recommendationCollapseRisk(currentCatalogCollapse, baselineRecommendations).collapse, true,
   'healthy current-catalog disappearance must remain unexplained so collector regressions cannot silently collapse recommendations');
+
+const crossSourceBaseline = {
+  recommendationPolicyVersion: 2,
+  jobs: [
+    ...Array.from({ length: 8 }, (_, index) => recommendationFixture(index, { source: 'Local Board', id: `local-${index}`, url: `https://example.com/local-${index}` })),
+    ...Array.from({ length: 64 }, (_, index) => recommendationFixture(index, { source: 'Other Sources', id: `other-${index}`, url: `https://example.com/other-${index}` }))
+  ]
+};
+const crossSourceCurrent = {
+  recommendationPolicyVersion: 2,
+  jobs: crossSourceBaseline.jobs.map((job, index) => job.source === 'Local Board' && index !== 0
+    ? { ...job, listingStatus: 'archived_missing', sourceCoverage: 'bounded_window', recommendationEligible: false, score: 0 }
+    : job)
+};
+const crossSourceRisk = recommendationCollapseRisk(crossSourceCurrent, crossSourceBaseline);
+assert.equal(crossSourceRisk.currentCount, 65);
+assert.equal(crossSourceRisk.collapse, true, 'one source collapsing 8→1 must trip the guard even when the global recommendation total stays healthy');
+assert.equal(crossSourceRisk.sourceCollapses[0].source, 'Local Board');
 
 const weakSourceDowngrade = {
   recommendationPolicyVersion: 2,

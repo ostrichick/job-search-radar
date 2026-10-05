@@ -425,6 +425,64 @@ test('거리 전체 보기에서는 근거리 출근형 → 주소 미확인 출
   await expect(page.locator('.job-card').last().locator('.distance-value')).toHaveText('원격 · 출근 거리 비해당');
 });
 
+test('지역 중심점 거리는 보수적 밴드로 정렬하고 지원 판단 메타를 카드와 상세에 노출한다', async ({ page }) => {
+  const coarse = job({
+    ...work24LocalJobs[0],
+    id: 'job:coarse-centroid',
+    source: '잡코리아',
+    title: '지역 중심점 기반 사무 지원',
+    url: 'https://example.com/coarse-centroid',
+    score: 40,
+    workSchedule: '주5일 · 08:30~17:30',
+    workPeriod: '24개월',
+    preferredConditions: ['유사업무 경험 우대'],
+    compensationNotes: ['식사 지원'],
+    deadlineType: 'fixed',
+    deadlineDate: '2099-12-31',
+    deadlineLabel: '2099-12-31',
+    deadlineCloseOnHire: true,
+    domesticRegion: {
+      ...work24LocalJobs[0].domesticRegion,
+      lat: 35.8122,
+      lon: 127.1197,
+      coordinatePrecision: 'district',
+      coordinateLabel: '전북특별자치도 전주시 완산구'
+    }
+  });
+  const exact = job({
+    ...coarse,
+    id: 'job:exact-coordinate',
+    title: '정확 좌표 기반 사무 지원',
+    url: 'https://example.com/exact-coordinate',
+    domesticRegion: {
+      ...coarse.domesticRegion,
+      coordinatePrecision: 'coordinates',
+      coordinateLabel: '공고 위치'
+    }
+  });
+
+  await useFeed(page, () => feed([coarse, exact]));
+  await page.goto('/');
+  await page.locator('#marketDomestic').click();
+
+  const titles = await page.locator('.job-card .title').allTextContents();
+  expect(titles).toEqual(['정확 좌표 기반 사무 지원', '지역 중심점 기반 사무 지원']);
+
+  const coarseCard = page.locator('.job-card', { hasText: '지역 중심점 기반 사무 지원' });
+  await expect(coarseCard.locator('.distance-note')).toContainText('지역 중심점은 거리 구간을 보수적으로 판정');
+  await expect(coarseCard.locator('.meta')).toContainText('근무 주5일 · 08:30~17:30');
+  await expect(coarseCard.locator('.meta')).toContainText('기간 24개월');
+  await expect(coarseCard.locator('.meta')).toContainText('우대 유사업무 경험 우대');
+  await expect(coarseCard.locator('.compensation-note')).toContainText('식사 지원');
+  await expect(coarseCard.locator('.posted')).toContainText('채용 시 조기마감 가능');
+
+  await coarseCard.locator('.details').click();
+  await expect(page.locator('#detailsMeta')).toContainText('근무 주5일 · 08:30~17:30');
+  await expect(page.locator('#detailsMeta')).toContainText('기간 24개월');
+  await expect(page.locator('#detailsMeta')).toContainText('우대 유사업무 경험 우대');
+  await expect(page.locator('#detailsCompensationNote')).toContainText('식사 지원');
+});
+
 test('국내·해외 탭의 검색과 지역 필터는 서로 독립적으로 reload 후 유지된다', async ({ page }) => {
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
   await page.goto('/');

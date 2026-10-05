@@ -208,16 +208,17 @@ function deadlinePriority(job, now = Date.now()) {
 }
 
 function formatDeadline(job) {
-  if (job.deadlineType === 'rolling') return job.deadlineLabel || '상시·채용시까지';
+  const earlyClose = job.deadlineCloseOnHire ? ' · 채용 시 조기마감 가능' : '';
+  if (job.deadlineType === 'rolling') return `${job.deadlineLabel || '상시·채용시까지'}${earlyClose}`;
   if (job.deadlineDate) {
     const date = new Date(`${job.deadlineDate}T00:00:00+09:00`);
     if (!Number.isNaN(date.getTime())) {
       const label = date.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' });
       const days = deadlineDaysRemaining(job);
-      return Number.isFinite(days) && days >= 0 && days <= 3 ? `마감 임박 · ${label}` : `마감 ${label}`;
+      return `${Number.isFinite(days) && days >= 0 && days <= 3 ? `마감 임박 · ${label}` : `마감 ${label}`}${earlyClose}`;
     }
   }
-  return job.deadlineLabel ? `마감 ${job.deadlineLabel}` : '';
+  return job.deadlineLabel ? `마감 ${job.deadlineLabel}${earlyClose}` : '';
 }
 
 function persistFilters() {
@@ -305,10 +306,20 @@ function distanceSummary(job) {
     : '공고 위치 좌표 기준';
   return {
     value: regionBased ? `지역 기준 직선거리 약 ${rounded}km` : `직선거리 약 ${rounded}km`,
-    note: `${targetEvidence} · ${reference.label}에서의 직선거리 · 실제 도로 이동거리 아님${region.coordinateSource ? ` · 좌표 ${region.coordinateSource}` : ''}`,
+    note: `${targetEvidence} · ${reference.label}에서의 직선거리 · 실제 도로 이동거리 아님${regionBased ? ' · 지역 중심점은 거리 구간을 보수적으로 판정' : ''}${region.coordinateSource ? ` · 좌표 ${region.coordinateSource}` : ''}`,
     km,
-    kind: regionBased ? 'region' : 'exact'
+    kind: regionBased ? 'region' : 'exact',
+    coordinatePrecision: region.coordinatePrecision || ''
   };
+}
+
+function distanceSortBand(summary) {
+  if (!Number.isFinite(summary?.km)) return Number.POSITIVE_INFINITY;
+  let band = summary.km <= 10 ? 0 : summary.km <= 20 ? 1 : summary.km <= 40 ? 2 : 3;
+  if (summary.kind === 'region' && ['province', 'city', 'district'].includes(summary.coordinatePrecision)) {
+    band = Math.min(3, band + 1);
+  }
+  return band;
 }
 
 function domesticLocalityMatches(region = {}, value = '') {
@@ -443,11 +454,7 @@ function filteredJobs() {
       if (bucketDiff) return bucketDiff;
       const aDistance = aSummary?.km;
       const bDistance = bSummary?.km;
-      const distanceBand = (distance) => !Number.isFinite(distance) ? Number.POSITIVE_INFINITY
-        : distance <= 10 ? 0
-          : distance <= 20 ? 1
-            : distance <= 40 ? 2 : 3;
-      const bandDiff = distanceBand(aDistance) - distanceBand(bDistance);
+      const bandDiff = distanceSortBand(aSummary) - distanceSortBand(bSummary);
       if (bandDiff) return bandDiff;
       exactDistanceDiff = (Number.isFinite(aDistance) ? aDistance : Number.POSITIVE_INFINITY)
         - (Number.isFinite(bDistance) ? bDistance : Number.POSITIVE_INFINITY);
@@ -572,6 +579,7 @@ function salarySummary(job) {
   if (info.paymentBasis === 'per_task_equivalent') notes.push('건당 지급을 시간당으로 환산');
   if (job.salaryMetadataConflict) notes.push('원문과 채용보드 메타데이터 불일치');
   else if (job.salaryMetadataSuppressed) notes.push('채용보드 금액은 원문 미확인');
+  for (const note of job.compensationNotes || []) notes.push(note);
   if (!value) notes.push('원문에서 확인 필요');
   return {
     value: value || '금액 미공개',
@@ -924,8 +932,11 @@ function openDetails(job) {
     job.location,
     jobMarketScopes(job).includes('domestic') ? workplaceModeLabel(job) : '',
     job.type,
+    job.workSchedule ? `근무 ${job.workSchedule}` : '',
+    job.workPeriod ? `기간 ${job.workPeriod}` : '',
     job.experience ? `경력 ${job.experience}` : '',
     job.education ? `학력 ${job.education}` : '',
+    (job.preferredConditions || []).length ? `우대 ${job.preferredConditions.slice(0, 3).join(', ')}` : '',
     formatDeadline(job),
     job.eligibility,
     job.category
@@ -950,7 +961,7 @@ function openDetails(job) {
   $('detailsSourceSummary').textContent = job.sourceSummary || '원문에서 모집 상태와 계약·지급 조건을 확인하세요.';
   const sourceMetric = state.meta?.sourceMetrics?.[job.source];
   $('detailsSourceHealth').textContent = sourceMetric
-    ? `소스 품질 ${sourceMetric.qualityTier || '미상'} · 최근 성공 ${Math.round(Number(sourceMetric.recentSuccessRate || 0) * 100)}% · 유효 ${sourceMetric.keptCount || 0}/${sourceMetric.matchedCount || 0} (${Math.round(Number(sourceMetric.validJobRate || sourceMetric.keptRate || 0) * 100)}%) · 노이즈 ${Math.round(Number(sourceMetric.noiseRate || 0) * 100)}% · 중복 ${Math.round(Number(sourceMetric.duplicateRate || 0) * 100)}% · 저품질 ${Math.round(Number(sourceMetric.lowQualityRate || 0) * 100)}% · 근거 갱신 ${sourceMetric.evidenceRefreshability || '미상'}${job.sourceRecommendationGateReason ? ` · 추천 제외: ${job.sourceRecommendationGateReason}` : ''}`
+    ? `소스 품질 ${sourceMetric.qualityTier || '미상'} · 최근 성공 ${Math.round(Number(sourceMetric.recentSuccessRate || 0) * 100)}% · 검색 발견 ${sourceMetric.discoveredCount ?? sourceMetric.rawCount ?? 0} · 유효 ${sourceMetric.keptCount || 0}/${sourceMetric.matchedCount || 0} (${Math.round(Number(sourceMetric.validJobRate || sourceMetric.keptRate || 0) * 100)}%) · 노이즈 ${Math.round(Number(sourceMetric.noiseRate || 0) * 100)}% · 중복 ${Math.round(Number(sourceMetric.duplicateRate || 0) * 100)}% · 저품질 ${Math.round(Number(sourceMetric.lowQualityRate || 0) * 100)}%${sourceMetric.continuityProbeCount ? ` · 연속성 확인 ${sourceMetric.continuityRecoveredCount || 0}/${sourceMetric.continuityProbeCount}` : ''}${sourceMetric.discoveryCollapseSuspected ? ' · 검색 급락 방어 작동' : ''} · 근거 갱신 ${sourceMetric.evidenceRefreshability || '미상'}${job.sourceRecommendationGateReason ? ` · 추천 제외: ${job.sourceRecommendationGateReason}` : ''}`
     : `소스 품질 ${job.sourceQualityTier || '미상'} · 근거 갱신 ${job.sourceEvidenceRefreshability || '미상'}`;
   appendEvidenceLinks($('detailsEvidence'), job.sourceEvidence || []);
   for (const [index, url] of (job.alternateUrls || []).entries()) {
@@ -1093,7 +1104,15 @@ function render() {
       node.querySelector('.distance-value').textContent = distance.value;
       node.querySelector('.distance-note').textContent = distance.note;
     }
-    const meta = [job.location, state.marketTab === 'domestic' ? workplaceModeLabel(job) : '', job.type, job.category].filter(Boolean);
+    const meta = [
+      job.location,
+      state.marketTab === 'domestic' ? workplaceModeLabel(job) : '',
+      job.type,
+      state.marketTab === 'domestic' && job.workSchedule ? `근무 ${job.workSchedule}` : '',
+      state.marketTab === 'domestic' && job.workPeriod ? `기간 ${job.workPeriod}` : '',
+      state.marketTab === 'domestic' && (job.preferredConditions || []).length ? `우대 ${job.preferredConditions.slice(0, 2).join(', ')}` : '',
+      job.category
+    ].filter(Boolean);
     node.querySelector('.meta').innerHTML = meta.map((v) => `<span>${escapeHtml(v)}</span>`).join('');
     node.querySelector('.description').textContent = job.description || '상세 설명 없음';
     const tagValues = [...new Set([...(state.newIds.has(job.id) ? ['NEW'] : []), ...(job.duplicateCount > 1 ? [`중복 ${job.duplicateCount}개 통합`] : []), ...(job.fitWarning ? [job.fitWarning] : []), ...(job.matchedKeywords || []), ...(job.tags || [])])].slice(0, 6);

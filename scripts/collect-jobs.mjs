@@ -1685,6 +1685,7 @@ function normalizeJob(raw) {
     deadlineType: text(raw.deadlineType),
     deadlineDate: text(raw.deadlineDate),
     deadlineLabel: text(raw.deadlineLabel),
+    deadlineCloseOnHire: Boolean(raw.deadlineCloseOnHire),
     verifiedAt: new Date().toISOString()
   };
   job.domesticRegion = domesticRegionFor(job);
@@ -1734,6 +1735,21 @@ function normalizeJob(raw) {
   job.salaryMetadataRaw = salaryMetadataRaw;
   job.salaryMetadataSuppressed = salaryMetadataSuppressed;
   job.salaryMetadataConflict = salaryMetadataConflict;
+  if (localDomesticBoardSources.has(job.source)) {
+    job.workSchedule = text(raw.workSchedule) || extractLocalWorkSchedule(fullDescription, job.title);
+    job.workPeriod = text(raw.workPeriod) || extractLocalWorkPeriod(fullDescription);
+    job.preferredConditions = Array.isArray(raw.preferredConditions)
+      ? raw.preferredConditions.map(text).filter(Boolean).slice(0, 5)
+      : localPreferredConditions(fullDescription);
+    job.compensationNotes = Array.isArray(raw.compensationNotes)
+      ? [...new Set(raw.compensationNotes.map(text).filter(Boolean))].slice(0, 4)
+      : localCompensationNotes(fullDescription, job.title);
+  } else {
+    job.workSchedule = '';
+    job.workPeriod = '';
+    job.preferredConditions = [];
+    job.compensationNotes = [];
+  }
   job.sourceKind = quality.kind;
   job.sourceCoverage = quality.coverage || 'unknown';
   job.sourceTrustLabel = quality.listingLabel;
@@ -1920,10 +1936,11 @@ function normalizeJob(raw) {
   }
   const structuredRoutineRequirements = [];
   if (localDomesticBoardSources.has(job.source)) {
-    structuredRoutineRequirements.push('공고 상세 자격·면허 요건 확인');
+    if (job.source === '고용24') structuredRoutineRequirements.push('공고 상세 자격·면허 요건 확인');
     const career = lower(job.experience);
     const education = lower(job.education);
     const title = lower(job.title);
+    const mandatoryQualification = text(raw.mandatoryQualification) || localMandatoryQualification(fullDescription);
     const requiredCareer = career
       && !/관계없음|경력무관|신입(?:\s*가능)?|무관/.test(career)
       && /경력|최소\s*\d+|\d+\s*(?:년|개월)/.test(career);
@@ -1931,10 +1948,17 @@ function normalizeJob(raw) {
       fitWarnings.push(`경력 요건 확인: ${evidenceSnippet(job.experience, 80)}`);
       job.score = Math.min(job.score, 19);
     }
-    const specialistTitle = /간호사|간호조무사|요양보호사|사회복지사|약사|의사|치위생사|물리치료사|작업치료사|용접|전기기사|산업기사|건축기사|토목기사|개발자|엔지니어|팀장|본부장|부장급|지게차운전원|헤어디자이너|트레이너|(?:학원\s*)?강사|설치기사/.test(title)
+    const licensedOrTechnicalTitle = /간호사|간호조무사|요양보호사|사회복지사|약사|의사|치위생사|물리치료사|작업치료사|용접|전기기사|산업기사|건축기사|토목기사|개발자|엔지니어|지게차운전원|헤어디자이너|트레이너|(?:학원\s*)?강사|설치기사/.test(title)
       || (/지게차/.test(title) && !/지게차\s*(?:시급|수당|우대|가능|별도)/.test(title));
+    const managerialTitle = /팀장|본부장|부장급/.test(title);
+    const entryLevelExplicit = /신입|초보\s*가능|초보가능|경력\s*무관/.test(`${career} ${fullDescription}`);
+    const specialistTitle = licensedOrTechnicalTitle || (managerialTitle && !entryLevelExplicit);
     if (specialistTitle) {
       fitWarnings.push('전문 자격·기술 경력 요건 확인');
+      job.score = Math.min(job.score, 19);
+    }
+    if (mandatoryQualification) {
+      fitWarnings.push(`필수 자격·면허 확인: ${mandatoryQualification}`);
       job.score = Math.min(job.score, 19);
     }
     if (education && !/학력무관|무관/.test(education) && /대졸|석사|박사/.test(education)) {
@@ -2084,7 +2108,11 @@ async function fetchText(url, options = {}) {
     ...options,
     headers: { 'User-Agent': 'DigitalNomadJobDashboard/0.2', Accept: 'text/html,application/rss+xml,application/xml,text/xml,*/*', ...(options.headers ?? {}) }
   });
-  if (!response.ok) throw new Error(`${response.status} ${response.statusText} - ${url}`);
+  if (!response.ok) {
+    const error = new Error(`${response.status} ${response.statusText} - ${url}`);
+    error.status = response.status;
+    throw error;
+  }
   return response.text();
 }
 
@@ -2130,6 +2158,91 @@ function cleanQualificationText(value) {
   normalized = normalized.split(/\s+(?:로그인\s+하고|TOP\b|궁금해요|AI추천공고|비슷한\s+조건의)/)[0].trim();
   if (/^(?:채용\s*상세요강|지원자격|상세요강)$/.test(normalized)) return '';
   return normalized;
+}
+
+function localPreferredConditions(value) {
+  const plain = text(value);
+  if (!plain) return [];
+  const match = plain.match(/(?:우대조건|우대사항)\s*[:：]?\s*(.{1,220}?)(?=\s+(?:근무조건|근무기간|근무요일|근무시간|근무일시|근무지역|휴게시간|복리후생|접수기간|접수방법|지원방법|모집직종|모집조건|모집마감|업직종|고용형태|급여)\s*[:：]?|\s+로그인\s+하고|$)/);
+  if (!match) return [];
+  const protectedParentheticalCommas = match[1].replace(/\(([^)]*)\)/g, (_, inside) => `(${inside.replace(/,/g, '/')})`);
+  return [...new Set(protectedParentheticalCommas
+    .split(/\s*,\s*|\s*·\s*/)
+    .map((item) => text(item)
+      .replace(/\([^)]*$/, '')
+      .replace(/^[^()]*\)\s*/, '')
+      .trim())
+    .filter((item) => item && item.length <= 60))]
+    .slice(0, 5);
+}
+
+function localMandatoryQualification(value) {
+  const plain = text(value);
+  if (!plain) return '';
+  const block = plain.match(/(?:필수조건|필수사항|자격요건|자격조건)\s*[:：]?\s*(.{1,220}?)(?=\s+(?:우대조건|우대사항|근무조건|근무기간|근무요일|근무시간|복리후생|접수기간|지원방법|모집직종|급여)\s*[:：]?|$)/)?.[1] || '';
+  if (block
+    && /(?:자격증|자격\s*소지|면허|운전면허|면허증)/.test(block)
+    && !/(?:우대|선호|있으면\s*좋)/.test(block)) {
+    return evidenceSnippet(block, 110);
+  }
+  const explicit = plain.match(/(?:필수|반드시)[^\n.;]{0,55}(?:자격증|면허|운전면허)|(?:자격증|면허|운전면허)[^\n.;]{0,55}(?:필수|반드시\s*필요)/)?.[0] || '';
+  return explicit && !/(?:우대|선호)/.test(explicit) ? evidenceSnippet(explicit, 110) : '';
+}
+
+function extractLocalWorkSchedule(value, title = '') {
+  const plain = text(value);
+  const combinedIndex = plain.search(/근무일시\s*[:：]?/);
+  const combinedRaw = combinedIndex >= 0 ? plain.slice(combinedIndex, combinedIndex + 180) : '';
+  const genericTimeIndex = plain.search(/근무시간\s*[:：]?/);
+  const genericTimeRaw = genericTimeIndex >= 0 ? plain.slice(genericTimeIndex, genericTimeIndex + 180) : '';
+  const sourceBlock = combinedRaw || genericTimeRaw;
+  const explicitDay = text(plain.match(/근무요일\s*[:：]?\s*((?:주\s*\d+\s*일|요일협의|(?:월|화|수|목|금|토|일)(?:\s*[~～\-–—,]\s*(?:월|화|수|목|금|토|일))*요일?)(?:\s*\([^)]{0,100}\))?)/)?.[1]);
+  const explicitTime = text(plain.match(/근무시간\s*[:：]?\s*((?:시간협의|(?:[01]?\d|2[0-3])(?::\d{2}|시)\s*[~～\-–—]\s*(?:[01]?\d|2[0-3])(?::\d{2}|시))(?:\s*\([^)]{0,120}\))?)/)?.[1]);
+  const dayRaw = explicitDay || text(sourceBlock.match(/주\s*\d+\s*일(?:\s*\([^)]{0,80}\))?|(?:월|화|수|목|금|토|일)(?:\s*[~～\-–—,]\s*(?:월|화|수|목|금|토|일))*요일?/)?.[0]);
+  const timeRaw = explicitTime || text(sourceBlock.match(/(?:[01]?\d|2[0-3])(?::\d{2}|시)\s*[~～\-–—]\s*(?:[01]?\d|2[0-3])(?::\d{2}|시)/)?.[0]);
+  const titleDay = text(title).match(/주\s*\d+\s*일/)?.[0] || '';
+  const day = text((dayRaw || titleDay).split('(')[0]);
+  const timePrimary = text(timeRaw.split('(')[0]);
+  const concreteTime = timeRaw.match(/(?:[01]?\d|2[0-3])(?::\d{2}|시)\s*[~～\-–—]\s*(?:[01]?\d|2[0-3])(?::\d{2}|시)/)?.[0] || '';
+  const time = timePrimary === '시간협의' && concreteTime
+    ? `${concreteTime} (시간협의)`
+    : timePrimary;
+  const qualifiers = [];
+  const combined = [dayRaw, timeRaw].filter(Boolean).join(' ');
+  if (/로테이션|교대/.test(combined)) qualifiers.push('로테이션');
+  const timeCount = (combined.match(/(?:[01]?\d|2[0-3])(?::\d{2}|시)\s*[~～\-–—]\s*(?:[01]?\d|2[0-3])(?::\d{2}|시)/g) || []).length;
+  if (timeCount > 1 && !qualifiers.includes('로테이션')) qualifiers.push('복수 시간대');
+  return [...new Set([day, time, ...qualifiers].filter(Boolean))].join(' · ');
+}
+
+function extractLocalWorkPeriod(value) {
+  const plain = text(value);
+  const raw = plain.match(/근무기간\s*[:：]?\s*(\d+\s*(?:일|주|개월|년)(?:\s*[~～\-–—]\s*\d+\s*(?:일|주|개월|년))?\s*(?:이상|이하)?|협의)/)?.[1] || '';
+  return text(raw).replace(/\s+/g, '');
+}
+
+function localSalaryContext(value) {
+  const plain = text(value);
+  if (!plain) return '';
+  return text(plain.match(/(?:급여|급여조건)\s*[:：]?\s*(.{1,120}?)(?=\s+(?:근무기간|근무요일|근무시간|근무일시|근무지역|업직종|고용형태|복리후생|우대(?:사항|조건)|모집조건|모집마감|지원자격|학력|경력|접수기간)\s*[:：]?|$)/)?.[1]);
+}
+
+function localCompensationNotes(value, title = '') {
+  const plain = `${text(title)} ${text(value)}`;
+  const notes = [];
+  const productionPay = plain.match(/생산직\s*급여\s*[:：]?\s*(기본급(?:여)?\s*약?\s*[0-9,.]+\s*만원[^,.;]{0,35},?\s*잔업\/특근\s*포함\s*[0-9,.]+\s*[~～\-–—]\s*[0-9,.]+\s*만원)/)?.[1] || '';
+  if (productionPay) notes.push(`생산직 ${text(productionPay)}`);
+  const forkliftPay = plain.match(/지게차\s*시급\s*[:：]?\s*([0-9][0-9,]*\s*원)/)?.[1] || '';
+  if (forkliftPay) notes.push(`지게차 시급 ${text(forkliftPay)}`);
+  if (/면접\s*후\s*결정/.test(plain)) notes.push('급여 면접 후 결정');
+  else if (/급여[^\n.;]{0,35}(?:협의|면접\s*시\s*추가협의)|(?:면접\s*시\s*)?급여\s*협의/.test(plain)) notes.push('급여 추가 협의 가능');
+  if (/주휴수당/.test(plain)) notes.push('주휴수당');
+  if (/식비\s*\(식사\)\s*지원|(?:조식|중식|석식)\s*제공/.test(plain)) notes.push('식사 지원');
+  if (/성과급/.test(plain)) notes.push('성과급');
+  if (/인센티브(?:제)?/.test(plain)) notes.push('인센티브');
+  if (/정기보너스/.test(plain)) notes.push('보너스');
+  if (/수습(?:기간)?/.test(plain)) notes.push('수습기간 조건 확인');
+  return [...new Set(notes)].slice(0, 5);
 }
 
 function moreSpecificQualification(primary, body) {
@@ -2231,6 +2344,8 @@ function structuredLocalBoardCandidate(source, sourcePostingId, url, html, listH
   if (!posting) throw localDetailError('detail_structure', source + ' detail missing supported JobPosting structure: ' + sourcePostingId);
   const nextData = source === '알바몬' ? nextDataJson(html) : null;
   const albamonView = nextData?.props?.pageProps?.data?.viewData || null;
+  const albamonDetailText = source === '알바몬' ? htmlPlainText(albamonView?.content || '') : '';
+  const decisionText = [plainText, albamonDetailText].filter(Boolean).join(' ');
   let workAddress = schemaAddress(posting);
   let workAddressEvidence = posting?._fallbackFormat === 'alba_legacy_html'
     ? 'detail_html'
@@ -2247,6 +2362,7 @@ function structuredLocalBoardCandidate(source, sourcePostingId, url, html, listH
   }
   if (!workAddress) throw localDetailError('workplace_unverified', source + ' detail missing verifiable workplace address: ' + sourcePostingId);
   const deadline = localPlatformDeadline(source, posting, plainText);
+  const deadlineCloseOnHire = source === '잡코리아' && /closeOnHire[^a-zA-Z]{0,12}true/.test(rawHtml);
   const listDeadline = deadlineFromListHint(listHint);
   const finalDeadline = deadline.type ? deadline : (listDeadline || deadline);
   const bodyExperience = cleanQualificationText(plainText.match(/(?:지원자격\s*)?경력\s+(.{1,65}?)(?=\s학력|\s접수기간|\s급여|\s근무지역|\s로그인|\sTOP\b|$)/)?.[1]);
@@ -2282,7 +2398,13 @@ function structuredLocalBoardCandidate(source, sourcePostingId, url, html, listH
     education,
     deadlineType: finalDeadline.type,
     deadlineDate: finalDeadline.date,
-    deadlineLabel: finalDeadline.label
+    deadlineLabel: finalDeadline.label,
+    workSchedule: extractLocalWorkSchedule(decisionText, title),
+    workPeriod: extractLocalWorkPeriod(decisionText),
+    preferredConditions: localPreferredConditions(decisionText),
+    compensationNotes: localCompensationNotes(`${description} ${albamonDetailText} 급여 ${localSalaryContext(plainText)}`, title),
+    mandatoryQualification: localMandatoryQualification(decisionText),
+    deadlineCloseOnHire
   };
   const normalized = normalizeJob(candidate);
   normalized._detailRecovered = Boolean(posting?._fallbackFormat);
@@ -2307,6 +2429,51 @@ function localContinuityCandidates(source, discoveredCandidates = [], previousJo
     .filter((job) => !['expired', 'talent_pool'].includes(job.listingStatus))
     .sort((a, b) => (Date.parse(b.lastVerifiedAt || b.verifiedAt || '') || 0) - (Date.parse(a.lastVerifiedAt || a.verifiedAt || '') || 0))
     .slice(0, Math.max(0, limit));
+}
+
+function localDiscoveryCollapseState(source, discoveredCandidates = [], previousJobs = []) {
+  const previousActive = (previousJobs || [])
+    .filter((job) => job?.source === source)
+    .filter((job) => isJeonjuWanjuLocal(job))
+    .filter((job) => !['archived_missing', 'expired', 'talent_pool'].includes(job.listingStatus));
+  const previousIds = new Set(previousActive.map((job) => text(job.sourcePostingId)).filter(Boolean));
+  const discoveredIds = new Set((discoveredCandidates || []).map((candidate) => text(candidate?.id)).filter(Boolean));
+  const referenceCount = previousActive.length;
+  const discoveredCount = discoveredIds.size;
+  const overlapCount = [...previousIds].filter((id) => discoveredIds.has(id)).length;
+  const ratio = referenceCount ? discoveredCount / referenceCount : null;
+  const overlapRatio = referenceCount ? overlapCount / referenceCount : null;
+  return {
+    suspected: referenceCount >= 10
+      && discoveredCount > 0
+      && (
+        discoveredCount < Math.ceil(referenceCount * 0.5)
+        || overlapCount < Math.ceil(referenceCount * 0.5)
+      ),
+    referenceCount,
+    discoveredCount,
+    overlapCount,
+    ratio,
+    overlapRatio
+  };
+}
+
+function markLocalTerminalPosting(previousJob, status) {
+  const nowIso = new Date().toISOString();
+  return {
+    ...previousJob,
+    listingStatus: 'expired',
+    listingLabel: '공개 상세 공고 종료/삭제 확인',
+    listingReason: `직전 공고 상세 URL을 다시 확인했지만 HTTP ${status} 응답으로 더 이상 공개되지 않음`,
+    listingBasis: 'detail_http_terminal',
+    listingVerification: 'intermediary',
+    listingCheckedAt: nowIso,
+    sourceListingState: 'public_detail_terminal',
+    stale: true,
+    score: 0,
+    recommendationEligible: false,
+    _continuityTerminal: true
+  };
 }
 
 async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detailUrl, perSearchLimit = 30, previousJobs = [] }) {
@@ -2350,8 +2517,29 @@ async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detail
     }
   });
   const successful = results.filter((result) => result?.ok && result.value).map((result) => result.value);
+  const collapseState = localDiscoveryCollapseState(source, candidates, previousJobs);
+  const discoveredDetailFailureCount = results.filter((result) => !result?.ok).length;
+  if (results.length >= 10
+    && successful.length < Math.ceil(results.length * 0.5)
+    && discoveredDetailFailureCount >= 5) {
+    const error = localDetailError(
+      'detail_collapse',
+      `${source} detail parsing collapsed: ${successful.length}/${results.length} discovered postings parsed successfully (previous local reference ${collapseState.referenceCount})`
+    );
+    error.sourceRun = {
+      rawCount: candidates.length,
+      discoveredCount: candidates.length,
+      detailAttemptCount: results.length,
+      detailSuccessCount: successful.length,
+      detailFailureCount: discoveredDetailFailureCount,
+      discoveryCollapseSuspected: collapseState.suspected,
+      discoveryReferenceCount: collapseState.referenceCount,
+      discoveryOverlapCount: collapseState.overlapCount
+    };
+    throw error;
+  }
   if (!successful.length) throw new Error(source + ' public detail parsing failed for all discovered postings');
-  const continuityCandidates = localContinuityCandidates(source, candidates, previousJobs);
+  const continuityCandidates = localContinuityCandidates(source, candidates, previousJobs, collapseState.suspected ? 60 : 12);
   const continuityResults = await mapLimit(continuityCandidates, 3, async (previousJob) => {
     const id = text(previousJob.sourcePostingId);
     const url = detailUrl(id);
@@ -2360,6 +2548,34 @@ async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detail
     recovered._continuityRecovered = true;
     return recovered;
   });
+  const continuityTerminal = continuityResults
+    .map((result, index) => ({ result, previousJob: continuityCandidates[index] }))
+    .filter(({ result }) => !result?.ok && [404, 410].includes(Number(result?.error?.status || 0)))
+    .map(({ result, previousJob }) => markLocalTerminalPosting(previousJob, Number(result.error.status)));
+  const continuityFailureCount = continuityResults.filter((result) =>
+    !result?.ok && ![404, 410].includes(Number(result?.error?.status || 0))).length;
+  if (collapseState.suspected
+    && continuityCandidates.length >= 3
+    && continuityFailureCount >= Math.max(3, Math.ceil(continuityCandidates.length * 0.5))) {
+    const error = localDetailError(
+      'discovery_collapse',
+      `${source} search discovery collapsed from ${collapseState.referenceCount} previous local postings to ${collapseState.discoveredCount}, and ${continuityFailureCount}/${continuityCandidates.length} direct continuity checks also failed`
+    );
+    error.sourceRun = {
+      rawCount: candidates.length + continuityCandidates.length,
+      discoveredCount: candidates.length,
+      detailAttemptCount: results.length,
+      detailSuccessCount: successful.length,
+      detailFailureCount: discoveredDetailFailureCount,
+      continuityProbeCount: continuityCandidates.length,
+      continuityRecoveredCount: continuityResults.filter((result) => result?.ok && result.value).length,
+      continuityFailureCount,
+      discoveryCollapseSuspected: true,
+      discoveryReferenceCount: collapseState.referenceCount,
+      discoveryOverlapCount: collapseState.overlapCount
+    };
+    throw error;
+  }
   const continuityRecovered = continuityResults
     .filter((result) => result?.ok && result.value && isJeonjuWanjuLocal(result.value))
     .map((result) => result.value);
@@ -2371,22 +2587,35 @@ async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detail
       successfulIds.add(key);
     }
   }
+  for (const terminal of continuityTerminal) {
+    const key = `${terminal.source}:${terminal.sourcePostingId}`;
+    if (!successfulIds.has(key)) {
+      successful.push(terminal);
+      successfulIds.add(key);
+    }
+  }
   const detailRecoveredCount = successful.filter((job) => job._detailRecovered).length;
   const listFallbackCount = successful.filter((job) => job._listFallback).length;
   const continuityRecoveredCount = successful.filter((job) => job._continuityRecovered).length;
+  const continuityTerminalCount = successful.filter((job) => job._continuityTerminal).length;
   for (const job of successful) {
     delete job._detailRecovered;
     delete job._detailRecoveryKind;
     delete job._listFallback;
     delete job._continuityRecovered;
+    delete job._continuityTerminal;
   }
   const local = successful.filter(isJeonjuWanjuLocal);
   const matched = local.filter((job) => Number(job.score || 0) >= 10);
+  const terminal = local.filter((job) => job.listingStatus === 'expired');
   const workplaceUnverifiedCount = results.filter((result) => !result?.ok && result?.error?.code === 'workplace_unverified').length;
   const accessRestrictedCount = results.filter((result) => !result?.ok && result?.error?.code === 'access_restricted').length;
   const detailFailureCount = results.filter((result) => !result?.ok
     && !['workplace_unverified', 'access_restricted'].includes(result?.error?.code)).length;
-  return sourceCollection(matched, candidates.length + continuityCandidates.length, {
+  return sourceCollection([...matched, ...terminal.filter((job) => !matched.includes(job))], candidates.length + continuityCandidates.length, {
+    discoveredCount: candidates.length,
+    detailAttemptCount: results.length,
+    detailSuccessCount: results.filter((result) => result?.ok && result.value).length,
     localeEligibleCount: local.length,
     profileMatchedCount: matched.length,
     detailFailureCount,
@@ -2395,7 +2624,12 @@ async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detail
     listFallbackCount,
     detailRecoveredCount,
     continuityProbeCount: continuityCandidates.length,
-    continuityRecoveredCount
+    continuityRecoveredCount,
+    continuityTerminalCount,
+    continuityFailureCount,
+    discoveryCollapseSuspected: collapseState.suspected,
+    discoveryReferenceCount: collapseState.referenceCount,
+    discoveryOverlapCount: collapseState.overlapCount
   });
 }
 
@@ -3299,7 +3533,10 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
 function keepInFeed(job) {
   return (Number(job.score || 0) >= 10 || isOfficialKind(job.sourceKind))
     || job.sourceKind === 'manual'
-    || ['source_error', 'archived_missing'].includes(job.listingStatus);
+    || ['source_error', 'archived_missing'].includes(job.listingStatus)
+    || (localDomesticBoardSources.has(job.source)
+      && job.listingStatus === 'expired'
+      && job.listingBasis === 'detail_http_terminal');
 }
 
 function isDefaultRecommendation(job) {
@@ -3314,7 +3551,7 @@ function recommendationCollapseRisk(feed, baseline) {
   if (!baseline
     || baseline.recommendationPolicyVersion !== feed.recommendationPolicyVersion
     || !Array.isArray(baseline.jobs)) {
-    return { guarded: false, collapse: false, baselineCount: 0, currentCount: 0, threshold: 0, unexplainedLosses: [] };
+    return { guarded: false, collapse: false, baselineCount: 0, currentCount: 0, threshold: 0, unexplainedLosses: [], sourceCollapses: [] };
   }
   const baselineRecommended = baseline.jobs.filter(isDefaultRecommendation);
   const currentRecommended = (feed.jobs || []).filter(isDefaultRecommendation);
@@ -3346,15 +3583,52 @@ function recommendationCollapseRisk(feed, baseline) {
   const threshold = baselineRecommended.length >= 5
     ? Math.max(3, Math.ceil(baselineRecommended.length * 0.5))
     : 1;
+  const sourceCollapses = [];
+  const baselineBySource = new Map();
+  for (const job of baselineRecommended) {
+    const source = job.source || 'unknown';
+    if (!baselineBySource.has(source)) baselineBySource.set(source, []);
+    baselineBySource.get(source).push(job);
+  }
+  for (const [source, sourceBaseline] of baselineBySource.entries()) {
+    if (sourceBaseline.length < 5) continue;
+    const sourceCurrent = currentRecommended.filter((job) => job.source === source);
+    const sourceThreshold = Math.max(2, Math.ceil(sourceBaseline.length * 0.5));
+    if (sourceCurrent.length >= sourceThreshold) continue;
+    const sourceLosses = sourceBaseline
+      .map((previous) => ({ previous, current: findCurrent(previous) }))
+      .filter(({ current }) => !isDefaultRecommendation(current || {}));
+    const sourceExplained = ({ current }) => Boolean(current) && (
+      ['source_error', 'talent_pool', 'expired', 'stale'].includes(current.listingStatus)
+      || ['degraded', 'unstable'].includes(current.sourceReliabilityState)
+      || current.sourceQualityTier === 'weak'
+      || (current.lastChangeKind === 'content_changed'
+        && (current.requirementsStatus === 'hard_check'
+          || current.eligibilityCode === 'restricted'
+          || Number(current.score || 0) < 20))
+    );
+    const sourceUnexplainedLosses = sourceLosses.filter((item) => !sourceExplained(item));
+    if (sourceUnexplainedLosses.length) {
+      sourceCollapses.push({
+        source,
+        baselineCount: sourceBaseline.length,
+        currentCount: sourceCurrent.length,
+        threshold: sourceThreshold,
+        unexplainedLosses: sourceUnexplainedLosses
+      });
+    }
+  }
   return {
-    guarded: baselineRecommended.length >= 5,
-    collapse: baselineRecommended.length >= 5
+    guarded: baselineRecommended.length >= 5 || sourceCollapses.length > 0,
+    collapse: (baselineRecommended.length >= 5
       && currentRecommended.length < threshold
-      && unexplainedLosses.length > 0,
+      && unexplainedLosses.length > 0)
+      || sourceCollapses.length > 0,
     baselineCount: baselineRecommended.length,
     currentCount: currentRecommended.length,
     threshold,
-    unexplainedLosses
+    unexplainedLosses,
+    sourceCollapses
   };
 }
 
@@ -3465,6 +3739,9 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       at: nowIso,
       ok: Boolean(status.ok),
       rawCount,
+      discoveredCount: Number(run.discoveredCount ?? rawCount),
+      detailAttemptCount: Number(run.detailAttemptCount || 0),
+      detailSuccessCount: Number(run.detailSuccessCount || 0),
       matchedCount,
       keptCount,
       recommendedCount,
@@ -3478,6 +3755,11 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       detailRecoveredCount: Number(run.detailRecoveredCount || 0),
       continuityProbeCount: Number(run.continuityProbeCount || 0),
       continuityRecoveredCount: Number(run.continuityRecoveredCount || 0),
+      continuityTerminalCount: Number(run.continuityTerminalCount || 0),
+      continuityFailureCount: Number(run.continuityFailureCount || 0),
+      discoveryCollapseSuspected: Boolean(run.discoveryCollapseSuspected),
+      discoveryReferenceCount: Number(run.discoveryReferenceCount || 0),
+      discoveryOverlapCount: Number(run.discoveryOverlapCount || 0),
       ...(status.error ? { error: String(status.error).slice(0, 240) } : {})
     };
     const history = appendLimitedHistory(previousHistory, historyEntry, sourceMetricHistoryLimit);
@@ -3506,6 +3788,12 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       recentAttempts,
       recentSuccessRate: recentAttempts ? Math.round((recentSuccesses / recentAttempts) * 1000) / 1000 : 0,
       rawCount,
+      discoveredCount: Number(run.discoveredCount ?? rawCount),
+      detailAttemptCount: Number(run.detailAttemptCount || 0),
+      detailSuccessCount: Number(run.detailSuccessCount || 0),
+      detailSuccessRate: Number(run.detailAttemptCount || 0)
+        ? Math.round((Number(run.detailSuccessCount || 0) / Number(run.detailAttemptCount || 0)) * 1000) / 1000
+        : null,
       localeEligibleCount: Number(run.localeEligibleCount || 0),
       profileMatchedCount: Number(run.profileMatchedCount ?? matchedCount),
       detailFailureCount: Number(run.detailFailureCount || 0),
@@ -3515,6 +3803,11 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       detailRecoveredCount: Number(run.detailRecoveredCount || 0),
       continuityProbeCount: Number(run.continuityProbeCount || 0),
       continuityRecoveredCount: Number(run.continuityRecoveredCount || 0),
+      continuityTerminalCount: Number(run.continuityTerminalCount || 0),
+      continuityFailureCount: Number(run.continuityFailureCount || 0),
+      discoveryCollapseSuspected: Boolean(run.discoveryCollapseSuspected),
+      discoveryReferenceCount: Number(run.discoveryReferenceCount || 0),
+      discoveryOverlapCount: Number(run.discoveryOverlapCount || 0),
       matchedCount,
       keptCount,
       recommendedCount,
@@ -3605,6 +3898,9 @@ export async function collectJobs({ includeManual = true, persist = true, previo
       const collected = Array.isArray(result) ? result : (result?.jobs || []);
       sourceRuns.set(name, {
         rawCount: Number(result?.rawCount ?? collected.length),
+        discoveredCount: Number(result?.discoveredCount ?? result?.rawCount ?? collected.length),
+        detailAttemptCount: Number(result?.detailAttemptCount || 0),
+        detailSuccessCount: Number(result?.detailSuccessCount || 0),
         matchedCount: Number(result?.matchedCount ?? collected.length),
         localeEligibleCount: Number(result?.localeEligibleCount || 0),
         profileMatchedCount: Number(result?.profileMatchedCount ?? collected.length),
@@ -3614,7 +3910,12 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         listFallbackCount: Number(result?.listFallbackCount || 0),
         detailRecoveredCount: Number(result?.detailRecoveredCount || 0),
         continuityProbeCount: Number(result?.continuityProbeCount || 0),
-        continuityRecoveredCount: Number(result?.continuityRecoveredCount || 0)
+        continuityRecoveredCount: Number(result?.continuityRecoveredCount || 0),
+        continuityTerminalCount: Number(result?.continuityTerminalCount || 0),
+        continuityFailureCount: Number(result?.continuityFailureCount || 0),
+        discoveryCollapseSuspected: Boolean(result?.discoveryCollapseSuspected),
+        discoveryReferenceCount: Number(result?.discoveryReferenceCount || 0),
+        discoveryOverlapCount: Number(result?.discoveryOverlapCount || 0)
       });
       jobs.push(...collected);
       sourceStatus.push({
@@ -3622,19 +3923,54 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         ok: true,
         count: collected.length,
         rawCount: Number(result?.rawCount ?? collected.length),
+        discoveredCount: Number(result?.discoveredCount ?? result?.rawCount ?? collected.length),
+        ...(result?.detailAttemptCount ? { detailAttemptCount: Number(result.detailAttemptCount) } : {}),
+        ...(result?.detailSuccessCount ? { detailSuccessCount: Number(result.detailSuccessCount) } : {}),
         ...(result?.detailFailureCount ? { detailFailureCount: Number(result.detailFailureCount) } : {}),
         ...(result?.workplaceUnverifiedCount ? { workplaceUnverifiedCount: Number(result.workplaceUnverifiedCount) } : {}),
         ...(result?.accessRestrictedCount ? { accessRestrictedCount: Number(result.accessRestrictedCount) } : {}),
         ...(result?.listFallbackCount ? { listFallbackCount: Number(result.listFallbackCount) } : {}),
         ...(result?.detailRecoveredCount ? { detailRecoveredCount: Number(result.detailRecoveredCount) } : {}),
         ...(result?.continuityProbeCount ? { continuityProbeCount: Number(result.continuityProbeCount) } : {}),
-        ...(result?.continuityRecoveredCount ? { continuityRecoveredCount: Number(result.continuityRecoveredCount) } : {})
+        ...(result?.continuityRecoveredCount ? { continuityRecoveredCount: Number(result.continuityRecoveredCount) } : {}),
+        ...(result?.continuityTerminalCount ? { continuityTerminalCount: Number(result.continuityTerminalCount) } : {}),
+        ...(result?.continuityFailureCount ? { continuityFailureCount: Number(result.continuityFailureCount) } : {}),
+        ...(result?.discoveryCollapseSuspected ? { discoveryCollapseSuspected: true } : {}),
+        ...(result?.discoveryReferenceCount ? { discoveryReferenceCount: Number(result.discoveryReferenceCount) } : {}),
+        ...(result?.discoveryOverlapCount ? { discoveryOverlapCount: Number(result.discoveryOverlapCount) } : {})
       });
     } catch (error) {
       const preserved = fallbackJobs.filter((job) => job.source === name).map(markPreservedSourceFailure);
       jobs.push(...preserved);
-      sourceRuns.set(name, { rawCount: 0, matchedCount: 0, localeEligibleCount: 0, profileMatchedCount: 0 });
-      sourceStatus.push({ source: name, ok: false, count: 0, preserved: preserved.length, error: String(error.message ?? error) });
+      const failureRun = error?.sourceRun || {};
+      sourceRuns.set(name, {
+        rawCount: Number(failureRun.rawCount || 0),
+        discoveredCount: Number(failureRun.discoveredCount || 0),
+        detailAttemptCount: Number(failureRun.detailAttemptCount || 0),
+        detailSuccessCount: Number(failureRun.detailSuccessCount || 0),
+        matchedCount: 0,
+        localeEligibleCount: 0,
+        profileMatchedCount: 0,
+        detailFailureCount: Number(failureRun.detailFailureCount || 0),
+        continuityProbeCount: Number(failureRun.continuityProbeCount || 0),
+        continuityRecoveredCount: Number(failureRun.continuityRecoveredCount || 0),
+        continuityFailureCount: Number(failureRun.continuityFailureCount || 0),
+        discoveryCollapseSuspected: Boolean(failureRun.discoveryCollapseSuspected),
+        discoveryReferenceCount: Number(failureRun.discoveryReferenceCount || 0),
+        discoveryOverlapCount: Number(failureRun.discoveryOverlapCount || 0)
+      });
+      sourceStatus.push({
+        source: name,
+        ok: false,
+        count: 0,
+        preserved: preserved.length,
+        ...(failureRun.discoveredCount ? { discoveredCount: Number(failureRun.discoveredCount) } : {}),
+        ...(failureRun.detailAttemptCount ? { detailAttemptCount: Number(failureRun.detailAttemptCount) } : {}),
+        ...(failureRun.detailSuccessCount ? { detailSuccessCount: Number(failureRun.detailSuccessCount) } : {}),
+        ...(failureRun.detailFailureCount ? { detailFailureCount: Number(failureRun.detailFailureCount) } : {}),
+        ...(failureRun.discoveryCollapseSuspected ? { discoveryCollapseSuspected: true } : {}),
+        error: String(error.message ?? error)
+      });
     }
   }
   // Use a collection-completion timestamp for lifecycle reconciliation. Individual
@@ -3692,6 +4028,18 @@ export async function collectJobs({ includeManual = true, persist = true, previo
     },
     jobs: uniqueJobs
   };
+  const collapseRisk = recommendationCollapseRisk(payload, fallbackFeed);
+  payload.recommendationSummary.collapseGuarded = collapseRisk.guarded;
+  payload.recommendationSummary.sourceCollapseCount = collapseRisk.sourceCollapses.length;
+  if (collapseRisk.collapse) {
+    const sources = collapseRisk.sourceCollapses.map((item) => item.source).join(', ');
+    const error = new Error(
+      `recommendation collapse guard blocked this refresh: ${collapseRisk.currentCount}/${collapseRisk.baselineCount} recommendations${sources ? `; source collapse: ${sources}` : ''}`
+    );
+    error.code = 'recommendation_collapse';
+    error.collapseRisk = collapseRisk;
+    throw error;
+  }
   if (persist) await fs.writeFile(path.join(root, 'data/jobs.json'), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
   return payload;
 }
@@ -3716,8 +4064,15 @@ export {
   jobKoreaSearchCandidates,
   localCrossPlatformDuplicateKey,
   structuredLocalBoardCandidate,
+  collectStructuredLocalBoard,
   isJeonjuWanjuLocal,
   localContinuityCandidates,
+  localDiscoveryCollapseState,
+  localPreferredConditions,
+  localMandatoryQualification,
+  extractLocalWorkSchedule,
+  extractLocalWorkPeriod,
+  localCompensationNotes,
   parseWork24ListXml,
   work24Candidate,
   fallbackJobsForConfiguredSources,
