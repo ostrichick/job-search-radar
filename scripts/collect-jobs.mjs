@@ -1500,9 +1500,20 @@ function currentListingState(job) {
   return { code: 'current_feed', label: '집계·채용보드 현재 피드', stale: false, reason: '현재 채용 보드·집계 피드에 존재하지만 고용주의 공식 모집 상태는 별도 확인 필요', basis: 'board_feed', verification: 'intermediary' };
 }
 
+function legacyLocalWorkAddressEvidence(job) {
+  if (job?.workAddressEvidence) return job.workAddressEvidence;
+  if (!['알바몬', '알바천국', '잡코리아'].includes(job?.source)) return '';
+  if (job?.sourceListingState !== 'public_detail' || !job?.workAddress) return '';
+  if (job?.domesticRegion?.evidenceLevel !== 'source_structured') return '';
+  if (!['address', 'exact'].includes(job?.domesticRegion?.precision)) return '';
+  return 'detail_structured';
+}
+
 function markPreservedSourceFailure(job) {
+  const migratedWorkAddressEvidence = legacyLocalWorkAddressEvidence(job);
   return {
     ...job,
+    ...(migratedWorkAddressEvidence ? { workAddressEvidence: migratedWorkAddressEvidence } : {}),
     listingStatus: 'source_error',
     listingLabel: '소스 확인 실패',
     listingReason: '이번 수집에서 원천 소스를 확인하지 못해 이전 공고를 보존함',
@@ -3182,8 +3193,10 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
       ? { ...(previous.domesticRegion || {}), ...recalculatedDomesticRegion }
       : previous.domesticRegion || null;
     const carriedMarketScopes = marketScopesFor({ ...previous, remote: carriedRemote, workplaceMode: carriedWorkplaceMode, domesticRegion: carriedDomesticRegion });
+    const carriedWorkAddressEvidence = legacyLocalWorkAddressEvidence(previous);
     carried.push({
       ...previous,
+      ...(carriedWorkAddressEvidence ? { workAddressEvidence: carriedWorkAddressEvidence } : {}),
       remote: carriedRemote,
       domesticRegion: carriedDomesticRegion,
       marketScopes: carriedMarketScopes,

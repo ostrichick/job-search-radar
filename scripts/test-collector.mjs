@@ -246,6 +246,35 @@ assert.equal(preservedFailure.listingStatus, 'source_error');
 assert.equal(preservedFailure.stale, true);
 assert.equal(preservedFailure.score, 80);
 
+const legacyLocalPreservedFailure = markPreservedSourceFailure({
+  source: '알바천국',
+  sourceListingState: 'public_detail',
+  workAddress: '전북특별자치도 완주군 봉동읍 완주산단2로 282-22 쿠팡',
+  domesticRegion: {
+    evidenceLevel: 'source_structured',
+    precision: 'address'
+  },
+  listingStatus: 'current_feed',
+  stale: false,
+  score: 28
+});
+assert.equal(legacyLocalPreservedFailure.workAddressEvidence, 'detail_structured',
+  'pre-provenance local detail rows must retain safely inferable workplace evidence when a source run fails');
+const ambiguousLegacyLocalPreservedFailure = markPreservedSourceFailure({
+  source: '잡코리아',
+  sourceListingState: 'public_detail',
+  workAddress: '전북 완주군',
+  domesticRegion: {
+    evidenceLevel: 'source_structured',
+    precision: 'city'
+  },
+  listingStatus: 'current_feed',
+  stale: false,
+  score: 28
+});
+assert.equal(ambiguousLegacyLocalPreservedFailure.workAddressEvidence, undefined,
+  'legacy migration must not upgrade list-level locality to detail-address provenance');
+
 const base = {
   source: 'Welo Global', company: 'Example Inc.', title: 'Korean Evaluator', remote: true,
   type: 'Remote', salary: '', postedAt: new Date().toISOString(), description: '', tags: [], countryCode: ''
@@ -923,6 +952,30 @@ assert.ok(withGracePeriod[0].contentFingerprint, 'legacy carried jobs must retai
 const secondGraceCycle = carryRecentlyMissing([], withGracePeriod, now + 86400000);
 assert.equal(secondGraceCycle.length, 1, 'relevant archived_missing jobs must remain through subsequent grace-period collections');
 assert.equal(secondGraceCycle[0].listingStatus, 'archived_missing');
+const legacyLocalMissing = carryRecentlyMissing([], [{
+  ...disappeared,
+  id: 'job:legacy-local-missing',
+  source: '알바몬',
+  sourceKind: 'job_board',
+  sourceListingState: 'public_detail',
+  title: '전주 카페 아르바이트',
+  company: '전주카페',
+  location: '전북 완주군 기지로 54',
+  workAddress: '전북 완주군 기지로 54',
+  remote: false,
+  workplaceMode: 'onsite',
+  domesticRegion: {
+    country: '대한민국',
+    province: '전북특별자치도',
+    city: '완주군',
+    precision: 'address',
+    evidenceLevel: 'source_structured',
+    sourceAddress: '전북 완주군 기지로 54'
+  },
+  score: 28
+}], now)[0];
+assert.equal(legacyLocalMissing.workAddressEvidence, 'detail_structured',
+  'archived legacy local detail rows must retain safely inferable workplace provenance');
 const nonKoreanOneFormaMissing = carryRecentlyMissing([], [{
   ...disappeared,
   source: 'OneForma',
