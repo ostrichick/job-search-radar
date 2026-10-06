@@ -29,7 +29,7 @@ assert.ok(!feed.domesticProvinceOptions.includes('광주광역시') && !feed.dom
 
 const ids = feed.jobs.map((job) => job.id);
 assert.equal(new Set(ids).size, ids.length, 'stable job ids must be unique');
-const localBoardSources = new Set(['알바몬', '알바천국', '잡코리아']);
+const localBoardSources = new Set(['알바몬', '알바천국', '잡코리아', '사람인']);
 
 for (const job of feed.jobs) {
   assert.ok(['remote', 'hybrid', 'onsite', 'unknown'].includes(job.workplaceMode), `${job.id} workplaceMode must use the canonical enum`);
@@ -133,6 +133,7 @@ for (const job of feed.jobs) {
   if (localBoardSources.has(job.source)) {
     assert.equal(job.sourceKind, 'job_board', `${job.id} Korean public platform must keep job-board intermediary semantics`);
     assert.ok(job.sourcePostingId && job.platform === job.source, `${job.id} Korean public platform must retain stable platform posting identity`);
+    assert.match(String(job.sourcePostingId), /^\d+$/, `${job.id} Korean public platform posting identity must remain a numeric source id`);
     assert.ok(job.workAddress && job.domesticRegion?.evidenceLevel === 'source_structured',
       `${job.id} Korean public platform must retain structured workplace evidence from the detail page`);
     assert.ok(['detail_structured', 'detail_html', 'embedded_list', 'search_card', 'public_list'].includes(job.workAddressEvidence || ''),
@@ -145,10 +146,14 @@ for (const job of feed.jobs) {
     assert.ok(['전주시', '완주군'].includes(job.domesticRegion?.city), `${job.id} commute-local platform row must be in Jeonju or Wanju`);
     assert.doesNotMatch(`${job.title || ''} ${job.description || ''}`, /전국\s*(?:채용|모집|근무|지역|대상)|전국채용/,
       `${job.id} nationwide posting must not be retained as a local commute job`);
+    if (job.source === '사람인') {
+      assert.equal(job.workAddressEvidence, 'detail_html', `${job.id} Saramin workplace evidence must come from the public detail page`);
+    }
     const expectedUrl = {
       '알바몬': /^https:\/\/www\.albamon\.com\/jobs\/detail\/\d+/,
       '알바천국': /^https:\/\/www\.alba\.co\.kr\/job\/Detail\?adid=\d+/,
-      '잡코리아': /^https:\/\/www\.jobkorea\.co\.kr\/Recruit\/GI_Read\/\d+/
+      '잡코리아': /^https:\/\/www\.jobkorea\.co\.kr\/Recruit\/GI_Read\/\d+/,
+      '사람인': /^https:\/\/www\.saramin\.co\.kr\/zf_user\/jobs\/view\?rec_idx=\d+/
     }[job.source];
     assert.match(job.url || '', expectedUrl, `${job.id} must link to the public source detail page`);
   }

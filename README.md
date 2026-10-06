@@ -34,6 +34,11 @@ npm start
 - Remote OK 공개 JSON API
 - Remotive 공개 Remote Jobs API
 - Arbeitnow 공개 Job Board API
+- 알바몬 공개 전북 지역 목록 + 상세 JobPosting 구조화 데이터 — 상세 근무지로 전주·완주를 최종 확인
+- 알바천국 공개 검색 + 상세 JobPosting 구조화 데이터 — 상세 근무지로 전주·완주를 최종 확인
+- 잡코리아 공개 검색 + 상세 JobPosting/모집요강 — 상세 근무지로 전주·완주를 최종 확인
+- 사람인 공개 전주·완주 지역 목록 + 상세 페이지 — 상세 근무지 위치를 확인할 수 없는 공고는 제외
+- 고용24 공식 채용정보 OPEN-API — `WORK24_AUTH_KEY`가 구성된 경우에만 전주·완주 수집 활성화
 - `data/manual-jobs.json`에 직접 추가한 공고
 
 LinkedIn과 Indeed는 직접 크롤링하지 않습니다. 두 플랫폼에서 발견한 공고는 화면의 **공고 추가**로 저장할 수 있습니다. Gmail Job Alert 자동 유입은 Gmail OAuth 토큰을 정적 웹앱에 넣지 않는 구조가 전제이며, 별도 서버/Apps Script 등 안전한 OAuth 보관 경로가 생길 때 연결합니다.
