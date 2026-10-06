@@ -790,7 +790,7 @@ function fixedDeadline(value) {
   return date ? { type: 'fixed', date, label: raw } : { type: 'unknown', date: '', label: raw };
 }
 
-const localDomesticBoardSources = new Set(['고용24', '알바몬', '알바천국', '잡코리아', '사람인']);
+const localDomesticBoardSources = new Set(['고용24', '알바몬', '알바천국', '잡코리아', '사람인', '인크루트']);
 
 function xmlTag(block, tag) {
   const match = block.match(new RegExp(`<${tag}>([\\s\\S]*?)<\\/${tag}>`, 'i'));
@@ -1114,6 +1114,14 @@ function exactSingleLocalListLocation(value) {
   return /^(?:전북특별자치도|전라북도|전북)\s+(?:전주시|완주군)(?:\s+(?:완산구|덕진구|[가-힣0-9]+(?:읍|면|동(?:\d+가)?)))?$/.test(raw);
 }
 
+function localMunicipality(value) {
+  const raw = text(value);
+  const jeonju = /(?:전북특별자치도|전라북도|전북)?\s*전주시(?:\s|$)/.test(raw);
+  const wanju = /(?:전북특별자치도|전라북도|전북)?\s*완주군(?:\s|$)/.test(raw);
+  if (jeonju === wanju) return '';
+  return jeonju ? '전주시' : '완주군';
+}
+
 function detailContradictsListLocation(plainText) {
   return /근무지(?:역|주소|장소)?[^.\n]{0,80}(?:상이|협의|변경|배정)|근무지\s*및\s*근무조[^.\n]{0,80}상이|전국\s*(?:채용|모집|근무|지역|대상)|재택근무|원격근무/.test(plainText);
 }
@@ -1311,6 +1319,44 @@ function saraminAreaListCandidates(html) {
       education,
       deadlineLabel,
       evidence: 'public_area_list'
+    });
+  }
+  return candidates;
+}
+
+function incruitSearchCandidates(html) {
+  const raw = String(html || '');
+  const candidates = [];
+  const seen = new Set();
+  for (const match of raw.matchAll(/<ul[^>]+class=["'][^"']*\bc_row\b[^"']*["'][^>]+jobno=["'](\d+)["'][^>]*>([\s\S]*?)<\/ul>/gi)) {
+    const id = text(match[1]);
+    const block = match[2];
+    if (!/^\d+$/.test(id) || seen.has(id)) continue;
+    if (!new RegExp(`id=["']JobList_${id}["']`, 'i').test(block)) continue;
+    const detailMatch = block.match(new RegExp(`<a[^>]+href=["'](?:https:\\/\\/job\\.incruit\\.com)?\\/jobdb_info\\/jobpost\\.asp\\?job=${id}(?:&[^"']*)?["'][^>]*>([\\s\\S]*?)<\\/a>`, 'i'));
+    if (!detailMatch) continue;
+    const title = htmlPlainText(detailMatch[1]);
+    const company = htmlPlainText(block.match(/<a[^>]+class=["'][^"']*\bcpname\b[^"']*["'][^>]*>([\s\S]*?)<\/a>/i)?.[1] || '');
+    const metaBlock = block.match(/<div[^>]+class=["'][^"']*\bcl_md\b[^"']*["'][^>]*>([\s\S]*?)<\/div>/i)?.[1] || '';
+    const meta = [...metaBlock.matchAll(/<span[^>]*>([\s\S]*?)<\/span>/gi)].map((item) => htmlPlainText(item[1]));
+    const listLocation = meta[0] || '';
+    if (!title || !company || !exactSingleLocalListLocation(listLocation)) continue;
+    if (/전국|재택|원격|\bremote\b/i.test(`${title} ${listLocation}`)) continue;
+    const deadlineLabel = htmlPlainText(
+      block.match(/<div[^>]+class=["'][^"']*\bcell_last\b[^"']*["'][^>]*>[\s\S]{0,900}?<div[^>]+class=["'][^"']*\bcl_btm\b[^"']*["'][^>]*>\s*<span[^>]*>([\s\S]*?)<\/span>/i)?.[1]
+      || ''
+    );
+    seen.add(id);
+    candidates.push({
+      id,
+      title,
+      company,
+      listLocation,
+      careerType: meta[1] || '',
+      education: meta[2] || '',
+      employmentType: meta[3] || '',
+      deadlineLabel,
+      evidence: 'public_search_list'
     });
   }
   return candidates;
@@ -2166,15 +2212,17 @@ async function fetchJson(url, options = {}) {
 }
 
 async function fetchText(url, options = {}) {
+  const { charset = '', ...fetchOptions } = options;
   const response = await fetch(url, {
-    ...options,
-    headers: { 'User-Agent': 'DigitalNomadJobDashboard/0.2', Accept: 'text/html,application/rss+xml,application/xml,text/xml,*/*', ...(options.headers ?? {}) }
+    ...fetchOptions,
+    headers: { 'User-Agent': 'DigitalNomadJobDashboard/0.2', Accept: 'text/html,application/rss+xml,application/xml,text/xml,*/*', ...(fetchOptions.headers ?? {}) }
   });
   if (!response.ok) {
     const error = new Error(`${response.status} ${response.statusText} - ${url}`);
     error.status = response.status;
     throw error;
   }
+  if (charset) return new TextDecoder(charset).decode(await response.arrayBuffer());
   return response.text();
 }
 
@@ -2472,6 +2520,31 @@ function albaPublicListFallbackCandidate(sourcePostingId, url, hint = {}, previo
   return normalized;
 }
 
+function canonicalUrlFromHtml(html) {
+  const tag = String(html || '').match(/<link\b[^>]*\brel=["']canonical["'][^>]*>/i)?.[0]
+    || String(html || '').match(/<link\b[^>]*\bhref=["'][^"']+["'][^>]*\brel=["']canonical["'][^>]*>/i)?.[0]
+    || '';
+  return text(decodeHtml(tag.match(/\bhref=["']([^"']+)["']/i)?.[1] || ''));
+}
+
+function incruitDetailUrlMatches(value, sourcePostingId) {
+  try {
+    const parsed = new URL(String(value || ''));
+    return parsed.protocol === 'https:'
+      && parsed.hostname === 'job.incruit.com'
+      && parsed.pathname.toLowerCase() === '/jobdb_info/jobpost.asp'
+      && parsed.searchParams.get('job') === text(sourcePostingId)
+      && [...parsed.searchParams.keys()].every((key) => key === 'job');
+  } catch {
+    return false;
+  }
+}
+
+function incruitPostingIdentifier(posting) {
+  const identifier = Array.isArray(posting?.identifier) ? posting.identifier[0] : posting?.identifier;
+  return text(identifier?.value);
+}
+
 function structuredLocalBoardCandidate(source, sourcePostingId, url, html, listHint = {}) {
   const rawHtml = String(html || '');
   if (
@@ -2488,23 +2561,51 @@ function structuredLocalBoardCandidate(source, sourcePostingId, url, html, listH
     || (source === '사람인' ? saraminHtmlJobPosting(html, listHint) : null)
     || (source === '알바몬' ? listHintJobPosting(listHint) : null);
   if (!posting) throw localDetailError('detail_structure', source + ' detail missing supported JobPosting structure: ' + sourcePostingId);
+  if (source === '인크루트') {
+    const expectedId = text(sourcePostingId);
+    const detailId = incruitPostingIdentifier(posting);
+    const canonicalUrl = canonicalUrlFromHtml(rawHtml);
+    const listLocation = text(listHint?.listLocation);
+    const detailAddress = schemaAddress(posting);
+    const searchMunicipality = localMunicipality(listLocation);
+    const detailMunicipality = localMunicipality(detailAddress);
+    if (!/^\d+$/.test(expectedId)) throw localDetailError('posting_id_invalid', `Incruit posting id must be numeric: ${expectedId}`);
+    if (detailId !== expectedId) throw localDetailError('posting_id_mismatch', `Incruit detail posting id mismatch: expected ${expectedId}, got ${detailId || 'missing'}`);
+    if (!incruitDetailUrlMatches(url, expectedId) || !canonicalUrl || !incruitDetailUrlMatches(canonicalUrl, expectedId)) {
+      throw localDetailError('detail_url_mismatch', `Incruit detail/canonical URL mismatch for posting ${expectedId}`);
+    }
+    if (!exactSingleLocalListLocation(listLocation) || !searchMunicipality) {
+      throw localDetailError('search_location_unverified', `Incruit search row lacks one exact Jeonju/Wanju workplace: ${expectedId}`);
+    }
+    if (!detailAddress || !detailMunicipality || detailMunicipality !== searchMunicipality) {
+      throw localDetailError('workplace_mismatch', `Incruit search/detail workplace mismatch for ${expectedId}: ${listLocation || 'missing'} <> ${detailAddress || 'missing'}`);
+    }
+    const postingText = `${text(listHint?.title)} ${listLocation} ${text(decodeHtml(posting?.title))} ${htmlPlainText(posting?.description || '')}`;
+    if (/전국|재택|원격|\bremote\b/i.test(postingText)) {
+      throw localDetailError('workplace_mode_rejected', `Incruit nationwide/remote posting rejected: ${expectedId}`);
+    }
+  }
   const nextData = source === '알바몬' ? nextDataJson(html) : null;
   const albamonView = nextData?.props?.pageProps?.data?.viewData || null;
   const albamonDetailText = source === '알바몬' ? htmlPlainText(albamonView?.content || '') : '';
   const decisionText = source === '사람인' && posting?._decisionText
     ? text(posting._decisionText)
+    : source === '인크루트'
+      ? htmlPlainText(posting?.description || '')
     : [plainText, albamonDetailText].filter(Boolean).join(' ');
   let workAddress = schemaAddress(posting);
-  let workAddressEvidence = text(posting?._workAddressEvidence) || (posting?._fallbackFormat === 'alba_legacy_html'
+  let workAddressEvidence = source === '인크루트'
+    ? 'detail_crosschecked'
+    : text(posting?._workAddressEvidence) || (posting?._fallbackFormat === 'alba_legacy_html'
     ? 'detail_html'
     : posting?._fallbackFormat === 'public_list_embedded'
       ? 'embedded_list'
       : 'detail_structured');
-  if (!workAddress && listHint?.workAddress && localAddressText(listHint.workAddress)) {
+  if (source !== '인크루트' && !workAddress && listHint?.workAddress && localAddressText(listHint.workAddress)) {
     workAddress = text(listHint.workAddress);
     workAddressEvidence = 'embedded_list';
   }
-  if (!workAddress && exactSingleLocalListLocation(listHint?.listLocation) && !detailContradictsListLocation(plainText)) {
+  if (source !== '인크루트' && !workAddress && exactSingleLocalListLocation(listHint?.listLocation) && !detailContradictsListLocation(plainText)) {
     workAddress = text(listHint.listLocation);
     workAddressEvidence = 'search_card';
   }
@@ -2862,6 +2963,73 @@ async function collectSaramin(previousJobs = []) {
     detailUrl: (id) => 'https://www.saramin.co.kr/zf_user/jobs/view?rec_idx=' + id,
     perSearchLimit: 30,
     previousJobs
+  });
+}
+
+async function collectIncruit(previousJobs = []) {
+  const searchBase = 'https://job.incruit.com/jobdb_list/searchjob.asp?col=job&kw=';
+  const candidates = [];
+  const byId = new Map();
+  for (const term of ['%EC%A0%84%EC%A3%BC', '%EC%99%84%EC%A3%BC']) {
+    const html = await fetchText(searchBase + term, { charset: 'euc-kr', signal: AbortSignal.timeout(15000) });
+    for (const candidate of incruitSearchCandidates(html).slice(0, 40)) {
+      if (byId.has(candidate.id)) continue;
+      byId.set(candidate.id, candidate);
+      candidates.push(candidate);
+    }
+  }
+  if (!candidates.length) throw new Error('인크루트 public search returned no verified Jeonju/Wanju posting ids');
+
+  const results = await mapLimit(candidates, 4, async (candidate) => {
+    const url = 'https://job.incruit.com/jobdb_info/jobpost.asp?job=' + candidate.id;
+    const html = await fetchText(url, { charset: 'euc-kr', signal: AbortSignal.timeout(15000) });
+    return structuredLocalBoardCandidate('인크루트', candidate.id, url, html, candidate);
+  });
+  const successful = results.filter((result) => result?.ok && result.value).map((result) => result.value);
+  const detailRejectionCounts = results.reduce((counts, result) => {
+    if (result?.ok) return counts;
+    const code = text(result?.error?.code) || 'detail_error';
+    counts[code] = Number(counts[code] || 0) + 1;
+    return counts;
+  }, {});
+  const rejected = results.length - successful.length;
+  if (results.length >= 10 && successful.length < Math.ceil(results.length * 0.5) && rejected >= 5) {
+    const error = localDetailError('detail_collapse', `인크루트 detail validation collapsed: ${successful.length}/${results.length} search-qualified postings passed cross-check`);
+    error.sourceRun = {
+      rawCount: candidates.length,
+      discoveredCount: candidates.length,
+      detailAttemptCount: results.length,
+      detailSuccessCount: successful.length,
+      detailFailureCount: rejected,
+      detailRejectedCount: rejected,
+      detailRejectionCounts
+    };
+    throw error;
+  }
+  if (!successful.length) {
+    const error = localDetailError('detail_collapse', '인크루트 public detail validation failed for all search-qualified postings');
+    error.sourceRun = {
+      rawCount: candidates.length,
+      discoveredCount: candidates.length,
+      detailAttemptCount: results.length,
+      detailSuccessCount: 0,
+      detailFailureCount: rejected,
+      detailRejectedCount: rejected,
+      detailRejectionCounts
+    };
+    throw error;
+  }
+  const local = successful.filter(isJeonjuWanjuLocal);
+  const matched = local.filter((job) => Number(job.score || 0) >= 10);
+  return sourceCollection(matched, candidates.length, {
+    discoveredCount: candidates.length,
+    detailAttemptCount: results.length,
+    detailSuccessCount: successful.length,
+    detailFailureCount: rejected,
+    detailRejectedCount: rejected,
+    detailRejectionCounts,
+    localeEligibleCount: local.length,
+    profileMatchedCount: matched.length
   });
 }
 
@@ -3924,6 +4092,10 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       lowQualityCount,
       noiseCount,
       detailFailureCount: Number(run.detailFailureCount || 0),
+      detailRejectedCount: Number(run.detailRejectedCount || 0),
+      detailRejectionCounts: run.detailRejectionCounts && typeof run.detailRejectionCounts === 'object'
+        ? { ...run.detailRejectionCounts }
+        : {},
       workplaceUnverifiedCount: Number(run.workplaceUnverifiedCount || 0),
       accessRestrictedCount: Number(run.accessRestrictedCount || 0),
       listFallbackCount: Number(run.listFallbackCount || 0),
@@ -3972,6 +4144,10 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       localeEligibleCount: Number(run.localeEligibleCount || 0),
       profileMatchedCount: Number(run.profileMatchedCount ?? matchedCount),
       detailFailureCount: Number(run.detailFailureCount || 0),
+      detailRejectedCount: Number(run.detailRejectedCount || 0),
+      detailRejectionCounts: run.detailRejectionCounts && typeof run.detailRejectionCounts === 'object'
+        ? { ...run.detailRejectionCounts }
+        : {},
       workplaceUnverifiedCount: Number(run.workplaceUnverifiedCount || 0),
       accessRestrictedCount: Number(run.accessRestrictedCount || 0),
       listFallbackCount: Number(run.listFallbackCount || 0),
@@ -4040,6 +4216,7 @@ export async function collectJobs({ includeManual = true, persist = true, previo
     ['알바천국', () => collectAlba(fallbackJobs)],
     ['잡코리아', () => collectJobKorea(fallbackJobs)],
     ['사람인', () => collectSaramin(fallbackJobs)],
+    ['인크루트', () => collectIncruit(fallbackJobs)],
     ['We Work Remotely', collectWeWorkRemotely],
     ['Jobicy', collectJobicy],
     ['Remote OK', collectRemoteOk],
@@ -4081,6 +4258,10 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         localeEligibleCount: Number(result?.localeEligibleCount || 0),
         profileMatchedCount: Number(result?.profileMatchedCount ?? collected.length),
         detailFailureCount: Number(result?.detailFailureCount || 0),
+        detailRejectedCount: Number(result?.detailRejectedCount || 0),
+        detailRejectionCounts: result?.detailRejectionCounts && typeof result.detailRejectionCounts === 'object'
+          ? { ...result.detailRejectionCounts }
+          : {},
         workplaceUnverifiedCount: Number(result?.workplaceUnverifiedCount || 0),
         accessRestrictedCount: Number(result?.accessRestrictedCount || 0),
         listFallbackCount: Number(result?.listFallbackCount || 0),
@@ -4103,6 +4284,10 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         ...(result?.detailAttemptCount ? { detailAttemptCount: Number(result.detailAttemptCount) } : {}),
         ...(result?.detailSuccessCount ? { detailSuccessCount: Number(result.detailSuccessCount) } : {}),
         ...(result?.detailFailureCount ? { detailFailureCount: Number(result.detailFailureCount) } : {}),
+        ...(result?.detailRejectedCount ? { detailRejectedCount: Number(result.detailRejectedCount) } : {}),
+        ...(result?.detailRejectionCounts && Object.keys(result.detailRejectionCounts).length
+          ? { detailRejectionCounts: { ...result.detailRejectionCounts } }
+          : {}),
         ...(result?.workplaceUnverifiedCount ? { workplaceUnverifiedCount: Number(result.workplaceUnverifiedCount) } : {}),
         ...(result?.accessRestrictedCount ? { accessRestrictedCount: Number(result.accessRestrictedCount) } : {}),
         ...(result?.listFallbackCount ? { listFallbackCount: Number(result.listFallbackCount) } : {}),
@@ -4128,6 +4313,10 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         localeEligibleCount: 0,
         profileMatchedCount: 0,
         detailFailureCount: Number(failureRun.detailFailureCount || 0),
+        detailRejectedCount: Number(failureRun.detailRejectedCount || 0),
+        detailRejectionCounts: failureRun.detailRejectionCounts && typeof failureRun.detailRejectionCounts === 'object'
+          ? { ...failureRun.detailRejectionCounts }
+          : {},
         continuityProbeCount: Number(failureRun.continuityProbeCount || 0),
         continuityRecoveredCount: Number(failureRun.continuityRecoveredCount || 0),
         continuityFailureCount: Number(failureRun.continuityFailureCount || 0),
@@ -4144,6 +4333,10 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         ...(failureRun.detailAttemptCount ? { detailAttemptCount: Number(failureRun.detailAttemptCount) } : {}),
         ...(failureRun.detailSuccessCount ? { detailSuccessCount: Number(failureRun.detailSuccessCount) } : {}),
         ...(failureRun.detailFailureCount ? { detailFailureCount: Number(failureRun.detailFailureCount) } : {}),
+        ...(failureRun.detailRejectedCount ? { detailRejectedCount: Number(failureRun.detailRejectedCount) } : {}),
+        ...(failureRun.detailRejectionCounts && Object.keys(failureRun.detailRejectionCounts).length
+          ? { detailRejectionCounts: { ...failureRun.detailRejectionCounts } }
+          : {}),
         ...(failureRun.discoveryCollapseSuspected ? { discoveryCollapseSuspected: true } : {}),
         error: String(error.message ?? error)
       });
@@ -4216,7 +4409,10 @@ export async function collectJobs({ includeManual = true, persist = true, previo
     error.collapseRisk = collapseRisk;
     throw error;
   }
-  if (persist) await fs.writeFile(path.join(root, 'data/jobs.json'), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  if (persist) {
+    await fs.mkdir(path.join(root, 'data'), { recursive: true });
+    await fs.writeFile(path.join(root, 'data/jobs.json'), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  }
   return payload;
 }
 
@@ -4240,6 +4436,8 @@ export {
   jobKoreaSearchCandidates,
   saraminAreaListCandidates,
   saraminHtmlJobPosting,
+  incruitSearchCandidates,
+  collectIncruit,
   localCrossPlatformDuplicateKey,
   structuredLocalBoardCandidate,
   collectStructuredLocalBoard,

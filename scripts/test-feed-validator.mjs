@@ -6,7 +6,7 @@ import { spawnSync } from 'node:child_process';
 
 const root = process.cwd();
 const baseline = JSON.parse(fs.readFileSync(path.join(root, 'docs', 'jobs.json'), 'utf8'));
-const localSources = new Set(['알바몬', '알바천국', '잡코리아', '사람인']);
+const localSources = new Set(['알바몬', '알바천국', '잡코리아', '사람인', '인크루트']);
 const templateIndex = baseline.jobs.findIndex((job) =>
   localSources.has(job.source)
   && job.marketScopes?.includes('domestic')
@@ -36,14 +36,42 @@ function saraminFeed() {
   return feed;
 }
 
+function incruitFeed() {
+  const feed = structuredClone(baseline);
+  const row = feed.jobs[templateIndex];
+  row.source = '인크루트';
+  row.platform = '인크루트';
+  row.sourcePostingId = '2609110000252';
+  row.sourceKind = 'job_board';
+  row.url = 'https://job.incruit.com/jobdb_info/jobpost.asp?job=2609110000252';
+  row.workAddress = '전북특별자치도 전주시 완산구 쑥고개로 398-16';
+  row.location = row.workAddress;
+  row.workAddressEvidence = 'detail_crosschecked';
+  row.remote = false;
+  row.workplaceMode = 'onsite';
+  row.marketScopes = ['domestic'];
+  row.domesticRegion = {
+    ...(row.domesticRegion || {}),
+    country: '대한민국',
+    province: '전북특별자치도',
+    city: '전주시',
+    district: '완산구',
+    neighborhood: '',
+    precision: 'address',
+    evidenceLevel: 'source_structured',
+    sourceAddress: row.workAddress
+  };
+  return feed;
+}
+
 function runValidator(feed, name) {
   const file = path.join(tempDir, `${name}.json`);
   fs.writeFileSync(file, JSON.stringify(feed));
   return spawnSync(process.execPath, [validator, file], { cwd: root, encoding: 'utf8' });
 }
 
-function expectRejected(name, mutate, message) {
-  const feed = saraminFeed();
+function expectRejected(name, mutate, message, makeFeed = saraminFeed) {
+  const feed = makeFeed();
   mutate(feed.jobs[templateIndex]);
   const result = runValidator(feed, name);
   assert.notEqual(result.status, 0, `${name} must be rejected by final feed validation`);
@@ -63,6 +91,18 @@ try {
   expectRejected('remote-local-row', (job) => { job.remote = true; }, /remote boolean must agree with canonical workplaceMode/);
   expectRejected('nationwide-row', (job) => { job.title = `전국 모집 ${job.title}`; }, /nationwide posting must not be retained/);
   expectRejected('wrong-detail-url', (job) => { job.url = 'https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=99999999'; }, /public source detail page/);
+
+  const validIncruit = runValidator(incruitFeed(), 'valid-incruit');
+  assert.equal(validIncruit.status, 0, `valid Incruit final-feed row must pass: ${validIncruit.stderr || validIncruit.stdout}`);
+  expectRejected('incruit-uncrosschecked-workplace', (job) => {
+    job.workAddressEvidence = 'detail_structured';
+  }, /Incruit workplace must be cross-checked/, incruitFeed);
+  expectRejected('incruit-non-address-workplace', (job) => {
+    job.domesticRegion.precision = 'city';
+  }, /Incruit must retain a posting-specific detail address/, incruitFeed);
+  expectRejected('incruit-wrong-detail-url', (job) => {
+    job.url = 'https://job.incruit.com/jobdb_info/jobpost.asp?job=2609110000252&src=search';
+  }, /public source detail page/, incruitFeed);
 
   console.log('feed validator tests passed');
 } finally {

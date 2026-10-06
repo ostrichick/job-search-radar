@@ -28,8 +28,20 @@
       "status": "blocked_public_access",
       "publicHumanPages": false,
       "automatedCollection": false,
-      "reason": "2026-10-05 전주 채용 공개 검색 URL의 무로그인 직접 요청이 HTTP 403을 반환했다. 로그인·차단 우회 없이 안정적인 공개 수집 경로를 확인하지 못했으므로 통합하지 않는다.",
-      "checkedPath": "https://www.jobplanet.co.kr/job/search?query=%EC%A0%84%EC%A3%BC"
+      "reason": "2026-10-06 현재 collector User-Agent를 포함한 무로그인 공개 GET에서 전주·완주 검색, /job, sitemap이 Cloudflare HTTP 403/challenge를 반환한다. 로그인·쿠키/세션·브라우저 자동화·challenge 우회 없이 후보 발견 경로를 확보하지 못했고, 고유 Jobplanet posting ID와 posting-specific 실제 근무지 계약도 확인되지 않아 통합하지 않는다.",
+      "checkedPaths": [
+        "https://www.jobplanet.co.kr/search/job?query=%EC%A0%84%EC%A3%BC",
+        "https://www.jobplanet.co.kr/search/job?query=%EC%99%84%EC%A3%BC",
+        "https://www.jobplanet.co.kr/job/search?query=%EC%A0%84%EC%A3%BC",
+        "https://www.jobplanet.co.kr/job"
+      ],
+      "activationGate": {
+        "requiresAll": true,
+        "unauthenticatedSearchGet200": false,
+        "stableUniquePostingId": false,
+        "postingSpecificJeonjuWanjuWorkplace": false,
+        "failureMode": "세 조건 중 하나라도 false이거나 403/challenge/로그인 요구/파서 불확실성이 발생하면 collector를 등록하지 않는다. 향후 활성화 후 같은 문제가 생기면 source run 전체를 실패 처리하고 기존 행은 source_error fallback으로만 보존한다. 외부 잡코리아·사람인 등 원문 링크는 원 출처 collector가 소유한다."
+      }
     },
     "사람인": {
       "status": "enabled_public_personal_use",
@@ -39,11 +51,13 @@
       "collectionPath": "https://www.saramin.co.kr/zf_user/jobs/list/domestic?loc_cd={113130,113140|113080} → /zf_user/jobs/view?rec_idx={id} 상세 근무지 주소로 전주·완주 최종 판정"
     },
     "인크루트": {
-      "status": "deferred_workplace_not_branch_verifiable",
+      "status": "enabled_public_personal_use",
       "publicHumanPages": true,
-      "automatedCollection": false,
-      "reason": "전주 키워드 공개 페이지는 로그인 없이 열리지만 이번 감사에서 전주·완주 실제 지점 근무지를 안정적으로 검증하는 공개 구조화 계약을 확보하지 못했다. 지역 타깃/복수 근무지 오탐을 피하기 위해 통합하지 않는다.",
-      "checkedPath": "https://job.incruit.com/jobdb_list/searchjob.asp?col=job&kw=%EC%A0%84%EC%A3%BC"
+      "automatedCollection": true,
+      "reason": "공개 검색 결과의 숫자 posting ID와 전주·완주 검색 지역을 후보 근거로 사용하고, EUC-KR 상세 페이지의 JobPosting identifier·canonical URL·상세 근무지 주소를 다시 확인한다. 검색 지역과 상세 주소가 같은 전주시/완주군으로 일치하는 경우만 허용하며, 본사 주소 오인·ID/URL 불일치·전국·원격·근무지 불명은 fail-closed로 제외한다.",
+      "collectionPath": "https://job.incruit.com/jobdb_list/searchjob.asp?col=job&kw={전주|완주} → /jobdb_info/jobpost.asp?job={id}",
+      "encoding": "euc-kr",
+      "workplaceEvidenceContract": "검색 결과의 단일 전북 전주시/완주군 지역 + 상세 JobPosting의 동일 municipality 실제 주소 + 동일 posting identifier/canonical URL"
     },
     "고용24": {
       "status": "ready_requires_auth_key",

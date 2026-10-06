@@ -29,7 +29,7 @@ assert.ok(!feed.domesticProvinceOptions.includes('광주광역시') && !feed.dom
 
 const ids = feed.jobs.map((job) => job.id);
 assert.equal(new Set(ids).size, ids.length, 'stable job ids must be unique');
-const localBoardSources = new Set(['알바몬', '알바천국', '잡코리아', '사람인']);
+const localBoardSources = new Set(['알바몬', '알바천국', '잡코리아', '사람인', '인크루트']);
 
 for (const job of feed.jobs) {
   assert.ok(['remote', 'hybrid', 'onsite', 'unknown'].includes(job.workplaceMode), `${job.id} workplaceMode must use the canonical enum`);
@@ -136,7 +136,7 @@ for (const job of feed.jobs) {
     assert.match(String(job.sourcePostingId), /^\d+$/, `${job.id} Korean public platform posting identity must remain a numeric source id`);
     assert.ok(job.workAddress && job.domesticRegion?.evidenceLevel === 'source_structured',
       `${job.id} Korean public platform must retain structured workplace evidence from the detail page`);
-    assert.ok(['detail_structured', 'detail_html', 'embedded_list', 'search_card', 'public_list'].includes(job.workAddressEvidence || ''),
+    assert.ok(['detail_structured', 'detail_html', 'detail_crosschecked', 'embedded_list', 'search_card', 'public_list'].includes(job.workAddressEvidence || ''),
       `${job.id} Korean public platform must identify how workplace evidence was obtained`);
     if (['search_card', 'public_list'].includes(job.workAddressEvidence)) {
       assert.notEqual(job.domesticRegion?.precision, 'address', `${job.id} list-level locality fallback must not claim exact address precision`);
@@ -149,11 +149,16 @@ for (const job of feed.jobs) {
     if (job.source === '사람인') {
       assert.equal(job.workAddressEvidence, 'detail_html', `${job.id} Saramin workplace evidence must come from the public detail page`);
     }
+    if (job.source === '인크루트') {
+      assert.equal(job.workAddressEvidence, 'detail_crosschecked', `${job.id} Incruit workplace must be cross-checked between search and detail`);
+      assert.equal(job.domesticRegion?.precision, 'address', `${job.id} Incruit must retain a posting-specific detail address`);
+    }
     const expectedUrl = {
       '알바몬': /^https:\/\/www\.albamon\.com\/jobs\/detail\/\d+/,
       '알바천국': /^https:\/\/www\.alba\.co\.kr\/job\/Detail\?adid=\d+/,
       '잡코리아': /^https:\/\/www\.jobkorea\.co\.kr\/Recruit\/GI_Read\/\d+/,
-      '사람인': /^https:\/\/www\.saramin\.co\.kr\/zf_user\/jobs\/view\?rec_idx=\d+/
+      '사람인': /^https:\/\/www\.saramin\.co\.kr\/zf_user\/jobs\/view\?rec_idx=\d+/,
+      '인크루트': /^https:\/\/job\.incruit\.com\/jobdb_info\/jobpost\.asp\?job=\d+$/
     }[job.source];
     assert.match(job.url || '', expectedUrl, `${job.id} must link to the public source detail page`);
   }

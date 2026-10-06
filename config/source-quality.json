@@ -319,6 +319,20 @@
     "summary": "로그인 없이 공개된 사람인 전주·완주 지역 최신 공고 목록에서 공고 ID를 찾고, 각 상세 페이지의 공개 HTML에서 실제 근무지 주소·근무조건·마감을 다시 확인합니다.",
     "evidence": [{"type": "public_page", "label": "사람인 전주 지역 채용정보", "url": "https://www.saramin.co.kr/zf_user/jobs/list/domestic?loc_cd=113130%2C113140&sort=RD&type=domestic"}]
   },
+  "인크루트": {
+    "kind": "job_board",
+    "coverage": "bounded_window",
+    "evidenceRefreshability": "public_html_structured_data",
+    "listingLabel": "인크루트 공개 공고",
+    "paymentStatus": "not_payer",
+    "paymentLabel": "지급 주체 아님",
+    "paymentEvidenceState": "not_applicable",
+    "paymentEvidenceLabel": "지급 주체 아님",
+    "paymentConfidence": "not_applicable",
+    "reviewedAt": "2026-10-06",
+    "summary": "로그인 없이 공개된 인크루트 전주·완주 검색 결과에서 숫자 공고 ID와 검색 지역을 확인하고, EUC-KR 상세 페이지의 JobPosting 식별자·canonical URL·근무지 주소가 같은 전주·완주 공고임을 교차검증한 경우만 수집합니다. 검색 지역과 상세 주소가 다르면 회사 본사 주소 가능성으로 보고 제외합니다.",
+    "evidence": [{"type": "public_page", "label": "인크루트 공개 채용 검색", "url": "https://job.incruit.com/jobdb_list/searchjob.asp?col=job&kw=%EC%A0%84%EC%A3%BC"}]
+  },
   "고용24": {
     "kind": "official_government",
     "coverage": "current_catalog",

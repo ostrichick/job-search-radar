@@ -13,6 +13,7 @@ import {
   jobKoreaSearchCandidates,
   saraminAreaListCandidates,
   saraminHtmlJobPosting,
+  incruitSearchCandidates,
   localCrossPlatformDuplicateKey,
   structuredLocalBoardCandidate,
   collectStructuredLocalBoard,
@@ -778,6 +779,102 @@ const saraminNoWorkplace = saraminDetailFixture.replace('근무지위치 (55353)
 assert.throws(() => structuredLocalBoardCandidate(
   '사람인', '55201443', 'https://www.saramin.co.kr/zf_user/jobs/view?rec_idx=55201443', saraminNoWorkplace, {}
 ), /missing verifiable workplace address/, 'Saramin rows without a verified local workplace must fail closed');
+
+const incruitListFixture = `<!doctype html><html><body>
+  <ul class="c_row" jobno="2609110000252"><li class="c_col">
+    <div class="cell_first"><input id="JobList_2609110000252" value="2609110000252"><a class="cpname">전주우리척병원</a></div>
+    <div class="cell_mid"><div class="cl_top"><a href="https://job.incruit.com/jobdb_info/jobpost.asp?job=2609110000252&src=gsw*etc">방사선사 직원 모집</a></div>
+      <div class="cl_md"><span>전북 전주시</span><span>경력무관</span><span>초대졸↑</span><span>정규직</span></div></div>
+    <div class="cell_last"><div class="cl_btm"><span>채용시</span></div></div>
+  </li></ul>
+  <ul class="c_row" jobno="2609240000043"><li class="c_col">
+    <div class="cell_first"><input id="JobList_2609240000043" value="2609240000043"><a class="cpname">현대자동차(주)</a></div>
+    <div class="cell_mid"><div class="cl_top"><a href="https://job.incruit.com/jobdb_info/jobpost.asp?job=2609240000043">[계약직] 전주공장 의전안내</a></div>
+      <div class="cl_md"><span>서울 강남구</span><span>경력무관</span><span>고졸↑</span><span>계약직</span></div></div>
+  </li></ul>
+  <ul class="c_row" jobno="2609110000999"><li class="c_col">
+    <div class="cell_first"><input id="JobList_2609110000999" value="2609110000999"><a class="cpname">테스트회사</a></div>
+    <div class="cell_mid"><div class="cl_top"><a href="https://job.incruit.com/jobdb_info/jobpost.asp?job=2609110000999">전국 원격 사무직</a></div>
+      <div class="cl_md"><span>전북 전주시</span><span>경력무관</span><span>학력무관</span><span>계약직</span></div></div>
+  </li></ul>
+</body></html>`;
+assert.deepEqual(incruitSearchCandidates(incruitListFixture), [{
+  id: '2609110000252',
+  title: '방사선사 직원 모집',
+  company: '전주우리척병원',
+  listLocation: '전북 전주시',
+  careerType: '경력무관',
+  education: '초대졸↑',
+  employmentType: '정규직',
+  deadlineLabel: '채용시',
+  evidence: 'public_search_list'
+}]);
+
+const incruitDetailFixture = `<!doctype html><html><head>
+  <link rel="canonical" href="https://job.incruit.com/jobdb_info/jobpost.asp?job=2609110000252">
+</head><body>
+  <script type="application/ld+json">{
+    "@context":"https://schema.org/","@type":"JobPosting","title":"방사선사 직원 모집",
+    "description":"전주우리척병원 방사선사 직원 모집",
+    "datePosted":"2026-09-17","validThrough":"2026-10-31T23:59:59+09:00","employmentType":["FULL_TIME"],
+    "identifier":{"@type":"PropertyValue","name":"인크루트","value":"2609110000252"},
+    "hiringOrganization":{"@type":"Organization","name":"전주우리척병원"},
+    "jobLocation":{"@type":"Place","address":{"@type":"PostalAddress","streetAddress":"전라북도 전주시 완산구 쑥고개로 398-16","addressLocality":"전주시","addressRegion":"전라북도","addressCountry":"KR"}}
+  }</script>
+</body></html>`;
+const incruitHint = incruitSearchCandidates(incruitListFixture)[0];
+const incruitLocal = structuredLocalBoardCandidate(
+  '인크루트',
+  '2609110000252',
+  'https://job.incruit.com/jobdb_info/jobpost.asp?job=2609110000252',
+  incruitDetailFixture,
+  incruitHint
+);
+assert.equal(incruitLocal.workAddress, '전라북도 전주시 완산구 쑥고개로 398-16');
+assert.equal(incruitLocal.workAddressEvidence, 'detail_crosschecked');
+assert.equal(incruitLocal.domesticRegion.city, '전주시');
+assert.equal(incruitLocal.domesticRegion.precision, 'address');
+assert.equal(incruitLocal.sourcePostingId, '2609110000252');
+
+const incruitHqMismatch = incruitDetailFixture.replace(
+  '전라북도 전주시 완산구 쑥고개로 398-16","addressLocality":"전주시","addressRegion":"전라북도',
+  '서울특별시 강남구 강남대로 350","addressLocality":"강남구","addressRegion":"서울특별시'
+);
+assert.throws(() => structuredLocalBoardCandidate(
+  '인크루트', '2609110000252', 'https://job.incruit.com/jobdb_info/jobpost.asp?job=2609110000252', incruitHqMismatch, incruitHint
+), /search\/detail workplace mismatch/, 'Incruit company-HQ location must not be mistaken for the posting workplace');
+
+assert.throws(() => structuredLocalBoardCandidate(
+  '인크루트',
+  '2609110000252',
+  'https://job.incruit.com/jobdb_info/jobpost.asp?job=2609110000252',
+  incruitDetailFixture.replace('"value":"2609110000252"', '"value":"2609110009999"'),
+  incruitHint
+), /posting id mismatch/, 'Incruit detail identifier must match the discovered posting id');
+
+assert.throws(() => structuredLocalBoardCandidate(
+  '인크루트',
+  '2609110000252',
+  'https://job.incruit.com/jobdb_info/jobpost.asp?job=2609110000252',
+  incruitDetailFixture.replace('job=2609110000252">', 'job=2609110009999">'),
+  incruitHint
+), /detail\/canonical URL mismatch/, 'Incruit canonical URL must match the discovered posting id');
+
+assert.throws(() => structuredLocalBoardCandidate(
+  '인크루트',
+  '2609110000252',
+  'https://job.incruit.com/jobdb_info/jobpost.asp?job=2609110000252&src=search',
+  incruitDetailFixture,
+  incruitHint
+), /detail\/canonical URL mismatch/, 'Incruit final detail URL must use the canonical posting URL contract');
+
+assert.throws(() => structuredLocalBoardCandidate(
+  '인크루트',
+  '2609110000252',
+  'https://job.incruit.com/jobdb_info/jobpost.asp?job=2609110000252',
+  incruitDetailFixture.replace('방사선사 직원 모집\",\n    \"description\":\"전주우리척병원 방사선사 직원 모집', '원격근무 방사선사\",\n    \"description\":\"전주우리척병원 원격근무 모집'),
+  incruitHint
+), /nationwide\/remote posting rejected/, 'Incruit remote rows must fail closed even when the address is local');
 
 const collapseFixturePrevious = Array.from({ length: 30 }, (_, index) => {
   const id = String(90000000 + index);
