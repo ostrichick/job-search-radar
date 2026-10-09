@@ -245,16 +245,17 @@ assert.equal(unanchored.length, 0, 'unanchored jobs must not receive meaningful 
 const fakeWorldwide = feed.jobs.filter((job) => job.eligibilityCode === 'worldwide' && /^remote$/i.test(job.location || ''));
 assert.equal(fakeWorldwide.length, 0, 'generic Remote location must not be treated as Worldwide');
 
+const inactiveRetentionStatuses = new Set(['source_error', 'archived_missing', 'expired']);
 const zeroScoreNoise = feed.jobs.filter((job) =>
   Number(job.score || 0) <= 0
   && !['official_ats', 'official_government', 'official_platform', 'manual'].includes(job.sourceKind)
-  && !['source_error', 'archived_missing'].includes(job.listingStatus));
+  && !inactiveRetentionStatuses.has(job.listingStatus));
 assert.equal(zeroScoreNoise.length, 0, 'zero-score collected noise must not remain in the active feed');
 
 const lowScoreIntermediaryNoise = feed.jobs.filter((job) =>
   Number(job.score || 0) < 10
   && !['official_ats', 'official_government', 'official_platform', 'manual'].includes(job.sourceKind)
-  && !['source_error', 'archived_missing'].includes(job.listingStatus));
+  && !inactiveRetentionStatuses.has(job.listingStatus));
 assert.equal(lowScoreIntermediaryNoise.length, 0, 'very-low-score intermediary noise must not remain in the active feed');
 
 for (const job of feed.jobs.filter((job) => job.salaryInfo?.confidence === 'suspicious')) {

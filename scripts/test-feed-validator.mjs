@@ -70,6 +70,16 @@ function runValidator(feed, name) {
   return spawnSync(process.execPath, [validator, file], { cwd: root, encoding: 'utf8' });
 }
 
+function refreshRecommendationSummary(feed) {
+  feed.recommendationSummary.count = feed.jobs.filter((job) =>
+    job.recommendationEligible !== false
+    && Number(job.score || 0) >= 20
+    && ['korea', 'worldwide'].includes(job.eligibilityCode)
+    && job.requirementsStatus !== 'hard_check'
+    && !['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus)
+  ).length;
+}
+
 function expectRejected(name, mutate, message, makeFeed = saraminFeed) {
   const feed = makeFeed();
   mutate(feed.jobs[templateIndex]);
@@ -103,6 +113,27 @@ try {
   expectRejected('incruit-wrong-detail-url', (job) => {
     job.url = 'https://job.incruit.com/jobdb_info/jobpost.asp?job=2609110000252&src=search';
   }, /public source detail page/, incruitFeed);
+
+  const expiredTerminal = saraminFeed();
+  expiredTerminal.jobs[templateIndex].score = 0;
+  expiredTerminal.jobs[templateIndex].recommendationEligible = false;
+  expiredTerminal.jobs[templateIndex].listingStatus = 'expired';
+  expiredTerminal.jobs[templateIndex].listingBasis = 'detail_http_terminal';
+  expiredTerminal.jobs[templateIndex].listingLabel = '종료 확인';
+  expiredTerminal.jobs[templateIndex].listingReason = '공개 상세 페이지가 HTTP 404/410으로 종료 상태를 확인함';
+  refreshRecommendationSummary(expiredTerminal);
+  const validExpiredTerminal = runValidator(expiredTerminal, 'valid-expired-terminal');
+  assert.equal(validExpiredTerminal.status, 0,
+    `terminally expired local-board row must be retained without being classified as active noise: ${validExpiredTerminal.stderr || validExpiredTerminal.stdout}`);
+
+  const zeroScoreActive = saraminFeed();
+  zeroScoreActive.jobs[templateIndex].score = 0;
+  zeroScoreActive.jobs[templateIndex].recommendationEligible = false;
+  refreshRecommendationSummary(zeroScoreActive);
+  const invalidZeroScoreActive = runValidator(zeroScoreActive, 'invalid-zero-score-active');
+  assert.notEqual(invalidZeroScoreActive.status, 0, 'active zero-score intermediary row must still be rejected');
+  assert.match(`${invalidZeroScoreActive.stdout}\n${invalidZeroScoreActive.stderr}`, /zero-score collected noise/,
+    'active zero-score intermediary row must fail the active-noise contract');
 
   console.log('feed validator tests passed');
 } finally {
