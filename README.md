@@ -75,7 +75,7 @@ Welo Global/Welocalize, RWS, LILT, Meridial, OneForma는 **공식 모집원 여�
 - GitHub Pages가 현재 영구 서비스입니다. `.github/workflows/pages.yml`이 6시간마다 또는 `main` push/수동 실행 시 Node 24에서 테스트 → 최신 피드 생성 → 피드 검증 → 이전 피드 기준선 저장 → Pages artifact 배포를 수행합니다.
 - 배포 전에 단위 테스트와 영구 Playwright E2E를 모두 실행합니다. E2E는 결정론적 피드 fixture를 사용해 상태·필터·숨김 Undo·archived snapshot·상세 탐색·390px 레이아웃·빈/오류 복구·백업/가져오기뿐 아니라 검증 이력, 원문 변경, 사라짐→재등장, 부분 소스 실패→복구, 근거 expiry 재계산, 추천 세트 과도 축소를 회귀 방지합니다.
 - Pages 설정은 GitHub Actions(`build_type=workflow`) 방식입니다. 서버 측 실행이므로 개인 PC가 꺼져 있어도 갱신됩니다.
-- `docs/`는 더 이상 실제 Pages 배포 원본이 아니지만, `docs/jobs.json`은 마지막 검증 피드의 영속 기준선입니다. Actions는 새 `public/jobs.json` 검증 후 이를 `docs/jobs.json`에 자동 커밋해 다음 6시간 실행이 직전 피드에서 이어지도록 합니다. 그래서 stable ID 승계, 출처 장애 fallback, 14일 실종 공고 grace의 `missingSince`가 PC 없이도 연속성을 유지합니다. UI 사본은 `npm run build:pages`로 **네트워크 수집 없이** 동기화하며, 피드 수집은 `npm run build:static`과 분리합니다.
+- `docs/`는 Pages 배포 원본이 아니며 **`docs/jobs.json` 하나만** 마지막 검증 피드의 영속 기준선으로 유지합니다. Actions는 새 `public/jobs.json` 검증 후 이를 자동 커밋해 다음 6시간 실행이 직전 피드에서 이어지도록 합니다. 그래서 stable ID 승계, 출처 장애 fallback, 14일 실종 공고 grace의 `missingSince`가 PC 없이도 연속성을 유지합니다. UI는 `public/`에만 한 벌 유지합니다.
 - `scripts/publish-pages.ps1`과 Windows 작업 스케줄러 `JobSearchRadarRefresh`는 롤백용으로 남겨 두었으며 현재 작업은 **비활성화**되어 있습니다. Actions 장애가 확인될 때만 다시 켭니다.
 - 관심 공고, 지원 상태, 숨김, 직접 추가 공고와 필터 설정은 사용자의 브라우저 `localStorage`에 저장됩니다.
 - 헤더의 **상태 백업 / 상태 가져오기**로 이 브라우저 상태를 버전이 있는 JSON 파일로 내보내고 다른 브라우저에 병합할 수 있습니다.
@@ -117,8 +117,6 @@ npm run check
 npm run test:e2e
 npm run build:static
 node scripts/validate-feed.mjs public/jobs.json docs/jobs.json
-npm run build:pages
-npm run check:pages
 ```
 
 `scripts/validate-feed.mjs`는 ID 중복뿐 아니라 모든 공고의 지원범위 판정 근거, 모집 상태 판정 강도, 소스 coverage, 지급 신뢰 freshness/expiry, 필수요건 상태, content fingerprint, 검증 이력, sourceMetrics 지속성을 확인합니다. 공식 ATS 또는 공식 프로젝트 게시로 표시하는 공고는 마지막 확인 시각과 해당 공고의 직접 링크가 반드시 있어야 합니다. 비공식·집계 소스의 10점 미만 noise는 피드에 남지 않습니다. 같은 `recommendationPolicyVersion` 안에서는 직전 검증 피드와 비교해 설명되지 않는 추천 세트 급감을 차단하고, 의도적인 추천 정책 변경은 버전을 올려 명시적으로 재기준화합니다. OneForma는 한국어 taxonomy를 우선 사용하되, South Korea가 명시되고 본문이 “해당 위치의 언어 native/fluent”를 직접 요구하는 프로젝트는 taxonomy 누락으로 버리지 않고 포함한 뒤 거주·경력 하드요건으로 추천 여부를 별도 판정합니다.
