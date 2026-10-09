@@ -39,9 +39,12 @@ const fallbackDomesticProvinceOptions = [
   '서울특별시', '전남광주통합특별시', '부산광역시', '대구광역시', '인천광역시', '대전광역시', '울산광역시', '세종특별자치시',
   '경기도', '충청북도', '충청남도', '경상북도', '경상남도', '제주특별자치도', '강원특별자치도', '전북특별자치도'
 ];
-const advancedFilterDefaults = {
-  category: '', remote: '', ageFilter: '', listingFilter: 'active',
-  sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score'
+const activeFilterLabels = {
+  query: '검색', source: '출처', category: '분야', remote: '근무 형태', eligibility: '지원 범위',
+  domesticProvince: '시·도', domesticLocality: '시·군·구', domesticNeighborhood: '읍·면·동',
+  compensationFilter: '보수 정보', ageFilter: '게시 시점', listingFilter: '모집 상태',
+  sourceKindFilter: '출처 검증', paymentFilter: '지급 신뢰 근거', requirementsFilter: '필수요건 확인',
+  minScore: '최소 검토 우선순위', statusFilter: '내 상태'
 };
 const filterDefaults = {
   overseas_remote: { query: '', source: '', category: '', remote: '', eligibility: 'likely', domesticProvince: '', domesticLocality: '', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score', statusFilter: 'active' },
@@ -128,10 +131,8 @@ const savedFilters = { ...filterDefaults[state.marketTab], ...(savedFiltersByMar
 function updateAdvancedFilterSummary() {
   const summary = $('advancedFiltersSummary');
   if (!summary) return;
-  const active = Object.entries(advancedFilterDefaults)
-    .filter(([id, defaultValue]) => $(id) && $(id).value !== (filterDefaults[state.marketTab]?.[id] ?? defaultValue))
-    .length;
-  summary.textContent = active ? `추가 필터 · ${active}개 적용` : '추가 필터';
+  const active = activeFilterEntries().length;
+  summary.textContent = active ? `추가 필터 · 현재 조건 ${active}개` : '추가 필터';
 }
 
 for (const id of controls) {
@@ -659,6 +660,65 @@ function showAllActiveJobs() {
     if (!element) continue;
     if (element.tagName === 'SELECT' && ![...element.options].some((option) => option.value === String(value))) continue;
     element.value = String(value);
+  }
+  state.visibleLimit = 60;
+  state.selectedIds.clear();
+  updateDynamicFilters();
+  updateAdvancedFilterSummary();
+  persistFilters();
+  render();
+}
+
+function activeFilterValueLabel(id, value) {
+  const element = $(id);
+  if (element?.tagName === 'SELECT') return element.selectedOptions?.[0]?.textContent?.trim() || String(value);
+  return String(value).trim();
+}
+
+function activeFilterEntries() {
+  const current = currentFilterValues();
+  const broad = broadActiveFilterValues();
+  return controls
+    .filter((id) => id !== 'sort' && String(current[id] ?? '') !== String(broad[id] ?? ''))
+    .map((id) => ({
+      id,
+      label: activeFilterLabels[id] || id,
+      value: activeFilterValueLabel(id, current[id])
+    }))
+    .filter((entry) => entry.value);
+}
+
+function renderActiveFilters() {
+  const panel = $('activeFilters');
+  const container = $('activeFilterChips');
+  if (!panel || !container) return;
+  const entries = activeFilterEntries();
+  panel.hidden = entries.length === 0;
+  container.replaceChildren();
+  for (const entry of entries) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'active-filter-chip';
+    button.dataset.filterId = entry.id;
+    button.setAttribute('aria-label', `${entry.label} ${entry.value} 조건 해제`);
+    button.textContent = `${entry.label}: ${entry.value} ×`;
+    container.append(button);
+  }
+}
+
+function clearFilterConstraint(id) {
+  if (!controls.includes(id) || id === 'sort') return;
+  const broad = broadActiveFilterValues();
+  const element = $(id);
+  if (!element) return;
+  const nextValue = String(broad[id] ?? '');
+  if (element.tagName === 'SELECT' && ![...element.options].some((option) => option.value === nextValue)) return;
+  element.value = nextValue;
+  if (id === 'domesticProvince') {
+    $('domesticLocality').value = '';
+    $('domesticNeighborhood').value = '';
+  } else if (id === 'domesticLocality') {
+    $('domesticNeighborhood').value = '';
   }
   state.visibleLimit = 60;
   state.selectedIds.clear();
@@ -1223,6 +1283,7 @@ function moveDetails(direction) {
 function render() {
   const jobs = filteredJobs();
   renderStats(jobs);
+  renderActiveFilters();
   const visibleJobs = jobs.slice(0, state.visibleLimit);
   const activeTotal = activeMarketJobs().length;
   $('resultCount').textContent = jobs.length > visibleJobs.length ? `${jobs.length}개 중 ${visibleJobs.length}개 표시` : `${jobs.length}개 공고`;
@@ -1802,6 +1863,12 @@ document.addEventListener('keydown', (event) => {
 $('loadMore').addEventListener('click', () => { state.visibleLimit += 60; render(); });
 $('resetFilters').addEventListener('click', resetFilters);
 $('showAllActive').addEventListener('click', showAllActiveJobs);
+$('clearActiveFilters').addEventListener('click', showAllActiveJobs);
+$('activeFilterChips').addEventListener('click', (event) => {
+  const button = event.target.closest('[data-filter-id]');
+  if (!button) return;
+  clearFilterConstraint(button.dataset.filterId);
+});
 $('marketPulseToggle').addEventListener('click', () => {
   const panel = $('marketPulse');
   const expanded = !panel.classList.contains('expanded');

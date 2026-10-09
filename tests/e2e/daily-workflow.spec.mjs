@@ -303,6 +303,32 @@ test('시장 요약은 추천 필터 밖의 활성 공고도 보여주고 전체
   await expect(page.locator('#showAllActive')).toBeHidden();
 });
 
+test('적용 조건을 결과 위에서 확인하고 개별 또는 전체 해제할 수 있다', async ({ page }) => {
+  const priority = job({ id: 'job:filter-chip-priority', title: '우선 검토 공고', url: 'https://example.com/job/filter-chip-priority', score: 70 });
+  const lowScore = job({
+    id: 'job:filter-chip-low', title: '낮은 점수 활성 공고', url: 'https://example.com/job/filter-chip-low',
+    score: 10, recommendationEligible: false
+  });
+  await useFeed(page, () => feed([priority, lowScore]));
+  await page.goto('/');
+
+  await expect(page.locator('#activeFilters')).toBeVisible();
+  await expect(page.locator('#activeFilterChips')).toContainText('지원 범위: 한국 / 전 세계');
+  await expect(page.locator('#activeFilterChips')).toContainText('최소 검토 우선순위: 추천 20+');
+  await expect(page.locator('.job-card')).toHaveCount(1);
+
+  await page.locator('[data-filter-id="minScore"]').click();
+  await expect(page.locator('#minScore')).toHaveValue('0');
+  await expect(page.locator('.job-card')).toHaveCount(2);
+  await expect(page.locator('#activeFilterChips')).not.toContainText('최소 검토 우선순위');
+  await expect(page.locator('#showAllActive')).toBeVisible();
+
+  await page.locator('#clearActiveFilters').click();
+  await expect(page.locator('#activeFilters')).toBeHidden();
+  await expect(page.locator('#eligibility')).toHaveValue('');
+  await expect(page.locator('#showAllActive')).toBeHidden();
+});
+
 test('기본 정렬은 같은 점수에서 오늘 판단하기 쉬운 공고를 먼저 보여준다', async ({ page }) => {
   const uncertain = job({
     id: 'job:sort-uncertain',
@@ -888,6 +914,7 @@ test('390px viewport에서 가로 overflow가 없다', async ({ page }) => {
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
   await page.goto('/');
   expect(await page.locator('#advancedFilters').evaluate((element) => element.open)).toBe(false);
+  await expect(page.locator('#advancedFiltersSummary')).toContainText('현재 조건 2개');
   const widths = await page.evaluate(() => ({
     inner: window.innerWidth,
     html: document.documentElement.scrollWidth,

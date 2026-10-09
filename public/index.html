@@ -196,6 +196,13 @@
             </select>
           </div>
         </div>
+        <div id="activeFilters" class="active-filters" hidden aria-live="polite">
+          <div class="active-filter-head">
+            <strong>적용 조건</strong>
+            <button id="clearActiveFilters" class="button compact secondary-light" type="button">조건 모두 해제</button>
+          </div>
+          <div id="activeFilterChips" class="active-filter-chips"></div>
+        </div>
       </details>
       <p id="distanceReference" class="distance-reference market-domestic-only" hidden></p>
     </section>
