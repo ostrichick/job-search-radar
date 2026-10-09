@@ -279,12 +279,16 @@ test('기본 추천이 렌더링되고 검토 우선순위로 표시된다', asy
   await expect(page.locator('.eligibility-badge').first()).toContainText('한국에서 지원 가능');
 });
 
-test('시장 요약은 추천 필터 밖의 활성 공고도 보여주고 전체 활성 공고 보기로 전환한다', async ({ page }) => {
-  const priority = job({ id: 'job:pulse-priority', title: '우선 검토 공고', url: 'https://example.com/job/pulse-priority', score: 70 });
+test('시장 요약은 추천 필터 밖의 활성 공고와 주요 확인 필요 항목을 보여주고 전체 활성 공고 보기로 전환한다', async ({ page }) => {
+  const priority = job({
+    id: 'job:pulse-priority', title: '우선 검토 공고', url: 'https://example.com/job/pulse-priority', score: 70,
+    decisionUnknowns: ['급여·단가']
+  });
   const lowScore = job({
     id: 'job:pulse-low', title: '낮은 점수지만 활성인 공고', url: 'https://example.com/job/pulse-low',
     score: 10, recommendationEligible: false, salary: '',
-    salaryInfo: { raw: '', display: '', currency: '', min: null, max: null, period: '', confidence: 'none' }
+    salaryInfo: { raw: '', display: '', currency: '', min: null, max: null, period: '', confidence: 'none' },
+    decisionUnknowns: ['급여·단가']
   });
   await useFeed(page, () => feed([priority, lowScore]));
   await page.goto('/');
@@ -294,6 +298,9 @@ test('시장 요약은 추천 필터 밖의 활성 공고도 보여주고 전체
   await expect(page.locator('#marketPulse')).toContainText('시장 한눈에 보기');
   await expect(page.locator('#marketPulse')).toContainText('최근 7일 신규');
   await expect(page.locator('#marketPulseNote')).toContainText('활성 공고 2개');
+  const decisionGap = page.locator('.market-pulse-card').filter({ hasText: '가장 많은 확인 필요' });
+  await expect(decisionGap).toContainText('2개');
+  await expect(decisionGap).toContainText('급여·단가');
   await expect(page.locator('#showAllActive')).toBeVisible();
   await expect(page.locator('#eligibility option[value="worldwide"]')).toHaveText('전 세계 지원 가능');
 
