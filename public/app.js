@@ -284,7 +284,6 @@ function setMarketTab(market) {
   updateMarketUI();
   updateDynamicFilters(true);
   persistFilters();
-  renderStats();
   render();
 }
 
@@ -558,8 +557,115 @@ function renderStats(filtered = matchingJobs()) {
     ['추천 공고', `${recommended}개`],
     ['관심 공고', `${saved}개`],
     ['지원 예정', `${planned}개`],
-    ['미검토 공고', `${unreviewed}개`]
+    ['아직 안 본 공고', `${unreviewed}개`]
   ].map(([label, value]) => `<div class="stat"><strong>${value}</strong><span>${label}</span></div>`).join('');
+  renderMarketPulse();
+}
+
+function topFrequency(items, selector) {
+  const counts = new Map();
+  for (const item of items) {
+    const value = String(selector(item) || '').trim();
+    if (!value || ['회사 미상', '비회원', '기업정보 미상', '기타'].includes(value)) continue;
+    counts.set(value, (counts.get(value) || 0) + 1);
+  }
+  return [...counts.entries()].sort((a, b) => (b[1] - a[1]) || a[0].localeCompare(b[0], 'ko'))[0] || null;
+}
+
+function marketPulseJobs() {
+  const values = { ...currentFilterValues(), statusFilter: 'all', minScore: '0' };
+  return matchingJobs({ values, ignore: ['statusFilter', 'minScore'] })
+    .filter((job) => !['source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus));
+}
+
+function renderMarketPulse() {
+  const container = $('marketPulseCards');
+  const note = $('marketPulseNote');
+  if (!container || !note) return;
+  const jobs = marketPulseJobs();
+  container.replaceChildren();
+  if (!jobs.length) {
+    const empty = document.createElement('div');
+    empty.className = 'market-pulse-card';
+    empty.innerHTML = '<span>시장 요약</span><strong>표시할 공고 없음</strong><small>지역·분야·출처 필터를 완화하면 시장 요약을 볼 수 있습니다.</small>';
+    container.append(empty);
+    note.textContent = '수집된 공고만 요약하며 전체 채용시장을 대표하지 않습니다.';
+    return;
+  }
+
+  const referenceAt = Date.parse(state.meta?.updatedAt || '') || Date.now();
+  const dated = jobs
+    .map((job) => ({ job, at: Date.parse(job.postedAt || '') }))
+    .filter((item) => Number.isFinite(item.at) && item.at <= referenceAt + 86400000);
+  const ageDays = (at) => (referenceAt - at) / 86400000;
+  const recent7 = dated.filter((item) => ageDays(item.at) >= 0 && ageDays(item.at) < 7).length;
+  const prior7 = dated.filter((item) => ageDays(item.at) >= 7 && ageDays(item.at) < 14).length;
+  const delta = recent7 - prior7;
+  const trendDetail = prior7 || recent7
+    ? `직전 7일 ${prior7}개 대비 ${delta > 0 ? '+' : ''}${delta}개`
+    : '최근 14일 게시일 확인 공고 없음';
+  const salaryKnown = jobs.filter((job) => salarySummary(job).hasAmount).length;
+  const salaryRate = Math.round((salaryKnown / jobs.length) * 100);
+  const category = topFrequency(jobs, (job) => job.category);
+  const company = topFrequency(jobs, (job) => job.company);
+
+  const cards = [
+    ['최근 7일 신규', `${recent7}개`, trendDetail],
+    ['보수 금액 공개', `${salaryKnown}/${jobs.length}개 · ${salaryRate}%`, '금액이 구조화된 공고 기준'],
+    ['공고 수 상위 분야', category ? `${category[0]} · ${category[1]}개` : '분야 정보 부족', '현재 필터 안에서 가장 많이 수집된 분야'],
+    ['공고 수 상위 회사', company ? `${company[0]} · ${company[1]}개` : '회사 정보 부족', '채용량 참고용 · 회사 평가는 아님']
+  ];
+  for (const [label, value, detail] of cards) {
+    const card = document.createElement('article');
+    card.className = 'market-pulse-card';
+    const labelEl = document.createElement('span');
+    labelEl.textContent = label;
+    const valueEl = document.createElement('strong');
+    valueEl.textContent = value;
+    const detailEl = document.createElement('small');
+    detailEl.textContent = detail;
+    card.append(labelEl, valueEl, detailEl);
+    container.append(card);
+  }
+  note.textContent = `현재 필터의 활성 공고 ${jobs.length}개 기준 · 게시일 확인 ${dated.length}/${jobs.length}개 · 개인 상태/최소 점수는 시장 요약에서 제외 · 전체 채용시장 대표 통계 아님`;
+}
+
+function broadActiveFilterValues({ includeHidden = false } = {}) {
+  return {
+    ...filterDefaults[state.marketTab],
+    query: '', source: '', category: '', remote: '', eligibility: '',
+    domesticProvince: '', domesticLocality: '', domesticNeighborhood: '',
+    compensationFilter: '', ageFilter: '', listingFilter: 'active',
+    sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '0',
+    sort: state.marketTab === 'domestic' ? 'distance' : 'score',
+    statusFilter: includeHidden ? 'all' : 'active'
+  };
+}
+
+function activeMarketJobs() {
+  return matchingJobs({ values: broadActiveFilterValues({ includeHidden: true }) });
+}
+
+function isBroadActiveView() {
+  const current = currentFilterValues();
+  const broad = broadActiveFilterValues();
+  return Object.entries(broad).every(([key, value]) => key === 'sort' || String(current[key] ?? '') === String(value));
+}
+
+function showAllActiveJobs() {
+  const values = broadActiveFilterValues();
+  for (const [id, value] of Object.entries(values)) {
+    const element = $(id);
+    if (!element) continue;
+    if (element.tagName === 'SELECT' && ![...element.options].some((option) => option.value === String(value))) continue;
+    element.value = String(value);
+  }
+  state.visibleLimit = 60;
+  state.selectedIds.clear();
+  updateDynamicFilters();
+  updateAdvancedFilterSummary();
+  persistFilters();
+  render();
 }
 
 function setJobState(id, value) {
@@ -569,7 +675,6 @@ function setJobState(id, value) {
   else delete state.jobStates[id];
   if (['planned', 'applied'].includes(value) || state.favorites.has(id)) snapshotJob(id);
   persist();
-  renderStats();
   render();
 }
 
@@ -578,7 +683,6 @@ function setHidden(id, hidden) {
   state.newIds.delete(id);
   hidden ? state.hiddenIds.add(id) : state.hiddenIds.delete(id);
   persist();
-  renderStats();
   render();
 }
 
@@ -676,6 +780,51 @@ function qualityClass(type, value) {
   if (type === 'requirements' && value === 'routine_check') return 'caution';
   if (type === 'requirements' && value === 'clear') return 'eligible';
   return '';
+}
+
+function listingDisplayLabel(job) {
+  if (job?.listingStatus === 'source_error') return '출처 확인 실패';
+  return friendlyUiText(job?.listingLabel || '상태 확인 필요');
+}
+
+function eligibilityDisplayLabel(job) {
+  if (job?.eligibilityCode === 'worldwide') return '전 세계 지원 가능';
+  return friendlyUiText(job?.eligibility || '지원 범위 확인 필요');
+}
+
+function requirementsDisplayLabel(job) {
+  return friendlyUiText(job?.requirementsLabel || '필수조건 상태 미상');
+}
+
+function friendlyUiText(value) {
+  return String(value || '')
+    .replace(/공식 ATS/g, '공식 채용 페이지')
+    .replace(/\bWorldwide\b/gi, '전 세계')
+    .replace(/하드요건/g, '필수조건')
+    .replace(/소스 확인 실패/g, '출처 확인 실패')
+    .replace(/소스 복구/g, '출처 복구');
+}
+
+function sourceQualityLabel(value) {
+  return ({ strong: '좋음', mixed: '혼합', weak: '낮음', degraded: '저하' })[value] || '미상';
+}
+
+function sourceReliabilityLabel(value) {
+  return ({ reliable: '안정', observed: '관찰 중', unstable: '불안정', degraded: '저하' })[value] || '미상';
+}
+
+function evidenceRefreshabilityLabel(value) {
+  return ({
+    direct_api: '직접 API',
+    approved_open_api: '승인형 공식 API',
+    official_rest_api: '공식 REST API',
+    official_rss: '공식 RSS',
+    public_api: '공개 API',
+    public_html: '공개 웹페이지',
+    public_html_structured_data: '공개 웹페이지·구조화 데이터',
+    public_feed: '공개 피드',
+    manual: '수동 확인'
+  })[value] || value || '미상';
 }
 
 function effectiveSignalFreshness(signal, now = Date.now()) {
@@ -778,10 +927,10 @@ function recentVerificationBadges(job, now = Date.now()) {
     return Number.isFinite(at) && now - at <= days * 86400000;
   };
   const lifecycle = {
-    source_failed: { state: 'source-failed', label: '소스 확인 실패' },
+    source_failed: { state: 'source-failed', label: '출처 확인 실패' },
     content_changed: { state: 'changed', label: '원문 변경됨' },
     reappeared: { state: 'reappeared', label: '재등장' },
-    source_recovered: { state: 'recovered', label: '소스 복구' }
+    source_recovered: { state: 'recovered', label: '출처 복구' }
   };
   const recentEvents = (Array.isArray(job.verificationHistory) ? job.verificationHistory : [])
     .filter((item) => lifecycle[item?.event] && recent(item.at, 7))
@@ -833,8 +982,8 @@ function renderVerificationHistory(job) {
     status_changed: '모집 상태 변경',
     disappeared: '원천에서 사라짐',
     reappeared: '재등장',
-    source_failed: '소스 확인 실패',
-    source_recovered: '소스 복구',
+    source_failed: '출처 확인 실패',
+    source_recovered: '출처 복구',
     evidence_freshness_changed: '근거 최신성 변경',
     evidence_state_changed: '지급 근거 상태 변경',
     legacy_content_change_unverified: '구형 원문 변경 기록·재검토',
@@ -856,7 +1005,7 @@ function renderVerificationHistory(job) {
     row.append(heading, meta);
     if (item.reason) {
       const reason = document.createElement('small');
-      reason.textContent = item.reason;
+      reason.textContent = friendlyUiText(item.reason);
       row.append(reason);
     }
     container.append(row);
@@ -986,31 +1135,31 @@ function openDetails(job) {
     job.education ? `학력 ${job.education}` : '',
     (job.preferredConditions || []).length ? `우대 ${job.preferredConditions.slice(0, 3).join(', ')}` : '',
     formatDeadline(job),
-    job.eligibility,
+    eligibilityDisplayLabel(job),
     job.category
   ].filter(Boolean).map((v) => `<span>${escapeHtml(v)}</span>`).join('');
   const payment = effectivePaymentEvidence(job);
   $('detailsTrust').innerHTML = [
-    `<span class="${qualityClass('listing', job.listingStatus)}">${escapeHtml(job.listingLabel || '상태 확인 필요')}</span>`,
-    `<span class="${qualityClass('eligibility', job.eligibilityCode)}">${escapeHtml(job.eligibility || '지원 범위 확인 필요')}</span>`,
+    `<span class="${qualityClass('listing', job.listingStatus)}">${escapeHtml(listingDisplayLabel(job))}</span>`,
+    `<span class="${qualityClass('eligibility', job.eligibilityCode)}">${escapeHtml(eligibilityDisplayLabel(job))}</span>`,
     `<span class="${qualityClass('trust', job.sourceKind)}">${escapeHtml(job.sourceTrustLabel || job.source)}</span>`,
     `<span class="${qualityClass('payment', payment.state)}">${escapeHtml(payment.label || job.paymentLabel || '지급 근거 확인 필요')}</span>`,
-    `<span class="${qualityClass('requirements', job.requirementsStatus || 'clear')}">${escapeHtml(job.requirementsLabel || '필수요건 상태 미상')}</span>`,
+    `<span class="${qualityClass('requirements', job.requirementsStatus || 'clear')}">${escapeHtml(requirementsDisplayLabel(job))}</span>`,
     `<span>검토 우선순위 ${Number(job.score || 0)}</span>`
   ].join('');
   $('detailsDecisionValue').textContent = (job.applyValueReasons || []).length
-    ? job.applyValueReasons.join(' · ')
+    ? job.applyValueReasons.map(friendlyUiText).join(' · ')
     : '현재 자동으로 확인된 지원 가치 신호가 없습니다.';
   $('detailsDecisionUnknown').textContent = (job.decisionUnknowns || []).length
-    ? job.decisionUnknowns.join(' · ')
+    ? job.decisionUnknowns.map(friendlyUiText).join(' · ')
     : '현재 자동 감지된 주요 미확인 항목이 없습니다.';
-  $('detailsListingReason').textContent = job.listingReason || '현재 모집 상태의 자동 판정 근거가 없습니다.';
+  $('detailsListingReason').textContent = friendlyUiText(job.listingReason || '현재 모집 상태의 자동 판정 근거가 없습니다.');
   appendEvidenceLinks($('detailsListingEvidence'), job.listingEvidence || [{ label: '공고 원문', url: job.url }]);
-  $('detailsSourceSummary').textContent = job.sourceSummary || '원문에서 모집 상태와 계약·지급 조건을 확인하세요.';
+  $('detailsSourceSummary').textContent = friendlyUiText(job.sourceSummary || '원문에서 모집 상태와 계약·지급 조건을 확인하세요.');
   const sourceMetric = state.meta?.sourceMetrics?.[job.source];
   $('detailsSourceHealth').textContent = sourceMetric
-    ? `소스 품질 ${sourceMetric.qualityTier || '미상'} · 최근 성공 ${Math.round(Number(sourceMetric.recentSuccessRate || 0) * 100)}% · 검색 발견 ${sourceMetric.discoveredCount ?? sourceMetric.rawCount ?? 0} · 유효 ${sourceMetric.keptCount || 0}/${sourceMetric.matchedCount || 0} (${Math.round(Number(sourceMetric.validJobRate || sourceMetric.keptRate || 0) * 100)}%) · 노이즈 ${Math.round(Number(sourceMetric.noiseRate || 0) * 100)}% · 중복 ${Math.round(Number(sourceMetric.duplicateRate || 0) * 100)}% · 저품질 ${Math.round(Number(sourceMetric.lowQualityRate || 0) * 100)}%${sourceMetric.continuityProbeCount ? ` · 연속성 확인 ${sourceMetric.continuityRecoveredCount || 0}/${sourceMetric.continuityProbeCount}` : ''}${sourceMetric.discoveryCollapseSuspected ? ' · 검색 급락 방어 작동' : ''} · 근거 갱신 ${sourceMetric.evidenceRefreshability || '미상'}${job.sourceRecommendationGateReason ? ` · 추천 제외: ${job.sourceRecommendationGateReason}` : ''}`
-    : `소스 품질 ${job.sourceQualityTier || '미상'} · 근거 갱신 ${job.sourceEvidenceRefreshability || '미상'}`;
+    ? `출처 품질 ${sourceQualityLabel(sourceMetric.qualityTier)} · 수집 신뢰 ${sourceReliabilityLabel(sourceMetric.reliabilityState)} · 최근 성공 ${Math.round(Number(sourceMetric.recentSuccessRate || 0) * 100)}% · 검색 발견 ${sourceMetric.discoveredCount ?? sourceMetric.rawCount ?? 0} · 유효 ${sourceMetric.keptCount || 0}/${sourceMetric.matchedCount || 0} (${Math.round(Number(sourceMetric.validJobRate || sourceMetric.keptRate || 0) * 100)}%) · 노이즈 ${Math.round(Number(sourceMetric.noiseRate || 0) * 100)}% · 중복 ${Math.round(Number(sourceMetric.duplicateRate || 0) * 100)}% · 저품질 ${Math.round(Number(sourceMetric.lowQualityRate || 0) * 100)}%${sourceMetric.continuityProbeCount ? ` · 연속성 확인 ${sourceMetric.continuityRecoveredCount || 0}/${sourceMetric.continuityProbeCount}` : ''}${sourceMetric.discoveryCollapseSuspected ? ' · 검색 급락 방어 작동' : ''} · 근거 갱신 ${evidenceRefreshabilityLabel(sourceMetric.evidenceRefreshability)}${job.sourceRecommendationGateReason ? ` · 추천 제외: ${job.sourceRecommendationGateReason}` : ''}`
+    : `출처 품질 ${sourceQualityLabel(job.sourceQualityTier)} · 근거 갱신 ${evidenceRefreshabilityLabel(job.sourceEvidenceRefreshability)}`;
   appendEvidenceLinks($('detailsEvidence'), job.sourceEvidence || []);
   for (const [index, url] of (job.alternateUrls || []).entries()) {
     const href = safeExternalUrl(url);
@@ -1034,21 +1183,21 @@ function openDetails(job) {
   $('detailsEligibilityReason').textContent = job.eligibilityReason || '지원 가능 국가 범위의 자동 판정 근거가 없습니다.';
   const fitReasonParts = [
     `이 점수는 합격 가능성이 아니라 검토 우선순위 ${Number(job.score || 0)}점입니다.`,
-    ...(job.fitReasons || [])
+    ...(job.fitReasons || []).map(friendlyUiText)
   ];
   $('detailsFitReasons').textContent = fitReasonParts.join(' · ');
   const requirements = job.requirementChecks?.length
-    ? job.requirementChecks.map((item) => item.label)
-    : (job.fitWarnings?.length ? job.fitWarnings : (job.fitWarning ? [job.fitWarning] : []));
+    ? job.requirementChecks.map((item) => friendlyUiText(item.label))
+    : (job.fitWarnings?.length ? job.fitWarnings.map(friendlyUiText) : (job.fitWarning ? [friendlyUiText(job.fitWarning)] : []));
   $('detailsFitWarnings').textContent = requirements.length
     ? `확인 필요: ${requirements.join(' · ')}`
-    : '현재 자동 감지된 추가 하드요건 없음';
+    : '현재 자동 감지된 추가 필수조건 없음';
   $('detailsFitWarnings').classList.toggle('has-warning', requirements.length > 0);
   const checkedAt = job.listingCheckedAt || job.verifiedAt;
   const reviewNote = job.paymentEvidenceCheckedAt || job.sourceReviewAt
     ? ` · 지급 근거 검토: ${job.paymentEvidenceCheckedAt || job.sourceReviewAt} (${paymentFreshness})`
     : '';
-  $('detailsVerifiedAt').textContent = checkedAt ? `모집 소스 마지막 확인: ${new Date(checkedAt).toLocaleString('ko-KR')}${reviewNote}` : `모집 확인 시각 미상${reviewNote}`;
+  $('detailsVerifiedAt').textContent = checkedAt ? `모집 출처 마지막 확인: ${new Date(checkedAt).toLocaleString('ko-KR')}${reviewNote}` : `모집 확인 시각 미상${reviewNote}`;
   renderVerificationHistory(job);
   $('detailsDescription').textContent = job.description || '상세 설명이 제공되지 않았습니다.';
   $('detailsLink').href = job.url;
@@ -1075,7 +1224,10 @@ function render() {
   const jobs = filteredJobs();
   renderStats(jobs);
   const visibleJobs = jobs.slice(0, state.visibleLimit);
+  const activeTotal = activeMarketJobs().length;
   $('resultCount').textContent = jobs.length > visibleJobs.length ? `${jobs.length}개 중 ${visibleJobs.length}개 표시` : `${jobs.length}개 공고`;
+  $('scopeCount').textContent = `· 활성 전체 ${activeTotal}개`;
+  $('showAllActive').hidden = isBroadActiveView();
   $('empty').hidden = jobs.length > 0;
   if (!jobs.length && !state.loadError) {
     const province = state.marketTab === 'domestic' ? $('domesticProvince').value : '';
@@ -1111,14 +1263,14 @@ function render() {
       updateBatchUI(visibleJobs);
     });
     const listingBadge = node.querySelector('.listing-badge');
-    listingBadge.textContent = job.listingLabel || '상태 확인 필요';
+    listingBadge.textContent = listingDisplayLabel(job);
     listingBadge.className = `listing-badge ${qualityClass('listing', job.listingStatus)}`;
     listingBadge.dataset.state = job.listingStatus || '';
     const trustBadge = node.querySelector('.trust-badge');
     trustBadge.textContent = job.sourceTrustLabel || job.source;
     trustBadge.className = `trust-badge ${qualityClass('trust', job.sourceKind)}`;
     const eligibilityBadge = node.querySelector('.eligibility-badge');
-    eligibilityBadge.textContent = job.eligibility || '지원 범위 확인 필요';
+    eligibilityBadge.textContent = eligibilityDisplayLabel(job);
     eligibilityBadge.className = `eligibility-badge ${qualityClass('eligibility', job.eligibilityCode)}`;
     const paymentBadge = node.querySelector('.payment-badge');
     const payment = effectivePaymentEvidence(job);
@@ -1128,14 +1280,14 @@ function render() {
     paymentBadge.dataset.freshness = payment.freshness || '';
     paymentBadge.title = `${paymentFreshnessLabel(job)}${payment.nextReviewAt ? ` · 재검토 기준 ${new Date(payment.nextReviewAt).toLocaleDateString('ko-KR')}` : ''}`;
     const requirementsBadge = node.querySelector('.requirements-badge');
-    requirementsBadge.textContent = job.requirementsLabel || '필수요건 상태 미상';
+    requirementsBadge.textContent = requirementsDisplayLabel(job);
     requirementsBadge.className = `requirements-badge ${qualityClass('requirements', job.requirementsStatus || 'clear')}`;
     requirementsBadge.dataset.state = job.requirementsStatus || 'clear';
     renderVerificationBadges(node.querySelector('.verification-badges'), job);
     const valueLine = node.querySelector('.decision-value');
-    valueLine.textContent = `지금 볼 이유 · ${(job.applyValueReasons || []).slice(0, 3).join(' · ') || '추가 근거 확인 필요'}`;
+    valueLine.textContent = `지금 볼 이유 · ${(job.applyValueReasons || []).slice(0, 3).map(friendlyUiText).join(' · ') || '추가 근거 확인 필요'}`;
     const unknownLine = node.querySelector('.decision-unknown');
-    unknownLine.textContent = `미확인 · ${(job.decisionUnknowns || []).slice(0, 3).join(' · ') || '주요 미확인 항목 없음'}`;
+    unknownLine.textContent = `미확인 · ${(job.decisionUnknowns || []).slice(0, 3).map(friendlyUiText).join(' · ') || '주요 미확인 항목 없음'}`;
     node.querySelector('.title').textContent = job.title;
     node.querySelector('.company').textContent = job.company;
     const compensation = salarySummary(job);
@@ -1164,7 +1316,7 @@ function render() {
     ].filter(Boolean);
     node.querySelector('.meta').innerHTML = meta.map((v) => `<span>${escapeHtml(v)}</span>`).join('');
     node.querySelector('.description').textContent = job.description || '상세 설명 없음';
-    const tagValues = [...new Set([...(state.newIds.has(job.id) ? ['NEW'] : []), ...(job.duplicateCount > 1 ? [`중복 ${job.duplicateCount}개 통합`] : []), ...(job.fitWarning ? [job.fitWarning] : []), ...(job.matchedKeywords || []), ...(job.tags || [])])].slice(0, 6);
+    const tagValues = [...new Set([...(state.newIds.has(job.id) ? ['신규'] : []), ...(job.duplicateCount > 1 ? [`중복 ${job.duplicateCount}개 통합`] : []), ...(job.fitWarning ? [friendlyUiText(job.fitWarning)] : []), ...(job.matchedKeywords || []), ...(job.tags || [])])].slice(0, 6);
     node.querySelector('.tags').innerHTML = tagValues.map((v) => `<span class="tag">${escapeHtml(v)}</span>`).join('');
     node.querySelector('.posted').textContent = [formatDate(job.postedAt), formatDeadline(job)].filter(Boolean).join(' · ');
     const apply = node.querySelector('.apply');
@@ -1186,7 +1338,7 @@ function render() {
       state.newIds.delete(job.id);
       state.favorites.has(job.id) ? state.favorites.delete(job.id) : state.favorites.add(job.id);
       if (state.favorites.has(job.id)) snapshotJob(job.id);
-      persist(); renderStats(); render();
+      persist(); render();
     });
 
     const jobState = node.querySelector('.job-state');
@@ -1253,7 +1405,6 @@ function applyBatch(action) {
     state.selectedIds.clear();
   }
   persist();
-  renderStats();
   render();
 }
 
@@ -1361,7 +1512,6 @@ async function importState(file) {
   updateMarketUI();
   updateDynamicFilters(true);
   persistFilters();
-  renderStats();
   render();
 }
 
@@ -1481,10 +1631,10 @@ function renderSourceHealth(sourceStatus = []) {
   const summary = document.createElement('div');
   const title = document.createElement('strong');
   title.textContent = failed.length
-    ? `일부 소스 확인 실패 · ${failed.length}개`
+      ? `일부 출처 확인 실패 · ${failed.length}개`
     : partial.length
       ? `일부 상세 확인 제약 · ${partial.length}개 소스`
-      : `소스 품질 주의 · ${qualityWarnings.length}개`;
+      : `출처 품질 주의 · ${qualityWarnings.length}개`;
   const text = document.createElement('span');
   const failureText = failed.map((source) => `${source.source}${source.preserved ? ` · 이전 ${source.preserved}개 보존` : ''}`);
   const partialText = partial.map((source) => {
@@ -1505,7 +1655,7 @@ function renderSourceHealth(sourceStatus = []) {
     .filter((metric) => !failed.some((source) => source.source === metric.source))
     .map((metric) => {
       if (['unstable', 'degraded'].includes(metric.reliabilityState)) {
-        return `${metric.source} · 수집 신뢰 ${metric.reliabilityState}`;
+        return `${metric.source} · 수집 신뢰 ${sourceReliabilityLabel(metric.reliabilityState)}`;
       }
       return `${metric.source} · 유효 ${metric.keptCount || 0}/${metric.matchedCount || 0} · 노이즈 ${Math.round(Number(metric.noiseRate || 0) * 100)}%`;
     });
@@ -1557,11 +1707,10 @@ function applyFeedData(data, detectNew = true) {
   const failedSources = (data.sourceStatus || []).filter((source) => !source.ok);
   if (failedSources.length) {
     const labels = failedSources.map((source) => `${source.source}${source.preserved ? `(${source.preserved}개 유지)` : ''}`).join(', ');
-    $('updatedAt').textContent += ` · 소스 오류: ${labels}`;
+    $('updatedAt').textContent += ` · 출처 오류: ${labels}`;
   }
   renderSourceHealth(data.sourceStatus || []);
   state.loadError = null;
-  renderStats();
   render();
 }
 
@@ -1639,11 +1788,8 @@ $('importStateFile').addEventListener('change', async (event) => {
 });
 $('closeDetails').addEventListener('click', () => {
   $('detailsDialog').close();
-  renderStats();
-  render();
 });
 $('detailsDialog').addEventListener('close', () => {
-  renderStats();
   render();
 });
 $('prevDetails').addEventListener('click', () => moveDetails(-1));
@@ -1655,6 +1801,14 @@ document.addEventListener('keydown', (event) => {
 });
 $('loadMore').addEventListener('click', () => { state.visibleLimit += 60; render(); });
 $('resetFilters').addEventListener('click', resetFilters);
+$('showAllActive').addEventListener('click', showAllActiveJobs);
+$('marketPulseToggle').addEventListener('click', () => {
+  const panel = $('marketPulse');
+  const expanded = !panel.classList.contains('expanded');
+  panel.classList.toggle('expanded', expanded);
+  $('marketPulseToggle').setAttribute('aria-expanded', String(expanded));
+  $('marketPulseToggle').textContent = expanded ? '요약 접기' : '요약 보기';
+});
 $('retryLoad').addEventListener('click', async () => {
   $('retryLoad').disabled = true;
   try { await load(); } catch (error) { state.loadError = error.message; $('emptyMessage').textContent = `공고를 불러오지 못했습니다: ${error.message}`; $('empty').hidden = false; }
@@ -1678,7 +1832,6 @@ $('undoHide').addEventListener('click', () => {
   clearTimeout(state.toastTimer);
   $('toast').hidden = true;
   persist();
-  renderStats();
   render();
 });
 
@@ -1764,7 +1917,7 @@ $('addForm').addEventListener('submit', (event) => {
   updateDynamicFilters();
   event.currentTarget.reset();
   dialog.close();
-  renderStats(); render();
+  render();
 });
 
 try {

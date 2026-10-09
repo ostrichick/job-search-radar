@@ -14,6 +14,14 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 npm run check
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+npm run build:static
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+node scripts/validate-feed.mjs public/jobs.json docs/jobs.json
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+Copy-Item -LiteralPath (Join-Path $ProjectRoot 'public/jobs.json') -Destination (Join-Path $ProjectRoot 'docs/jobs.json') -Force
+
 npm run build:pages
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 

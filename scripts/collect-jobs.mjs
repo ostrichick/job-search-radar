@@ -3576,7 +3576,13 @@ async function collectArbeitnow() {
 }
 
 async function collectManual() {
-  const items = JSON.parse(await fs.readFile(path.join(root, 'data/manual-jobs.json'), 'utf8'));
+  let items = [];
+  try {
+    items = JSON.parse(await fs.readFile(path.join(root, 'data/manual-jobs.json'), 'utf8'));
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error;
+  }
+  if (!Array.isArray(items)) throw new Error('data/manual-jobs.json must contain a JSON array');
   const collected = items.map((j, index) => normalizeJob({ ...j, id: j.id || `manual:${index}`, source: j.source || '직접 추가' }));
   return sourceCollection(collected, items.length);
 }
@@ -4451,6 +4457,7 @@ export {
   localCompensationNotes,
   parseWork24ListXml,
   work24Candidate,
+  collectManual,
   fallbackJobsForConfiguredSources,
   relevantToProfile,
   currentListingState,

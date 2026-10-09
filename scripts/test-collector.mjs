@@ -27,6 +27,7 @@ import {
   localCompensationNotes,
   parseWork24ListXml,
   work24Candidate,
+  collectManual,
   fallbackJobsForConfiguredSources,
   relevantToProfile,
   currentListingState,
@@ -2448,5 +2449,9 @@ const mixedAgeEvidence = derivePaymentEvidence({
 }, Date.parse('2026-10-04T00:00:00Z'));
 assert.equal(mixedAgeEvidence.state, 'policy_only', 'expired review caution must not remain a current caution when only policy evidence is fresh');
 assert.equal(mixedAgeEvidence.freshness, 'mixed_age');
+
+const manualCollection = await collectManual();
+assert.ok(Array.isArray(manualCollection.jobs), 'missing manual-jobs.json must behave as an empty optional source instead of a source failure');
+assert.equal(manualCollection.rawCount, manualCollection.jobs.length, 'manual source raw count must match the optional file contents');
 
 console.log('collector tests passed');

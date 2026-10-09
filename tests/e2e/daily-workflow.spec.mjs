@@ -279,6 +279,30 @@ test('기본 추천이 렌더링되고 검토 우선순위로 표시된다', asy
   await expect(page.locator('.eligibility-badge').first()).toContainText('한국에서 지원 가능');
 });
 
+test('시장 요약은 추천 필터 밖의 활성 공고도 보여주고 전체 활성 공고 보기로 전환한다', async ({ page }) => {
+  const priority = job({ id: 'job:pulse-priority', title: '우선 검토 공고', url: 'https://example.com/job/pulse-priority', score: 70 });
+  const lowScore = job({
+    id: 'job:pulse-low', title: '낮은 점수지만 활성인 공고', url: 'https://example.com/job/pulse-low',
+    score: 10, recommendationEligible: false, salary: '',
+    salaryInfo: { raw: '', display: '', currency: '', min: null, max: null, period: '', confidence: 'none' }
+  });
+  await useFeed(page, () => feed([priority, lowScore]));
+  await page.goto('/');
+
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await expect(page.locator('#scopeCount')).toContainText('활성 전체 2개');
+  await expect(page.locator('#marketPulse')).toContainText('시장 한눈에 보기');
+  await expect(page.locator('#marketPulse')).toContainText('최근 7일 신규');
+  await expect(page.locator('#marketPulseNote')).toContainText('활성 공고 2개');
+  await expect(page.locator('#showAllActive')).toBeVisible();
+  await expect(page.locator('#eligibility option[value="worldwide"]')).toHaveText('전 세계 지원 가능');
+
+  await page.locator('#showAllActive').click();
+  await expect(page.locator('#minScore')).toHaveValue('0');
+  await expect(page.locator('.job-card')).toHaveCount(2);
+  await expect(page.locator('#showAllActive')).toBeHidden();
+});
+
 test('기본 정렬은 같은 점수에서 오늘 판단하기 쉬운 공고를 먼저 보여준다', async ({ page }) => {
   const uncertain = job({
     id: 'job:sort-uncertain',
@@ -850,7 +874,7 @@ test('상세 이전/다음과 근거 패널이 현재 필터 큐를 따른다', 
   await page.locator('.job-card').first().locator('.details').click();
   await expect(page.locator('#detailsDialog')).toBeVisible();
   await expect(page.locator('#detailsTitle')).toHaveText('AI Data Specialist - Korean');
-  await expect(page.locator('#detailsListingReason')).toContainText('공식 ATS');
+  await expect(page.locator('#detailsListingReason')).toContainText('공식 채용 페이지');
   await expect(page.locator('#detailsEligibilityReason')).toContainText('한국');
   await expect(page.locator('#detailsFitReasons')).toContainText('합격 가능성이 아니라 검토 우선순위');
   await page.locator('#nextDetails').click();
@@ -1061,7 +1085,7 @@ test('지원 가치·미확인·필수요건 상태를 카드와 상세에서 �
   await useFeed(page);
   await page.goto('/');
   const rws = page.locator('.job-card').filter({ hasText: 'AI Data Specialist - Korean' });
-  await expect(rws.locator('.decision-value')).toContainText('공식 ATS 모집 확인');
+  await expect(rws.locator('.decision-value')).toContainText('공식 채용 페이지 모집 확인');
   await expect(rws.locator('.decision-unknown')).toContainText('지급 평판');
   await expect(rws.locator('.requirements-badge')).toHaveAttribute('data-state', 'clear');
 
@@ -1148,7 +1172,7 @@ test('부분 소스 실패를 별도 경고하고 보존 공고로 바로 이동
   await page.locator('#showSourceErrors').click();
   await expect(page.locator('.job-card')).toHaveCount(1);
   await expect(page.locator('.title')).toHaveText('Preserved Korean Reviewer');
-  await expect(page.locator('.listing-badge')).toHaveText('소스 확인 실패');
+  await expect(page.locator('.listing-badge')).toHaveText('출처 확인 실패');
 });
 
 test('최근 검증·원문 변경을 카드에서 구분하고 상세 이력을 확인한다', async ({ page }) => {
@@ -1244,9 +1268,9 @@ test('부분 소스 실패 후 복구 상태와 이력을 유지한다', async (
   })]);
   await page.reload();
   await expect(page.locator('#sourceHealth')).toBeHidden();
-  await expect(page.locator('.verification-badge[data-state="recovered"]')).toHaveText('소스 복구');
+  await expect(page.locator('.verification-badge[data-state="recovered"]')).toHaveText('출처 복구');
   await page.locator('.details').click();
-  await expect(page.locator('#detailsHistory')).toContainText('소스 복구');
+  await expect(page.locator('#detailsHistory')).toContainText('출처 복구');
 });
 
 test('추천 품질 게이트가 정상 후보 세트를 과도하게 축소하지 않는다', async ({ page }) => {
@@ -1316,7 +1340,7 @@ test('재등장·복구와 원문 변경이 같은 실행에서 함께 발생해
   await expect(returnedCard.locator('.verification-badge[data-state="reappeared"]')).toHaveText('재등장');
   const recoveredCard = page.locator('.job-card', { hasText: 'Recovered And Changed' });
   await expect(recoveredCard.locator('.verification-badge[data-state="changed"]')).toHaveText('원문 변경됨');
-  await expect(recoveredCard.locator('.verification-badge[data-state="recovered"]')).toHaveText('소스 복구');
+  await expect(recoveredCard.locator('.verification-badge[data-state="recovered"]')).toHaveText('출처 복구');
 });
 
 test('검증 이력이 새 피드로 교체되어도 이전 사건을 유지한다', async ({ page }) => {
