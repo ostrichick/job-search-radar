@@ -14,6 +14,7 @@ import {
   saraminAreaListCandidates,
   saraminHtmlJobPosting,
   incruitSearchCandidates,
+  fetchIncruitSearchText,
   localCrossPlatformDuplicateKey,
   structuredLocalBoardCandidate,
   collectStructuredLocalBoard,
@@ -810,6 +811,39 @@ assert.deepEqual(incruitSearchCandidates(incruitListFixture), [{
   deadlineLabel: '채용시',
   evidence: 'public_search_list'
 }]);
+
+const incruitOriginalFetch = globalThis.fetch;
+try {
+  let searchAttempts = 0;
+  globalThis.fetch = async () => {
+    searchAttempts += 1;
+    if (searchAttempts === 1) throw new TypeError('fetch failed');
+    const body = new TextEncoder().encode('<html>ok</html>');
+    return {
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      arrayBuffer: async () => body.buffer
+    };
+  };
+  assert.equal(await fetchIncruitSearchText('https://job.incruit.com/search-test'), '<html>ok</html>',
+    'Incruit search should recover from one transient network failure');
+  assert.equal(searchAttempts, 2, 'Incruit search transient retry must be limited to one retry');
+
+  let httpAttempts = 0;
+  globalThis.fetch = async () => {
+    httpAttempts += 1;
+    return { ok: false, status: 503, statusText: 'Service Unavailable' };
+  };
+  await assert.rejects(
+    fetchIncruitSearchText('https://job.incruit.com/search-http-error'),
+    /503 Service Unavailable/,
+    'Incruit HTTP failures must remain fail-closed instead of being retried as network noise'
+  );
+  assert.equal(httpAttempts, 1, 'Incruit HTTP failures must not be retried');
+} finally {
+  globalThis.fetch = incruitOriginalFetch;
+}
 
 const incruitDetailFixture = `<!doctype html><html><head>
   <link rel="canonical" href="https://job.incruit.com/jobdb_info/jobpost.asp?job=2609110000252">

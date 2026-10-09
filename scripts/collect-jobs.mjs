@@ -2966,12 +2966,29 @@ async function collectSaramin(previousJobs = []) {
   });
 }
 
+function transientIncruitSearchFailure(error) {
+  return !error?.status && ['TypeError', 'TimeoutError', 'AbortError'].includes(String(error?.name || ''));
+}
+
+async function fetchIncruitSearchText(url) {
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      return await fetchText(url, { charset: 'euc-kr', signal: AbortSignal.timeout(15000) });
+    } catch (error) {
+      lastError = error;
+      if (attempt > 0 || !transientIncruitSearchFailure(error)) throw error;
+    }
+  }
+  throw lastError;
+}
+
 async function collectIncruit(previousJobs = []) {
   const searchBase = 'https://job.incruit.com/jobdb_list/searchjob.asp?col=job&kw=';
   const candidates = [];
   const byId = new Map();
   for (const term of ['%EC%A0%84%EC%A3%BC', '%EC%99%84%EC%A3%BC']) {
-    const html = await fetchText(searchBase + term, { charset: 'euc-kr', signal: AbortSignal.timeout(15000) });
+    const html = await fetchIncruitSearchText(searchBase + term);
     for (const candidate of incruitSearchCandidates(html).slice(0, 40)) {
       if (byId.has(candidate.id)) continue;
       byId.set(candidate.id, candidate);
@@ -4443,6 +4460,7 @@ export {
   saraminAreaListCandidates,
   saraminHtmlJobPosting,
   incruitSearchCandidates,
+  fetchIncruitSearchText,
   collectIncruit,
   localCrossPlatformDuplicateKey,
   structuredLocalBoardCandidate,
