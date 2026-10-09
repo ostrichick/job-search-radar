@@ -294,7 +294,7 @@ test('시장 요약은 추천 필터 밖의 활성 공고와 주요 확인 필�
   await page.goto('/');
 
   await expect(page.locator('.job-card')).toHaveCount(1);
-  await expect(page.locator('#scopeCount')).toContainText('활성 전체 2개');
+  await expect(page.locator('#scopeCount')).toContainText('숨김 제외 활성 전체 2개');
   await expect(page.locator('#marketPulse')).toContainText('시장 한눈에 보기');
   await expect(page.locator('#marketPulse')).toContainText('최근 7일 신규');
   await expect(page.locator('#marketPulseNote')).toContainText('활성 공고 2개');
@@ -302,11 +302,28 @@ test('시장 요약은 추천 필터 밖의 활성 공고와 주요 확인 필�
   await expect(decisionGap).toContainText('2개');
   await expect(decisionGap).toContainText('급여·단가');
   await expect(page.locator('#showAllActive')).toBeVisible();
+  await expect(page.locator('#showAllActive')).toHaveText('숨김 제외 활성 공고 보기');
   await expect(page.locator('#eligibility option[value="worldwide"]')).toHaveText('전 세계 지원 가능');
 
   await page.locator('#showAllActive').click();
   await expect(page.locator('#minScore')).toHaveValue('0');
   await expect(page.locator('.job-card')).toHaveCount(2);
+  await expect(page.locator('#showAllActive')).toBeHidden();
+});
+
+test('활성 전체 수와 전체 보기 버튼은 개인 숨김 공고를 제외해 같은 범위를 사용한다', async ({ page }) => {
+  const visible = job({ id: 'job:scope-visible', title: '표시할 활성 공고', url: 'https://example.com/job/scope-visible', score: 70 });
+  const hidden = job({ id: 'job:scope-hidden', title: '숨긴 활성 공고', url: 'https://example.com/job/scope-hidden', score: 10, recommendationEligible: false });
+  await page.addInitScript((hiddenId) => localStorage.setItem('jobHidden', JSON.stringify([hiddenId])), hidden.id);
+  await useFeed(page, () => feed([visible, hidden]));
+  await page.goto('/');
+
+  await expect(page.locator('#scopeCount')).toContainText('숨김 제외 활성 전체 1개');
+  await expect(page.locator('#marketPulseNote')).toContainText('활성 공고 2개');
+  await expect(page.locator('.job-card')).toHaveCount(1);
+
+  await page.locator('#showAllActive').click();
+  await expect(page.locator('.job-card')).toHaveCount(1);
   await expect(page.locator('#showAllActive')).toBeHidden();
 });
 

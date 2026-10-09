@@ -649,7 +649,7 @@ function broadActiveFilterValues({ includeHidden = false } = {}) {
 }
 
 function activeMarketJobs() {
-  return matchingJobs({ values: broadActiveFilterValues({ includeHidden: true }) });
+  return matchingJobs({ values: broadActiveFilterValues() });
 }
 
 function isBroadActiveView() {
@@ -1292,7 +1292,7 @@ function render() {
   const visibleJobs = jobs.slice(0, state.visibleLimit);
   const activeTotal = activeMarketJobs().length;
   $('resultCount').textContent = jobs.length > visibleJobs.length ? `${jobs.length}개 중 ${visibleJobs.length}개 표시` : `${jobs.length}개 공고`;
-  $('scopeCount').textContent = `· 활성 전체 ${activeTotal}개`;
+  $('scopeCount').textContent = `· 숨김 제외 활성 전체 ${activeTotal}개`;
   $('showAllActive').hidden = isBroadActiveView();
   $('empty').hidden = jobs.length > 0;
   if (!jobs.length && !state.loadError) {
