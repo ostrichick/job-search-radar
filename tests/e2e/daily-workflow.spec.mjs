@@ -1389,8 +1389,9 @@ test('부분 소스 실패를 별도 경고하고 보존 공고로 바로 이동
     sourceStatus: [
       { source: 'RWS TrainAI', ok: true, count: 1 },
       { source: '알바천국', ok: true, count: 7, workplaceUnverifiedCount: 2, accessRestrictedCount: 1, detailRecoveredCount: 2, continuityRecoveredCount: 1 },
-      { source: '인크루트', ok: true, count: 3, searchFailureCount: 1, searchFailureScopes: ['완주'] },
-      { source: 'OneForma', ok: false, count: 0, preserved: 1, error: '503' }
+      { source: '인크루트', ok: true, count: 3, searchFailureCount: 1, searchFailureScopes: ['완주'], searchFailureReasons: { 완주: 'timeout' } },
+      { source: 'OneForma', ok: false, count: 0, preserved: 1, error: '503' },
+      { source: '인크루트-검증 예시', ok: false, count: 0, searchFailureScopes: ['전주'], searchFailureReasons: { 전주: 'http_forbidden' } }
     ]
   };
   await useFeed(page, () => partialFeed);
@@ -1400,6 +1401,8 @@ test('부분 소스 실패를 별도 경고하고 보존 공고로 바로 이동
   await expect(page.locator('#sourceHealth')).toContainText('근무지 확인 불가 2건 제외');
   await expect(page.locator('#sourceHealth')).toContainText('로그인·연령 인증 필요 1건 제외');
   await expect(page.locator('#sourceHealth')).toContainText('지역 검색 실패 1개(완주)');
+  await expect(page.locator('#sourceHealth')).toContainText('완주: 응답 시간 초과');
+  await expect(page.locator('#sourceHealth')).toContainText('전주: HTTP 403 접근 거부');
   await expect(page.locator('#sourceHealth')).toContainText('대체 상세 구조 2건 복구');
   await expect(page.locator('#sourceHealth')).toContainText('검색창 이탈 1건 상세 재확인');
   await expect(page.locator('#showSourceErrors')).toContainText('보존 공고 1개');

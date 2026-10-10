@@ -2999,6 +2999,35 @@ function transientIncruitSearchFailure(error) {
   return !error?.status && ['TypeError', 'TimeoutError', 'AbortError'].includes(String(error?.name || ''));
 }
 
+// Only stable, non-sensitive failure categories enter the public feed. Never
+// serialize raw network exceptions, response bodies, or request headers.
+function incruitSearchFailureCode(error) {
+  const status = Number(error?.status);
+  if (Number.isInteger(status) && status >= 400) {
+    if (status === 403) return 'http_forbidden';
+    if (status === 429) return 'http_rate_limited';
+    if (status >= 500) return 'http_server_error';
+    return 'http_client_error';
+  }
+  if (['TimeoutError', 'AbortError'].includes(String(error?.name || ''))) return 'timeout';
+  // Node's fetch may wrap several IPv4/IPv6 failures in an AggregateError.
+  // Inspect bounded error codes only; never persist potentially sensitive messages.
+  const causeCodes = [
+    error?.cause?.code,
+    error?.code,
+    ...(Array.isArray(error?.cause?.errors) ? error.cause.errors.slice(0, 4).map((item) => item?.code) : [])
+  ].filter(Boolean).map((code) => String(code).toUpperCase());
+  const dnsCodes = ['ENOTFOUND', 'EAI_AGAIN', 'ENODATA'];
+  const timeoutCodes = ['ETIMEDOUT', 'UND_ERR_CONNECT_TIMEOUT', 'UND_ERR_HEADERS_TIMEOUT'];
+  const connectionCodes = ['ECONNREFUSED', 'ECONNRESET', 'EHOSTUNREACH', 'ENETUNREACH', 'UND_ERR_SOCKET'];
+  if (causeCodes.some((code) => ['UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'CERT_HAS_EXPIRED', 'DEPTH_ZERO_SELF_SIGNED_CERT'].includes(code))) return 'tls_error';
+  if (causeCodes.length && causeCodes.every((code) => dnsCodes.includes(code))) return 'dns_error';
+  if (causeCodes.length && causeCodes.every((code) => timeoutCodes.includes(code))) return 'timeout';
+  if (causeCodes.some((code) => [...dnsCodes, ...timeoutCodes, ...connectionCodes].includes(code))) return 'network_error';
+  if (String(error?.name || '') === 'TypeError') return 'network_error';
+  return 'other_error';
+}
+
 async function fetchIncruitSearchText(url) {
   let lastError;
   for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -3022,6 +3051,7 @@ async function collectIncruit(previousJobs = []) {
   ];
   let searchSuccessCount = 0;
   const searchFailureScopes = [];
+  const searchFailureReasons = {};
   for (const target of searchTargets) {
     try {
       const html = await fetchIncruitSearchText(searchBase + target.term);
@@ -3031,15 +3061,17 @@ async function collectIncruit(previousJobs = []) {
         byId.set(candidate.id, candidate);
         candidates.push(candidate);
       }
-    } catch {
+    } catch (error) {
       searchFailureScopes.push(target.label);
+      searchFailureReasons[target.label] = incruitSearchFailureCode(error);
     }
   }
   const searchRun = {
     searchAttemptCount: searchTargets.length,
     searchSuccessCount,
     searchFailureCount: searchFailureScopes.length,
-    searchFailureScopes
+    searchFailureScopes,
+    searchFailureReasons
   };
   if (!candidates.length) {
     const error = new Error(searchFailureScopes.length
@@ -4163,6 +4195,8 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       searchSuccessCount: Number(run.searchSuccessCount || 0),
       searchFailureCount: Number(run.searchFailureCount || 0),
       searchFailureScopes: Array.isArray(run.searchFailureScopes) ? [...run.searchFailureScopes] : [],
+      searchFailureReasons: run.searchFailureReasons && typeof run.searchFailureReasons === 'object'
+        ? { ...run.searchFailureReasons } : {},
       detailAttemptCount: Number(run.detailAttemptCount || 0),
       detailSuccessCount: Number(run.detailSuccessCount || 0),
       matchedCount,
@@ -4220,6 +4254,8 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       searchSuccessCount: Number(run.searchSuccessCount || 0),
       searchFailureCount: Number(run.searchFailureCount || 0),
       searchFailureScopes: Array.isArray(run.searchFailureScopes) ? [...run.searchFailureScopes] : [],
+      searchFailureReasons: run.searchFailureReasons && typeof run.searchFailureReasons === 'object'
+        ? { ...run.searchFailureReasons } : {},
       detailAttemptCount: Number(run.detailAttemptCount || 0),
       detailSuccessCount: Number(run.detailSuccessCount || 0),
       detailSuccessRate: Number(run.detailAttemptCount || 0)
@@ -4382,6 +4418,8 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         searchSuccessCount: Number(result?.searchSuccessCount || 0),
         searchFailureCount: Number(result?.searchFailureCount || 0),
         searchFailureScopes: Array.isArray(result?.searchFailureScopes) ? [...result.searchFailureScopes] : [],
+        searchFailureReasons: result?.searchFailureReasons && typeof result.searchFailureReasons === 'object'
+          ? { ...result.searchFailureReasons } : {},
         detailAttemptCount: Number(result?.detailAttemptCount || 0),
         detailSuccessCount: Number(result?.detailSuccessCount || 0),
         matchedCount: Number(result?.matchedCount ?? collected.length),
@@ -4423,6 +4461,8 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         ...(Array.isArray(result?.searchFailureScopes) && result.searchFailureScopes.length
           ? { searchFailureScopes: [...result.searchFailureScopes] }
           : {}),
+        ...(result?.searchFailureReasons && Object.keys(result.searchFailureReasons).length
+          ? { searchFailureReasons: { ...result.searchFailureReasons } } : {}),
         ...(result?.detailAttemptCount ? { detailAttemptCount: Number(result.detailAttemptCount) } : {}),
         ...(result?.detailSuccessCount ? { detailSuccessCount: Number(result.detailSuccessCount) } : {}),
         ...(result?.detailFailureCount ? { detailFailureCount: Number(result.detailFailureCount) } : {}),
@@ -4453,6 +4493,8 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         searchSuccessCount: Number(failureRun.searchSuccessCount || 0),
         searchFailureCount: Number(failureRun.searchFailureCount || 0),
         searchFailureScopes: Array.isArray(failureRun.searchFailureScopes) ? [...failureRun.searchFailureScopes] : [],
+        searchFailureReasons: failureRun.searchFailureReasons && typeof failureRun.searchFailureReasons === 'object'
+          ? { ...failureRun.searchFailureReasons } : {},
         detailAttemptCount: Number(failureRun.detailAttemptCount || 0),
         detailSuccessCount: Number(failureRun.detailSuccessCount || 0),
         matchedCount: 0,
@@ -4481,6 +4523,8 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         ...(Array.isArray(failureRun.searchFailureScopes) && failureRun.searchFailureScopes.length
           ? { searchFailureScopes: [...failureRun.searchFailureScopes] }
           : {}),
+        ...(failureRun.searchFailureReasons && Object.keys(failureRun.searchFailureReasons).length
+          ? { searchFailureReasons: { ...failureRun.searchFailureReasons } } : {}),
         ...(failureRun.discoveredCount ? { discoveredCount: Number(failureRun.discoveredCount) } : {}),
         ...(failureRun.detailAttemptCount ? { detailAttemptCount: Number(failureRun.detailAttemptCount) } : {}),
         ...(failureRun.detailSuccessCount ? { detailSuccessCount: Number(failureRun.detailSuccessCount) } : {}),
@@ -4591,6 +4635,7 @@ export {
   saraminHtmlJobPosting,
   incruitSearchCandidates,
   fetchIncruitSearchText,
+  incruitSearchFailureCode,
   collectIncruit,
   localCrossPlatformDuplicateKey,
   structuredLocalBoardCandidate,

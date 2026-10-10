@@ -15,6 +15,7 @@ import {
   saraminHtmlJobPosting,
   incruitSearchCandidates,
   fetchIncruitSearchText,
+  incruitSearchFailureCode,
   collectIncruit,
   localCrossPlatformDuplicateKey,
   structuredLocalBoardCandidate,
@@ -906,6 +907,17 @@ const incruitDetailFixture = `<!doctype html><html><head>
 </body></html>`;
 
 const incruitPartialOriginalFetch = globalThis.fetch;
+assert.equal(incruitSearchFailureCode({ status: 403, message: 'private token=secret' }), 'http_forbidden');
+assert.equal(incruitSearchFailureCode({ status: 429 }), 'http_rate_limited');
+assert.equal(incruitSearchFailureCode({ status: 503 }), 'http_server_error');
+assert.equal(incruitSearchFailureCode({ name: 'TimeoutError' }), 'timeout');
+assert.equal(incruitSearchFailureCode({ name: 'TypeError', cause: { code: 'ENOTFOUND' } }), 'dns_error');
+assert.equal(incruitSearchFailureCode({ name: 'TypeError', cause: { code: 'UND_ERR_CONNECT_TIMEOUT' } }), 'timeout');
+assert.equal(incruitSearchFailureCode({ name: 'TypeError', cause: { code: 'ECONNRESET' } }), 'network_error');
+assert.equal(incruitSearchFailureCode({ name: 'TypeError', cause: { errors: [{ code: 'ETIMEDOUT' }, { code: 'ETIMEDOUT' }] } }), 'timeout');
+assert.equal(incruitSearchFailureCode({ name: 'TypeError', cause: { errors: [{ code: 'ENETUNREACH' }, { code: 'ETIMEDOUT' }] } }), 'network_error');
+assert.equal(incruitSearchFailureCode({ name: 'TypeError', cause: { code: 'UNABLE_TO_VERIFY_LEAF_SIGNATURE' } }), 'tls_error');
+assert.equal(incruitSearchFailureCode(new Error('secret=should-not-persist')), 'other_error');
 try {
   const encoder = new TextEncoder();
   const eucKrSafeFixture = (value) => String(value).replace(/[^\x00-\x7F]/g, (char) => `&#${char.codePointAt(0)};`);
@@ -929,6 +941,7 @@ try {
   assert.equal(partialIncruit.searchSuccessCount, 1);
   assert.equal(partialIncruit.searchFailureCount, 1);
   assert.deepEqual(partialIncruit.searchFailureScopes, ['완주']);
+  assert.deepEqual(partialIncruit.searchFailureReasons, { 완주: 'network_error' });
   assert.equal(partialIncruit.jobs.length, 1, 'a verified successful region must survive another region search failure');
 } finally {
   globalThis.fetch = incruitPartialOriginalFetch;
@@ -948,8 +961,29 @@ try {
   assert.equal(outageError.sourceRun?.searchSuccessCount, 0);
   assert.equal(outageError.sourceRun?.searchFailureCount, 2);
   assert.deepEqual(outageError.sourceRun?.searchFailureScopes, ['전주', '완주']);
+  assert.deepEqual(outageError.sourceRun?.searchFailureReasons,
+    { 전주: 'network_error', 완주: 'network_error' });
 } finally {
   globalThis.fetch = incruitOutageOriginalFetch;
+}
+
+const incruitForbiddenOriginalFetch = globalThis.fetch;
+try {
+  let requests = 0;
+  globalThis.fetch = async () => {
+    requests += 1;
+    return { ok: false, status: 403, statusText: 'Forbidden private-context' };
+  };
+  await assert.rejects(collectIncruit([]), (error) => {
+    assert.deepEqual(error.sourceRun?.searchFailureReasons,
+      { 전주: 'http_forbidden', 완주: 'http_forbidden' });
+    assert.equal(JSON.stringify(error.sourceRun).includes('private-context'), false,
+      'public diagnostics must never contain response text or arbitrary exception messages');
+    return true;
+  });
+  assert.equal(requests, 2, 'HTTP access denials must not be retried');
+} finally {
+  globalThis.fetch = incruitForbiddenOriginalFetch;
 }
 
 const incruitFresh = {
@@ -983,6 +1017,17 @@ assert.equal(partialMetrics.history.at(-1).ok, false,
 assert.equal(partialMetrics.lastSuccessAt, '2026-10-09T00:00:00.000Z',
   'a partial search must not overwrite the last full-success timestamp');
 assert.equal(partialMetrics.lastFailureAt, '2026-10-10T00:00:00.000Z');
+const codedMetrics = buildSourceMetrics(
+  ['인크루트'],
+  new Map([['인크루트', {
+    searchAttemptCount: 2, searchSuccessCount: 0, searchFailureCount: 2,
+    searchFailureScopes: ['전주', '완주'], searchFailureReasons: { 전주: 'dns_error', 완주: 'timeout' }
+  }]]),
+  [{ source: '인크루트', ok: false, count: 0 }],
+  [], [], {}, Date.parse('2026-10-10T01:00:00.000Z')
+).인크루트;
+assert.deepEqual(codedMetrics.searchFailureReasons, { 전주: 'dns_error', 완주: 'timeout' });
+assert.deepEqual(codedMetrics.history.at(-1).searchFailureReasons, codedMetrics.searchFailureReasons);
 
 const incruitHint = incruitSearchCandidates(incruitListFixture)[0];
 const incruitLocal = structuredLocalBoardCandidate(

@@ -1844,6 +1844,26 @@ function updateDynamicFilters(forceSaved = false) {
 function renderSourceHealth(sourceStatus = []) {
   const panel = $('sourceHealth');
   if (!panel) return;
+  const searchFailureLabels = {
+    http_forbidden: 'HTTP 403 접근 거부',
+    http_rate_limited: 'HTTP 429 요청 제한',
+    http_server_error: 'HTTP 서버 오류',
+    http_client_error: 'HTTP 요청 오류',
+    tls_error: 'TLS 인증서 연결 오류',
+    dns_error: 'DNS 조회 실패',
+    timeout: '응답 시간 초과',
+    network_error: '네트워크 연결 오류',
+    other_error: '실패 원인 미분류'
+  };
+  const searchFailureDescription = (source) => {
+    const reasons = source.searchFailureReasons;
+    if (!reasons || typeof reasons !== 'object' || Array.isArray(reasons)) return '';
+    const scopes = Array.isArray(source.searchFailureScopes) ? source.searchFailureScopes : [];
+    const details = scopes.slice(0, 3)
+      .filter((scope) => typeof scope === 'string' && Object.hasOwn(searchFailureLabels, reasons[scope]))
+      .map((scope) => `${scope}: ${searchFailureLabels[reasons[scope]]}`);
+    return details.length ? ` · ${details.join(', ')}` : '';
+  };
   const failed = (sourceStatus || []).filter((source) => !source.ok);
   const partial = (sourceStatus || []).filter((source) => source.ok && (
     Number(source.searchFailureCount || 0) > 0
@@ -1871,12 +1891,12 @@ function renderSourceHealth(sourceStatus = []) {
       ? `일부 수집 제약 · ${partial.length}개 소스`
       : `출처 품질 주의 · ${qualityWarnings.length}개`;
   const text = document.createElement('span');
-  const failureText = failed.map((source) => `${source.source}${source.preserved ? ` · 이전 ${source.preserved}개 보존` : ''}`);
+  const failureText = failed.map((source) => `${source.source}${source.preserved ? ` · 이전 ${source.preserved}개 보존` : ''}${searchFailureDescription(source)}`);
   const partialText = partial.map((source) => {
     const details = [];
     if (Number(source.searchFailureCount || 0) > 0) {
       const scopes = Array.isArray(source.searchFailureScopes) ? source.searchFailureScopes.filter(Boolean) : [];
-      details.push(`지역 검색 실패 ${Number(source.searchFailureCount)}개${scopes.length ? `(${scopes.join(', ')})` : ''}`);
+      details.push(`지역 검색 실패 ${Number(source.searchFailureCount)}개${scopes.length ? `(${scopes.join(', ')})` : ''}${searchFailureDescription(source)}`);
     }
     if (Number(source.detailFailureCount || 0) > 0) details.push(`상세 파싱·응답 실패 ${Number(source.detailFailureCount)}건`);
     if (Number(source.workplaceUnverifiedCount || 0) > 0) details.push(`근무지 확인 불가 ${Number(source.workplaceUnverifiedCount)}건 제외`);
