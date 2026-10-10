@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { incruitJeonbukRssUrl, parseIncruitJeonbukRss } from './incruit-rss.mjs';
 import {
   defaultLocationReference,
   domesticProvinceOptions,
@@ -970,7 +971,8 @@ try {
 const incruitForbiddenOriginalFetch = globalThis.fetch;
 try {
   let requests = 0;
-  globalThis.fetch = async () => {
+  globalThis.fetch = async (url) => {
+    if (String(url) === incruitJeonbukRssUrl) throw new TypeError('rss not available');
     requests += 1;
     return { ok: false, status: 403, statusText: 'Forbidden private-context' };
   };
@@ -984,6 +986,60 @@ try {
   assert.equal(requests, 2, 'HTTP access denials must not be retried');
 } finally {
   globalThis.fetch = incruitForbiddenOriginalFetch;
+}
+
+// Publisher RSS contract verified against the live Jeonbuk RSS structure
+// (20 public items on 2026-10-10); only one unambiguous city location passes.
+const rssNow = Date.parse('2026-10-10T07:15:00.000Z');
+const rssItem = (id, title, regions) => `<item>
+<title><![CDATA[[${title}] ${title} 채용]]></title>
+<link>https://job.incruit.com/jobdb_info/jobpost.asp?job=${id}</link>
+<description><![CDATA[▨ 회사명 : ${title}<br><br>▨ 지역 : |${regions}<br><br>▨ 마감일 : 10/30(금)]]></description>
+<author>${title}</author><pubDate>Fri, 09 Oct 2026 12:10:00 +0900</pubDate></item>`;
+const rssXml = (items, built = 'Sat, 10 Oct 2026 15:10:04 +0900') =>
+  `<?xml version="1.0" encoding="utf-8" ?><rss version="2.0"><channel>
+<title><![CDATA[[인크루트] 채용정보 - 전북]]></title><lastBuildDate>${built}</lastBuildDate>
+${items.join('')}</channel></rss>`;
+const rssFixture = rssXml([
+  rssItem('2610080004445', '전주사무소', '전북>전주시 덕진구'),
+  rssItem('2610070001034', '여러 지역', '전북>전주시 덕진구|전북>완주군'),
+  rssItem('2609300004336', '전북 전체', '전북'),
+  rssItem('2610070004813', '타도시', '전북>익산시'),
+  rssItem('2401080006415', '인재 Pool', '전북>전주시 덕진구')
+]);
+const parsedRss = parseIncruitJeonbukRss(rssFixture, rssNow);
+assert.equal(parsedRss.itemCount, 5);
+assert.deepEqual(parsedRss.candidates.map((item) => item.id), ['2610080004445']);
+assert.equal(parsedRss.candidates[0].listLocation, '전북특별자치도 전주시 덕진구');
+assert.throws(() => parseIncruitJeonbukRss(rssXml([rssItem('1', 'test', '전북>완주군')],
+  'Tue, 06 Oct 2026 00:00:00 +0900'), rssNow), /stale/);
+assert.throws(() => parseIncruitJeonbukRss('<html>not rss</html>', rssNow), /not a recognized/);
+const rssOnlyOriginalFetch = globalThis.fetch;
+try {
+  globalThis.fetch = async (url) => {
+    if (String(url) === incruitJeonbukRssUrl) {
+      return { ok: true, status: 200, text: async () => rssFixture };
+    }
+    throw new TypeError('CI simulated network timeout');
+  };
+  const rssRecovered = await collectIncruit([]);
+  assert.equal(rssRecovered.searchFailureCount, 2);
+  assert.equal(rssRecovered.rssStatus, 'ok');
+  assert.equal(rssRecovered.rssListOnlyCount, 1);
+  assert.equal(rssRecovered.jobs.length, 1, 'publisher RSS must recover a single verified-area list entry');
+  assert.equal(rssRecovered.jobs[0].listingBasis, 'public_rss_list');
+  assert.equal(rssRecovered.jobs[0].domesticRegion.city, '전주시');
+  assert.notEqual(rssRecovered.jobs[0].domesticRegion.precision, 'address');
+  assert.equal(rssRecovered.jobs[0].listingVerification, 'intermediary');
+  const temptingRssOnly = { ...rssRecovered.jobs[0], roleFitEvidence: true, score: 99 };
+  const gated = applySourceMetricsToJobs([temptingRssOnly], {
+    인크루트: { qualityTier: 'strong', reliabilityState: 'observed' }
+  })[0];
+  assert.equal(gated.recommendationEligible, false,
+    'even a high-scored RSS list-only row must not become a default recommendation');
+  assert.match(gated.sourceRecommendationGateReason, /상세.*미검증/);
+} finally {
+  globalThis.fetch = rssOnlyOriginalFetch;
 }
 
 const incruitFresh = {

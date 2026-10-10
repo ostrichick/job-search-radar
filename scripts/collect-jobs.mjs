@@ -3,6 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { isDefaultRecommendation as recommendationRule } from '../public/recommendation-rules.js';
+import { incruitJeonbukRssUrl, parseIncruitJeonbukRss } from './incruit-rss.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -1588,6 +1589,13 @@ function currentListingState(job) {
     };
   }
   if (meta.kind === 'manual') return { code: 'manual', label: '직접 확인 필요', stale: false, reason: '사용자가 직접 추가한 공고라 자동 모집 확인 근거가 없음', basis: 'manual', verification: 'manual' };
+  if (job.source === '인크루트' && job.sourceListingState === 'public_rss') {
+    return {
+      code: 'current_feed', label: '공개 RSS 목록 확인', stale: false,
+      reason: '인크루트가 공개한 전북 RSS의 공고 ID와 단일 전주·완주 근무지 표기를 확인함. 상세 본문과 고용주 모집 상태는 별도 확인 필요',
+      basis: 'public_rss_list', verification: 'intermediary'
+    };
+  }
   if (localDomesticBoardSources.has(job.source) && ['public_list', 'public_list_cached_detail'].includes(job.sourceListingState)) {
     return {
       code: 'current_feed',
@@ -3041,6 +3049,25 @@ async function fetchIncruitSearchText(url) {
   throw lastError;
 }
 
+function incruitRssListJob(candidate) {
+  return normalizeJob({
+    id: 'incruit:' + candidate.id,
+    sourcePostingId: candidate.id,
+    source: '인크루트',
+    platform: '인크루트',
+    title: candidate.title,
+    company: candidate.company,
+    location: candidate.listLocation,
+    workplaceMode: 'unknown',
+    countryCode: 'KR',
+    url: candidate.url,
+    postedAt: candidate.postedAt,
+    description: candidate.title,
+    sourceListingState: 'public_rss',
+    locationEvidenceLevel: 'source_list'
+  });
+}
+
 async function collectIncruit(previousJobs = []) {
   const searchBase = 'https://job.incruit.com/jobdb_list/searchjob.asp?col=job&kw=';
   const candidates = [];
@@ -3052,6 +3079,21 @@ async function collectIncruit(previousJobs = []) {
   let searchSuccessCount = 0;
   const searchFailureScopes = [];
   const searchFailureReasons = {};
+  // Publisher-advertised bounded RSS: one request, not a search substitute.
+  // Require one explicit local workplace; province-wide/multi-site items are excluded.
+  let rssCandidates = [];
+  let rssItemCount = 0;
+  let rssStatus = 'failed';
+  let rssFailureCode = '';
+  try {
+    const rssXml = await fetchText(incruitJeonbukRssUrl, { signal: AbortSignal.timeout(10000) });
+    const rss = parseIncruitJeonbukRss(rssXml);
+    rssCandidates = rss.candidates;
+    rssItemCount = rss.itemCount;
+    rssStatus = 'ok';
+  } catch (error) {
+    rssFailureCode = incruitSearchFailureCode(error);
+  }
   for (const target of searchTargets) {
     try {
       const html = await fetchIncruitSearchText(searchBase + target.term);
@@ -3071,9 +3113,12 @@ async function collectIncruit(previousJobs = []) {
     searchSuccessCount,
     searchFailureCount: searchFailureScopes.length,
     searchFailureScopes,
-    searchFailureReasons
+    searchFailureReasons,
+    rssStatus,
+    rssItemCount,
+    rssFailureCode
   };
-  if (!candidates.length) {
+  if (!candidates.length && !rssCandidates.length) {
     const error = new Error(searchFailureScopes.length
       ? `인크루트 public search incomplete (${searchFailureScopes.join(', ')} 검색 실패) and returned no verified Jeonju/Wanju posting ids`
       : '인크루트 public search returned no verified Jeonju/Wanju posting ids');
@@ -3094,7 +3139,7 @@ async function collectIncruit(previousJobs = []) {
     return counts;
   }, {});
   const rejected = results.length - successful.length;
-  if (results.length >= 10 && successful.length < Math.ceil(results.length * 0.5) && rejected >= 5) {
+  if (!rssCandidates.length && results.length >= 10 && successful.length < Math.ceil(results.length * 0.5) && rejected >= 5) {
     const error = localDetailError('detail_collapse', `인크루트 detail validation collapsed: ${successful.length}/${results.length} search-qualified postings passed cross-check`);
     error.sourceRun = {
       ...searchRun,
@@ -3108,7 +3153,7 @@ async function collectIncruit(previousJobs = []) {
     };
     throw error;
   }
-  if (!successful.length) {
+  if (!successful.length && !rssCandidates.length) {
     const error = localDetailError('detail_collapse', '인크루트 public detail validation failed for all search-qualified postings');
     error.sourceRun = {
       ...searchRun,
@@ -3122,11 +3167,15 @@ async function collectIncruit(previousJobs = []) {
     };
     throw error;
   }
-  const local = successful.filter(isJeonjuWanjuLocal);
+  const detailIds = new Set(successful.map((job) => text(job.sourcePostingId)));
+  const rssOnly = rssCandidates.filter((candidate) => !detailIds.has(candidate.id))
+    .map(incruitRssListJob).filter(isJeonjuWanjuLocal);
+  const local = [...successful, ...rssOnly].filter(isJeonjuWanjuLocal);
   const matched = local.filter((job) => Number(job.score || 0) >= 10);
-  return sourceCollection(matched, candidates.length, {
+  return sourceCollection(matched, candidates.length + rssItemCount, {
     ...searchRun,
-    discoveredCount: candidates.length,
+    discoveredCount: candidates.length + rssCandidates.length,
+    rssListOnlyCount: rssOnly.length,
     detailAttemptCount: results.length,
     detailSuccessCount: successful.length,
     detailFailureCount: rejected,
@@ -4188,7 +4237,8 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       at: nowIso,
       // A region-level partial search is not a complete verification of this
       // source. Otherwise repeated partial outages would appear fully reliable.
-      ok: Boolean(status.ok) && Number(run.searchFailureCount || 0) === 0,
+      ok: Boolean(status.ok) && Number(run.searchFailureCount || 0) === 0
+        && !(Number(run.rssListOnlyCount || 0) > 0 && Number(run.detailSuccessCount || 0) === 0),
       rawCount,
       discoveredCount: Number(run.discoveredCount ?? rawCount),
       searchAttemptCount: Number(run.searchAttemptCount || 0),
@@ -4197,6 +4247,10 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       searchFailureScopes: Array.isArray(run.searchFailureScopes) ? [...run.searchFailureScopes] : [],
       searchFailureReasons: run.searchFailureReasons && typeof run.searchFailureReasons === 'object'
         ? { ...run.searchFailureReasons } : {},
+      rssStatus: run.rssStatus || '',
+      rssItemCount: Number(run.rssItemCount || 0),
+      rssListOnlyCount: Number(run.rssListOnlyCount || 0),
+      rssFailureCode: run.rssFailureCode || '',
       detailAttemptCount: Number(run.detailAttemptCount || 0),
       detailSuccessCount: Number(run.detailSuccessCount || 0),
       matchedCount,
@@ -4256,6 +4310,10 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       searchFailureScopes: Array.isArray(run.searchFailureScopes) ? [...run.searchFailureScopes] : [],
       searchFailureReasons: run.searchFailureReasons && typeof run.searchFailureReasons === 'object'
         ? { ...run.searchFailureReasons } : {},
+      rssStatus: run.rssStatus || '',
+      rssItemCount: Number(run.rssItemCount || 0),
+      rssListOnlyCount: Number(run.rssListOnlyCount || 0),
+      rssFailureCode: run.rssFailureCode || '',
       detailAttemptCount: Number(run.detailAttemptCount || 0),
       detailSuccessCount: Number(run.detailSuccessCount || 0),
       detailSuccessRate: Number(run.detailAttemptCount || 0)
@@ -4300,8 +4358,10 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
 function applySourceMetricsToJobs(jobs, sourceMetrics = {}) {
   return jobs.map((job) => {
     const metric = sourceMetrics[job.source] || {};
-    const sourceRecommendationGateReason = ['degraded', 'unstable'].includes(metric.reliabilityState)
-      ? '반복 수집 실패로 소스 신뢰가 낮음'
+    const sourceRecommendationGateReason = job.sourceListingState === 'public_rss'
+      ? 'RSS 목록만 확인되어 상세 자격·모집 상태 미검증'
+      : ['degraded', 'unstable'].includes(metric.reliabilityState)
+        ? '반복 수집 실패로 소스 신뢰가 낮음'
       : metric.qualityTier === 'weak'
         ? '반복적으로 유효 공고 비율이 낮거나 중복·저품질 비율이 높은 소스'
         : '';
@@ -4420,6 +4480,10 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         searchFailureScopes: Array.isArray(result?.searchFailureScopes) ? [...result.searchFailureScopes] : [],
         searchFailureReasons: result?.searchFailureReasons && typeof result.searchFailureReasons === 'object'
           ? { ...result.searchFailureReasons } : {},
+        rssStatus: result?.rssStatus || '',
+        rssItemCount: Number(result?.rssItemCount || 0),
+        rssListOnlyCount: Number(result?.rssListOnlyCount || 0),
+        rssFailureCode: result?.rssFailureCode || '',
         detailAttemptCount: Number(result?.detailAttemptCount || 0),
         detailSuccessCount: Number(result?.detailSuccessCount || 0),
         matchedCount: Number(result?.matchedCount ?? collected.length),
@@ -4463,6 +4527,12 @@ export async function collectJobs({ includeManual = true, persist = true, previo
           : {}),
         ...(result?.searchFailureReasons && Object.keys(result.searchFailureReasons).length
           ? { searchFailureReasons: { ...result.searchFailureReasons } } : {}),
+        ...(name === '인크루트' ? {
+          rssStatus: result?.rssStatus || 'failed',
+          rssItemCount: Number(result?.rssItemCount || 0),
+          rssListOnlyCount: Number(result?.rssListOnlyCount || 0),
+          ...(result?.rssFailureCode ? { rssFailureCode: result.rssFailureCode } : {})
+        } : {}),
         ...(result?.detailAttemptCount ? { detailAttemptCount: Number(result.detailAttemptCount) } : {}),
         ...(result?.detailSuccessCount ? { detailSuccessCount: Number(result.detailSuccessCount) } : {}),
         ...(result?.detailFailureCount ? { detailFailureCount: Number(result.detailFailureCount) } : {}),
@@ -4495,6 +4565,10 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         searchFailureScopes: Array.isArray(failureRun.searchFailureScopes) ? [...failureRun.searchFailureScopes] : [],
         searchFailureReasons: failureRun.searchFailureReasons && typeof failureRun.searchFailureReasons === 'object'
           ? { ...failureRun.searchFailureReasons } : {},
+        rssStatus: failureRun.rssStatus || '',
+        rssItemCount: Number(failureRun.rssItemCount || 0),
+        rssListOnlyCount: Number(failureRun.rssListOnlyCount || 0),
+        rssFailureCode: failureRun.rssFailureCode || '',
         detailAttemptCount: Number(failureRun.detailAttemptCount || 0),
         detailSuccessCount: Number(failureRun.detailSuccessCount || 0),
         matchedCount: 0,
@@ -4525,6 +4599,11 @@ export async function collectJobs({ includeManual = true, persist = true, previo
           : {}),
         ...(failureRun.searchFailureReasons && Object.keys(failureRun.searchFailureReasons).length
           ? { searchFailureReasons: { ...failureRun.searchFailureReasons } } : {}),
+        ...(name === '인크루트' ? {
+          rssStatus: failureRun.rssStatus || 'failed',
+          rssItemCount: Number(failureRun.rssItemCount || 0),
+          ...(failureRun.rssFailureCode ? { rssFailureCode: failureRun.rssFailureCode } : {})
+        } : {}),
         ...(failureRun.discoveredCount ? { discoveredCount: Number(failureRun.discoveredCount) } : {}),
         ...(failureRun.detailAttemptCount ? { detailAttemptCount: Number(failureRun.detailAttemptCount) } : {}),
         ...(failureRun.detailSuccessCount ? { detailSuccessCount: Number(failureRun.detailSuccessCount) } : {}),

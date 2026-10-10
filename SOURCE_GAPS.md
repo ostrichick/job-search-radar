@@ -12,6 +12,7 @@
 | LinkedIn | 직접 크롤링하지 않음 | LinkedIn 공식 **Job Alert 이메일**을 사용. 저장/내보낸 이메일 본문은 `scripts/linkedin-alert-parser.mjs`로 파싱하고, 결과 JSON은 화면의 `상태/알림 가져오기`에서 stable LinkedIn job ID 기준으로 중복 없이 병합 | Gmail 등에서 토큰을 정적 웹앱에 노출하지 않는 서버 측 수집 경로가 생기면 자동 유입 검토 |
 | Indeed | 직접 크롤링하지 않음 | Indeed 공식 **Job Alert 이메일**을 사용하거나 화면의 `공고 추가` 사용 | 실제 Job Alert 샘플 fixture를 확보한 뒤에만 parser를 작성. 이메일 형식을 추측해 구현하지 않음 |
 | 고용24 | collector 구현 완료, 인증키가 없으면 비활성 | 공식 OPEN-API | 사용자 `WORK24_AUTH_KEY` 발급·설정 후 활성화 |
+| 인크루트 | GitHub Actions 지역 검색 13회 연속 실패(2026-10-10), 두 지역 모두 시간 초과. 로컬은 같은 공개 검색 요청 HTTP 200; IP 차단은 **미확인** | 인크루트가 공개 안내하는 **전북 지역 RSS**(최신 최대 20건)에서 단일 전주·완주 지역 표기 공고만 약한 목록 근거로 확보. 상세 검증과 구분·추천 제외 | RSS는 전북 전체 수집을 대체하지 않으며, 지역 검색의 상세 검증 및 CI 접근 문제는 별개로 남음 |
 | Gmail Job Alert 자동 유입 | 정적 GitHub Pages에 OAuth 토큰을 둘 수 없어 미연결 | 현재는 사용자가 내보낸/복사한 알림을 parser 또는 `공고 추가`로 처리 | 서버/Apps Script/안전한 connector처럼 토큰이 브라우저에 노출되지 않는 경로가 생길 때 연결 |
 
 ## 공식 대체 입력의 근거
@@ -22,6 +23,8 @@
   https://support.indeed.com/hc/en-us/articles/204488890-Starting-Stopping-and-Managing-Job-Alerts
 - 고용24 OPEN-API는 HTTP/XML(UTF-8) 기반이며 회원 가입 후 발급받는 인증키가 필요하다.
   https://www.work24.go.kr/cm/e/a/0110/selectOpenApiIntro.do
+- 인크루트는 공개 RSS 안내 페이지에서 지역별 채용정보 XML 피드를 제공하며, 전북 채널의 공개 위치를 확인했다. 2026-10-10 실측에서 HTTP 200, 20개 `item`과 공고 고유 ID·지역·게시일이 존재했다. 다중 지역/전북 전체는 전주·완주 단일 일자리로 추정하지 않는다.
+  https://people.incruit.com/rss/rss.asp
 
 ## 구현 우선순위
 

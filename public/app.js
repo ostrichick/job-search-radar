@@ -1867,6 +1867,7 @@ function renderSourceHealth(sourceStatus = []) {
   const failed = (sourceStatus || []).filter((source) => !source.ok);
   const partial = (sourceStatus || []).filter((source) => source.ok && (
     Number(source.searchFailureCount || 0) > 0
+    || Number(source.rssListOnlyCount || 0) > 0
     || Number(source.detailFailureCount || 0) > 0
     || Number(source.workplaceUnverifiedCount || 0) > 0
     || Number(source.accessRestrictedCount || 0) > 0
@@ -1898,6 +1899,7 @@ function renderSourceHealth(sourceStatus = []) {
       const scopes = Array.isArray(source.searchFailureScopes) ? source.searchFailureScopes.filter(Boolean) : [];
       details.push(`지역 검색 실패 ${Number(source.searchFailureCount)}개${scopes.length ? `(${scopes.join(', ')})` : ''}${searchFailureDescription(source)}`);
     }
+    if (Number(source.rssListOnlyCount || 0) > 0) details.push(`공식 공개 RSS 목록 ${Number(source.rssListOnlyCount)}건 · 상세 미검증`);
     if (Number(source.detailFailureCount || 0) > 0) details.push(`상세 파싱·응답 실패 ${Number(source.detailFailureCount)}건`);
     if (Number(source.workplaceUnverifiedCount || 0) > 0) details.push(`근무지 확인 불가 ${Number(source.workplaceUnverifiedCount)}건 제외`);
     if (Number(source.accessRestrictedCount || 0) > 0) details.push(`로그인·연령 인증 필요 ${Number(source.accessRestrictedCount)}건 제외`);

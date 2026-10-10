@@ -157,10 +157,16 @@ for (const job of feed.jobs) {
     assert.equal(job.sourceKind, 'job_board', `${job.id} Korean public platform must keep job-board intermediary semantics`);
     assert.ok(job.sourcePostingId && job.platform === job.source, `${job.id} Korean public platform must retain stable platform posting identity`);
     assert.match(String(job.sourcePostingId), /^\d+$/, `${job.id} Korean public platform posting identity must remain a numeric source id`);
-    assert.ok(job.workAddress && job.domesticRegion?.evidenceLevel === 'source_structured',
-      `${job.id} Korean public platform must retain structured workplace evidence from the detail page`);
-    assert.ok(['detail_structured', 'detail_html', 'detail_crosschecked', 'embedded_list', 'search_card', 'public_list'].includes(job.workAddressEvidence || ''),
-      `${job.id} Korean public platform must identify how workplace evidence was obtained`);
+    if (job.sourceListingState === 'public_rss') {
+      assert.equal(job.source, '인크루트', `${job.id} RSS list fallback is Incruit-only`);
+      assert.ok(!job.workAddress && job.domesticRegion?.evidenceLevel !== 'source_structured',
+        `${job.id} RSS location must not claim detailed workplace verification`);
+    } else {
+      assert.ok(job.workAddress && job.domesticRegion?.evidenceLevel === 'source_structured',
+        `${job.id} Korean public platform must retain structured workplace evidence from the detail page`);
+      assert.ok(['detail_structured', 'detail_html', 'detail_crosschecked', 'embedded_list', 'search_card', 'public_list'].includes(job.workAddressEvidence || ''),
+        `${job.id} Korean public platform must identify how workplace evidence was obtained`);
+    }
     if (['search_card', 'public_list'].includes(job.workAddressEvidence)) {
       assert.notEqual(job.domesticRegion?.precision, 'address', `${job.id} list-level locality fallback must not claim exact address precision`);
     }
@@ -172,7 +178,7 @@ for (const job of feed.jobs) {
     if (job.source === '사람인') {
       assert.equal(job.workAddressEvidence, 'detail_html', `${job.id} Saramin workplace evidence must come from the public detail page`);
     }
-    if (job.source === '인크루트') {
+    if (job.source === '인크루트' && job.sourceListingState !== 'public_rss') {
       assert.equal(job.workAddressEvidence, 'detail_crosschecked', `${job.id} Incruit workplace must be cross-checked between search and detail`);
       assert.equal(job.domesticRegion?.precision, 'address', `${job.id} Incruit must retain a posting-specific detail address`);
     }
@@ -238,6 +244,13 @@ for (const [source, metric] of Object.entries(feed.sourceMetrics)) {
   assert.ok(metric.reliabilityState, `${source} metric must expose reliability state`);
   assert.ok(Array.isArray(metric.history) && metric.history.length > 0, `${source} metric must retain recent history`);
   assert.ok(metric.history.length <= 24, `${source} metric history must remain bounded`);
+  if (source === '인크루트' && metric.rssStatus) {
+    assert.ok(['ok', 'failed'].includes(metric.rssStatus), 'Incruit RSS status must be explicit');
+    assert.ok(Number.isInteger(metric.rssItemCount) && metric.rssItemCount >= 0 && metric.rssItemCount <= 20,
+      'Incruit official RSS is bounded to 20 entries');
+    assert.ok(Number.isInteger(metric.rssListOnlyCount) && metric.rssListOnlyCount >= 0
+      && metric.rssListOnlyCount <= metric.rssItemCount, 'RSS fallback cannot exceed source list');
+  }
   assert.ok(Number.isFinite(metric.rawCount) && metric.rawCount >= 0, `${source} rawCount must be non-negative`);
   assert.ok(Number.isFinite(metric.matchedCount) && metric.matchedCount >= 0, `${source} matchedCount must be non-negative`);
   assert.ok(Number.isFinite(metric.keptCount) && metric.keptCount >= 0, `${source} keptCount must be non-negative`);
@@ -254,6 +267,16 @@ for (const [source, metric] of Object.entries(feed.sourceMetrics)) {
   if (['degraded', 'unstable'].includes(metric.reliabilityState) || metric.qualityTier === 'weak') {
     assert.equal(metric.recommendedCount, 0, `${source} unreliable or repeatedly weak source must not contribute default recommendations`);
   }
+}
+
+for (const job of feed.jobs.filter((item) => item.sourceListingState === 'public_rss')) {
+  assert.equal(job.source, '인크루트', 'RSS listing contract currently supports only Incruit');
+  assert.equal(job.listingBasis, 'public_rss_list', 'RSS must not masquerade as verified detail');
+  assert.equal(job.listingVerification, 'intermediary', 'RSS does not verify official employer recruitment');
+  assert.equal(job.recommendationEligible, false, 'RSS-only listings are never default recommendations');
+  assert.ok(job.domesticRegion?.province === '전북특별자치도'
+    && ['전주시', '완주군'].includes(job.domesticRegion?.city), 'RSS-only listings require explicit target city');
+  assert.ok(!job.workAddress, 'RSS-only listings must not invent street address');
 }
 
 const unanchored = feed.jobs.filter((job) => job.score > 5 && job.category === '기타' && !(job.matchedKeywords || []).length);
