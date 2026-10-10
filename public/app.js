@@ -1883,7 +1883,7 @@ function renderSourceHealth(sourceStatus = []) {
     panel.replaceChildren();
     return;
   }
-  const preserved = failed.reduce((sum, source) => sum + Number(source.preserved || 0), 0);
+  const preserved = [...failed, ...partial].reduce((sum, source) => sum + Number(source.preserved || 0), 0);
   const summary = document.createElement('div');
   const title = document.createElement('strong');
   title.textContent = failed.length
@@ -1895,6 +1895,7 @@ function renderSourceHealth(sourceStatus = []) {
   const failureText = failed.map((source) => `${source.source}${source.preserved ? ` · 이전 ${source.preserved}개 보존` : ''}${searchFailureDescription(source)}`);
   const partialText = partial.map((source) => {
     const details = [];
+    if (Number(source.preserved || 0) > 0) details.push(`이전 ${Number(source.preserved)}개 보존 · 현재 모집 미확인`);
     if (Number(source.searchFailureCount || 0) > 0) {
       const scopes = Array.isArray(source.searchFailureScopes) ? source.searchFailureScopes.filter(Boolean) : [];
       details.push(`지역 검색 실패 ${Number(source.searchFailureCount)}개${scopes.length ? `(${scopes.join(', ')})` : ''}${searchFailureDescription(source)}`);

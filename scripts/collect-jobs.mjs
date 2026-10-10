@@ -1642,7 +1642,11 @@ function markPreservedSourceFailure(job) {
     listingBasis: 'source_error',
     listingVerification: 'source_error',
     stale: true,
-    score: Math.max(0, Number(job.score || 0) - 20)
+    // An outage is not new evidence of weaker role fit. Apply the legacy
+    // caution only on the first outage, not again on every scheduled retry.
+    score: job.listingStatus === 'source_error'
+      ? Number(job.score || 0)
+      : Math.max(0, Number(job.score || 0) - 20)
   };
 }
 
@@ -4218,8 +4222,13 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
     const run = sourceRuns.get(source) || {};
     const rawCount = Number(run.rawCount || 0);
     const matchedCount = Number(run.matchedCount || status.count || 0);
-    const uniqueMatchedCount = dedupedJobs.filter((job) => job.source === source || (job.sources || []).includes(source)).length;
-    const keptCount = keptJobs.filter((job) => job.source === source || (job.sources || []).includes(source)).length;
+    // Historical rows retained for continuity did not pass this collection.
+    // Exclude them from present-run yield rather than producing 4/1 (400%).
+    const currentlyObserved = (job) => !['source_error', 'archived_missing'].includes(job.listingStatus)
+      && (job.source === source || (job.sources || []).includes(source));
+    const uniqueMatchedCount = Math.min(matchedCount, dedupedJobs.filter(currentlyObserved).length);
+    const keptCount = Math.min(matchedCount, keptJobs.filter(currentlyObserved).length);
+    const preservedCount = Number(status.preserved || 0);
     const recommendedCount = keptJobs.filter((job) =>
       (job.source === source || (job.sources || []).includes(source))
       && isDefaultRecommendation({ ...job, recommendationEligible: true })).length;
@@ -4255,6 +4264,7 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       detailSuccessCount: Number(run.detailSuccessCount || 0),
       matchedCount,
       keptCount,
+      preservedCount,
       recommendedCount,
       duplicateCount,
       lowQualityCount,
@@ -4339,6 +4349,7 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       discoveryOverlapCount: Number(run.discoveryOverlapCount || 0),
       matchedCount,
       keptCount,
+      preservedCount,
       recommendedCount,
       duplicateCount,
       lowQualityCount,

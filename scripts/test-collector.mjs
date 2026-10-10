@@ -1050,6 +1050,10 @@ const incruitOld = {
   ...incruitFresh, sourcePostingId: '2609110000253', id: 'incruit:2609110000253',
   title: '자료입력', score: 25
 };
+const onceUnavailable = markPreservedSourceFailure({ ...incruitOld, score: 85 });
+const twiceUnavailable = markPreservedSourceFailure(onceUnavailable);
+assert.equal(onceUnavailable.score, 65);
+assert.equal(twiceUnavailable.score, 65, 'repeated source outage must not repeatedly reduce role-fit score');
 const incruitArchived = { ...incruitOld, sourcePostingId: '2609110000254', listingStatus: 'archived_missing' };
 const partialOld = preservePartialIncruitFallback(
   [incruitFresh, incruitOld, incruitArchived, { ...incruitOld, source: '잡코리아' }],
@@ -1073,6 +1077,43 @@ assert.equal(partialMetrics.history.at(-1).ok, false,
 assert.equal(partialMetrics.lastSuccessAt, '2026-10-09T00:00:00.000Z',
   'a partial search must not overwrite the last full-success timestamp');
 assert.equal(partialMetrics.lastFailureAt, '2026-10-10T00:00:00.000Z');
+const retainedJobs = [
+  { ...incruitFresh, score: 30, listingStatus: 'current_feed' },
+  ...[1, 2, 3].map((num) => ({
+    ...incruitOld, id: 'incruit:previous-' + num,
+    sourcePostingId: String(2609110000253 + num), listingStatus: 'source_error'
+  }))
+];
+const preservedMetrics = buildSourceMetrics(
+  ['인크루트'],
+  new Map([['인크루트', { rawCount: 1, matchedCount: 1, searchAttemptCount: 2, searchSuccessCount: 1, searchFailureCount: 1 }]]),
+  [{ source: '인크루트', ok: true, count: 1, preserved: 3 }],
+  retainedJobs, retainedJobs, {}, Date.parse('2026-10-10T04:00:00.000Z')
+).인크루트;
+assert.equal(preservedMetrics.matchedCount, 1);
+assert.equal(preservedMetrics.keptCount, 1);
+assert.equal(preservedMetrics.preservedCount, 3);
+assert.equal(preservedMetrics.validJobRate, 1, 'historical source-error posts must not inflate source yield to 400%');
+assert.equal(preservedMetrics.history.at(-1).ok, false);
+assert.equal(preservedMetrics.history.at(-1).preservedCount, 3);
+const totalOutageMetrics = buildSourceMetrics(
+  ['인크루트'], new Map([['인크루트', { matchedCount: 0, searchFailureCount: 2 }]]),
+  [{ source: '인크루트', ok: false, count: 0, preserved: 3 }],
+  retainedJobs.slice(1), retainedJobs.slice(1), {}, Date.parse('2026-10-10T05:00:00.000Z')
+).인크루트;
+assert.equal(totalOutageMetrics.keptCount, 0);
+assert.equal(totalOutageMetrics.validJobRate, 0);
+assert.equal(totalOutageMetrics.preservedCount, 3);
+const fullRecoveryMetrics = buildSourceMetrics(
+  ['인크루트'], new Map([['인크루트', { matchedCount: 4, searchAttemptCount: 2, searchSuccessCount: 2 }]]),
+  [{ source: '인크루트', ok: true, count: 4, preserved: 0 }],
+  retainedJobs.map((j) => ({ ...j, listingStatus: 'current_feed' })),
+  retainedJobs.map((j) => ({ ...j, listingStatus: 'current_feed' })),
+  {}, Date.parse('2026-10-10T06:00:00.000Z')
+).인크루트;
+assert.equal(fullRecoveryMetrics.keptCount, 4);
+assert.equal(fullRecoveryMetrics.validJobRate, 1);
+assert.equal(fullRecoveryMetrics.preservedCount, 0);
 const codedMetrics = buildSourceMetrics(
   ['인크루트'],
   new Map([['인크루트', {

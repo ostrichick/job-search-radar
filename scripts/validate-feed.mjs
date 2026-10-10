@@ -262,8 +262,14 @@ for (const [source, metric] of Object.entries(feed.sourceMetrics)) {
     `${source} lowQualityRate must be a ratio`);
   assert.ok(Number.isFinite(metric.noiseRate) && metric.noiseRate >= 0 && metric.noiseRate <= 1,
     `${source} noiseRate must be a ratio`);
-  assert.ok(metric.keptCount <= metric.matchedCount || !metric.history.at(-1)?.ok,
-    `${source} kept count cannot exceed matched count on successful collection`);
+  // Legacy baselines predate preservedCount and can contain distorted counts.
+  // New runs must explicitly separate retained history from observed yield.
+  if (metric.preservedCount !== undefined) {
+    assert.ok(metric.keptCount <= metric.matchedCount,
+      `${source} present-run kept count cannot exceed matched count even when collection is partial`);
+    assert.ok(Number.isInteger(metric.preservedCount) && metric.preservedCount >= 0,
+      `${source} historical preserved count must be a separate non-negative integer`);
+  }
   if (['degraded', 'unstable'].includes(metric.reliabilityState) || metric.qualityTier === 'weak') {
     assert.equal(metric.recommendedCount, 0, `${source} unreliable or repeatedly weak source must not contribute default recommendations`);
   }

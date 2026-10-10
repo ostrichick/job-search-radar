@@ -1413,6 +1413,48 @@ test('부분 소스 실패를 별도 경고하고 보존 공고로 바로 이동
   await expect(page.locator('.listing-badge')).toHaveText('출처 확인 실패');
 });
 
+test('인크루트 일부 지역만 성공해도 보존 공고 수를 안내하고 클릭으로 찾을 수 있다', async ({ page }) => {
+  const preserved = job({
+    id: 'job:incruit-preserved',
+    source: '인크루트',
+    sourceKind: 'job_board',
+    sourceQualityTier: 'weak',
+    sourceReliabilityState: 'degraded',
+    title: '전주 데이터 정리 보조 (이전 확인 공고)',
+    company: '지역기업',
+    location: '전북특별자치도 전주시 덕진구',
+    remote: false,
+    workplaceMode: 'onsite',
+    marketScopes: ['domestic'],
+    marketSegment: 'domestic',
+    domesticRegion: { country: '대한민국', province: '전북특별자치도', city: '전주시', district: '덕진구', neighborhood: '', precision: 'district' },
+    score: 0,
+    recommendationEligible: false,
+    listingStatus: 'source_error',
+    listingLabel: '출처 확인 실패',
+    listingVerification: 'source_error',
+    listingReason: '지역 검색이 실패해 현재 모집 상태를 확인하지 못함',
+    url: 'https://job.incruit.com/jobdb_info/jobpost.asp?job=2609110000253'
+  });
+  const partialFeed = {
+    ...feed([...defaultJobs, preserved]),
+    sourceStatus: [
+      { source: '인크루트', ok: true, count: 1, preserved: 1, searchFailureCount: 1,
+        searchFailureScopes: ['완주'], searchFailureReasons: { 완주: 'timeout' } }
+    ],
+    sourceMetrics: {}
+  };
+  await useFeed(page, () => partialFeed);
+  await page.goto('/');
+  await page.locator('#marketDomestic').click();
+  await expect(page.locator('#sourceHealth')).toContainText('이전 1개 보존 · 현재 모집 미확인');
+  await expect(page.locator('#showSourceErrors')).toHaveText('보존 공고 1개 보기');
+  await page.locator('#showSourceErrors').click();
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await expect(page.locator('.title')).toHaveText('전주 데이터 정리 보조 (이전 확인 공고)');
+  await expect(page.locator('.listing-badge')).toContainText('출처 확인 실패');
+});
+
 test('자동 수집하지 못하는 플랫폼과 대체 경로를 시장별 수집 범위 안내로 보여준다', async ({ page }) => {
   const coverageFeed = {
     ...feed(defaultJobs),
