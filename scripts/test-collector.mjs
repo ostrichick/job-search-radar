@@ -18,6 +18,8 @@ import {
   fetchIncruitSearchText,
   incruitSearchFailureCode,
   collectIncruit,
+  collectSaramin,
+  preservePartialLocalSearch,
   localCrossPlatformDuplicateKey,
   structuredLocalBoardCandidate,
   collectStructuredLocalBoard,
@@ -832,6 +834,71 @@ const saraminNoWorkplace = saraminDetailFixture.replace('근무지위치 (55353)
 assert.throws(() => structuredLocalBoardCandidate(
   '사람인', '55201443', 'https://www.saramin.co.kr/zf_user/jobs/view?rec_idx=55201443', saraminNoWorkplace, {}
 ), /missing verifiable workplace address/, 'Saramin rows without a verified local workplace must fail closed');
+
+const saraminPartialOriginalFetch = globalThis.fetch;
+try {
+  const encoder = new TextEncoder();
+  const body = (value) => {
+    const bytes = encoder.encode(value);
+    return { ok: true, status: 200, arrayBuffer: async () => bytes.buffer, text: async () => value };
+  };
+  const requests = [];
+  globalThis.fetch = async (url) => {
+    const value = String(url);
+    requests.push(value);
+    if (value.includes('loc_cd=113130%2C113140')) throw new TypeError('simulated Jeonju failure');
+    if (value.includes('loc_cd=113080')) return body(saraminListFixture);
+    if (value.includes('rec_idx=55201442')) return body(saraminDetailFixture);
+    throw new Error('Unexpected Saramin test route: ' + value);
+  };
+  const partial = await collectSaramin([]);
+  assert.equal(partial.searchAttemptCount, 2);
+  assert.equal(partial.searchSuccessCount, 1);
+  assert.equal(partial.searchFailureCount, 1);
+  assert.deepEqual(partial.searchFailureScopes, ['전주']);
+  assert.deepEqual(partial.searchFailureReasons, { 전주: 'network_error' });
+  assert.equal(partial.jobs.length, 1,
+    'verified Wanju job survives unavailable Jeonju public search');
+  assert.equal(partial.jobs[0].sourcePostingId, '55201442');
+  assert.equal(partial.jobs[0].domesticRegion.city, '완주군');
+  const historical = { ...partial.jobs[0], sourcePostingId: '55201443',
+    id: 'saramin:55201443', url: 'https://www.saramin.co.kr/zf_user/jobs/view?rec_idx=55201443',
+    lastVerifiedAt: '2026-10-09T00:00:00.000Z', score: 35, listingStatus: 'current_feed' };
+  const preserved = preservePartialLocalSearch('사람인',
+    [partial.jobs[0], historical, { ...historical, listingStatus: 'expired', id: 'old-expired' }],
+    partial.jobs, partial.searchFailureCount);
+  assert.equal(preserved.length, 1);
+  assert.equal(preserved[0].sourcePostingId, '55201443');
+  assert.equal(preserved[0].listingStatus, 'source_error');
+  assert.equal(preserved[0].lastVerifiedAt, historical.lastVerifiedAt);
+  assert.equal(preserved[0].score, 15);
+  assert.equal(preservePartialLocalSearch('사람인', [historical], [], 0).length, 0,
+    'complete search uses normal missing lifecycle');
+  const metrics = buildSourceMetrics(
+    ['사람인'], new Map([['사람인', { matchedCount: 1, searchAttemptCount: 2,
+      searchSuccessCount: 1, searchFailureCount: 1 }]]),
+    [{ source: '사람인', ok: true, count: 1, preserved: 1 }],
+    [...partial.jobs, ...preserved], [...partial.jobs, ...preserved],
+    {}, Date.parse('2026-10-10T08:00:00.000Z')
+  ).사람인;
+  assert.equal(metrics.history.at(-1).ok, false);
+  assert.equal(metrics.matchedCount, 1);
+  assert.equal(metrics.keptCount, 1);
+  assert.equal(metrics.preservedCount, 1);
+  assert.equal(metrics.validJobRate, 1);
+  assert.equal(requests.filter((url) => url.includes('loc_cd=113130')).length, 1,
+    'do not retry an unavailable region aggressively');
+  globalThis.fetch = async () => { throw new TypeError('simulated both-region outage'); };
+  await assert.rejects(collectSaramin([]), (error) => {
+    assert.deepEqual(error.sourceRun?.searchFailureScopes, ['전주', '완주']);
+    assert.equal(error.sourceRun?.searchSuccessCount, 0);
+    assert.deepEqual(error.sourceRun?.searchFailureReasons,
+      { 전주: 'network_error', 완주: 'network_error' });
+    return true;
+  });
+} finally {
+  globalThis.fetch = saraminPartialOriginalFetch;
+}
 
 const incruitListFixture = `<!doctype html><html><body>
   <ul class="c_row" jobno="2609110000252"><li class="c_col">

@@ -1698,10 +1698,14 @@ function markPreservedSourceFailure(job) {
 }
 
 function preservePartialIncruitFallback(previousJobs = [], collected = [], searchFailureCount = 0) {
-  if (!searchFailureCount) return [];
+  return preservePartialLocalSearch('인크루트', previousJobs, collected, searchFailureCount);
+}
+
+function preservePartialLocalSearch(source, previousJobs = [], collected = [], incompleteCount = 0) {
+  if (!incompleteCount) return [];
   const seenPostingIds = new Set(collected.map((job) => text(job.sourcePostingId)).filter(Boolean));
   return previousJobs
-    .filter((job) => job.source === '인크루트'
+    .filter((job) => job.source === source
       && /^\d+$/.test(text(job.sourcePostingId))
       && !seenPostingIds.has(text(job.sourcePostingId))
       && !['archived_missing', 'expired', 'talent_pool'].includes(job.listingStatus))
@@ -2829,9 +2833,23 @@ function markLocalTerminalPosting(previousJob, status) {
 async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detailUrl, perSearchLimit = 30, previousJobs = [] }) {
   const candidates = [];
   const candidateIndexes = new Map();
-  for (const searchSpec of searchUrls) {
+  const saraminPartialSearch = source === '사람인';
+  const searchFailureScopes = [];
+  const searchFailureReasons = {};
+  let searchSuccessCount = 0;
+  for (const [index, searchSpec] of searchUrls.entries()) {
     const spec = typeof searchSpec === 'string' ? { url: searchSpec } : searchSpec;
-    const html = await fetchText(spec.url);
+    let html;
+    try {
+      html = await fetchText(spec.url);
+    } catch (error) {
+      if (!saraminPartialSearch) throw error;
+      const scope = ['전주', '완주'][index] || '지역 ' + (index + 1);
+      searchFailureScopes.push(scope);
+      searchFailureReasons[scope] = incruitSearchFailureCode(error);
+      continue;
+    }
+    searchSuccessCount += 1;
     const discovered = typeof spec.discover === 'function'
       ? spec.discover(html).slice(0, spec.limit || perSearchLimit)
       : uniqueIds(html, idRegex, spec.limit || perSearchLimit).map((id) => ({ id }));
@@ -2851,7 +2869,18 @@ async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detail
       candidates.push({ ...candidate, id });
     }
   }
-  if (!candidates.length) throw new Error(source + ' public search returned no posting ids');
+  const searchRun = saraminPartialSearch ? {
+    searchAttemptCount: searchUrls.length,
+    searchSuccessCount,
+    searchFailureCount: searchFailureScopes.length,
+    searchFailureScopes,
+    searchFailureReasons
+  } : {};
+  if (!candidates.length) {
+    const error = new Error(source + ' public search returned no posting ids');
+    if (saraminPartialSearch) error.sourceRun = searchRun;
+    throw error;
+  }
   const results = await mapLimit(candidates, 4, async (candidate) => {
     const url = detailUrl(candidate.id);
     try {
@@ -2877,6 +2906,7 @@ async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detail
       `${source} detail parsing collapsed: ${successful.length}/${results.length} discovered postings parsed successfully (previous local reference ${collapseState.referenceCount})`
     );
     error.sourceRun = {
+      ...searchRun,
       rawCount: candidates.length,
       discoveredCount: candidates.length,
       detailAttemptCount: results.length,
@@ -2912,6 +2942,7 @@ async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detail
       `${source} search discovery collapsed from ${collapseState.referenceCount} previous local postings to ${collapseState.discoveredCount}, and ${continuityFailureCount}/${continuityCandidates.length} direct continuity checks also failed`
     );
     error.sourceRun = {
+      ...searchRun,
       rawCount: candidates.length + continuityCandidates.length,
       discoveredCount: candidates.length,
       detailAttemptCount: results.length,
@@ -2963,6 +2994,7 @@ async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detail
   const detailFailureCount = results.filter((result) => !result?.ok
     && !['workplace_unverified', 'access_restricted'].includes(result?.error?.code)).length;
   return sourceCollection([...matched, ...terminal.filter((job) => !matched.includes(job))], candidates.length + continuityCandidates.length, {
+    ...searchRun,
     discoveredCount: candidates.length,
     detailAttemptCount: results.length,
     detailSuccessCount: results.filter((result) => result?.ok && result.value).length,
@@ -4618,7 +4650,9 @@ export async function collectJobs({ includeManual = true, persist = true, previo
       const preservedPartial = name === '인크루트'
         ? preservePartialIncruitFallback(fallbackJobs, collected,
           Number(result?.searchFailureCount || 0) + (result?.detailCollapseSuspected ? 1 : 0))
-        : [];
+        : name === '사람인'
+          ? preservePartialLocalSearch(name, fallbackJobs, collected, result?.searchFailureCount)
+          : [];
       jobs.push(...collected, ...preservedPartial);
       sourceStatus.push({
         source: name,
@@ -4849,6 +4883,8 @@ export {
   normalizedUrl,
   markPreservedSourceFailure,
   preservePartialIncruitFallback,
+  preservePartialLocalSearch,
+  collectSaramin,
   preserveFailedSourceJobs,
   normalizeJob,
   dedupe,

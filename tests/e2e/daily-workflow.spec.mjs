@@ -1455,6 +1455,49 @@ test('인크루트 일부 지역만 성공해도 보존 공고 수를 안내하�
   await expect(page.locator('.listing-badge')).toContainText('출처 확인 실패');
 });
 
+test('사람인 한 지역 검색이 실패해도 성공 지역을 유지하고 과거 공고는 미확인으로 분리한다', async ({ page }) => {
+  const preserved = job({
+    id: 'job:saramin-prior-55201443',
+    source: '사람인',
+    sourceKind: 'job_board',
+    sourceQualityTier: 'mixed',
+    sourceReliabilityState: 'observed',
+    title: '완주 데이터 정리원 (이전 확인)',
+    company: '지역회사',
+    location: '전북특별자치도 완주군',
+    remote: false,
+    workplaceMode: 'onsite',
+    marketScopes: ['domestic'],
+    marketSegment: 'domestic',
+    domesticRegion: { country: '대한민국', province: '전북특별자치도', city: '완주군', district: '', neighborhood: '', precision: 'city', evidenceLevel: 'source_text' },
+    score: 15,
+    recommendationEligible: false,
+    listingStatus: 'source_error',
+    listingLabel: '출처 확인 실패',
+    listingVerification: 'source_error',
+    listingReason: '전주 검색 실패로 이전 공고의 현 모집 상태를 확인하지 못함',
+    url: 'https://www.saramin.co.kr/zf_user/jobs/view?rec_idx=55201443'
+  });
+  await useFeed(page, () => ({
+    ...feed([...defaultJobs, preserved]),
+    sourceStatus: [{ source: '사람인', ok: true, count: 1, preserved: 1,
+      searchAttemptCount: 2, searchSuccessCount: 1, searchFailureCount: 1,
+      searchFailureScopes: ['전주'], searchFailureReasons: { 전주: 'network_error' } }],
+    sourceMetrics: {}
+  }));
+  await page.goto('/');
+  await page.locator('#marketDomestic').click();
+  await expect(page.locator('#sourceHealth')).toContainText('사람인');
+  await expect(page.locator('#sourceHealth')).toContainText('지역 검색 실패 1개(전주)');
+  await expect(page.locator('#sourceHealth')).toContainText('전주: 네트워크 연결 오류');
+  await expect(page.locator('#sourceHealth')).toContainText('이전 1개 보존 · 현재 모집 미확인');
+  await expect(page.locator('#showSourceErrors')).toHaveText('보존 공고 1개 보기');
+  await page.locator('#showSourceErrors').click();
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await expect(page.locator('.title')).toHaveText('완주 데이터 정리원 (이전 확인)');
+  await expect(page.locator('.listing-badge')).toContainText('출처 확인 실패');
+});
+
 test('RSS 성공 중 상세 수집 붕괴도 원문 미확인으로 경고하고 이전 공고를 찾게 한다', async ({ page }) => {
   const preserved = job({
     id: 'job:incruit-detail-unavailable',

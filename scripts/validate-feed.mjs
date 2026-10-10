@@ -292,12 +292,15 @@ for (const [source, metric] of Object.entries(feed.sourceMetrics)) {
 
 for (const job of feed.jobs.filter((item) => ['public_rss', 'public_rss_cached_detail'].includes(item.sourceListingState))) {
   assert.equal(job.source, '인크루트', 'RSS listing contract currently supports only Incruit');
-  assert.equal(job.listingBasis, 'public_rss_list', 'RSS must not masquerade as verified detail');
-  assert.equal(job.listingVerification, 'intermediary', 'RSS does not verify official employer recruitment');
   assert.equal(job.recommendationEligible, false, 'RSS-only listings are never default recommendations');
   assert.ok(job.domesticRegion?.province === '전북특별자치도'
     && ['전주시', '완주군'].includes(job.domesticRegion?.city), 'RSS-only listings require explicit target city');
   if (job.sourceListingState === 'public_rss') assert.ok(!job.workAddress, 'RSS-only listings must not invent street address');
+  // Retained RSS rows can legitimately transition into expired, missing or
+  // source-error states without changing their original discovery channel.
+  if (['archived_missing', 'expired', 'source_error'].includes(job.listingStatus)) continue;
+  assert.equal(job.listingBasis, 'public_rss_list', 'current RSS must not masquerade as verified detail');
+  assert.equal(job.listingVerification, 'intermediary', 'RSS does not verify official employer recruitment');
 }
 
 const unanchored = feed.jobs.filter((job) => job.score > 5 && job.category === '기타' && !(job.matchedKeywords || []).length);
