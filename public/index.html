@@ -222,7 +222,7 @@
 
     <section class="result-head">
       <div>
-        <strong id="resultCount">0개</strong>
+        <strong id="resultCount" tabindex="-1">0개</strong>
         <span id="scopeCount" class="scope-count"></span>
         <span id="updatedAt"></span>
       </div>
@@ -232,6 +232,10 @@
       </div>
     </section>
     <section id="sourceHealth" class="source-health" hidden aria-live="polite"></section>
+    <details id="collectionCoverage" class="collection-coverage" hidden>
+      <summary id="collectionCoverageSummary">수집 범위 안내</summary>
+      <div id="collectionCoverageList" class="collection-coverage-list"></div>
+    </details>
     <section id="loadErrorBanner" class="load-error-banner" hidden role="alert">
       <strong>목록 확인 실패</strong>
       <span id="loadErrorText"></span>

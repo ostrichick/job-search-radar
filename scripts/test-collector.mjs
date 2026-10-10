@@ -44,6 +44,7 @@ import {
   reconcileVerificationHistory,
   buildSourceMetrics,
   applySourceMetricsToJobs,
+  collectionGapsFor,
   isDefaultRecommendation,
   recommendationCollapseRisk,
   refreshTimeBasedEvidence
@@ -363,6 +364,13 @@ for (const [location, province, city] of [
 assert.ok(domesticProvinceOptions.includes('전남광주통합특별시'));
 assert.ok(!domesticProvinceOptions.includes('광주광역시'));
 assert.ok(!domesticProvinceOptions.includes('전라남도'));
+const gapsWithoutWork24 = collectionGapsFor({ work24Configured: false });
+assert.ok(gapsWithoutWork24.some((gap) => gap.source === '고용24' && gap.status === 'not_configured'),
+  'missing Work24 credentials must be exposed as an explicit collection gap');
+assert.ok(gapsWithoutWork24.some((gap) => gap.source === 'LinkedIn' && /Job Alert/.test(gap.alternative)),
+  'LinkedIn collection gap must retain the supported official-alert import path');
+assert.ok(!collectionGapsFor({ work24Configured: true }).some((gap) => gap.source === '고용24'),
+  'Work24 must disappear from collection gaps once its API credential is configured');
 const countryOnlyRegion = domesticRegionFor({ location: '위치 미상', countryCode: 'KR' });
 assert.equal(countryOnlyRegion.precision, 'country');
 assert.equal(countryOnlyRegion.evidenceLevel, 'country_code');

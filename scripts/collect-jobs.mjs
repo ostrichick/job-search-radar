@@ -4241,6 +4241,43 @@ function applySourceMetricsToJobs(jobs, sourceMetrics = {}) {
   });
 }
 
+function collectionGapsFor({ work24Configured = false } = {}) {
+  return [
+    ...(!work24Configured ? [{
+      source: '고용24',
+      status: 'not_configured',
+      label: '공식 API 미연결',
+      reason: 'WORK24_AUTH_KEY가 설정되지 않아 현재 수집 실행에서 제외됨',
+      alternative: '공식 OPEN-API 인증키를 설정하면 자동 수집 가능',
+      markets: ['domestic']
+    }] : []),
+    {
+      source: 'LinkedIn',
+      status: 'manual_import',
+      label: '자동 수집 안 함',
+      reason: '로그인 기반 직접 크롤링 대신 공식 Job Alert 경로를 사용',
+      alternative: '공식 Job Alert 내보내기 JSON을 상태/알림 가져오기로 병합',
+      markets: ['overseas_remote', 'domestic']
+    },
+    {
+      source: 'Indeed',
+      status: 'manual_only',
+      label: '자동 수집 안 함',
+      reason: '직접 크롤링 대신 공식 Job Alert 또는 수동 입력을 사용',
+      alternative: '실제 Job Alert 샘플 확보 전에는 공고 직접 추가 사용',
+      markets: ['overseas_remote', 'domestic']
+    },
+    {
+      source: '잡플래닛',
+      status: 'access_restricted',
+      label: '공개 접근 제한',
+      reason: '무로그인 공개 검색이 Cloudflare challenge로 제한됨',
+      alternative: '연결된 원출처 공고를 우선 사용하거나 공고 직접 추가',
+      markets: ['domestic']
+    }
+  ];
+}
+
 export async function collectJobs({ includeManual = true, persist = true, previousJobs = null, previousFeed = null } = {}) {
   const work24AuthKey = text(process.env.WORK24_AUTH_KEY || '');
   const sources = [
@@ -4424,6 +4461,7 @@ export async function collectJobs({ includeManual = true, persist = true, previo
     updatedAt: new Date(now).toISOString(),
     locationReference: defaultLocationReference,
     domesticProvinceOptions,
+    collectionGaps: collectionGapsFor({ work24Configured: Boolean(work24AuthKey) }),
     sourceStatus: enrichedSourceStatus,
     sourceMetrics,
     recommendationPolicyVersion,
@@ -4513,6 +4551,7 @@ export {
   reconcileVerificationHistory,
   buildSourceMetrics,
   applySourceMetricsToJobs,
+  collectionGapsFor,
   keepInFeed,
   isDefaultRecommendation,
   recommendationCollapseRisk,

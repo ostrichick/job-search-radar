@@ -13,6 +13,22 @@ if (baselineTarget && fs.existsSync(baselineTarget)) {
 assert.ok(Array.isArray(feed.jobs) && feed.jobs.length > 0, 'feed must contain jobs');
 assert.ok(feed.sourceMetrics && typeof feed.sourceMetrics === 'object' && !Array.isArray(feed.sourceMetrics),
   'feed must persist sourceMetrics for long-term source quality tracking');
+if (feed.collectionGaps !== undefined) {
+  assert.ok(Array.isArray(feed.collectionGaps), 'collectionGaps must be an array when present');
+  const gapSources = new Set();
+  for (const gap of feed.collectionGaps) {
+    assert.ok(gap && typeof gap === 'object', 'collection gap must be an object');
+    assert.ok(gap.source, 'collection gap must name its source');
+    assert.ok(!gapSources.has(gap.source), `collection gap source must be unique: ${gap.source}`);
+    gapSources.add(gap.source);
+    assert.ok(['not_configured', 'manual_import', 'manual_only', 'access_restricted'].includes(gap.status),
+      `${gap.source} collection gap must use a supported status`);
+    assert.ok(gap.label && gap.reason && gap.alternative, `${gap.source} collection gap must explain status and alternative`);
+    assert.ok(Array.isArray(gap.markets) && gap.markets.length > 0, `${gap.source} collection gap must identify affected markets`);
+    assert.ok(gap.markets.every((market) => ['overseas_remote', 'domestic'].includes(market)),
+      `${gap.source} collection gap markets must use known market scopes`);
+  }
+}
 assert.ok(feed.recommendationSummary && typeof feed.recommendationSummary === 'object',
   'feed must persist recommendationSummary');
 assert.ok(Number.isInteger(feed.recommendationPolicyVersion) && feed.recommendationPolicyVersion >= 1,

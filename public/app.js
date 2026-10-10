@@ -29,6 +29,7 @@ const state = {
   toastTimer: null,
   currentDetailId: null,
   detailQueue: [],
+  detailReturnFocus: null,
   loadError: null,
   dynamicFiltersInitialized: false,
   marketTab: localStorage.getItem('jobMarketTab') === 'domestic' ? 'domestic' : 'overseas_remote'
@@ -580,6 +581,11 @@ function marketPulseJobs() {
     .filter((job) => !['source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus));
 }
 
+function currentCollectionGaps() {
+  return (Array.isArray(state.meta?.collectionGaps) ? state.meta.collectionGaps : [])
+    .filter((gap) => !Array.isArray(gap?.markets) || gap.markets.includes(state.marketTab));
+}
+
 function renderMarketPulse() {
   const container = $('marketPulseCards');
   const note = $('marketPulseNote');
@@ -591,7 +597,8 @@ function renderMarketPulse() {
     empty.className = 'market-pulse-card';
     empty.innerHTML = '<span>시장 요약</span><strong>표시할 공고 없음</strong><small>지역·분야·출처 필터를 완화하면 시장 요약을 볼 수 있습니다.</small>';
     container.append(empty);
-    note.textContent = '수집된 공고만 요약하며 전체 채용시장을 대표하지 않습니다.';
+    const gapCount = currentCollectionGaps().length;
+    note.textContent = `수집된 공고만 요약하며 전체 채용시장을 대표하지 않습니다.${gapCount ? ` · 자동 수집 제한 ${gapCount}개 출처` : ''}`;
     return;
   }
 
@@ -637,7 +644,8 @@ function renderMarketPulse() {
     card.append(labelEl, valueEl, detailEl);
     container.append(card);
   }
-  note.textContent = `현재 필터의 활성 공고 ${jobs.length}개 기준 · 게시일 확인 ${dated.length}/${jobs.length}개 · 개인 상태/최소 점수는 시장 요약에서 제외 · 전체 채용시장 대표 통계 아님`;
+  const gapCount = currentCollectionGaps().length;
+  note.textContent = `현재 필터의 활성 공고 ${jobs.length}개 기준 · 게시일 확인 ${dated.length}/${jobs.length}개 · 개인 상태/최소 점수는 시장 요약에서 제외${gapCount ? ` · 자동 수집 제한 ${gapCount}개 출처` : ''} · 전체 채용시장 대표 통계 아님`;
 }
 
 function broadActiveFilterValues({ includeHidden = false } = {}) {
@@ -1173,7 +1181,9 @@ function safeExternalUrl(value) {
 }
 
 function openDetails(job) {
-  if (!$('detailsDialog').open || !state.detailQueue.includes(job.id)) state.detailQueue = filteredJobs().map((item) => item.id);
+  const openingFromList = !$('detailsDialog').open;
+  if (openingFromList || !state.detailQueue.includes(job.id)) state.detailQueue = filteredJobs().map((item) => item.id);
+  if (openingFromList) state.detailReturnFocus = captureJobCardFocus() || { jobId: job.id, selector: '.details', index: 0 };
   state.reviewedIds.add(job.id);
   state.newIds.delete(job.id);
   state.currentDetailId = job.id;
@@ -1289,10 +1299,31 @@ function moveDetails(direction) {
   if (next) openDetails(next);
 }
 
+function captureJobCardFocus() {
+  const active = document.activeElement;
+  const card = active?.closest?.('.job-card');
+  if (!card?.dataset?.jobId) return null;
+  const selectors = ['.favorite', '.dismiss', '.job-state', '.job-select', '.details', '.apply'];
+  const selector = selectors.find((candidate) => active.matches?.(candidate)) || '.details';
+  const cards = [...document.querySelectorAll('.job-card')];
+  return { jobId: card.dataset.jobId, selector, index: Math.max(0, cards.indexOf(card)) };
+}
+
+function restoreJobCardFocus(snapshot) {
+  if (!snapshot) return;
+  const cards = [...document.querySelectorAll('.job-card')];
+  let card = cards.find((item) => item.dataset.jobId === snapshot.jobId);
+  if (!card && cards.length) card = cards[Math.min(snapshot.index, cards.length - 1)];
+  const target = card?.querySelector(snapshot.selector) || card?.querySelector('.details') || $('resultCount');
+  target?.focus?.({ preventScroll: true });
+}
+
 function render() {
+  const focusSnapshot = captureJobCardFocus();
   const jobs = filteredJobs();
   renderStats(jobs);
   renderActiveFilters();
+  renderCollectionCoverage();
   const visibleJobs = jobs.slice(0, state.visibleLimit);
   const activeTotal = activeMarketJobs().length;
   $('resultCount').textContent = jobs.length > visibleJobs.length ? `${jobs.length}개 중 ${visibleJobs.length}개 표시` : `${jobs.length}개 공고`;
@@ -1439,6 +1470,7 @@ function render() {
     container.appendChild(node);
   }
   updateBatchUI(visibleJobs);
+  restoreJobCardFocus(focusSnapshot);
 }
 
 function updateBatchUI(visibleJobs = filteredJobs().slice(0, state.visibleLimit)) {
@@ -1894,6 +1926,31 @@ function renderSourceHealth(sourceStatus = []) {
   panel.hidden = false;
 }
 
+function renderCollectionCoverage() {
+  const panel = $('collectionCoverage');
+  const summary = $('collectionCoverageSummary');
+  const list = $('collectionCoverageList');
+  if (!panel || !summary || !list) return;
+  const gaps = currentCollectionGaps();
+  panel.hidden = gaps.length === 0;
+  list.replaceChildren();
+  if (!gaps.length) return;
+  summary.textContent = `수집 범위 제한 · ${gaps.length}개 출처`;
+  for (const gap of gaps) {
+    const item = document.createElement('article');
+    item.className = 'collection-gap-item';
+    const heading = document.createElement('strong');
+    heading.textContent = `${gap.source} · ${gap.label || '자동 수집 제한'}`;
+    const reason = document.createElement('span');
+    reason.textContent = gap.reason || '';
+    const alternative = document.createElement('small');
+    alternative.textContent = gap.alternative ? `대체 경로 · ${gap.alternative}` : '';
+    item.append(heading, reason);
+    if (alternative.textContent) item.append(alternative);
+    list.append(item);
+  }
+}
+
 function applyFeedData(data, detectNew = true) {
   state.apiJobs = data.jobs || [];
   state.meta = data;
@@ -2007,7 +2064,10 @@ $('closeDetails').addEventListener('click', () => {
   $('detailsDialog').close();
 });
 $('detailsDialog').addEventListener('close', () => {
+  const returnFocus = state.detailReturnFocus;
+  state.detailReturnFocus = null;
   render();
+  restoreJobCardFocus(returnFocus);
 });
 $('prevDetails').addEventListener('click', () => moveDetails(-1));
 $('nextDetails').addEventListener('click', () => moveDetails(1));

@@ -917,6 +917,34 @@ test('상태와 동적 소스 필터가 reload 후 유지된다', async ({ page 
   await expect(page.locator('.job-card')).toHaveCount(1);
 });
 
+test('카드 상태 변경과 상세 닫기 뒤에도 키보드 포커스가 작업 위치를 유지한다', async ({ page }) => {
+  await useFeed(page);
+  await page.goto('/');
+
+  const targetTitle = await page.locator('.job-card').first().locator('.title').textContent();
+  const targetCard = () => page.locator('.job-card').filter({ hasText: targetTitle || '' });
+  await targetCard().locator('.favorite').click();
+  await expect(targetCard().locator('.favorite')).toBeFocused();
+
+  await targetCard().locator('.job-state').focus();
+  await targetCard().locator('.job-state').selectOption('planned');
+  await expect(targetCard().locator('.job-state')).toBeFocused();
+
+  await targetCard().locator('.dismiss').click();
+  const focusedAfterHide = await page.evaluate(() => ({
+    className: document.activeElement?.className || '',
+    jobId: document.activeElement?.closest?.('.job-card')?.dataset?.jobId || ''
+  }));
+  expect(focusedAfterHide.className).toContain('dismiss');
+  expect(focusedAfterHide.jobId).not.toBe('');
+  const nextCard = page.locator(`.job-card[data-job-id="${focusedAfterHide.jobId}"]`);
+
+  await nextCard.locator('.details').click();
+  await expect(page.locator('#detailsDialog')).toBeVisible();
+  await page.locator('#closeDetails').click();
+  await expect(nextCard.locator('.details')).toBeFocused();
+});
+
 test('batch hide를 한 번에 되돌릴 수 있다', async ({ page }) => {
   await useFeed(page);
   await page.goto('/');
@@ -1342,6 +1370,35 @@ test('부분 소스 실패를 별도 경고하고 보존 공고로 바로 이동
   await expect(page.locator('.job-card')).toHaveCount(1);
   await expect(page.locator('.title')).toHaveText('Preserved Korean Reviewer');
   await expect(page.locator('.listing-badge')).toHaveText('출처 확인 실패');
+});
+
+test('자동 수집하지 못하는 플랫폼과 대체 경로를 시장별 수집 범위 안내로 보여준다', async ({ page }) => {
+  const coverageFeed = {
+    ...feed(defaultJobs),
+    collectionGaps: [
+      { source: '고용24', status: 'not_configured', label: '공식 API 미연결', reason: 'WORK24_AUTH_KEY 미설정', alternative: '공식 OPEN-API 인증키 설정', markets: ['domestic'] },
+      { source: 'LinkedIn', status: 'manual_import', label: '자동 수집 안 함', reason: '로그인 기반 직접 크롤링 안 함', alternative: '공식 Job Alert JSON 가져오기', markets: ['overseas_remote', 'domestic'] },
+      { source: 'Indeed', status: 'manual_only', label: '자동 수집 안 함', reason: '직접 크롤링 안 함', alternative: '공식 Job Alert 또는 공고 직접 추가', markets: ['overseas_remote', 'domestic'] },
+      { source: '잡플래닛', status: 'access_restricted', label: '공개 접근 제한', reason: '공개 검색 접근 제한', alternative: '원출처 공고 또는 직접 추가', markets: ['domestic'] }
+    ]
+  };
+  await useFeed(page, () => coverageFeed);
+  await page.goto('/');
+
+  await expect(page.locator('#collectionCoverage')).toBeVisible();
+  await expect(page.locator('#collectionCoverageSummary')).toContainText('2개 출처');
+  await page.locator('#collectionCoverageSummary').click();
+  await expect(page.locator('#collectionCoverageList')).toContainText('LinkedIn');
+  await expect(page.locator('#collectionCoverageList')).toContainText('공식 Job Alert JSON 가져오기');
+  await expect(page.locator('#collectionCoverageList')).toContainText('Indeed');
+  await expect(page.locator('#collectionCoverageList')).not.toContainText('고용24');
+  await expect(page.locator('#marketPulseNote')).toContainText('자동 수집 제한 2개 출처');
+
+  await page.locator('#marketDomestic').click();
+  await expect(page.locator('#collectionCoverageSummary')).toContainText('4개 출처');
+  await expect(page.locator('#collectionCoverageList')).toContainText('고용24');
+  await expect(page.locator('#collectionCoverageList')).toContainText('잡플래닛');
+  await expect(page.locator('#marketPulseNote')).toContainText('자동 수집 제한 4개 출처');
 });
 
 test('최근 검증·원문 변경을 카드에서 구분하고 상세 이력을 확인한다', async ({ page }) => {
