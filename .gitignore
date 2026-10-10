@@ -7,3 +7,6 @@ dashboard*.png
 deployed*.png
 test-results/
 playwright-report/
+
+# Temporary job-board HTML captures kept for local diagnostics.
+.tmp-jlab-*.html
