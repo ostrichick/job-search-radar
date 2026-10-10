@@ -1082,6 +1082,8 @@ test('상태와 동적 소스 필터가 reload 후 유지된다', async ({ page 
   await page.goto('/');
   await page.selectOption('#source', 'OneForma');
   await page.locator('.job-card').first().locator('.favorite').click();
+  // The active button is rendered only after the IndexedDB commit completes.
+  await expect(page.locator('.job-card').first().locator('.favorite')).toHaveClass(/active/);
   await page.reload();
   await expect(page.locator('#source')).toHaveValue('OneForma');
   await page.selectOption('#statusFilter', 'saved');
