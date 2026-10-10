@@ -157,10 +157,21 @@ for (const job of feed.jobs) {
     assert.equal(job.sourceKind, 'job_board', `${job.id} Korean public platform must keep job-board intermediary semantics`);
     assert.ok(job.sourcePostingId && job.platform === job.source, `${job.id} Korean public platform must retain stable platform posting identity`);
     assert.match(String(job.sourcePostingId), /^\d+$/, `${job.id} Korean public platform posting identity must remain a numeric source id`);
-    if (job.sourceListingState === 'public_rss') {
+    if (['public_rss', 'public_rss_cached_detail'].includes(job.sourceListingState)) {
       assert.equal(job.source, '인크루트', `${job.id} RSS list fallback is Incruit-only`);
-      assert.ok(!job.workAddress && job.domesticRegion?.evidenceLevel !== 'source_structured',
+      assert.ok(job.domesticRegion?.evidenceLevel !== 'source_structured',
         `${job.id} RSS location must not claim detailed workplace verification`);
+      if (job.sourceListingState === 'public_rss') assert.ok(!job.workAddress,
+        `${job.id} RSS list-only row must not invent a street address`);
+      if (job.sourceListingState === 'public_rss_cached_detail') {
+        assert.equal(job.workAddressEvidence, 'historical_detail',
+          `${job.id} historical Incruit detail must have explicit old-evidence provenance`);
+        assert.ok(job.workAddress && job.lastDetailVerifiedAt,
+          `${job.id} cached detail must retain old workplace and last detailed validation time`);
+        assert.ok(Number.isFinite(Date.parse(job.lastDetailVerifiedAt))
+          && Date.parse(job.lastDetailVerifiedAt) <= Date.parse(job.lastVerifiedAt || job.verifiedAt),
+        `${job.id} cached detail cannot claim a later detailed check than the RSS observation`);
+      }
     } else {
       assert.ok(job.workAddress && job.domesticRegion?.evidenceLevel === 'source_structured',
         `${job.id} Korean public platform must retain structured workplace evidence from the detail page`);
@@ -178,7 +189,7 @@ for (const job of feed.jobs) {
     if (job.source === '사람인') {
       assert.equal(job.workAddressEvidence, 'detail_html', `${job.id} Saramin workplace evidence must come from the public detail page`);
     }
-    if (job.source === '인크루트' && job.sourceListingState !== 'public_rss') {
+    if (job.source === '인크루트' && !['public_rss', 'public_rss_cached_detail'].includes(job.sourceListingState)) {
       assert.equal(job.workAddressEvidence, 'detail_crosschecked', `${job.id} Incruit workplace must be cross-checked between search and detail`);
       assert.equal(job.domesticRegion?.precision, 'address', `${job.id} Incruit must retain a posting-specific detail address`);
     }
@@ -250,6 +261,10 @@ for (const [source, metric] of Object.entries(feed.sourceMetrics)) {
       'Incruit official RSS is bounded to 20 entries');
     assert.ok(Number.isInteger(metric.rssListOnlyCount) && metric.rssListOnlyCount >= 0
       && metric.rssListOnlyCount <= metric.rssItemCount, 'RSS fallback cannot exceed source list');
+    if (metric.detailCollapseSuspected) {
+      assert.equal(metric.history.at(-1).ok, false,
+        'RSS may keep public listings but cannot mark collapsed detail verification successful');
+    }
   }
   assert.ok(Number.isFinite(metric.rawCount) && metric.rawCount >= 0, `${source} rawCount must be non-negative`);
   assert.ok(Number.isFinite(metric.matchedCount) && metric.matchedCount >= 0, `${source} matchedCount must be non-negative`);
@@ -275,14 +290,14 @@ for (const [source, metric] of Object.entries(feed.sourceMetrics)) {
   }
 }
 
-for (const job of feed.jobs.filter((item) => item.sourceListingState === 'public_rss')) {
+for (const job of feed.jobs.filter((item) => ['public_rss', 'public_rss_cached_detail'].includes(item.sourceListingState))) {
   assert.equal(job.source, '인크루트', 'RSS listing contract currently supports only Incruit');
   assert.equal(job.listingBasis, 'public_rss_list', 'RSS must not masquerade as verified detail');
   assert.equal(job.listingVerification, 'intermediary', 'RSS does not verify official employer recruitment');
   assert.equal(job.recommendationEligible, false, 'RSS-only listings are never default recommendations');
   assert.ok(job.domesticRegion?.province === '전북특별자치도'
     && ['전주시', '완주군'].includes(job.domesticRegion?.city), 'RSS-only listings require explicit target city');
-  assert.ok(!job.workAddress, 'RSS-only listings must not invent street address');
+  if (job.sourceListingState === 'public_rss') assert.ok(!job.workAddress, 'RSS-only listings must not invent street address');
 }
 
 const unanchored = feed.jobs.filter((job) => job.score > 5 && job.category === '기타' && !(job.matchedKeywords || []).length);

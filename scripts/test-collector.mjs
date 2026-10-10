@@ -35,8 +35,10 @@ import {
   fallbackJobsForConfiguredSources,
   relevantToProfile,
   currentListingState,
+  normalizedUrl,
   markPreservedSourceFailure,
   preservePartialIncruitFallback,
+  preserveFailedSourceJobs,
   normalizeJob,
   dedupe,
   carryForwardLegacyIds,
@@ -1008,9 +1010,46 @@ const rssFixture = rssXml([
   rssItem('2401080006415', '인재 Pool', '전북>전주시 덕진구')
 ]);
 const parsedRss = parseIncruitJeonbukRss(rssFixture, rssNow);
+assert.notEqual(
+  normalizedUrl('https://job.incruit.com/jobdb_info/jobpost.asp?job=2609230002388'),
+  normalizedUrl('https://job.incruit.com/jobdb_info/jobpost.asp?job=2610080004445'),
+  'Incruit posting-specific query IDs must never collapse to the same URL identity'
+);
+assert.equal(
+  normalizedUrl('https://job.incruit.com/jobdb_info/jobpost.asp?job=2610080004445&src=rss'),
+  normalizedUrl('https://job.incruit.com/jobdb_info/jobpost.asp?job=2610080004445'),
+  'Incruit non-identity search tracking must not change the canonical posting identity'
+);
+assert.notEqual(
+  normalizedUrl('https://www.saramin.co.kr/zf_user/jobs/view?rec_idx=100'),
+  normalizedUrl('https://www.saramin.co.kr/zf_user/jobs/view?rec_idx=101'),
+  'Saramin public source-native IDs must also stay distinct'
+);
+assert.notEqual(
+  normalizedUrl('https://www.alba.co.kr/job/Detail?adid=100'),
+  normalizedUrl('https://www.alba.co.kr/job/Detail?adid=101'),
+  'Alba public source-native IDs must also stay distinct'
+);
+assert.notEqual(
+  normalizedUrl('https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=K100'),
+  normalizedUrl('https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=K101'),
+  'Work24 public source-native IDs must also stay distinct'
+);
 assert.equal(parsedRss.itemCount, 5);
 assert.deepEqual(parsedRss.candidates.map((item) => item.id), ['2610080004445']);
 assert.equal(parsedRss.candidates[0].listLocation, '전북특별자치도 전주시 덕진구');
+assert.equal(parsedRss.candidates[0].deadlineType, 'fixed');
+assert.equal(parsedRss.candidates[0].deadlineDate, '2026-10-30');
+assert.equal(parsedRss.candidates[0].deadlineLabel, '10/30(금)');
+const expiredRss = parseIncruitJeonbukRss(rssFixture.replace('10/30(금)', '10/09(금)'), rssNow);
+assert.equal(expiredRss.candidates[0].deadlineDate, '2026-10-09');
+assert.equal(currentListingState({ source: '인크루트', deadlineType: 'fixed',
+  deadlineDate: expiredRss.candidates[0].deadlineDate,
+  sourceListingState: 'public_rss', title: expiredRss.candidates[0].title }).code, 'expired',
+'RSS expiry must take priority over a recently refreshed RSS list');
+const ambiguousRss = parseIncruitJeonbukRss(rssFixture.replace('10/30(금)', '10/30(목)'), rssNow);
+assert.equal(ambiguousRss.candidates[0].deadlineType, 'unknown',
+  'incompatible weekday must not invent an expiry year');
 assert.throws(() => parseIncruitJeonbukRss(rssXml([rssItem('1', 'test', '전북>완주군')],
   'Tue, 06 Oct 2026 00:00:00 +0900'), rssNow), /stale/);
 assert.throws(() => parseIncruitJeonbukRss('<html>not rss</html>', rssNow), /not a recognized/);
@@ -1038,8 +1077,129 @@ try {
   assert.equal(gated.recommendationEligible, false,
     'even a high-scored RSS list-only row must not become a default recommendation');
   assert.match(gated.sourceRecommendationGateReason, /상세.*미검증/);
+  const previousDetail = normalizeJob({
+    id: 'incruit:2610080004445', sourcePostingId: '2610080004445',
+    title: parsedRss.candidates[0].title, company: parsedRss.candidates[0].company,
+    source: '인크루트', platform: '인크루트',
+    location: '전북특별자치도 전주시 덕진구 백제대로 24',
+    workAddress: '전북특별자치도 전주시 덕진구 백제대로 24',
+    locationEvidenceLevel: 'source_structured', workAddressEvidence: 'detail_crosschecked',
+    countryCode: 'KR', workplaceMode: 'onsite', sourceListingState: 'public_detail',
+    title: parsedRss.candidates[0].title, description: '사무직 데이터 정리 업무 경력무관',
+    postedAt: '2026-10-08T13:10:00.000Z',
+    url: 'https://job.incruit.com/jobdb_info/jobpost.asp?job=2610080004445'
+  });
+  previousDetail.lastVerifiedAt = '2026-10-09T02:00:00.000Z';
+  previousDetail.lastDetailVerifiedAt = previousDetail.lastVerifiedAt;
+  const downgraded = await collectIncruit([previousDetail]);
+  assert.equal(downgraded.jobs.length, 1);
+  const cached = downgraded.jobs[0];
+  assert.equal(cached.sourceListingState, 'public_rss_cached_detail');
+  assert.equal(cached.workAddressEvidence, 'historical_detail');
+  assert.equal(cached.lastDetailVerifiedAt, previousDetail.lastDetailVerifiedAt);
+  assert.equal(cached.deadlineDate, '2026-10-30');
+  assert.equal(cached.listingBasis, 'public_rss_list');
+  assert.equal(cached.domesticRegion.evidenceLevel, 'source_text',
+    'last known detailed address must not masquerade as newly verified structured location');
+  const downgradedHistory = reconcileVerificationHistory(
+    [cached], [previousDetail], Date.parse('2026-10-10T08:00:00.000Z'))[0];
+  assert.ok(downgradedHistory.verificationHistory.some((item) => item.event === 'verification_scope_changed'));
+  assert.ok(!downgradedHistory.verificationHistory.some((item) => item.event === 'content_changed'),
+    'detail-to-RSS evidence downgrade is not an employer content edit');
+  const repeatedRss = await collectIncruit([downgradedHistory]);
+  const repeatedRssHistory = reconcileVerificationHistory(
+    repeatedRss.jobs, [downgradedHistory], Date.parse('2026-10-19T08:00:00.000Z'))[0];
+  assert.equal(repeatedRssHistory.lastDetailVerifiedAt, previousDetail.lastVerifiedAt);
+  assert.ok(repeatedRssHistory.verificationHistory.some((item) => item.event === 'rss_list_seen'));
+  assert.ok(!repeatedRssHistory.verificationHistory.some((item) => item.event === 'verified_unchanged'));
+  const otherDetails = [2609230002388, 2610020002957, 2609220000728, 2609090002581]
+    .map((id, index) => ({
+      ...previousDetail,
+      id: 'incruit:other-' + id,
+      sourcePostingId: String(id),
+      title: '사무보조 모집 ' + index,
+      url: `https://job.incruit.com/jobdb_info/jobpost.asp?job=${id}`,
+      firstSeenAt: '2026-10-06T02:00:00.000Z',
+      lastVerifiedAt: '2026-10-06T02:00:00.000Z',
+      score: 25,
+      legacyIds: []
+    }));
+  const independent = reconcileVerificationHistory([rssRecovered.jobs[0]], otherDetails,
+    Date.parse('2026-10-10T08:00:00.000Z'))[0];
+  assert.notEqual(independent.firstSeenAt, '2026-10-06T02:00:00.000Z',
+    'distinct ?job= posting IDs cannot inherit another Incruit row first-seen history');
+  assert.equal(independent.verificationHistory.at(-1).event, 'first_seen');
+  const missing = carryRecentlyMissing([rssRecovered.jobs[0]], otherDetails,
+    Date.parse('2026-10-10T08:00:00.000Z'));
+  assert.equal(missing.length, 5,
+    'one current RSS result must not suppress four other previous detail posting IDs');
+  assert.equal(missing.filter((item) => item.listingStatus === 'archived_missing').length, 4);
+  const trackedUrl = { ...rssRecovered.jobs[0],
+    id: 'incruit:other-id', legacyIds: [],
+    url: rssRecovered.jobs[0].url + '&src=search' };
+  const samePosting = reconcileVerificationHistory([trackedUrl], [
+    { ...rssRecovered.jobs[0], firstSeenAt: '2026-10-05T02:00:00.000Z' }
+  ], Date.parse('2026-10-10T08:00:00.000Z'))[0];
+  assert.equal(samePosting.firstSeenAt, '2026-10-05T02:00:00.000Z',
+    'tracking parameters may vary without breaking same source posting identity');
 } finally {
   globalThis.fetch = rssOnlyOriginalFetch;
+}
+
+const incruitDetailCollapseFetch = globalThis.fetch;
+try {
+  const template = incruitListFixture.match(/<ul class="c_row" jobno="2609110000252">[\s\S]*?<\/ul>/)?.[0];
+  assert.ok(template, 'detail-collapse fixture must reuse the supported public Incruit row');
+  const searchHtml = '<html><body>' + Array.from({ length: 10 }, (_, i) => template
+    .replaceAll('2609110000252', String(2609110000252 + i))
+    .replace('방사선사 직원 모집', '사무보조')).join('') + '</body></html>';
+  const asciiEntities = (value) => String(value).replace(/[^\x00-\x7F]/g,
+    (char) => `&#${char.codePointAt(0)};`);
+  let detailRequests = 0;
+  globalThis.fetch = async (url) => {
+    if (String(url) === incruitJeonbukRssUrl) return { ok: true, status: 200, text: async () => rssFixture };
+    if (String(url).includes('searchjob.asp')) {
+      const encoded = new TextEncoder().encode(asciiEntities(searchHtml));
+      return { ok: true, status: 200, arrayBuffer: async () => encoded.buffer };
+    }
+    if (String(url).includes('/jobdb_info/jobpost.asp?job=')) {
+      detailRequests += 1;
+      return { ok: false, status: 403, statusText: 'Forbidden' };
+    }
+    throw new Error('Unexpected public Incruit fixture route: ' + String(url));
+  };
+  const rssWithDetailCollapse = await collectIncruit([]);
+  assert.equal(detailRequests, 10);
+  assert.equal(rssWithDetailCollapse.searchFailureCount, 0);
+  assert.equal(rssWithDetailCollapse.detailAttemptCount, 10);
+  assert.equal(rssWithDetailCollapse.detailSuccessCount, 0);
+  assert.equal(rssWithDetailCollapse.detailCollapseSuspected, true);
+  assert.equal(rssWithDetailCollapse.rssListOnlyCount, 1);
+  const previouslyDetailVerified = {
+    source: '인크루트', sourcePostingId: '2609110000252',
+    id: 'incruit:2609110000252', listingStatus: 'current_feed',
+    score: 35, lastVerifiedAt: '2026-10-09T01:00:00.000Z'
+  };
+  const carry = preservePartialIncruitFallback([previouslyDetailVerified], rssWithDetailCollapse.jobs,
+    Number(rssWithDetailCollapse.detailCollapseSuspected));
+  assert.equal(carry.length, 1, 'RSS must not cause previously detailed jobs to disappear on 10/10 detail HTTP403');
+  assert.equal(carry[0].listingStatus, 'source_error');
+  assert.equal(carry[0].score, 15);
+  assert.equal(carry[0].lastVerifiedAt, previouslyDetailVerified.lastVerifiedAt);
+  const collapseMetrics = buildSourceMetrics(
+    ['인크루트'],
+    new Map([['인크루트', { matchedCount: rssWithDetailCollapse.jobs.length, ...rssWithDetailCollapse }]]),
+    [{ source: '인크루트', ok: true, count: rssWithDetailCollapse.jobs.length, preserved: carry.length }],
+    [...rssWithDetailCollapse.jobs, ...carry],
+    [...rssWithDetailCollapse.jobs, ...carry],
+    {}, Date.parse('2026-10-10T08:00:00.000Z')
+  ).인크루트;
+  assert.equal(collapseMetrics.history.at(-1).ok, false);
+  assert.equal(collapseMetrics.preservedCount, 1);
+  assert.equal(collapseMetrics.keptCount, 1);
+  assert.equal(collapseMetrics.detailCollapseSuspected, true);
+} finally {
+  globalThis.fetch = incruitDetailCollapseFetch;
 }
 
 const incruitFresh = {
@@ -1055,6 +1215,15 @@ const twiceUnavailable = markPreservedSourceFailure(onceUnavailable);
 assert.equal(onceUnavailable.score, 65);
 assert.equal(twiceUnavailable.score, 65, 'repeated source outage must not repeatedly reduce role-fit score');
 const incruitArchived = { ...incruitOld, sourcePostingId: '2609110000254', listingStatus: 'archived_missing' };
+const failedWithExpired = preserveFailedSourceJobs('인크루트', [
+  incruitOld, { ...incruitOld, listingStatus: 'expired', id: 'expired' },
+  { ...incruitOld, listingStatus: 'archived_missing', id: 'archived' },
+  { ...incruitOld, listingStatus: 'talent_pool', id: 'pool' },
+  { ...incruitOld, listingStatus: 'source_error', id: 'previous-failure' }
+]);
+assert.equal(failedWithExpired.length, 2);
+assert.ok(failedWithExpired.every((item) => item.listingStatus === 'source_error'));
+assert.equal(failedWithExpired.find((item) => item.id === 'previous-failure').score, incruitOld.score);
 const partialOld = preservePartialIncruitFallback(
   [incruitFresh, incruitOld, incruitArchived, { ...incruitOld, source: '잡코리아' }],
   [incruitFresh], 1

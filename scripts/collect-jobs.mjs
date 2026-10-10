@@ -255,7 +255,28 @@ function sourceMeta(source) {
 }
 
 function normalizedUrl(value) {
-  return lower(value).replace(/[?#].*$/, '').replace(/\/$/, '');
+  const raw = text(value);
+  try {
+    const url = new URL(raw);
+    const path = url.pathname.toLowerCase().replace(/\/$/, '');
+    const base = `${url.origin.toLowerCase()}${path}`;
+    // These are proven source-native posting IDs, not tracking parameters.
+    // Only preserve identifier-bearing query keys for supported known routes.
+    const postingRoutes = [
+      ['job.incruit.com', '/jobdb_info/jobpost.asp', 'job', /^\d+$/],
+      ['www.saramin.co.kr', '/zf_user/jobs/view', 'rec_idx', /^\d+$/],
+      ['www.alba.co.kr', '/job/detail', 'adid', /^\d+$/],
+      ['www.work24.go.kr', '/wk/a/b/1500/empdetailauthview.do', 'wantedAuthNo', /^[A-Za-z0-9]+$/]
+    ];
+    for (const [host, route, key, validId] of postingRoutes) {
+      if (url.hostname.toLowerCase() !== host || path !== route) continue;
+      const postingId = url.searchParams.get(key);
+      if (validId.test(postingId || '')) return `${base}?${key.toLowerCase()}=${postingId}`;
+    }
+    return base;
+  } catch {
+    return lower(value).replace(/[?#].*$/, '').replace(/\/$/, '');
+  }
 }
 
 function stableSourceDescription(source, value) {
@@ -430,10 +451,30 @@ function reconcileVerificationHistory(jobs, previousJobs = [], now = Date.now())
     const sameFingerprintContract = Number(previous.contentFingerprintVersion || 0) === Number(job.contentFingerprintVersion || 0);
     const hadPreviousFingerprint = Boolean(previous.contentFingerprint) && sameFingerprintContract;
     const previousFingerprint = previous.contentFingerprint || '';
-    const changedFields = hadPreviousFingerprint && previousFingerprint !== fingerprint
+    const previousIncruitRss = previous.source === '인크루트'
+      && ['public_rss', 'public_rss_cached_detail'].includes(previous.sourceListingState);
+    const currentIncruitRss = job.source === '인크루트'
+      && ['public_rss', 'public_rss_cached_detail'].includes(job.sourceListingState);
+    const verificationScopeChanged = previous.source === '인크루트' && job.source === '인크루트'
+      && previousIncruitRss !== currentIncruitRss;
+    // RSS cannot verify detailed fields, so losing or regaining access to a
+    // detail page is not evidence that the employer edited the job content.
+    const changedFields = !verificationScopeChanged && hadPreviousFingerprint && previousFingerprint !== fingerprint
       ? changedSourceFields(previous, job)
       : [];
     const events = [];
+    if (verificationScopeChanged) {
+      events.push({
+        at: nowIso,
+        event: 'verification_scope_changed',
+        fromStatus: previous.sourceListingState || '',
+        toStatus: job.sourceListingState || '',
+        fingerprint,
+        reason: currentIncruitRss
+          ? '상세 페이지 검증에서 공개 RSS 목록 확인으로 근거 범위가 축소됨. 원문 변경으로 판정하지 않음'
+          : 'RSS 목록 확인에서 상세 페이지 교차 검증으로 근거 범위가 확대됨'
+      });
+    }
     if (previous.listingStatus === 'archived_missing' && !['archived_missing', 'source_error'].includes(job.listingStatus)) {
       events.push({
         at: nowIso,
@@ -519,15 +560,18 @@ function reconcileVerificationHistory(jobs, previousJobs = [], now = Date.now())
       && (!Number.isFinite(lastHistoryAt) || now - lastHistoryAt >= verificationCheckpointMs)) {
       history = appendLimitedHistory(history, {
         at: nowIso,
-        event: 'verified_unchanged',
+        event: currentIncruitRss ? 'rss_list_seen' : 'verified_unchanged',
         fromStatus: job.listingStatus,
         toStatus: job.listingStatus,
         fingerprint,
-        reason: '원문과 모집 상태의 의미 있는 변경 없이 재검증됨'
+        reason: currentIncruitRss
+          ? '공개 RSS 목록에 동일 공고가 재표시됨. 상세 페이지를 재검증한 것은 아님'
+          : '원문과 모집 상태의 의미 있는 변경 없이 재검증됨'
       });
     }
 
-    const primaryEvent = events.find((event) => ['reappeared', 'source_recovered', 'source_failed', 'content_changed', 'status_changed', 'evidence_freshness_changed', 'evidence_state_changed'].includes(event.event));
+    const primaryEvent = ['reappeared', 'source_recovered', 'source_failed', 'verification_scope_changed', 'content_changed', 'status_changed', 'evidence_freshness_changed', 'evidence_state_changed']
+      .map((kind) => events.find((event) => event.event === kind)).find(Boolean);
     const historyEvent = primaryEvent || (rebase.rebased ? history.at(-1) : null);
     const verifiedCurrent = job.listingStatus !== 'source_error';
     return {
@@ -1589,10 +1633,13 @@ function currentListingState(job) {
     };
   }
   if (meta.kind === 'manual') return { code: 'manual', label: '직접 확인 필요', stale: false, reason: '사용자가 직접 추가한 공고라 자동 모집 확인 근거가 없음', basis: 'manual', verification: 'manual' };
-  if (job.source === '인크루트' && job.sourceListingState === 'public_rss') {
+  if (job.source === '인크루트' && ['public_rss', 'public_rss_cached_detail'].includes(job.sourceListingState)) {
+    const cached = job.sourceListingState === 'public_rss_cached_detail';
     return {
-      code: 'current_feed', label: '공개 RSS 목록 확인', stale: false,
-      reason: '인크루트가 공개한 전북 RSS의 공고 ID와 단일 전주·완주 근무지 표기를 확인함. 상세 본문과 고용주 모집 상태는 별도 확인 필요',
+      code: 'current_feed', label: cached ? 'RSS 확인·상세는 이전 기록' : '공개 RSS 목록 확인', stale: false,
+      reason: cached
+        ? '이번 공개 RSS에서 공고 ID와 단일 전주·완주 근무지 표기를 확인함. 근무지 상세·경력·학력 정보는 이전 상세 확인 당시 기록이며 변경 여부와 현재 모집 상태는 원문 재확인 필요'
+        : '인크루트가 공개한 전북 RSS의 공고 ID와 단일 전주·완주 근무지 표기를 확인함. 상세 본문과 고용주 모집 상태는 별도 확인 필요',
       basis: 'public_rss_list', verification: 'intermediary'
     };
   }
@@ -1834,6 +1881,9 @@ function normalizeJob(raw) {
     deadlineDate: text(raw.deadlineDate),
     deadlineLabel: text(raw.deadlineLabel),
     deadlineCloseOnHire: Boolean(raw.deadlineCloseOnHire),
+    lastDetailVerifiedAt: raw.source === '인크루트' && raw.sourceListingState === 'public_detail'
+      ? new Date().toISOString()
+      : text(raw.lastDetailVerifiedAt),
     verifiedAt: new Date().toISOString()
   };
   job.domesticRegion = domesticRegionFor(job);
@@ -3011,6 +3061,14 @@ function transientIncruitSearchFailure(error) {
   return !error?.status && ['TypeError', 'TimeoutError', 'AbortError'].includes(String(error?.name || ''));
 }
 
+function preserveFailedSourceJobs(source, previousJobs = []) {
+  return previousJobs
+    .filter((job) => job.source === source
+      && (source !== '인크루트'
+        || !['expired', 'archived_missing', 'talent_pool'].includes(job.listingStatus)))
+    .map(markPreservedSourceFailure);
+}
+
 // Only stable, non-sensitive failure categories enter the public feed. Never
 // serialize raw network exceptions, response bodies, or request headers.
 function incruitSearchFailureCode(error) {
@@ -3053,22 +3111,48 @@ async function fetchIncruitSearchText(url) {
   throw lastError;
 }
 
-function incruitRssListJob(candidate) {
+function incruitRssListJob(candidate, previousJob = null) {
+  const cached = previousJob
+    && ['public_detail', 'public_rss_cached_detail'].includes(previousJob.sourceListingState)
+    && previousJob.workAddress
+    && localMunicipality(previousJob.workAddress) === localMunicipality(candidate.listLocation);
   return normalizeJob({
+    ...(cached ? {
+      description: previousJob.description,
+      type: previousJob.type,
+      salary: previousJob.salaryMetadataRaw || '',
+      experience: previousJob.experience,
+      education: previousJob.education,
+      location: previousJob.workAddress,
+      workAddress: previousJob.workAddress,
+      workAddressEvidence: 'historical_detail',
+      lastDetailVerifiedAt: previousJob.lastDetailVerifiedAt || previousJob.lastVerifiedAt || previousJob.verifiedAt,
+      deadlineType: previousJob.deadlineType,
+      deadlineDate: previousJob.deadlineDate,
+      deadlineLabel: previousJob.deadlineLabel
+    } : {}),
     id: 'incruit:' + candidate.id,
     sourcePostingId: candidate.id,
     source: '인크루트',
     platform: '인크루트',
     title: candidate.title,
     company: candidate.company,
-    location: candidate.listLocation,
+    location: cached ? previousJob.workAddress : candidate.listLocation,
     workplaceMode: 'unknown',
     countryCode: 'KR',
     url: candidate.url,
     postedAt: candidate.postedAt,
-    description: candidate.title,
-    sourceListingState: 'public_rss',
-    locationEvidenceLevel: 'source_list'
+    deadlineType: candidate.deadlineType,
+    deadlineDate: candidate.deadlineDate,
+    deadlineLabel: candidate.deadlineLabel,
+    description: cached ? previousJob.description : candidate.title,
+    sourceListingState: cached ? 'public_rss_cached_detail' : 'public_rss',
+    locationEvidenceLevel: cached ? 'source_text' : 'source_list',
+    deadlineType: candidate.deadlineType === 'fixed' || candidate.deadlineType === 'rolling'
+      ? candidate.deadlineType : (cached ? previousJob.deadlineType : candidate.deadlineType),
+    deadlineDate: candidate.deadlineType === 'fixed'
+      ? candidate.deadlineDate : (candidate.deadlineType === 'rolling' ? '' : (cached ? previousJob.deadlineDate : candidate.deadlineDate)),
+    deadlineLabel: candidate.deadlineLabel || (cached ? previousJob.deadlineLabel : '')
   });
 }
 
@@ -3143,7 +3227,11 @@ async function collectIncruit(previousJobs = []) {
     return counts;
   }, {});
   const rejected = results.length - successful.length;
-  if (!rssCandidates.length && results.length >= 10 && successful.length < Math.ceil(results.length * 0.5) && rejected >= 5) {
+  const detailCollapseSuspected = results.length > 0 && (
+    successful.length === 0
+    || (results.length >= 10 && successful.length < Math.ceil(results.length * 0.5) && rejected >= 5)
+  );
+  if (!rssCandidates.length && detailCollapseSuspected) {
     const error = localDetailError('detail_collapse', `인크루트 detail validation collapsed: ${successful.length}/${results.length} search-qualified postings passed cross-check`);
     error.sourceRun = {
       ...searchRun,
@@ -3172,14 +3260,18 @@ async function collectIncruit(previousJobs = []) {
     throw error;
   }
   const detailIds = new Set(successful.map((job) => text(job.sourcePostingId)));
+  const previousById = new Map(previousJobs
+    .filter((job) => job.source === '인크루트' && /^\d+$/.test(text(job.sourcePostingId)))
+    .map((job) => [text(job.sourcePostingId), job]));
   const rssOnly = rssCandidates.filter((candidate) => !detailIds.has(candidate.id))
-    .map(incruitRssListJob).filter(isJeonjuWanjuLocal);
+    .map((candidate) => incruitRssListJob(candidate, previousById.get(candidate.id))).filter(isJeonjuWanjuLocal);
   const local = [...successful, ...rssOnly].filter(isJeonjuWanjuLocal);
   const matched = local.filter((job) => Number(job.score || 0) >= 10);
   return sourceCollection(matched, candidates.length + rssItemCount, {
     ...searchRun,
     discoveredCount: candidates.length + rssCandidates.length,
     rssListOnlyCount: rssOnly.length,
+    detailCollapseSuspected,
     detailAttemptCount: results.length,
     detailSuccessCount: successful.length,
     detailFailureCount: rejected,
@@ -3749,7 +3841,7 @@ function dedupe(jobs) {
   for (const job of jobs) {
     const company = canonicalCompany(job.company);
     const title = canonicalDedupeTitle(job);
-    const fallback = lower(job.url).replace(/[?#].*$/, '').replace(/\/$/, '');
+    const fallback = normalizedUrl(job.url);
     const baseKey = company && company !== '회사 미상' && title ? `${company}::${title}` : fallback;
     const clusters = groups.get(baseKey) ?? [];
     const compatible = clusters.find((cluster) => {
@@ -3890,7 +3982,7 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
     representedIds.add(job.id);
     for (const id of job.legacyIds || []) representedIds.add(id);
     for (const url of [job.url, ...(job.alternateUrls || [])]) {
-      if (url) representedUrls.add(lower(url).replace(/[?#].*$/, '').replace(/\/$/, ''));
+      if (url) representedUrls.add(normalizedUrl(url));
     }
   }
   const carried = [...jobs];
@@ -3916,7 +4008,7 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
         || previous.listingStatus === 'archived_missing'
       );
     if (!preserveForGrace) continue;
-    const previousUrl = lower(previous.url).replace(/[?#].*$/, '').replace(/\/$/, '');
+    const previousUrl = normalizedUrl(previous.url);
     const aliases = [previous.id, ...(previous.legacyIds || [])].filter(Boolean);
     if (aliases.some((id) => representedIds.has(id)) || (previousUrl && representedUrls.has(previousUrl))) continue;
     const missingSince = Date.parse(previous.missingSince || '') || now;
@@ -4247,6 +4339,7 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       // A region-level partial search is not a complete verification of this
       // source. Otherwise repeated partial outages would appear fully reliable.
       ok: Boolean(status.ok) && Number(run.searchFailureCount || 0) === 0
+        && !run.detailCollapseSuspected
         && !(Number(run.rssListOnlyCount || 0) > 0 && Number(run.detailSuccessCount || 0) === 0),
       rawCount,
       discoveredCount: Number(run.discoveredCount ?? rawCount),
@@ -4259,6 +4352,7 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       rssStatus: run.rssStatus || '',
       rssItemCount: Number(run.rssItemCount || 0),
       rssListOnlyCount: Number(run.rssListOnlyCount || 0),
+      detailCollapseSuspected: Boolean(run.detailCollapseSuspected),
       rssFailureCode: run.rssFailureCode || '',
       detailAttemptCount: Number(run.detailAttemptCount || 0),
       detailSuccessCount: Number(run.detailSuccessCount || 0),
@@ -4323,6 +4417,7 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       rssStatus: run.rssStatus || '',
       rssItemCount: Number(run.rssItemCount || 0),
       rssListOnlyCount: Number(run.rssListOnlyCount || 0),
+      detailCollapseSuspected: Boolean(run.detailCollapseSuspected),
       rssFailureCode: run.rssFailureCode || '',
       detailAttemptCount: Number(run.detailAttemptCount || 0),
       detailSuccessCount: Number(run.detailSuccessCount || 0),
@@ -4369,7 +4464,7 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
 function applySourceMetricsToJobs(jobs, sourceMetrics = {}) {
   return jobs.map((job) => {
     const metric = sourceMetrics[job.source] || {};
-    const sourceRecommendationGateReason = job.sourceListingState === 'public_rss'
+    const sourceRecommendationGateReason = ['public_rss', 'public_rss_cached_detail'].includes(job.sourceListingState)
       ? 'RSS 목록만 확인되어 상세 자격·모집 상태 미검증'
       : ['degraded', 'unstable'].includes(metric.reliabilityState)
         ? '반복 수집 실패로 소스 신뢰가 낮음'
@@ -4494,6 +4589,7 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         rssStatus: result?.rssStatus || '',
         rssItemCount: Number(result?.rssItemCount || 0),
         rssListOnlyCount: Number(result?.rssListOnlyCount || 0),
+        detailCollapseSuspected: Boolean(result?.detailCollapseSuspected),
         rssFailureCode: result?.rssFailureCode || '',
         detailAttemptCount: Number(result?.detailAttemptCount || 0),
         detailSuccessCount: Number(result?.detailSuccessCount || 0),
@@ -4520,7 +4616,8 @@ export async function collectJobs({ includeManual = true, persist = true, previo
       // Keep previously verified posts from a failed search region as
       // unverified, never as "disappeared", while retaining newly verified posts.
       const preservedPartial = name === '인크루트'
-        ? preservePartialIncruitFallback(fallbackJobs, collected, result?.searchFailureCount)
+        ? preservePartialIncruitFallback(fallbackJobs, collected,
+          Number(result?.searchFailureCount || 0) + (result?.detailCollapseSuspected ? 1 : 0))
         : [];
       jobs.push(...collected, ...preservedPartial);
       sourceStatus.push({
@@ -4551,6 +4648,7 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         ...(result?.detailRejectionCounts && Object.keys(result.detailRejectionCounts).length
           ? { detailRejectionCounts: { ...result.detailRejectionCounts } }
           : {}),
+        ...(result?.detailCollapseSuspected ? { detailCollapseSuspected: true } : {}),
         ...(result?.workplaceUnverifiedCount ? { workplaceUnverifiedCount: Number(result.workplaceUnverifiedCount) } : {}),
         ...(result?.accessRestrictedCount ? { accessRestrictedCount: Number(result.accessRestrictedCount) } : {}),
         ...(result?.listFallbackCount ? { listFallbackCount: Number(result.listFallbackCount) } : {}),
@@ -4564,7 +4662,9 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         ...(result?.discoveryOverlapCount ? { discoveryOverlapCount: Number(result.discoveryOverlapCount) } : {})
       });
     } catch (error) {
-      const preserved = fallbackJobs.filter((job) => job.source === name).map(markPreservedSourceFailure);
+      // A failed Incruit fetch cannot reverse an already confirmed expiry or
+      // turn an archived/pool row into a fresh "source failed" opening.
+      const preserved = preserveFailedSourceJobs(name, fallbackJobs);
       jobs.push(...preserved);
       const failureRun = error?.sourceRun || {};
       sourceRuns.set(name, {
@@ -4579,6 +4679,7 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         rssStatus: failureRun.rssStatus || '',
         rssItemCount: Number(failureRun.rssItemCount || 0),
         rssListOnlyCount: Number(failureRun.rssListOnlyCount || 0),
+        detailCollapseSuspected: Boolean(failureRun.detailCollapseSuspected),
         rssFailureCode: failureRun.rssFailureCode || '',
         detailAttemptCount: Number(failureRun.detailAttemptCount || 0),
         detailSuccessCount: Number(failureRun.detailSuccessCount || 0),
@@ -4623,6 +4724,7 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         ...(failureRun.detailRejectionCounts && Object.keys(failureRun.detailRejectionCounts).length
           ? { detailRejectionCounts: { ...failureRun.detailRejectionCounts } }
           : {}),
+        ...(failureRun.detailCollapseSuspected ? { detailCollapseSuspected: true } : {}),
         ...(failureRun.discoveryCollapseSuspected ? { discoveryCollapseSuspected: true } : {}),
         error: String(error.message ?? error)
       });
@@ -4744,8 +4846,10 @@ export {
   fallbackJobsForConfiguredSources,
   relevantToProfile,
   currentListingState,
+  normalizedUrl,
   markPreservedSourceFailure,
   preservePartialIncruitFallback,
+  preserveFailedSourceJobs,
   normalizeJob,
   dedupe,
   carryForwardLegacyIds,

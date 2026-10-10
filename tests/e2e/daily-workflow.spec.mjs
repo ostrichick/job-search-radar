@@ -1455,6 +1455,97 @@ test('인크루트 일부 지역만 성공해도 보존 공고 수를 안내하�
   await expect(page.locator('.listing-badge')).toContainText('출처 확인 실패');
 });
 
+test('RSS 성공 중 상세 수집 붕괴도 원문 미확인으로 경고하고 이전 공고를 찾게 한다', async ({ page }) => {
+  const preserved = job({
+    id: 'job:incruit-detail-unavailable',
+    source: '인크루트', sourceKind: 'job_board',
+    title: '완주 데이터 정리 사무보조 · 지난 확인',
+    company: '이전기업',
+    location: '전북특별자치도 완주군',
+    remote: false, workplaceMode: 'onsite',
+    marketScopes: ['domestic'], marketSegment: 'domestic',
+    domesticRegion: { country: '대한민국', province: '전북특별자치도', city: '완주군', precision: 'city', evidenceLevel: 'source_text' },
+    listingStatus: 'source_error', listingLabel: '출처 확인 실패',
+    listingVerification: 'source_error', listingReason: '상세 응답 실패로 현재 모집은 확인하지 못함',
+    sourceQualityTier: 'weak', sourceReliabilityState: 'degraded',
+    recommendationEligible: false, score: 15,
+    url: 'https://job.incruit.com/jobdb_info/jobpost.asp?job=2609110000252'
+  });
+  await useFeed(page, () => ({
+    ...feed([...defaultJobs, preserved]),
+    sourceStatus: [
+      { source: '인크루트', ok: true, count: 1, preserved: 1,
+        searchAttemptCount: 2, searchSuccessCount: 2, searchFailureCount: 0,
+        detailAttemptCount: 10, detailSuccessCount: 0, detailFailureCount: 10,
+        detailCollapseSuspected: true, rssStatus: 'ok', rssListOnlyCount: 1 }
+    ],
+    sourceMetrics: {}
+  }));
+  await page.goto('/');
+  await page.locator('#marketDomestic').click();
+  await expect(page.locator('#sourceHealth')).toContainText('상세 응답·검증 대량 실패');
+  await expect(page.locator('#sourceHealth')).toContainText('이전 1개 보존 · 현재 모집 미확인');
+  await expect(page.locator('#showSourceErrors')).toContainText('보존 공고 1개 보기');
+  await page.locator('#showSourceErrors').click();
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await expect(page.locator('.title')).toHaveText('완주 데이터 정리 사무보조 · 지난 확인');
+});
+
+test('인크루트 RSS 후퇴는 원문 변경이 아니라 근거 축소로, 과거 상세 확인일을 표시한다', async ({ page }) => {
+  const now = new Date().toISOString();
+  const cached = job({
+    id: 'job:incruit-rss-cached',
+    source: '인크루트',
+    sourceKind: 'job_board',
+    title: '전주 사무·데이터 정리 보조',
+    company: '전주기업',
+    location: '전북특별자치도 전주시 덕진구',
+    workAddress: '전북특별자치도 전주시 덕진구 백제대로 24',
+    workAddressEvidence: 'historical_detail',
+    sourceListingState: 'public_rss_cached_detail',
+    lastDetailVerifiedAt: '2026-10-05T01:00:00.000Z',
+    sourceQualityTier: 'weak',
+    sourceReliabilityState: 'degraded',
+    marketScopes: ['domestic'],
+    marketSegment: 'domestic',
+    remote: false,
+    workplaceMode: 'onsite',
+    domesticRegion: { country: '대한민국', province: '전북특별자치도', city: '전주시', district: '덕진구', precision: 'district', evidenceLevel: 'source_text' },
+    score: 35,
+    roleFitEvidence: false,
+    recommendationEligible: false,
+    listingStatus: 'current_feed',
+    listingLabel: 'RSS 확인·상세는 이전 기록',
+    listingBasis: 'public_rss_list',
+    listingReason: '현재 RSS에서 공고가 확인됐지만 상세 정보는 이전 기록이며 재확인이 필요함',
+    lastVerifiedAt: now,
+    listingCheckedAt: now,
+    lastChangeKind: 'verification_scope_changed',
+    lastChangeAt: now,
+    verificationHistory: [
+      { at: '2026-10-05T01:00:00.000Z', event: 'first_seen', reason: '상세 원문 확인' },
+      { at: now, event: 'verification_scope_changed', reason: '상세 페이지 검증에서 RSS 확인으로 근거 축소' }
+    ],
+    url: 'https://job.incruit.com/jobdb_info/jobpost.asp?job=2610080004445'
+  });
+  await useFeed(page, () => ({ ...feed([cached]), sourceStatus: [
+    { source: '인크루트', ok: true, count: 1, rssListOnlyCount: 1,
+      searchFailureCount: 2, searchFailureScopes: ['전주', '완주'] }
+  ] }));
+  await page.goto('/');
+  await page.locator('#marketDomestic').click();
+  await page.selectOption('#minScore', '0');
+  await expect(page.locator('.listing-badge')).toContainText('RSS 확인·상세는 이전 기록');
+  await expect(page.locator('.verification-badge[data-state="changed"]')).toHaveCount(0);
+  await expect(page.locator('.verification-badge')).toContainText('RSS 목록 최근 확인');
+  await page.locator('.details').click();
+  await expect(page.locator('#detailsListingReason')).toContainText('상세 정보는 이전 기록');
+  await expect(page.locator('#detailsVerifiedAt')).toContainText('RSS 목록 마지막 확인');
+  await expect(page.locator('#detailsVerifiedAt')).toContainText('상세 마지막 교차 검증');
+  await expect(page.locator('#detailsHistory')).toContainText('확인 근거 범위 변경');
+  await expect(page.locator('#detailsHistory')).not.toContainText('원문 변경');
+});
+
 test('자동 수집하지 못하는 플랫폼과 대체 경로를 시장별 수집 범위 안내로 보여준다', async ({ page }) => {
   const coverageFeed = {
     ...feed(defaultJobs),

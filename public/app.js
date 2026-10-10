@@ -1028,7 +1028,9 @@ function recentVerificationBadges(job, now = Date.now()) {
   if (payment.freshness === 'expired') badges.push({ state: 'expired', label: '지급 근거 만료' });
   if ((job.requirementsStatus || 'clear') === 'hard_check') badges.push({ state: 'hard', label: '미확인 핵심요건' });
   if (!badges.length && recent(job.lastVerifiedAt || job.listingCheckedAt || job.verifiedAt, 1)) {
-    badges.push({ state: 'recent', label: '최근 검증됨' });
+    badges.push({ state: 'recent',
+      label: ['public_rss', 'public_rss_cached_detail'].includes(job.sourceListingState)
+        ? 'RSS 목록 최근 확인' : '최근 검증됨' });
   }
   return badges.slice(0, 3);
 }
@@ -1051,6 +1053,8 @@ function renderVerificationHistory(job) {
   const eventLabels = {
     first_seen: '처음 발견',
     verified_unchanged: '변경 없이 재검증',
+    rss_list_seen: 'RSS 목록 재확인',
+    verification_scope_changed: '확인 근거 범위 변경',
     content_changed: '원문 변경',
     status_changed: '모집 상태 변경',
     disappeared: '원천에서 사라짐',
@@ -1272,7 +1276,13 @@ function openDetails(job) {
   const reviewNote = job.paymentEvidenceCheckedAt || job.sourceReviewAt
     ? ` · 지급 근거 검토: ${job.paymentEvidenceCheckedAt || job.sourceReviewAt} (${paymentFreshness})`
     : '';
-  $('detailsVerifiedAt').textContent = checkedAt ? `모집 출처 마지막 확인: ${new Date(checkedAt).toLocaleString('ko-KR')}${reviewNote}` : `모집 확인 시각 미상${reviewNote}`;
+  const rssScope = ['public_rss', 'public_rss_cached_detail'].includes(job.sourceListingState);
+  const priorDetail = rssScope && job.lastDetailVerifiedAt
+    ? ` · 상세 마지막 교차 검증: ${new Date(job.lastDetailVerifiedAt).toLocaleString('ko-KR')} (이번 수집에서는 재검증 안 됨)`
+    : '';
+  $('detailsVerifiedAt').textContent = checkedAt
+    ? `${rssScope ? 'RSS 목록 마지막 확인' : '모집 출처 마지막 확인'}: ${new Date(checkedAt).toLocaleString('ko-KR')}${priorDetail}${reviewNote}`
+    : `모집 확인 시각 미상${priorDetail}${reviewNote}`;
   renderVerificationHistory(job);
   $('detailsDescription').textContent = job.description || '상세 설명이 제공되지 않았습니다.';
   $('detailsLink').href = job.url;
@@ -1868,6 +1878,7 @@ function renderSourceHealth(sourceStatus = []) {
   const partial = (sourceStatus || []).filter((source) => source.ok && (
     Number(source.searchFailureCount || 0) > 0
     || Number(source.rssListOnlyCount || 0) > 0
+    || Boolean(source.detailCollapseSuspected)
     || Number(source.detailFailureCount || 0) > 0
     || Number(source.workplaceUnverifiedCount || 0) > 0
     || Number(source.accessRestrictedCount || 0) > 0
@@ -1901,6 +1912,7 @@ function renderSourceHealth(sourceStatus = []) {
       details.push(`지역 검색 실패 ${Number(source.searchFailureCount)}개${scopes.length ? `(${scopes.join(', ')})` : ''}${searchFailureDescription(source)}`);
     }
     if (Number(source.rssListOnlyCount || 0) > 0) details.push(`공식 공개 RSS 목록 ${Number(source.rssListOnlyCount)}건 · 상세 미검증`);
+    if (source.detailCollapseSuspected) details.push('상세 응답·검증 대량 실패 · 기존 공고 현재 모집 미확인');
     if (Number(source.detailFailureCount || 0) > 0) details.push(`상세 파싱·응답 실패 ${Number(source.detailFailureCount)}건`);
     if (Number(source.workplaceUnverifiedCount || 0) > 0) details.push(`근무지 확인 불가 ${Number(source.workplaceUnverifiedCount)}건 제외`);
     if (Number(source.accessRestrictedCount || 0) > 0) details.push(`로그인·연령 인증 필요 ${Number(source.accessRestrictedCount)}건 제외`);
