@@ -608,7 +608,10 @@ function renderMarketPulse() {
   const salaryKnown = jobs.filter((job) => salarySummary(job).hasAmount).length;
   const salaryRate = Math.round((salaryKnown / jobs.length) * 100);
   const category = topFrequency(jobs, (job) => job.category);
-  const company = topFrequency(jobs, (job) => job.company);
+  const applicationCompany = topFrequency(jobs.filter(isRecommendedJob), (job) => job.company);
+  const applicationCompanyActiveCount = applicationCompany
+    ? jobs.filter((job) => String(job.company || '').trim() === applicationCompany[0]).length
+    : 0;
   const decisionUnknown = topFrequency(
     jobs.flatMap((job) => Array.isArray(job.decisionUnknowns) ? job.decisionUnknowns.filter(Boolean) : []),
     (value) => value
@@ -618,7 +621,7 @@ function renderMarketPulse() {
     ['최근 7일 신규', `${recent7}개`, trendDetail],
     ['보수 금액 공개', `${salaryKnown}/${jobs.length}개 · ${salaryRate}%`, '금액이 구조화된 공고 기준'],
     ['공고 수 상위 분야', category ? `${category[0]} · ${category[1]}개` : '분야 정보 부족', '현재 필터 안에서 가장 많이 수집된 분야'],
-    ['공고 수 상위 회사', company ? `${company[0]} · ${company[1]}개` : '회사 정보 부족', '채용량 참고용 · 회사 평가는 아님'],
+    ['지원 후보 상위 회사', applicationCompany ? `${applicationCompany[0]} · ${applicationCompany[1]}개` : '추천 후보 없음', applicationCompany ? `활성 ${applicationCompanyActiveCount}개 중 추천 기준 충족 ${applicationCompany[1]}개` : '현재 필터에서 추천 기준을 충족한 회사 공고가 없습니다.'],
     ['가장 많은 확인 필요', decisionUnknown ? `${decisionUnknown[1]}개` : '추가 확인 없음', decisionUnknown ? decisionUnknown[0] : '현재 필터에서 별도 확인 항목이 없습니다.']
   ];
   for (const [label, value, detail] of cards) {

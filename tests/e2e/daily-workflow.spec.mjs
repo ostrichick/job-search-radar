@@ -311,6 +311,32 @@ test('시장 요약은 추천 필터 밖의 활성 공고와 주요 확인 필�
   await expect(page.locator('#showAllActive')).toBeHidden();
 });
 
+test('시장 요약의 상위 회사는 단순 공고 수가 아니라 실제 추천 기준 충족 공고로 정한다', async ({ page }) => {
+  const noisyCatalog = Array.from({ length: 4 }, (_, index) => job({
+    id: `job:catalog-${index}`,
+    title: `대량 수집 저우선 공고 ${index + 1}`,
+    company: 'Catalog Heavy',
+    url: `https://example.com/job/catalog-${index}`,
+    score: 10,
+    recommendationEligible: false
+  }));
+  const actionable = Array.from({ length: 2 }, (_, index) => job({
+    id: `job:actionable-${index}`,
+    title: `지원 후보 공고 ${index + 1}`,
+    company: 'Ready Co',
+    url: `https://example.com/job/actionable-${index}`,
+    score: 70,
+    recommendationEligible: true
+  }));
+  await useFeed(page, () => feed([...noisyCatalog, ...actionable]));
+  await page.goto('/');
+
+  const companyCard = page.locator('.market-pulse-card').filter({ hasText: '지원 후보 상위 회사' });
+  await expect(companyCard).toContainText('Ready Co · 2개');
+  await expect(companyCard).toContainText('활성 2개 중 추천 기준 충족 2개');
+  await expect(companyCard).not.toContainText('Catalog Heavy');
+});
+
 test('활성 전체 수와 전체 보기 버튼은 개인 숨김 공고를 제외해 같은 범위를 사용한다', async ({ page }) => {
   const visible = job({ id: 'job:scope-visible', title: '표시할 활성 공고', url: 'https://example.com/job/scope-visible', score: 70 });
   const hidden = job({ id: 'job:scope-hidden', title: '숨긴 활성 공고', url: 'https://example.com/job/scope-hidden', score: 10, recommendationEligible: false });
