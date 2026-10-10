@@ -1009,6 +1009,7 @@ test('구형 국내 필터의 null 값은 exact 기본값으로 간주하지 않
   }, { filters: customFilters });
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
   await page.goto('/');
+  await expect.poll(() => readStoredState(page, (storage) => storage.getItem('jobFilterSchemaVersion'))).toBe('8');
 
   const stored = await readStoredState(page, (localStorage) => ({
     version: localStorage.getItem('jobFilterSchemaVersion'),
