@@ -746,7 +746,6 @@ function clearFilterConstraint(id) {
 }
 
 function setJobState(id, value) {
-  state.reviewedIds.add(id);
   state.newIds.delete(id);
   if (value) state.jobStates[id] = value;
   else delete state.jobStates[id];
@@ -756,7 +755,6 @@ function setJobState(id, value) {
 }
 
 function setHidden(id, hidden) {
-  state.reviewedIds.add(id);
   state.newIds.delete(id);
   hidden ? state.hiddenIds.add(id) : state.hiddenIds.delete(id);
   persist();
@@ -767,7 +765,6 @@ function captureHideState(ids) {
   return ids.map((id) => ({
     id,
     hidden: state.hiddenIds.has(id),
-    reviewed: state.reviewedIds.has(id),
     isNew: state.newIds.has(id)
   }));
 }
@@ -776,7 +773,6 @@ function restoreHideState(items = []) {
   for (const item of items) {
     if (!item?.id) continue;
     item.hidden ? state.hiddenIds.add(item.id) : state.hiddenIds.delete(item.id);
-    item.reviewed ? state.reviewedIds.add(item.id) : state.reviewedIds.delete(item.id);
     item.isNew ? state.newIds.add(item.id) : state.newIds.delete(item.id);
   }
 }
@@ -1443,7 +1439,6 @@ function render() {
     favorite.setAttribute('aria-label', state.favorites.has(job.id) ? `${job.title} 관심 해제` : `${job.title} 관심 등록`);
     favorite.classList.toggle('active', state.favorites.has(job.id));
     favorite.addEventListener('click', () => {
-      state.reviewedIds.add(job.id);
       state.newIds.delete(job.id);
       state.favorites.has(job.id) ? state.favorites.delete(job.id) : state.favorites.add(job.id);
       if (state.favorites.has(job.id)) snapshotJob(job.id);
@@ -1494,7 +1489,6 @@ function applyBatch(action) {
   const affectedIds = [...state.selectedIds];
   const hideSnapshot = action === 'hide' ? captureHideState(affectedIds) : [];
   for (const id of affectedIds) {
-    state.reviewedIds.add(id);
     state.newIds.delete(id);
     if (action === 'favorite') state.favorites.add(id);
     if (action === 'planned') state.jobStates[id] = 'planned';

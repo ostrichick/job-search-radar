@@ -917,6 +917,28 @@ test('상태와 동적 소스 필터가 reload 후 유지된다', async ({ page 
   await expect(page.locator('.job-card')).toHaveCount(1);
 });
 
+test('관심·지원 상태·숨김은 내용 확인으로 간주하지 않고 상세 확인만 미확인에서 제외한다', async ({ page }) => {
+  await useFeed(page);
+  await page.goto('/');
+  const targetTitle = 'AI Data Specialist - Korean';
+  const target = () => page.locator('.job-card').filter({ hasText: targetTitle });
+
+  await target().locator('.favorite').click();
+  await target().locator('.job-state').selectOption('planned');
+  await target().locator('.dismiss').click();
+  await page.selectOption('#statusFilter', 'unreviewed');
+  await expect(target()).toHaveCount(1);
+
+  await target().locator('.dismiss').click();
+  await target().locator('.details').click();
+  await page.locator('#closeDetails').click();
+  await expect(target()).toHaveCount(0);
+
+  await page.reload();
+  await expect(page.locator('#statusFilter')).toHaveValue('unreviewed');
+  await expect(target()).toHaveCount(0);
+});
+
 test('카드 상태 변경과 상세 닫기 뒤에도 키보드 포커스가 작업 위치를 유지한다', async ({ page }) => {
   await useFeed(page);
   await page.goto('/');
@@ -943,6 +965,19 @@ test('카드 상태 변경과 상세 닫기 뒤에도 키보드 포커스가 작
   await expect(page.locator('#detailsDialog')).toBeVisible();
   await page.locator('#closeDetails').click();
   await expect(nextCard.locator('.details')).toBeFocused();
+});
+
+test('일괄 관심은 미확인 상태를 유지하고 내용 확인함만 확인 상태를 바꾼다', async ({ page }) => {
+  await useFeed(page);
+  await page.goto('/');
+  await page.locator('#selectVisible').check();
+  await page.locator('#batchFavorite').click();
+  await page.selectOption('#statusFilter', 'unreviewed');
+  await expect(page.locator('.job-card')).toHaveCount(3);
+
+  await page.locator('#selectVisible').check();
+  await page.locator('#batchReviewed').click();
+  await expect(page.locator('.job-card')).toHaveCount(0);
 });
 
 test('batch hide를 한 번에 되돌릴 수 있다', async ({ page }) => {
