@@ -692,8 +692,7 @@ test('전주·완주 로컬 기본 탐색은 출근형을 거리순으로 보고
   await expect(page.locator('#sort')).toHaveValue('distance');
   await expect(page.locator('.job-card').filter({ hasText: 'AI Creative QC Reviewer' })).toHaveCount(0);
 
-  const titles = await page.locator('.job-card .title').allTextContents();
-  expect(titles.slice(0, 3)).toEqual(['일반 사무원', '운영지원 사무원', '자료입력 보조']);
+  await expect.poll(async () => (await page.locator('.job-card .title').allTextContents()).slice(0, 3)).toEqual(['일반 사무원', '운영지원 사무원', '자료입력 보조']);
   await expect(page.locator('.job-card').filter({ hasText: '자료입력 보조' }).locator('.distance-value')).toHaveText('주소 부족으로 거리 계산 불가');
 
   await page.locator('#domesticLocality').selectOption('완주군');
@@ -737,8 +736,7 @@ test('국내 거리 전체 보기에서는 글로벌 원격을 제외하고 국�
   await page.locator('#domesticProvince').selectOption('');
   await page.locator('#domesticLocality').selectOption('');
 
-  const titles = await page.locator('.job-card .title').allTextContents();
-  expect(titles).toEqual(['조금 더 먼 마감임박 사무 지원', '가까운 상시 매장 지원', '자료입력 보조']);
+  await expect(page.locator('.job-card .title')).toHaveText(['조금 더 먼 마감임박 사무 지원', '가까운 상시 매장 지원', '자료입력 보조']);
   await expect(page.locator('.job-card').first().locator('.posted')).toContainText('마감 임박');
   await expect(page.locator('.job-card').filter({ hasText: 'AI Creative QC Reviewer' })).toHaveCount(0);
 });
@@ -783,8 +781,7 @@ test('지역 중심점 거리는 보수적 밴드로 정렬하고 지원 판단 
   await page.goto('/');
   await page.locator('#marketDomestic').click();
 
-  const titles = await page.locator('.job-card .title').allTextContents();
-  expect(titles).toEqual(['정확 좌표 기반 사무 지원', '지역 중심점 기반 사무 지원']);
+  await expect(page.locator('.job-card .title')).toHaveText(['정확 좌표 기반 사무 지원', '지역 중심점 기반 사무 지원']);
 
   const coarseCard = page.locator('.job-card', { hasText: '지역 중심점 기반 사무 지원' });
   await expect(coarseCard.locator('.distance-note')).toContainText('지역 중심점은 거리 구간을 보수적으로 판정');
@@ -1206,6 +1203,7 @@ test('관심 공고가 피드에서 사라져도 archived snapshot으로 남는�
   await page.goto('/');
   const first = page.locator('.job-card').first();
   await first.locator('.favorite').click();
+  await expect(first.locator('.favorite')).toHaveClass(/active/);
   current = feed(defaultJobs.slice(1));
   await page.reload();
   await page.selectOption('#statusFilter', 'saved');
