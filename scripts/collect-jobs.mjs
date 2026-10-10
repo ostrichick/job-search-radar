@@ -1638,6 +1638,17 @@ function markPreservedSourceFailure(job) {
   };
 }
 
+function preservePartialIncruitFallback(previousJobs = [], collected = [], searchFailureCount = 0) {
+  if (!searchFailureCount) return [];
+  const seenPostingIds = new Set(collected.map((job) => text(job.sourcePostingId)).filter(Boolean));
+  return previousJobs
+    .filter((job) => job.source === '인크루트'
+      && /^\d+$/.test(text(job.sourcePostingId))
+      && !seenPostingIds.has(text(job.sourcePostingId))
+      && !['archived_missing', 'expired', 'talent_pool'].includes(job.listingStatus))
+    .map(markPreservedSourceFailure);
+}
+
 function relevantToProfile(job) {
   const title = lower(job.title);
   const haystack = lower([job.title, job.description, job.tags?.join(' ')].join(' '));
@@ -4143,7 +4154,9 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
     const previousHistory = Array.isArray(previous.history) ? previous.history : [];
     const historyEntry = {
       at: nowIso,
-      ok: Boolean(status.ok),
+      // A region-level partial search is not a complete verification of this
+      // source. Otherwise repeated partial outages would appear fully reliable.
+      ok: Boolean(status.ok) && Number(run.searchFailureCount || 0) === 0,
       rawCount,
       discoveredCount: Number(run.discoveredCount ?? rawCount),
       searchAttemptCount: Number(run.searchAttemptCount || 0),
@@ -4196,8 +4209,8 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       qualityTier,
       reliabilityState,
       lastAttemptAt: nowIso,
-      lastSuccessAt: status.ok ? nowIso : (previous.lastSuccessAt || ''),
-      lastFailureAt: status.ok ? (previous.lastFailureAt || '') : nowIso,
+      lastSuccessAt: historyEntry.ok ? nowIso : (previous.lastSuccessAt || ''),
+      lastFailureAt: historyEntry.ok ? (previous.lastFailureAt || '') : nowIso,
       consecutiveFailures,
       recentAttempts,
       recentSuccessRate: recentAttempts ? Math.round((recentSuccesses / recentAttempts) * 1000) / 1000 : 0,
@@ -4391,11 +4404,17 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         discoveryReferenceCount: Number(result?.discoveryReferenceCount || 0),
         discoveryOverlapCount: Number(result?.discoveryOverlapCount || 0)
       });
-      jobs.push(...collected);
+      // Keep previously verified posts from a failed search region as
+      // unverified, never as "disappeared", while retaining newly verified posts.
+      const preservedPartial = name === '인크루트'
+        ? preservePartialIncruitFallback(fallbackJobs, collected, result?.searchFailureCount)
+        : [];
+      jobs.push(...collected, ...preservedPartial);
       sourceStatus.push({
         source: name,
         ok: true,
         count: collected.length,
+        ...(preservedPartial.length ? { preserved: preservedPartial.length } : {}),
         rawCount: Number(result?.rawCount ?? collected.length),
         discoveredCount: Number(result?.discoveredCount ?? result?.rawCount ?? collected.length),
         ...(result?.searchAttemptCount ? { searchAttemptCount: Number(result.searchAttemptCount) } : {}),
@@ -4591,6 +4610,7 @@ export {
   relevantToProfile,
   currentListingState,
   markPreservedSourceFailure,
+  preservePartialIncruitFallback,
   normalizeJob,
   dedupe,
   carryForwardLegacyIds,

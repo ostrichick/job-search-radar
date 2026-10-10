@@ -34,6 +34,7 @@ import {
   relevantToProfile,
   currentListingState,
   markPreservedSourceFailure,
+  preservePartialIncruitFallback,
   normalizeJob,
   dedupe,
   carryForwardLegacyIds,
@@ -950,6 +951,38 @@ try {
 } finally {
   globalThis.fetch = incruitOutageOriginalFetch;
 }
+
+const incruitFresh = {
+  source: '인크루트', sourcePostingId: '2609110000252', id: 'incruit:2609110000252',
+  title: '사무보조', company: '검증기업', listingStatus: 'current_feed', score: 25
+};
+const incruitOld = {
+  ...incruitFresh, sourcePostingId: '2609110000253', id: 'incruit:2609110000253',
+  title: '자료입력', score: 25
+};
+const incruitArchived = { ...incruitOld, sourcePostingId: '2609110000254', listingStatus: 'archived_missing' };
+const partialOld = preservePartialIncruitFallback(
+  [incruitFresh, incruitOld, incruitArchived, { ...incruitOld, source: '잡코리아' }],
+  [incruitFresh], 1
+);
+assert.equal(partialOld.length, 1, 'partial Incruit outage must preserve only missing active Incruit posts');
+assert.equal(partialOld[0].sourcePostingId, incruitOld.sourcePostingId);
+assert.equal(partialOld[0].listingStatus, 'source_error', 'missing region must be unverified, not falsely disappeared');
+assert.equal(preservePartialIncruitFallback([incruitOld], [incruitFresh], 0).length, 0,
+  'a complete search must use normal missing-post lifecycle reconciliation');
+const partialMetrics = buildSourceMetrics(
+  ['인크루트'],
+  new Map([['인크루트', { searchAttemptCount: 2, searchSuccessCount: 1, searchFailureCount: 1, searchFailureScopes: ['완주'] }]]),
+  [{ source: '인크루트', ok: true, count: 1, searchFailureCount: 1 }],
+  [], [],
+  { 인크루트: { lastSuccessAt: '2026-10-09T00:00:00.000Z', history: [{ at: '2026-10-09T00:00:00.000Z', ok: true }] } },
+  Date.parse('2026-10-10T00:00:00.000Z')
+).인크루트;
+assert.equal(partialMetrics.history.at(-1).ok, false,
+  'a partial Incruit search must not improve the complete-run reliability metric');
+assert.equal(partialMetrics.lastSuccessAt, '2026-10-09T00:00:00.000Z',
+  'a partial search must not overwrite the last full-success timestamp');
+assert.equal(partialMetrics.lastFailureAt, '2026-10-10T00:00:00.000Z');
 
 const incruitHint = incruitSearchCandidates(incruitListFixture)[0];
 const incruitLocal = structuredLocalBoardCandidate(
