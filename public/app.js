@@ -1,4 +1,5 @@
 import { mergeWorkflowState, reconcileNewIds } from './state-rules.js';
+import { hasRoleFitEvidence, isDefaultRecommendation as recommendationRule } from './recommendation-rules.js';
 
 const legacyDismissed = new Set(JSON.parse(localStorage.getItem('jobDismissed') || '[]'));
 const storedStates = JSON.parse(localStorage.getItem('jobStates') || '{}');
@@ -412,7 +413,7 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
   if (!skipped.has('requirementsFilter') && requirementsFilter && (job.requirementsStatus || 'clear') !== requirementsFilter) return false;
   if (!skipped.has('minScore')) {
     if (job.score < minScore) return false;
-    if (minScore >= 20 && job.recommendationEligible === false) return false;
+    if (minScore >= 20 && !job.manual && (job.recommendationEligible === false || !roleFitEvidenceFor(job))) return false;
   }
   if (!skipped.has('statusFilter')) {
     if (status === 'active' && hidden) return false;
@@ -981,11 +982,11 @@ function paymentFreshnessLabel(job) {
 }
 
 function isRecommendedJob(job) {
-  return job.recommendationEligible !== false
-    && Number(job.score || 0) >= 20
-    && ['korea', 'worldwide'].includes(job.eligibilityCode)
-    && (job.requirementsStatus || 'clear') !== 'hard_check'
-    && !['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus);
+  return recommendationRule(job, state.meta?.recommendationPolicyVersion || 0);
+}
+
+function roleFitEvidenceFor(job) {
+  return hasRoleFitEvidence(job, state.meta?.recommendationPolicyVersion || 0);
 }
 
 function recentVerificationBadges(job, now = Date.now()) {
@@ -1322,8 +1323,16 @@ function render() {
     node.querySelector('.job-card').dataset.jobId = job.id;
     node.querySelector('.source').textContent = job.source;
     if ((job.sources || []).length > 1) node.querySelector('.source').textContent = `${job.source} +${job.sources.length - 1}`;
-    node.querySelector('.score').textContent = job.manual ? '직접 추가' : `검토 우선순위 ${job.score}`;
-    if (!job.manual) node.querySelector('.score').title = '합격 가능성이 아니라 먼저 확인할 순서를 위한 점수입니다.';
+    node.querySelector('.score').textContent = job.manual
+      ? '직접 추가'
+      : roleFitEvidenceFor(job)
+        ? `검토 우선순위 ${job.score}`
+        : `시장 탐색 후보 · 우선순위 ${job.score}`;
+    if (!job.manual) {
+      node.querySelector('.score').title = roleFitEvidenceFor(job)
+        ? '합격 가능성이 아니라 먼저 확인할 순서를 위한 점수입니다.'
+        : '지역·출처 조건은 맞지만 관심 업무와 직접 일치하는 근거가 부족한 일반 시장 후보입니다.';
+    }
     const selection = node.querySelector('.job-select');
     selection.checked = state.selectedIds.has(job.id);
     selection.setAttribute('aria-label', `${job.title} 선택`);
@@ -1524,8 +1533,142 @@ function mergeArraySet(target, values) {
   for (const value of values) if (typeof value === 'string') target.add(value);
 }
 
+function manualJobRecord({
+  id = `manual:${crypto.randomUUID()}`,
+  source = '직접 추가',
+  title = '',
+  company = '',
+  location = '',
+  url = '',
+  remote = false,
+  description = '',
+  market = 'overseas_remote',
+  sourceSummary = '',
+  listingEvidenceLabel = '직접 추가 원문'
+} = {}) {
+  const manualMarket = remote ? 'overseas_remote' : market;
+  const checkedAt = new Date().toISOString();
+  return {
+    id,
+    source: String(source || '직접 추가').trim() || '직접 추가',
+    title: String(title || '').trim(),
+    company: String(company || '').trim() || '회사 미상',
+    location: String(location || '').trim() || '위치 미상',
+    remote: Boolean(remote),
+    workplaceMode: remote ? 'remote' : 'unknown',
+    type: remote ? 'Remote' : '미상',
+    salary: '',
+    url: String(url || '').trim(),
+    postedAt: '',
+    description: String(description || '').trim(),
+    tags: [],
+    matchedKeywords: [],
+    roleFitEvidence: false,
+    roleFitBasis: 'none',
+    recommendationEligible: false,
+    roleRecommendationGateReason: '사용자가 직접 추가한 추적 공고',
+    category: '직접 추가',
+    eligibility: '확인 필요',
+    eligibilityCode: 'unknown',
+    eligibilityBasis: 'manual',
+    eligibilityReason: '직접 추가 공고라 지원 가능한 국가 범위를 자동 검증하지 않음',
+    listingStatus: 'manual',
+    listingLabel: '직접 확인 필요',
+    listingBasis: 'manual',
+    listingReason: '사용자가 직접 추가한 공고라 원문에서 현재 모집 여부를 확인해야 함',
+    listingVerification: 'manual',
+    sourceKind: 'manual',
+    sourceCoverage: 'manual',
+    sourceTrustLabel: '사용자 직접 추가',
+    sourceOfficiality: 'manual',
+    paymentStatus: 'unknown',
+    paymentLabel: '직접 확인 필요',
+    paymentEvidenceState: 'insufficient',
+    paymentEvidenceLabel: '근거 부족',
+    paymentConfidence: 'low',
+    paymentEvidenceFreshness: 'insufficient',
+    paymentEvidenceCheckedAt: '',
+    paymentEvidenceNextReviewAt: '',
+    paymentSummary: '직접 추가 공고라 구조화된 공개 지급 평판 근거가 없습니다.',
+    paymentSignals: [],
+    sourceSummary: sourceSummary || '사용자가 직접 추가한 공고입니다. 원문에서 현재 모집과 지급 조건을 확인하세요.',
+    sourceEvidence: [],
+    salaryInfo: { raw: '', display: '', confidence: 'none' },
+    verifiedAt: checkedAt,
+    listingCheckedAt: checkedAt,
+    listingEvidence: [{ type: 'manual_listing', label: listingEvidenceLabel, url: String(url || '').trim(), checkedAt }],
+    fitReasons: ['사용자가 직접 검토 대상으로 추가함'],
+    fitWarnings: [],
+    fitWarning: '',
+    requirementChecks: [],
+    requirementsStatus: 'clear',
+    requirementsLabel: '추가 필수조건 감지 없음',
+    applyValueReasons: ['사용자가 직접 검토 대상으로 추가함'],
+    decisionUnknowns: ['현재 모집 여부', '지원 가능 국가', '급여·단가', '지급 신뢰 근거'],
+    score: 50,
+    marketScopes: [manualMarket],
+    marketSegment: manualMarket,
+    ...(manualMarket === 'domestic' ? {
+      domesticRegion: {
+        country: '대한민국', province: '', city: '', district: '', locality: '', neighborhood: '',
+        label: String(location || '').trim(), precision: 'country', evidenceLevel: 'manual_location'
+      }
+    } : {}),
+    manual: true
+  };
+}
+
+function mergeManualJobs(jobs) {
+  const current = new Map(state.manualJobs.map((job) => [job.id || job.url, job]));
+  for (const job of jobs || []) {
+    if (!job || typeof job !== 'object' || !job.url || !job.title) continue;
+    current.set(job.id || job.url, job);
+  }
+  state.manualJobs = [...current.values()];
+}
+
+function isLinkedInAlertImport(payload) {
+  return Array.isArray(payload)
+    && payload.length > 0
+    && payload.every((job) => job && typeof job === 'object'
+      && (String(job.id || '').startsWith('linkedin-alert:') || job.linkedinJobId)
+      && /^https:\/\/www\.linkedin\.com\/jobs\/view\/\d+\/?/i.test(String(job.url || '')));
+}
+
+function linkedinAlertManualJobs(payload) {
+  return payload.map((job) => {
+    const location = String(job.location || '').trim();
+    const remote = Boolean(job.remote) || job.workplace === 'remote';
+    const koreaLocation = /(?:south\s+korea|republic\s+of\s+korea|대한민국|한국|서울|부산|대구|인천|대전|울산|세종|경기|강원|충청|전라|경상|제주|전주|완주)/i.test(location);
+    const market = !remote && koreaLocation ? 'domestic' : 'overseas_remote';
+    const linkedinJobId = String(job.linkedinJobId || String(job.id || '').replace(/^linkedin-alert:/, '')).trim();
+    return manualJobRecord({
+      id: `linkedin-alert:${linkedinJobId}`,
+      source: 'LinkedIn Job Alert',
+      title: job.title,
+      company: job.company,
+      location,
+      url: `https://www.linkedin.com/jobs/view/${linkedinJobId}/`,
+      remote,
+      market,
+      sourceSummary: 'LinkedIn 공식 Job Alert 이메일에서 사용자가 내보낸 항목입니다. 공고 원문에서 현재 모집·지원 범위를 다시 확인하세요.',
+      listingEvidenceLabel: 'LinkedIn 공고 원문'
+    });
+  });
+}
+
 async function importState(file) {
   const payload = JSON.parse(await file.text());
+  if (isLinkedInAlertImport(payload)) {
+    const importedJobs = linkedinAlertManualJobs(payload);
+    mergeManualJobs(importedJobs);
+    persist();
+    mergeJobs();
+    updateDynamicFilters(true);
+    if (importedJobs.length && !importedJobs.some((job) => job.marketSegment === state.marketTab)) setMarketTab(importedJobs[0].marketSegment);
+    showAllActiveJobs();
+    return { kind: 'linkedin-alert', count: importedJobs.length };
+  }
   if (payload?.schema !== 'job-search-radar-state' || ![1, 2].includes(payload?.version)) throw new Error('지원하지 않는 백업 파일입니다.');
   const importedFilterSchemaVersion = Number(payload.filterSchemaVersion || 0);
   mergeArraySet(state.favorites, payload.favorites);
@@ -1539,12 +1682,7 @@ async function importState(file) {
     }
   }
   if (Array.isArray(payload.manualJobs)) {
-    const current = new Map(state.manualJobs.map((job) => [job.id || job.url, job]));
-    for (const job of payload.manualJobs) {
-      if (!job || typeof job !== 'object' || !job.url || !job.title) continue;
-      current.set(job.id || job.url, job);
-    }
-    state.manualJobs = [...current.values()];
+    mergeManualJobs(payload.manualJobs);
   }
   if (payload.trackedJobs && typeof payload.trackedJobs === 'object' && !Array.isArray(payload.trackedJobs)) {
     for (const [id, snapshot] of Object.entries(payload.trackedJobs)) {
@@ -1582,6 +1720,7 @@ async function importState(file) {
   updateDynamicFilters(true);
   persistFilters();
   render();
+  return { kind: 'backup' };
 }
 
 function escapeHtml(value) {
@@ -1780,6 +1919,7 @@ function applyFeedData(data, detectNew = true) {
   }
   renderSourceHealth(data.sourceStatus || []);
   state.loadError = null;
+  $('loadErrorBanner').hidden = true;
   render();
 }
 
@@ -1806,11 +1946,13 @@ async function load() {
 
 $('refreshBtn').addEventListener('click', async () => {
   const button = $('refreshBtn');
+  const staticPages = location.hostname.endsWith('.github.io');
+  const idleLabel = staticPages ? '목록 다시 확인' : '목록 새로고침';
   button.disabled = true;
-  button.textContent = '수집 중…';
+  button.textContent = staticPages ? '목록 확인 중…' : '수집 중…';
   try {
     let data;
-    if (location.hostname.endsWith('.github.io')) {
+    if (staticPages) {
       data = await fetchFeed();
     } else {
       try {
@@ -1824,11 +1966,15 @@ $('refreshBtn').addEventListener('click', async () => {
     applyFeedData(data, true);
   } catch (error) {
     state.loadError = error.message;
-    $('emptyMessage').textContent = `공고를 다시 불러오지 못했습니다: ${error.message}`;
-    $('empty').hidden = false;
+    $('loadErrorText').textContent = `새 목록을 확인하지 못했습니다. 현재 화면은 마지막으로 성공한 수집 결과를 유지합니다. (${error.message})`;
+    $('loadErrorBanner').hidden = false;
+    if (!state.jobs.length) {
+      $('emptyMessage').textContent = `공고를 다시 불러오지 못했습니다: ${error.message}`;
+      $('empty').hidden = false;
+    }
   } finally {
     button.disabled = false;
-    button.textContent = '목록 새로고침';
+    button.textContent = idleLabel;
   }
 });
 
@@ -1842,8 +1988,10 @@ $('importStateFile').addEventListener('change', async (event) => {
   const file = event.target.files?.[0];
   if (!file) return;
   try {
-    await importState(file);
-    $('toastText').textContent = '백업 상태를 현재 데이터에 병합했습니다.';
+    const imported = await importState(file);
+    $('toastText').textContent = imported?.kind === 'linkedin-alert'
+      ? `LinkedIn 알림 공고 ${imported.count}개를 현재 목록에 병합했습니다.`
+      : '백업 상태를 현재 데이터에 병합했습니다.';
     $('undoHide').hidden = true;
     $('toast').hidden = false;
     clearTimeout(state.toastTimer);
@@ -1916,83 +2064,33 @@ $('addForm').addEventListener('submit', (event) => {
   const data = Object.fromEntries(form);
   const url = String(data.url || '').trim();
   const title = String(data.title || '').trim();
+  const location = String(data.location || '').trim();
+  const manualMarket = form.has('remote') ? 'overseas_remote' : state.marketTab;
   if (!title || !url) return;
   try { new URL(url); } catch { alert('올바른 URL을 입력해 주세요.'); return; }
-  const manual = {
-    id: `manual:${crypto.randomUUID()}`,
-    source: String(data.source || '직접 추가').trim() || '직접 추가',
+  const manual = manualJobRecord({
+    source: data.source,
     title,
-    company: String(data.company || '').trim() || '회사 미상',
-    location: String(data.location || '').trim() || '위치 미상',
-    remote: form.has('remote'),
-    type: form.has('remote') ? 'Remote' : '미상',
-    salary: '',
+    company: data.company,
+    location,
     url,
-    postedAt: new Date().toISOString(),
-    description: String(data.description || '').trim(),
-    tags: [],
-    matchedKeywords: [],
-    category: '직접 추가',
-    eligibility: '확인 필요',
-    eligibilityCode: 'unknown',
-    eligibilityBasis: 'manual',
-    eligibilityReason: '직접 추가 공고라 지원 가능한 국가 범위를 자동 검증하지 않음',
-    listingStatus: 'manual',
-    listingLabel: '직접 확인 필요',
-    listingBasis: 'manual',
-    listingReason: '사용자가 직접 추가한 공고라 원문에서 현재 모집 여부를 확인해야 함',
-    listingVerification: 'manual',
-    sourceKind: 'manual',
-    sourceCoverage: 'manual',
-    sourceTrustLabel: '사용자 직접 추가',
-    sourceOfficiality: 'manual',
-    paymentStatus: 'unknown',
-    paymentLabel: '직접 확인 필요',
-    paymentEvidenceState: 'insufficient',
-    paymentEvidenceLabel: '근거 부족',
-    paymentConfidence: 'low',
-    paymentEvidenceFreshness: 'insufficient',
-    paymentEvidenceCheckedAt: '',
-    paymentEvidenceNextReviewAt: '',
-    paymentSummary: '직접 추가 공고라 구조화된 공개 지급 평판 근거가 없습니다.',
-    paymentSignals: [],
-    sourceSummary: '사용자가 직접 추가한 공고입니다. 원문에서 현재 모집과 지급 조건을 확인하세요.',
-    sourceEvidence: [],
-    salaryInfo: { raw: '', display: '', confidence: 'none' },
-    verifiedAt: new Date().toISOString(),
-    listingCheckedAt: new Date().toISOString(),
-    listingEvidence: [{ type: 'manual_listing', label: '직접 추가 원문', url }],
-    fitReasons: ['사용자가 직접 검토 대상으로 추가함'],
-    fitWarnings: [],
-    fitWarning: '',
-    requirementChecks: [],
-    requirementsStatus: 'clear',
-    requirementsLabel: '추가 하드요건 감지 없음',
-    applyValueReasons: ['사용자가 직접 검토 대상으로 추가함'],
-    decisionUnknowns: ['현재 모집 여부', '지원 가능 국가', '급여·단가', '지급 신뢰 근거'],
-    score: 50,
-    marketScopes: [state.marketTab],
-    marketSegment: state.marketTab,
-    ...(state.marketTab === 'domestic' ? {
-      domesticRegion: {
-        country: '대한민국',
-        province: $('domesticProvince').value || '',
-        locality: $('domesticLocality').value || '',
-        neighborhood: $('domesticNeighborhood').value || '',
-        label: [$('domesticProvince').value, $('domesticLocality').value, $('domesticNeighborhood').value].filter(Boolean).join(' ') || String(data.location || '').trim(),
-        evidenceLevel: 'manual_tab_context'
-      },
-      workplaceMode: form.has('remote') ? 'remote' : 'unknown'
-    } : {}),
-    manual: true
-  };
+    remote: form.has('remote'),
+    description: data.description,
+    market: manualMarket
+  });
   state.manualJobs.unshift(manual);
   persist();
   mergeJobs();
   updateDynamicFilters();
   event.currentTarget.reset();
   dialog.close();
-  render();
+  if (manualMarket !== state.marketTab) setMarketTab(manualMarket);
+  showAllActiveJobs();
+  $('toastText').textContent = '공고를 추가했습니다. 방금 추가한 공고가 보이도록 현재 조건을 넓혔습니다.';
+  $('undoHide').hidden = true;
+  $('toast').hidden = false;
+  clearTimeout(state.toastTimer);
+  state.toastTimer = setTimeout(() => { $('toast').hidden = true; $('undoHide').hidden = false; }, 3500);
 });
 
 try {

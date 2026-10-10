@@ -16,7 +16,7 @@
     </div>
     <div class="actions">
       <button id="exportStateBtn" class="button secondary">상태 백업</button>
-      <button id="importStateBtn" class="button secondary">상태 가져오기</button>
+      <button id="importStateBtn" class="button secondary">상태/알림 가져오기</button>
       <input id="importStateFile" type="file" accept="application/json,.json" hidden>
       <button id="addJobBtn" class="button secondary">공고 추가</button>
       <button id="refreshBtn" class="button primary">목록 새로고침</button>
@@ -232,6 +232,10 @@
       </div>
     </section>
     <section id="sourceHealth" class="source-health" hidden aria-live="polite"></section>
+    <section id="loadErrorBanner" class="load-error-banner" hidden role="alert">
+      <strong>목록 확인 실패</strong>
+      <span id="loadErrorText"></span>
+    </section>
 
     <section id="jobs" class="job-grid" aria-live="polite"></section>
     <section id="empty" class="empty" hidden>

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { recommendationCollapseRisk } from './collect-jobs.mjs';
+import { isDefaultRecommendation as recommendationRule } from '../public/recommendation-rules.js';
 
 const target = process.argv[2] || './data/jobs.json';
 const feed = JSON.parse(fs.readFileSync(target, 'utf8'));
@@ -16,6 +17,7 @@ assert.ok(feed.recommendationSummary && typeof feed.recommendationSummary === 'o
   'feed must persist recommendationSummary');
 assert.ok(Number.isInteger(feed.recommendationPolicyVersion) && feed.recommendationPolicyVersion >= 1,
   'feed must persist recommendationPolicyVersion');
+const roleFitRecommendationPolicy = feed.recommendationPolicyVersion >= 3;
 assert.ok(feed.locationReference && typeof feed.locationReference === 'object', 'feed must persist the domestic distance reference');
 assert.equal(feed.locationReference.label, '전북특별자치도 전주시 덕진구 산정동', 'distance reference must remain the user-selected Sanjeong-dong baseline');
 assert.ok(Number.isFinite(feed.locationReference.lat) && Number.isFinite(feed.locationReference.lon), 'distance reference must use reproducible coordinates');
@@ -87,6 +89,11 @@ for (const job of feed.jobs) {
   }
   assert.ok(['clear', 'routine_check', 'hard_check'].includes(job.requirementsStatus), `${job.id} must expose requirements review state`);
   assert.ok(job.requirementsLabel, `${job.id} must have a user-readable requirements label`);
+  if (roleFitRecommendationPolicy && !['archived_missing', 'source_error'].includes(job.listingStatus)) {
+    assert.equal(typeof job.roleFitEvidence, 'boolean', `${job.id} current recommendation policy must persist roleFitEvidence`);
+    assert.ok(['title_keyword_match', 'keyword_match', 'target_category', 'none'].includes(job.roleFitBasis),
+      `${job.id} current recommendation policy must identify roleFitBasis`);
+  }
   assert.ok(job.contentFingerprint, `${job.id} must have a content fingerprint`);
   if (!['archived_missing', 'source_error'].includes(job.listingStatus)) {
     assert.equal(job.contentFingerprintVersion, 3, `${job.id} current source fingerprint must use contract v3`);
@@ -183,13 +190,7 @@ for (const job of feed.jobs) {
   }
 }
 
-const recommended = feed.jobs.filter((job) =>
-  job.recommendationEligible !== false &&
-  job.score >= 20 &&
-  ['korea', 'worldwide'].includes(job.eligibilityCode) &&
-  job.requirementsStatus !== 'hard_check' &&
-  !['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus)
-);
+const recommended = feed.jobs.filter((job) => recommendationRule(job, feed.recommendationPolicyVersion));
 assert.ok(recommended.length > 0, 'default recommendation set must not be empty');
 assert.equal(recommended.filter((job) => job.fitWarning).length, 0, 'default recommendations must not require unverified specialist credentials');
 assert.equal(recommended.filter((job) => job.requirementsStatus === 'hard_check').length, 0, 'default recommendations must not contain unresolved hard requirements');

@@ -417,7 +417,9 @@ assert.equal(work24Office.sourcePostingId, 'K161132610050001');
 assert.equal(work24Office.sourceKind, 'official_government');
 assert.equal(work24Office.listingStatus, 'official_listed');
 assert.equal(work24Office.category, '사무·운영');
-assert.ok(work24Office.score >= 20, 'general local office work must remain reviewable');
+assert.equal(work24Office.roleFitEvidence, false, 'generic local office work must not become a recommendation from geography alone');
+assert.ok(work24Office.score < 20, 'generic local office work must remain a broad-market candidate rather than a default recommendation');
+assert.match(work24Office.decisionUnknowns.join(' '), /관심 업무와 직접 일치하는 근거 부족/);
 assert.equal(work24Office.requirementsStatus, 'routine_check');
 assert.ok(work24Office.requirementChecks.some((item) => /자격·면허/.test(item.label)),
   'list-only Work24 candidates must keep detail qualification uncertainty visible');
@@ -453,8 +455,40 @@ const work24PartTime = work24Candidate({
   maxEdubg: '학력무관'
 });
 assert.equal(work24PartTime.category, '일반·파트타임');
-assert.ok(work24PartTime.score >= 20, 'practical local part-time roles must remain visible at the default domestic threshold');
+assert.equal(work24PartTime.roleFitEvidence, false);
+assert.ok(work24PartTime.score < 20, 'generic cafe work must remain available in broad market exploration but stay out of recommendations');
 assert.equal(work24PartTime.requirementsStatus, 'routine_check');
+
+const work24DataSupport = work24Candidate({
+  ...work24Rows[0],
+  wantedAuthNo: 'K161132610050004',
+  title: '자료입력 사무보조',
+  career: '관계없음',
+  minEdubg: '학력무관',
+  maxEdubg: '학력무관'
+});
+assert.equal(work24DataSupport.roleFitEvidence, true, 'explicit Korean interest-role keywords must create role-fit evidence');
+assert.ok(work24DataSupport.matchedKeywords.includes('자료입력') || work24DataSupport.matchedKeywords.includes('사무보조'));
+assert.ok(work24DataSupport.score >= 20);
+assert.equal(isDefaultRecommendation({ ...work24DataSupport, recommendationEligible: true }), true,
+  'an explicit local interest-role match with no hard blocker must remain recommendable');
+
+const localBodyOnlyNoise = normalizeJob({
+  ...base,
+  id: 'local-body-only-noise',
+  source: '사람인',
+  title: '겨울캠프 영어강사&보조강사 채용 공고',
+  location: '전북 전주시 덕진구',
+  countryCode: 'KR',
+  remote: false,
+  workplaceMode: 'onsite',
+  url: 'https://example.com/local-body-only-noise',
+  description: '채용보드 부가 분류: data entry, education operations'
+});
+assert.equal(localBodyOnlyNoise.category, '기타');
+assert.equal(localBodyOnlyNoise.roleFitEvidence, false);
+assert.deepEqual(localBodyOnlyNoise.matchedKeywords, [], 'local board body metadata must not surface as role-fit keywords');
+assert.ok(localBodyOnlyNoise.score <= 5, 'unanchored local 기타 roles must retain the strict noise score cap');
 
 const albamonFixture = structuredLocalBoardCandidate(
   '알바몬',
@@ -488,7 +522,9 @@ assert.equal(albamonFixture.salaryInfo.min, 36000000);
 assert.equal(albamonFixture.salaryInfo.period, 'year');
 assert.equal(albamonFixture.deadlineType, 'rolling');
 assert.equal(albamonFixture.category, '사무·운영');
-assert.ok(albamonFixture.score >= 20);
+assert.equal(albamonFixture.roleFitEvidence, false,
+  'local-board body/category metadata must not substitute for explicit role evidence in the posting title');
+assert.ok(albamonFixture.score < 20);
 
 const albaFixture = structuredLocalBoardCandidate(
   '알바천국',
@@ -516,7 +552,8 @@ assert.equal(albaFixture.salaryInfo.min, 10320);
 assert.equal(albaFixture.salaryInfo.period, 'hour');
 assert.equal(albaFixture.category, '일반·파트타임');
 assert.equal(albaFixture.deadlineType, 'rolling');
-assert.ok(albaFixture.score >= 20);
+assert.equal(albaFixture.roleFitEvidence, false);
+assert.ok(albaFixture.score < 20, 'generic retail roles must not be recommended from Korea/category points alone');
 
 const albaLegacyFixture = structuredLocalBoardCandidate(
   '알바천국',
@@ -1114,7 +1151,8 @@ assert.equal(jobKoreaFixture.deadlineDate, '2026-11-01');
 assert.equal(jobKoreaFixture.experience, '경력무관');
 assert.equal(jobKoreaFixture.education, '학력무관');
 assert.equal(jobKoreaFixture.category, '사무·운영');
-assert.ok(jobKoreaFixture.score >= 20);
+assert.equal(jobKoreaFixture.roleFitEvidence, false);
+assert.ok(jobKoreaFixture.score < 20, 'generic concierge/customer-facing roles must stay out of default recommendations');
 
 const jobKoreaRollingSentinelFixture = structuredLocalBoardCandidate(
   '잡코리아',
@@ -1183,7 +1221,8 @@ const localPackingFixture = structuredLocalBoardCandidate(
   </body></html>`
 );
 assert.equal(localPackingFixture.category, '일반·파트타임');
-assert.ok(localPackingFixture.score >= 20, 'a beginner-friendly packing role must not be hidden merely because the title mentions a separate forklift pay rate');
+assert.equal(localPackingFixture.roleFitEvidence, false);
+assert.ok(localPackingFixture.score < 20, 'generic packing work may remain in the broad local market without being presented as a role-fit recommendation');
 assert.ok(!localPackingFixture.fitWarnings.includes('전문 자격·기술 경력 요건 확인'));
 
 const remoteLocalAddressFixture = structuredLocalBoardCandidate(
@@ -2373,6 +2412,8 @@ const recommendationFixture = (index, overrides = {}) => ({
   title: `Korean AI Evaluator ${index}`,
   source: 'Source A',
   score: 70,
+  roleFitEvidence: true,
+  roleFitBasis: 'keyword_match',
   recommendationEligible: true,
   eligibilityCode: 'korea',
   requirementsStatus: 'clear',
@@ -2381,21 +2422,21 @@ const recommendationFixture = (index, overrides = {}) => ({
   ...overrides
 });
 const baselineRecommendations = {
-  recommendationPolicyVersion: 2,
+  recommendationPolicyVersion: 3,
   jobs: Array.from({ length: 8 }, (_, index) => recommendationFixture(index))
 };
 const collapsedRecommendations = {
-  recommendationPolicyVersion: 2,
+  recommendationPolicyVersion: 3,
   jobs: baselineRecommendations.jobs.slice(0, 2)
 };
 const collapseRisk = recommendationCollapseRisk(collapsedRecommendations, baselineRecommendations);
 assert.equal(collapseRisk.collapse, true, 'same-policy unexplained recommendation collapse must be detected');
 assert.equal(collapseRisk.baselineCount, 8);
 assert.equal(collapseRisk.currentCount, 2);
-assert.equal(recommendationCollapseRisk({ ...collapsedRecommendations, recommendationPolicyVersion: 3 }, baselineRecommendations).collapse, false,
+assert.equal(recommendationCollapseRisk({ ...collapsedRecommendations, recommendationPolicyVersion: 4 }, baselineRecommendations).collapse, false,
   'policy version bump must explicitly rebaseline intentional recommendation policy changes');
 const explainedRecommendations = {
-  recommendationPolicyVersion: 2,
+  recommendationPolicyVersion: 3,
   jobs: baselineRecommendations.jobs.map((job, index) => index < 2 ? job : recommendationFixture(index, {
     listingStatus: 'archived_missing',
     sourceCoverage: 'bounded_window',
@@ -2406,7 +2447,7 @@ const explainedRecommendations = {
 assert.equal(recommendationCollapseRisk(explainedRecommendations, baselineRecommendations).collapse, true,
   'catastrophic bounded-window disappearance must remain guarded at the source level instead of being auto-explained');
 const currentCatalogCollapse = {
-  recommendationPolicyVersion: 2,
+  recommendationPolicyVersion: 3,
   jobs: baselineRecommendations.jobs.map((job, index) => index < 2 ? job : recommendationFixture(index, {
     listingStatus: 'archived_missing',
     sourceCoverage: 'current_catalog',
@@ -2418,14 +2459,14 @@ assert.equal(recommendationCollapseRisk(currentCatalogCollapse, baselineRecommen
   'healthy current-catalog disappearance must remain unexplained so collector regressions cannot silently collapse recommendations');
 
 const crossSourceBaseline = {
-  recommendationPolicyVersion: 2,
+  recommendationPolicyVersion: 3,
   jobs: [
     ...Array.from({ length: 8 }, (_, index) => recommendationFixture(index, { source: 'Local Board', id: `local-${index}`, url: `https://example.com/local-${index}` })),
     ...Array.from({ length: 64 }, (_, index) => recommendationFixture(index, { source: 'Other Sources', id: `other-${index}`, url: `https://example.com/other-${index}` }))
   ]
 };
 const crossSourceCurrent = {
-  recommendationPolicyVersion: 2,
+  recommendationPolicyVersion: 3,
   jobs: crossSourceBaseline.jobs.map((job, index) => job.source === 'Local Board' && index !== 0
     ? { ...job, listingStatus: 'archived_missing', sourceCoverage: 'bounded_window', recommendationEligible: false, score: 0 }
     : job)
@@ -2436,7 +2477,7 @@ assert.equal(crossSourceRisk.collapse, true, 'one source collapsing 8→1 must t
 assert.equal(crossSourceRisk.sourceCollapses[0].source, 'Local Board');
 
 const weakSourceDowngrade = {
-  recommendationPolicyVersion: 2,
+  recommendationPolicyVersion: 3,
   jobs: baselineRecommendations.jobs.map((job, index) => index < 2 ? job : recommendationFixture(index, {
     recommendationEligible: false,
     sourceQualityTier: 'weak',

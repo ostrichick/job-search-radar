@@ -28,6 +28,8 @@ function job(overrides = {}) {
     sourceReliabilityState: 'reliable',
     sourceRecentSuccessRate: 1,
     recommendationEligible: true,
+    roleFitEvidence: true,
+    roleFitBasis: 'keyword_match',
     sourceTrustLabel: '공식 직접 채용',
     sourceOfficiality: 'official',
     sourceSummary: '공식 ATS의 현재 공개 공고입니다.',
@@ -90,18 +92,18 @@ function feed(jobs) {
       province: '전북특별자치도', city: '전주시', district: '덕진구', neighborhood: '산정동',
       lat: 35.84434, lon: 127.1736277, precision: 'neighborhood', coordinateSource: 'OpenStreetMap Nominatim', distanceMethod: 'haversine_straight_line'
     },
-    recommendationPolicyVersion: 2,
-    sourceStatus: [{ source: 'RWS TrainAI', ok: true, count: jobs.length, qualityTier: 'strong', kept: jobs.length, recommended: jobs.filter((item) => item.recommendationEligible !== false).length }],
+    recommendationPolicyVersion: 3,
+    sourceStatus: [{ source: 'RWS TrainAI', ok: true, count: jobs.length, qualityTier: 'strong', kept: jobs.length, recommended: jobs.filter((item) => item.recommendationEligible !== false && item.roleFitEvidence === true).length }],
     sourceMetrics: {
       'RWS TrainAI': {
         source: 'RWS TrainAI', kind: 'official_ats', officiality: 'official', coverage: 'current_catalog',
         evidenceRefreshability: 'direct_api', qualityTier: 'strong', reliabilityState: 'reliable',
-        recentSuccessRate: 1, matchedCount: jobs.length, keptCount: jobs.length, recommendedCount: jobs.filter((item) => item.recommendationEligible !== false).length,
+        recentSuccessRate: 1, matchedCount: jobs.length, keptCount: jobs.length, recommendedCount: jobs.filter((item) => item.recommendationEligible !== false && item.roleFitEvidence === true).length,
         validJobRate: 1, keptRate: 1, duplicateRate: 0, lowQualityRate: 0,
         history: [{ at: '2026-10-04T06:00:00.000Z', ok: true, rawCount: jobs.length, matchedCount: jobs.length, keptCount: jobs.length }]
       }
     },
-    recommendationSummary: { count: jobs.filter((item) => item.recommendationEligible !== false && item.score >= 20 && item.requirementsStatus !== 'hard_check').length, minExpected: 5, hardRequirementCount: 0 },
+    recommendationSummary: { count: jobs.filter((item) => item.recommendationEligible !== false && item.roleFitEvidence === true && item.score >= 20 && item.requirementsStatus !== 'hard_check').length, minExpected: 5, hardRequirementCount: 0 },
     jobs
   };
 }
@@ -277,6 +279,37 @@ test('기본 추천이 렌더링되고 검토 우선순위로 표시된다', asy
   await expect(page.locator('.job-card')).toHaveCount(3);
   await expect(page.locator('.score').first()).toContainText('검토 우선순위');
   await expect(page.locator('.eligibility-badge').first()).toContainText('한국에서 지원 가능');
+});
+
+test('국내 일반 지역 공고는 추천에서 제외하되 전체 시장 탐색에서는 유지한다', async ({ page }) => {
+  const domesticRegion = {
+    country: '대한민국', province: '전북특별자치도', city: '전주시', district: '덕진구', neighborhood: '',
+    locality: '전주시', precision: 'district', evidenceLevel: 'source_structured'
+  };
+  const roleFit = job({
+    id: 'job:domestic-role-fit', title: '자료입력 사무보조', company: '업무적합사',
+    url: 'https://example.com/job/domestic-role-fit', location: '전북 전주시 덕진구', remote: false,
+    workplaceMode: 'onsite', marketScopes: ['domestic'], marketSegment: 'domestic', domesticRegion,
+    score: 48, roleFitEvidence: true, roleFitBasis: 'keyword_match', matchedKeywords: ['자료입력'], recommendationEligible: true
+  });
+  const generic = job({
+    id: 'job:domestic-generic', title: '카페 매장 직원', company: '지역카페',
+    url: 'https://example.com/job/domestic-generic', location: '전북 전주시 덕진구', remote: false,
+    workplaceMode: 'onsite', marketScopes: ['domestic'], marketSegment: 'domestic', domesticRegion,
+    score: 28, roleFitEvidence: false, roleFitBasis: 'none', matchedKeywords: [], recommendationEligible: false,
+    decisionUnknowns: ['관심 업무와 직접 일치하는 근거 부족']
+  });
+  await useFeed(page, () => feed([roleFit, generic]));
+  await page.goto('/');
+  await page.locator('#marketDomestic').click();
+
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await expect(page.locator('.job-card .title')).toHaveText('자료입력 사무보조');
+  await page.locator('#showAllActive').click();
+  await expect(page.locator('.job-card')).toHaveCount(2);
+  const genericCard = page.locator('.job-card', { hasText: '카페 매장 직원' });
+  await expect(genericCard.locator('.score')).toContainText('시장 탐색 후보');
+  await expect(genericCard.locator('.decision-unknown')).toContainText('관심 업무와 직접 일치하는 근거 부족');
 });
 
 test('시장 요약은 추천 필터 밖의 활성 공고와 주요 확인 필요 항목을 보여주고 전체 활성 공고 보기로 전환한다', async ({ page }) => {
@@ -979,6 +1012,12 @@ test('390px viewport에서 가로 overflow가 없다', async ({ page }) => {
   expect(widths.selectHitWidth).toBeGreaterThanOrEqual(43);
   expect(widths.selectHitHeight).toBeGreaterThanOrEqual(43);
   await expect(page.locator('.job-card')).toHaveCount(4);
+  await page.locator('#marketPulseToggle').click();
+  await expect(page.locator('.market-pulse-card small').first()).toBeVisible();
+  await expect(page.locator('#marketPulseNote')).toBeVisible();
+  const expandedMarketWidths = await page.evaluate(() => ({ inner: innerWidth, html: document.documentElement.scrollWidth, body: document.body.scrollWidth }));
+  expect(expandedMarketWidths.html).toBeLessThanOrEqual(expandedMarketWidths.inner);
+  expect(expandedMarketWidths.body).toBeLessThanOrEqual(expandedMarketWidths.inner);
   await page.locator('#marketDomestic').click();
   const domesticWidths = await page.evaluate(() => ({ inner: innerWidth, html: document.documentElement.scrollWidth, body: document.body.scrollWidth }));
   expect(domesticWidths.html).toBeLessThanOrEqual(domesticWidths.inner);
@@ -1072,6 +1111,25 @@ test('빈 결과와 로드 오류에서 복구할 수 있다', async ({ page }) 
   await expect(page.locator('#emptyMessage')).toContainText('현재 필터에 맞는 공고가 없습니다');
 });
 
+test('새로고침 실패 시 기존 공고를 유지하면서 상단에서 오래된 결과임을 경고한다', async ({ page }) => {
+  let failRefresh = false;
+  await page.route('**/api/refresh', async (route) => route.fulfill({ status: 500, body: 'refresh failed' }));
+  await page.route('**/api/jobs', async (route) => route.fulfill({ status: 500, body: 'api failed' }));
+  await page.route('**/jobs.json*', async (route) => {
+    if (failRefresh) await route.fulfill({ status: 500, body: 'feed failed' });
+    else await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(feed(defaultJobs)) });
+  });
+  await page.goto('/');
+  await expect(page.locator('.job-card')).toHaveCount(3);
+  failRefresh = true;
+
+  await page.locator('#refreshBtn').click();
+  await expect(page.locator('#loadErrorBanner')).toBeVisible();
+  await expect(page.locator('#loadErrorText')).toContainText('마지막으로 성공한 수집 결과를 유지');
+  await expect(page.locator('.job-card')).toHaveCount(3);
+  await expect(page.locator('#empty')).toBeHidden();
+});
+
 test('상태 백업/가져오기는 지원함 상태와 필터를 복원한다', async ({ page }) => {
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
   await page.goto('/');
@@ -1106,6 +1164,40 @@ test('상태 백업/가져오기는 지원함 상태와 필터를 복원한다',
   await page.selectOption('#statusFilter', 'applied');
   await expect(page.locator('.job-card')).toHaveCount(1);
   await expect(page.locator('.title')).toHaveText('AI Data Specialist - Korean');
+});
+
+test('LinkedIn Job Alert parser JSON을 기존 가져오기 동선으로 중복 없이 병합한다', async ({ page }) => {
+  await useFeed(page);
+  await page.goto('/');
+  const alertPayload = [{
+    id: 'linkedin-alert:1234567890',
+    linkedinJobId: '1234567890',
+    source: 'LinkedIn Job Alert',
+    title: 'Korean AI Content Reviewer',
+    company: 'Alert Example',
+    location: 'Seoul, South Korea (Remote)',
+    remote: true,
+    workplace: 'remote',
+    url: 'https://www.linkedin.com/jobs/view/1234567890/',
+    alertReceivedAt: '2026-10-10T01:00:00.000Z'
+  }];
+  const file = {
+    name: 'linkedin-alert.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(alertPayload))
+  };
+
+  await page.locator('#importStateFile').setInputFiles(file);
+  await expect(page.locator('#toastText')).toContainText('LinkedIn 알림 공고 1개');
+  await expect(page.locator('.job-card', { hasText: 'Korean AI Content Reviewer' })).toBeVisible();
+  let saved = await page.evaluate(() => JSON.parse(localStorage.getItem('manualJobs') || '[]'));
+  expect(saved.filter((item) => item.id === 'linkedin-alert:1234567890')).toHaveLength(1);
+  expect(saved.find((item) => item.id === 'linkedin-alert:1234567890').postedAt).toBe('');
+  expect(saved.find((item) => item.id === 'linkedin-alert:1234567890').recommendationEligible).toBe(false);
+
+  await page.locator('#importStateFile').setInputFiles(file);
+  saved = await page.evaluate(() => JSON.parse(localStorage.getItem('manualJobs') || '[]'));
+  expect(saved.filter((item) => item.id === 'linkedin-alert:1234567890')).toHaveLength(1);
 });
 
 test('collector 병합으로 ID가 바뀌어도 legacyIds가 관심·지원·숨김 상태를 새 ID로 승계한다', async ({ page }) => {
@@ -1510,4 +1602,67 @@ test('보수는 카드·상세에서 우선 노출되고 공개 수준으로 바
 
   await page.locator('#compensationFilter').selectOption('undisclosed');
   await expect(page.locator('.job-card')).toHaveCount(2);
+});
+
+test('해외 탭에서 직접 추가한 공고는 기본 지원범위 필터에 가려지지 않고 즉시 보인다', async ({ page }) => {
+  await useFeed(page);
+  await page.goto('/');
+  await expect(page.locator('#eligibility')).toHaveValue('likely');
+
+  await page.locator('#addJobBtn').click();
+  await page.locator('#addForm input[name="source"]').fill('LinkedIn');
+  await page.locator('#addForm input[name="title"]').fill('Manual Korean AI Role');
+  await page.locator('#addForm input[name="company"]').fill('Manual Co');
+  await page.locator('#addForm input[name="url"]').fill('https://example.com/manual-overseas');
+  await page.locator('#addForm button[value="default"]').click();
+
+  await expect(page.locator('#eligibility')).toHaveValue('');
+  await expect(page.locator('.job-card', { hasText: 'Manual Korean AI Role' })).toBeVisible();
+  await expect(page.locator('#toastText')).toContainText('공고를 추가했습니다');
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('manualJobs') || '[]')[0]);
+  expect(saved.eligibilityCode).toBe('unknown');
+  expect(saved.marketScopes).toEqual(['overseas_remote']);
+});
+
+test('국내 탭에서 직접 추가한 공고는 현재 지역 필터를 근거처럼 저장하지 않고 즉시 보인다', async ({ page }) => {
+  await useFeed(page);
+  await page.goto('/');
+  await page.locator('#marketDomestic').click();
+  await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
+  await expect(page.locator('#domesticLocality')).toHaveValue('전주·완주');
+
+  await page.locator('#addJobBtn').click();
+  await page.locator('#addForm input[name="source"]').fill('Indeed');
+  await page.locator('#addForm input[name="title"]').fill('Manual Jeonju Role');
+  await page.locator('#addForm input[name="location"]').fill('전주시 덕진구');
+  await page.locator('#addForm input[name="url"]').fill('https://example.com/manual-domestic');
+  await page.locator('#addForm button[value="default"]').click();
+
+  await expect(page.locator('#domesticProvince')).toHaveValue('');
+  await expect(page.locator('#domesticLocality')).toHaveValue('');
+  await expect(page.locator('.job-card', { hasText: 'Manual Jeonju Role' })).toBeVisible();
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('manualJobs') || '[]')[0]);
+  expect(saved.marketScopes).toEqual(['domestic']);
+  expect(saved.domesticRegion.province).toBe('');
+  expect(saved.domesticRegion.city).toBe('');
+  expect(saved.domesticRegion.label).toBe('전주시 덕진구');
+  expect(saved.domesticRegion.evidenceLevel).toBe('manual_location');
+});
+
+test('국내 탭에서 원격으로 직접 추가한 공고는 해외·원격 범위로 이동해 표시한다', async ({ page }) => {
+  await useFeed(page);
+  await page.goto('/');
+  await page.locator('#marketDomestic').click();
+
+  await page.locator('#addJobBtn').click();
+  await page.locator('#addForm input[name="title"]').fill('Manual Remote Role');
+  await page.locator('#addForm input[name="url"]').fill('https://example.com/manual-remote');
+  await page.locator('#addForm input[name="remote"]').check();
+  await page.locator('#addForm button[value="default"]').click();
+
+  await expect(page.locator('#marketOverseas')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.job-card', { hasText: 'Manual Remote Role' })).toBeVisible();
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('manualJobs') || '[]')[0]);
+  expect(saved.remote).toBe(true);
+  expect(saved.marketScopes).toEqual(['overseas_remote']);
 });

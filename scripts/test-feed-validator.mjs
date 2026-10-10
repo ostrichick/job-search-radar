@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { isDefaultRecommendation as recommendationRule } from '../public/recommendation-rules.js';
 
 const root = process.cwd();
 const baseline = JSON.parse(fs.readFileSync(path.join(root, 'docs', 'jobs.json'), 'utf8'));
@@ -71,13 +72,7 @@ function runValidator(feed, name) {
 }
 
 function refreshRecommendationSummary(feed) {
-  feed.recommendationSummary.count = feed.jobs.filter((job) =>
-    job.recommendationEligible !== false
-    && Number(job.score || 0) >= 20
-    && ['korea', 'worldwide'].includes(job.eligibilityCode)
-    && job.requirementsStatus !== 'hard_check'
-    && !['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus)
-  ).length;
+  feed.recommendationSummary.count = feed.jobs.filter((job) => recommendationRule(job, feed.recommendationPolicyVersion)).length;
 }
 
 function expectRejected(name, mutate, message, makeFeed = saraminFeed) {

@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { isDefaultRecommendation as recommendationRule } from '../public/recommendation-rules.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -33,7 +34,7 @@ const verificationHistoryLimit = 24;
 const sourceMetricHistoryLimit = 24;
 const verificationCheckpointMs = 7 * dayMs;
 const contentFingerprintVersion = 3;
-const recommendationPolicyVersion = 2;
+const recommendationPolicyVersion = 3;
 const defaultLocationReference = Object.freeze({
   id: 'kr-jeonbuk-jeonju-deokjin-sanjeong',
   label: '전북특별자치도 전주시 덕진구 산정동',
@@ -1726,6 +1727,15 @@ function scoreJob(job) {
   const matched = profile.includeKeywords.filter((keyword) => hasPhrase(haystack, keyword));
   const titleMatched = profile.includeKeywords.filter((keyword) => hasPhrase(title, keyword));
   const bodyMatched = matched.filter((keyword) => !titleMatched.includes(keyword));
+  const localBoard = localDomesticBoardSources.has(job.source);
+  const roleMatched = localBoard ? titleMatched : matched;
+  const roleFitEvidence = roleMatched.length > 0
+    || (!localBoard && job.category !== '기타');
+  const roleFitBasis = roleMatched.length > 0
+    ? localBoard ? 'title_keyword_match' : 'keyword_match'
+    : roleFitEvidence
+      ? 'target_category'
+      : 'none';
   const excluded = profile.excludeKeywords.some((keyword) => hasPhrase(haystack, keyword));
   let score = 0;
   for (const keyword of titleMatched) {
@@ -1757,8 +1767,15 @@ function scoreJob(job) {
     else if (ageDays !== null && ageDays > 14) score -= 3;
   }
   if (excluded) score -= 40;
-  if (!titleMatched.length && !bodyMatched.length && job.category === '기타') score = Math.min(score, 5);
-  return { score: Math.max(0, Math.min(100, score)), matchedKeywords: [...titleMatched, ...bodyMatched].slice(0, 8), excluded };
+  if (!roleMatched.length && job.category === '기타') score = Math.min(score, 5);
+  if (!roleFitEvidence) score = Math.min(score, 15);
+  return {
+    score: Math.max(0, Math.min(100, score)),
+    matchedKeywords: (localBoard ? titleMatched : [...titleMatched, ...bodyMatched]).slice(0, 8),
+    roleFitEvidence,
+    roleFitBasis,
+    excluded
+  };
 }
 
 function normalizeJob(raw) {
@@ -2165,7 +2182,7 @@ function normalizeJob(raw) {
         : '추가 하드요건 감지 없음';
   job.fitReasons = [
     ...(job.matchedKeywords?.length ? [`일치 키워드: ${job.matchedKeywords.slice(0, 4).join(', ')}`] : []),
-    ...(job.category !== '기타' ? [`관심 분야: ${job.category}`] : []),
+    ...(job.roleFitEvidence && job.category !== '기타' ? [`관심 분야: ${job.category}`] : []),
     ...(['korea', 'worldwide'].includes(job.eligibilityCode) ? [`지원 범위: ${job.eligibility}`] : []),
     ...(job.listingStatus === 'verified_open' ? ['공식 ATS에서 현재 모집 공고 확인'] : []),
     ...(job.listingStatus === 'official_listed' ? ['공식 프로젝트 플랫폼에 현재 게시 확인'] : []),
@@ -2179,9 +2196,10 @@ function normalizeJob(raw) {
     ...(job.eligibilityCode === 'worldwide' ? ['Worldwide 지원'] : []),
     ...(job.remote ? ['원격'] : []),
     ...(job.salaryInfo?.display ? [`급여 ${job.salaryInfo.display}`] : []),
-    ...(job.score >= 80 ? ['관심 업무와 강한 일치'] : job.score >= 40 ? ['관심 업무와 일치'] : [])
+    ...(job.roleFitEvidence && job.score >= 80 ? ['관심 업무와 강한 일치'] : job.roleFitEvidence && job.score >= 40 ? ['관심 업무와 일치'] : [])
   ].slice(0, 5);
   job.decisionUnknowns = [
+    ...(!job.roleFitEvidence ? ['관심 업무와 직접 일치하는 근거 부족'] : []),
     ...(job.listingStatus === 'official_listed' ? ['실제 작업량·선발 가능성'] : []),
     ...(job.listingStatus === 'current_feed' ? ['고용주 공식 모집 상태'] : []),
     ...(job.eligibilityCode === 'unknown' ? ['지원 가능 국가'] : []),
@@ -2876,7 +2894,7 @@ async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detail
     detailAttemptCount: results.length,
     detailSuccessCount: results.filter((result) => result?.ok && result.value).length,
     localeEligibleCount: local.length,
-    profileMatchedCount: matched.length,
+    profileMatchedCount: matched.filter((job) => job.roleFitEvidence).length,
     detailFailureCount,
     workplaceUnverifiedCount,
     accessRestrictedCount,
@@ -3046,7 +3064,7 @@ async function collectIncruit(previousJobs = []) {
     detailRejectedCount: rejected,
     detailRejectionCounts,
     localeEligibleCount: local.length,
-    profileMatchedCount: matched.length
+    profileMatchedCount: matched.filter((job) => job.roleFitEvidence).length
   });
 }
 
@@ -3342,7 +3360,7 @@ async function collectWork24(authKey) {
   }
   return sourceCollection(collected, rowsById.size, {
     localeEligibleCount: collected.length,
-    profileMatchedCount: collected.filter((job) => job.category !== '기타' || job.score >= 20).length
+    profileMatchedCount: collected.filter((job) => job.roleFitEvidence).length
   });
 }
 
@@ -3906,11 +3924,7 @@ function keepInFeed(job) {
 }
 
 function isDefaultRecommendation(job) {
-  return job.recommendationEligible !== false
-    && Number(job.score || 0) >= 20
-    && ['korea', 'worldwide'].includes(job.eligibilityCode)
-    && job.requirementsStatus !== 'hard_check'
-    && !['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus);
+  return recommendationRule(job, recommendationPolicyVersion);
 }
 
 function recommendationCollapseRisk(feed, baseline) {
@@ -4208,7 +4222,11 @@ function applySourceMetricsToJobs(jobs, sourceMetrics = {}) {
       : metric.qualityTier === 'weak'
         ? '반복적으로 유효 공고 비율이 낮거나 중복·저품질 비율이 높은 소스'
         : '';
+    const roleRecommendationGateReason = job.roleFitEvidence === true
+      ? ''
+      : '관심 업무와 직접 일치하는 근거 부족';
     const recommendationEligible = !sourceRecommendationGateReason
+      && !roleRecommendationGateReason
       && job.requirementsStatus !== 'hard_check';
     return {
       ...job,
@@ -4217,6 +4235,7 @@ function applySourceMetricsToJobs(jobs, sourceMetrics = {}) {
       sourceRecentSuccessRate: metric.recentSuccessRate ?? null,
       sourceEvidenceRefreshability: metric.evidenceRefreshability || sourceMeta(job.source).evidenceRefreshability || 'unknown',
       sourceRecommendationGateReason,
+      roleRecommendationGateReason,
       recommendationEligible
     };
   });
