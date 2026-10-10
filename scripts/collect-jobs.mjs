@@ -3005,15 +3005,38 @@ async function collectIncruit(previousJobs = []) {
   const searchBase = 'https://job.incruit.com/jobdb_list/searchjob.asp?col=job&kw=';
   const candidates = [];
   const byId = new Map();
-  for (const term of ['%EC%A0%84%EC%A3%BC', '%EC%99%84%EC%A3%BC']) {
-    const html = await fetchIncruitSearchText(searchBase + term);
-    for (const candidate of incruitSearchCandidates(html).slice(0, 40)) {
-      if (byId.has(candidate.id)) continue;
-      byId.set(candidate.id, candidate);
-      candidates.push(candidate);
+  const searchTargets = [
+    { term: '%EC%A0%84%EC%A3%BC', label: '전주' },
+    { term: '%EC%99%84%EC%A3%BC', label: '완주' }
+  ];
+  let searchSuccessCount = 0;
+  const searchFailureScopes = [];
+  for (const target of searchTargets) {
+    try {
+      const html = await fetchIncruitSearchText(searchBase + target.term);
+      searchSuccessCount += 1;
+      for (const candidate of incruitSearchCandidates(html).slice(0, 40)) {
+        if (byId.has(candidate.id)) continue;
+        byId.set(candidate.id, candidate);
+        candidates.push(candidate);
+      }
+    } catch {
+      searchFailureScopes.push(target.label);
     }
   }
-  if (!candidates.length) throw new Error('인크루트 public search returned no verified Jeonju/Wanju posting ids');
+  const searchRun = {
+    searchAttemptCount: searchTargets.length,
+    searchSuccessCount,
+    searchFailureCount: searchFailureScopes.length,
+    searchFailureScopes
+  };
+  if (!candidates.length) {
+    const error = new Error(searchFailureScopes.length
+      ? `인크루트 public search incomplete (${searchFailureScopes.join(', ')} 검색 실패) and returned no verified Jeonju/Wanju posting ids`
+      : '인크루트 public search returned no verified Jeonju/Wanju posting ids');
+    error.sourceRun = searchRun;
+    throw error;
+  }
 
   const results = await mapLimit(candidates, 4, async (candidate) => {
     const url = 'https://job.incruit.com/jobdb_info/jobpost.asp?job=' + candidate.id;
@@ -3031,6 +3054,7 @@ async function collectIncruit(previousJobs = []) {
   if (results.length >= 10 && successful.length < Math.ceil(results.length * 0.5) && rejected >= 5) {
     const error = localDetailError('detail_collapse', `인크루트 detail validation collapsed: ${successful.length}/${results.length} search-qualified postings passed cross-check`);
     error.sourceRun = {
+      ...searchRun,
       rawCount: candidates.length,
       discoveredCount: candidates.length,
       detailAttemptCount: results.length,
@@ -3044,6 +3068,7 @@ async function collectIncruit(previousJobs = []) {
   if (!successful.length) {
     const error = localDetailError('detail_collapse', '인크루트 public detail validation failed for all search-qualified postings');
     error.sourceRun = {
+      ...searchRun,
       rawCount: candidates.length,
       discoveredCount: candidates.length,
       detailAttemptCount: results.length,
@@ -3057,6 +3082,7 @@ async function collectIncruit(previousJobs = []) {
   const local = successful.filter(isJeonjuWanjuLocal);
   const matched = local.filter((job) => Number(job.score || 0) >= 10);
   return sourceCollection(matched, candidates.length, {
+    ...searchRun,
     discoveredCount: candidates.length,
     detailAttemptCount: results.length,
     detailSuccessCount: successful.length,
@@ -4120,6 +4146,10 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       ok: Boolean(status.ok),
       rawCount,
       discoveredCount: Number(run.discoveredCount ?? rawCount),
+      searchAttemptCount: Number(run.searchAttemptCount || 0),
+      searchSuccessCount: Number(run.searchSuccessCount || 0),
+      searchFailureCount: Number(run.searchFailureCount || 0),
+      searchFailureScopes: Array.isArray(run.searchFailureScopes) ? [...run.searchFailureScopes] : [],
       detailAttemptCount: Number(run.detailAttemptCount || 0),
       detailSuccessCount: Number(run.detailSuccessCount || 0),
       matchedCount,
@@ -4173,6 +4203,10 @@ function buildSourceMetrics(sourceNames, sourceRuns, sourceStatus, dedupedJobs, 
       recentSuccessRate: recentAttempts ? Math.round((recentSuccesses / recentAttempts) * 1000) / 1000 : 0,
       rawCount,
       discoveredCount: Number(run.discoveredCount ?? rawCount),
+      searchAttemptCount: Number(run.searchAttemptCount || 0),
+      searchSuccessCount: Number(run.searchSuccessCount || 0),
+      searchFailureCount: Number(run.searchFailureCount || 0),
+      searchFailureScopes: Array.isArray(run.searchFailureScopes) ? [...run.searchFailureScopes] : [],
       detailAttemptCount: Number(run.detailAttemptCount || 0),
       detailSuccessCount: Number(run.detailSuccessCount || 0),
       detailSuccessRate: Number(run.detailAttemptCount || 0)
@@ -4331,6 +4365,10 @@ export async function collectJobs({ includeManual = true, persist = true, previo
       sourceRuns.set(name, {
         rawCount: Number(result?.rawCount ?? collected.length),
         discoveredCount: Number(result?.discoveredCount ?? result?.rawCount ?? collected.length),
+        searchAttemptCount: Number(result?.searchAttemptCount || 0),
+        searchSuccessCount: Number(result?.searchSuccessCount || 0),
+        searchFailureCount: Number(result?.searchFailureCount || 0),
+        searchFailureScopes: Array.isArray(result?.searchFailureScopes) ? [...result.searchFailureScopes] : [],
         detailAttemptCount: Number(result?.detailAttemptCount || 0),
         detailSuccessCount: Number(result?.detailSuccessCount || 0),
         matchedCount: Number(result?.matchedCount ?? collected.length),
@@ -4360,6 +4398,12 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         count: collected.length,
         rawCount: Number(result?.rawCount ?? collected.length),
         discoveredCount: Number(result?.discoveredCount ?? result?.rawCount ?? collected.length),
+        ...(result?.searchAttemptCount ? { searchAttemptCount: Number(result.searchAttemptCount) } : {}),
+        ...(result?.searchSuccessCount ? { searchSuccessCount: Number(result.searchSuccessCount) } : {}),
+        ...(result?.searchFailureCount ? { searchFailureCount: Number(result.searchFailureCount) } : {}),
+        ...(Array.isArray(result?.searchFailureScopes) && result.searchFailureScopes.length
+          ? { searchFailureScopes: [...result.searchFailureScopes] }
+          : {}),
         ...(result?.detailAttemptCount ? { detailAttemptCount: Number(result.detailAttemptCount) } : {}),
         ...(result?.detailSuccessCount ? { detailSuccessCount: Number(result.detailSuccessCount) } : {}),
         ...(result?.detailFailureCount ? { detailFailureCount: Number(result.detailFailureCount) } : {}),
@@ -4386,6 +4430,10 @@ export async function collectJobs({ includeManual = true, persist = true, previo
       sourceRuns.set(name, {
         rawCount: Number(failureRun.rawCount || 0),
         discoveredCount: Number(failureRun.discoveredCount || 0),
+        searchAttemptCount: Number(failureRun.searchAttemptCount || 0),
+        searchSuccessCount: Number(failureRun.searchSuccessCount || 0),
+        searchFailureCount: Number(failureRun.searchFailureCount || 0),
+        searchFailureScopes: Array.isArray(failureRun.searchFailureScopes) ? [...failureRun.searchFailureScopes] : [],
         detailAttemptCount: Number(failureRun.detailAttemptCount || 0),
         detailSuccessCount: Number(failureRun.detailSuccessCount || 0),
         matchedCount: 0,
@@ -4408,6 +4456,12 @@ export async function collectJobs({ includeManual = true, persist = true, previo
         ok: false,
         count: 0,
         preserved: preserved.length,
+        ...(failureRun.searchAttemptCount ? { searchAttemptCount: Number(failureRun.searchAttemptCount) } : {}),
+        ...(failureRun.searchSuccessCount ? { searchSuccessCount: Number(failureRun.searchSuccessCount) } : {}),
+        ...(failureRun.searchFailureCount ? { searchFailureCount: Number(failureRun.searchFailureCount) } : {}),
+        ...(Array.isArray(failureRun.searchFailureScopes) && failureRun.searchFailureScopes.length
+          ? { searchFailureScopes: [...failureRun.searchFailureScopes] }
+          : {}),
         ...(failureRun.discoveredCount ? { discoveredCount: Number(failureRun.discoveredCount) } : {}),
         ...(failureRun.detailAttemptCount ? { detailAttemptCount: Number(failureRun.detailAttemptCount) } : {}),
         ...(failureRun.detailSuccessCount ? { detailSuccessCount: Number(failureRun.detailSuccessCount) } : {}),

@@ -1846,7 +1846,8 @@ function renderSourceHealth(sourceStatus = []) {
   if (!panel) return;
   const failed = (sourceStatus || []).filter((source) => !source.ok);
   const partial = (sourceStatus || []).filter((source) => source.ok && (
-    Number(source.detailFailureCount || 0) > 0
+    Number(source.searchFailureCount || 0) > 0
+    || Number(source.detailFailureCount || 0) > 0
     || Number(source.workplaceUnverifiedCount || 0) > 0
     || Number(source.accessRestrictedCount || 0) > 0
     || Number(source.listFallbackCount || 0) > 0
@@ -1865,14 +1866,18 @@ function renderSourceHealth(sourceStatus = []) {
   const summary = document.createElement('div');
   const title = document.createElement('strong');
   title.textContent = failed.length
-      ? `일부 출처 확인 실패 · ${failed.length}개`
+    ? `일부 출처 확인 실패 · ${failed.length}개`
     : partial.length
-      ? `일부 상세 확인 제약 · ${partial.length}개 소스`
+      ? `일부 수집 제약 · ${partial.length}개 소스`
       : `출처 품질 주의 · ${qualityWarnings.length}개`;
   const text = document.createElement('span');
   const failureText = failed.map((source) => `${source.source}${source.preserved ? ` · 이전 ${source.preserved}개 보존` : ''}`);
   const partialText = partial.map((source) => {
     const details = [];
+    if (Number(source.searchFailureCount || 0) > 0) {
+      const scopes = Array.isArray(source.searchFailureScopes) ? source.searchFailureScopes.filter(Boolean) : [];
+      details.push(`지역 검색 실패 ${Number(source.searchFailureCount)}개${scopes.length ? `(${scopes.join(', ')})` : ''}`);
+    }
     if (Number(source.detailFailureCount || 0) > 0) details.push(`상세 파싱·응답 실패 ${Number(source.detailFailureCount)}건`);
     if (Number(source.workplaceUnverifiedCount || 0) > 0) details.push(`근무지 확인 불가 ${Number(source.workplaceUnverifiedCount)}건 제외`);
     if (Number(source.accessRestrictedCount || 0) > 0) details.push(`로그인·연령 인증 필요 ${Number(source.accessRestrictedCount)}건 제외`);

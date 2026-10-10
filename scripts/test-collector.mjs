@@ -15,6 +15,7 @@ import {
   saraminHtmlJobPosting,
   incruitSearchCandidates,
   fetchIncruitSearchText,
+  collectIncruit,
   localCrossPlatformDuplicateKey,
   structuredLocalBoardCandidate,
   collectStructuredLocalBoard,
@@ -902,6 +903,54 @@ const incruitDetailFixture = `<!doctype html><html><head>
     "jobLocation":{"@type":"Place","address":{"@type":"PostalAddress","streetAddress":"전라북도 전주시 완산구 쑥고개로 398-16","addressLocality":"전주시","addressRegion":"전라북도","addressCountry":"KR"}}
   }</script>
 </body></html>`;
+
+const incruitPartialOriginalFetch = globalThis.fetch;
+try {
+  const encoder = new TextEncoder();
+  const eucKrSafeFixture = (value) => String(value).replace(/[^\x00-\x7F]/g, (char) => `&#${char.codePointAt(0)};`);
+  const partialListFixture = incruitListFixture.replace(/방사선사 직원 모집/g, '사무보조');
+  const partialDetailFixture = incruitDetailFixture.replace(/방사선사 직원 모집/g, '사무보조');
+  globalThis.fetch = async (url) => {
+    const value = String(url);
+    if (value.includes('kw=%EC%A0%84%EC%A3%BC')) {
+      const body = encoder.encode(eucKrSafeFixture(partialListFixture));
+      return { ok: true, status: 200, statusText: 'OK', arrayBuffer: async () => body.buffer };
+    }
+    if (value.includes('kw=%EC%99%84%EC%A3%BC')) throw new TypeError('fetch failed');
+    if (value.includes('job=2609110000252')) {
+      const body = encoder.encode(eucKrSafeFixture(partialDetailFixture));
+      return { ok: true, status: 200, statusText: 'OK', arrayBuffer: async () => body.buffer };
+    }
+    throw new Error(`unexpected Incruit fixture URL: ${value}`);
+  };
+  const partialIncruit = await collectIncruit([]);
+  assert.equal(partialIncruit.searchAttemptCount, 2);
+  assert.equal(partialIncruit.searchSuccessCount, 1);
+  assert.equal(partialIncruit.searchFailureCount, 1);
+  assert.deepEqual(partialIncruit.searchFailureScopes, ['완주']);
+  assert.equal(partialIncruit.jobs.length, 1, 'a verified successful region must survive another region search failure');
+} finally {
+  globalThis.fetch = incruitPartialOriginalFetch;
+}
+
+const incruitOutageOriginalFetch = globalThis.fetch;
+try {
+  globalThis.fetch = async () => { throw new TypeError('fetch failed'); };
+  let outageError;
+  try {
+    await collectIncruit([]);
+  } catch (error) {
+    outageError = error;
+  }
+  assert.ok(outageError, 'Incruit must fail closed when no regional search succeeds');
+  assert.equal(outageError.sourceRun?.searchAttemptCount, 2);
+  assert.equal(outageError.sourceRun?.searchSuccessCount, 0);
+  assert.equal(outageError.sourceRun?.searchFailureCount, 2);
+  assert.deepEqual(outageError.sourceRun?.searchFailureScopes, ['전주', '완주']);
+} finally {
+  globalThis.fetch = incruitOutageOriginalFetch;
+}
+
 const incruitHint = incruitSearchCandidates(incruitListFixture)[0];
 const incruitLocal = structuredLocalBoardCandidate(
   '인크루트',
