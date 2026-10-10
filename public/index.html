@@ -24,6 +24,8 @@
   </header>
 
   <main>
+    <section id="storageStatus" role="alert" class="panel" hidden><p id="storageStatusText"></p><button id="retryStorage" class="button secondary">저장소 다시 시도</button></section>
+    <section id="recoveryNotice" role="status" class="panel" hidden><p id="recoveryNoticeText"></p><button id="downloadRecovery" class="button secondary">손상 원본 다운로드</button></section>
     <nav class="market-tabs" aria-label="공고 탐색 범위">
       <button id="marketOverseas" class="market-tab" type="button" aria-pressed="true" data-market="overseas_remote">해외 / 원격근무</button>
       <button id="marketDomestic" class="market-tab" type="button" aria-pressed="false" data-market="domestic">국내</button>

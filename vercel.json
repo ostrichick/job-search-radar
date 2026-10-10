@@ -3,12 +3,63 @@
   "functions": {
     "api/jobs.mjs": {
       "maxDuration": 30
+    },
+    "api/refresh.mjs": {
+      "maxDuration": 30
     }
   },
   "rewrites": [
-    { "source": "/", "destination": "/public/index.html" },
-    { "source": "/app.js", "destination": "/public/app.js" },
-    { "source": "/state-rules.js", "destination": "/public/state-rules.js" },
-    { "source": "/styles.css", "destination": "/public/styles.css" }
+    {
+      "source": "/",
+      "destination": "/public/index.html"
+    },
+    {
+      "source": "/app.js",
+      "destination": "/public/app.js"
+    },
+    {
+      "source": "/state-rules.js",
+      "destination": "/public/state-rules.js"
+    },
+    {
+      "source": "/styles.css",
+      "destination": "/public/styles.css"
+    },
+    {
+      "source": "/backup-rules.js",
+      "destination": "/public/backup-rules.js"
+    },
+    {
+      "source": "/compensation-ui.js",
+      "destination": "/public/compensation-ui.js"
+    },
+    {
+      "source": "/filter-rules.js",
+      "destination": "/public/filter-rules.js"
+    },
+    {
+      "source": "/manual-job.js",
+      "destination": "/public/manual-job.js"
+    },
+    {
+      "source": "/recommendation-rules.js",
+      "destination": "/public/recommendation-rules.js"
+    },
+    {
+      "source": "/sort-rules.js",
+      "destination": "/public/sort-rules.js"
+    },
+    {
+      "source": "/state-storage.js",
+      "destination": "/public/state-storage.js"
+    },
+    {
+      "source": "/render-cache.js",
+      "destination": "/public/render-cache.js"
+    },
+    {
+      "source": "/render-cards.js",
+      "destination": "/public/render-cards.js"
+    }
   ]
 }

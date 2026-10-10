@@ -1,5 +1,14 @@
 import { test, expect } from '@playwright/test';
 
+async function readStoredState(page, project) {
+  const values = await page.evaluate(async () => {
+    const db = await new Promise((resolve, reject) => { const r = indexedDB.open('job-search-radar', 1); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); });
+    try { return await new Promise((resolve, reject) => { const r = db.transaction('state').objectStore('state').get('current'); r.onsuccess = () => resolve(r.result?.values || {}); r.onerror = () => reject(r.error); }); }
+    finally { db.close(); }
+  });
+  return project({ getItem: (key) => values[key] ?? null });
+}
+
 function job(overrides = {}) {
   const now = '2026-10-04T06:00:00.000Z';
   return {
@@ -272,6 +281,168 @@ async function useFeed(page, getFeed = () => feed(defaultJobs)) {
     });
   });
 }
+
+test('손상 저장값은 원본을 보존하고 정상 관심 상태와 함께 복구한다', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('jobHidden', '{bad');
+    localStorage.setItem('jobFavorites', '["job:default"]');
+  });
+  await useFeed(page); await page.goto('/');
+  await expect(page.locator('.job-card')).toHaveCount(3);
+  await expect(page.locator('#recoveryNotice')).toBeVisible();
+  await expect(page.locator('.job-card').first().locator('.favorite')).toHaveText('★');
+  expect(await page.evaluate(() => localStorage.getItem('jobHidden'))).toBe('{bad');
+  const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#downloadRecovery').click()]);
+  const recovery = JSON.parse(await (await import('node:fs/promises')).readFile(await download.path(), 'utf8'));
+  expect(recovery).toEqual(expect.arrayContaining([expect.objectContaining({ key: 'jobHidden', raw: '{bad' })]));
+});
+
+test('localStorage 원본을 다시 주입해도 IndexedDB 이전은 한 번만 수행한다', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('jobFavorites', '["job:default"]'));
+  await useFeed(page); await page.goto('/');
+  const favorite = page.locator('.job-card').first().locator('.favorite');
+  await expect(favorite).toHaveText('★'); await favorite.click(); await expect(favorite).toHaveText('☆');
+  await page.reload(); await expect(favorite).toHaveText('☆');
+  expect(await page.evaluate(() => localStorage.getItem('jobFavorites'))).toBe('["job:default"]');
+});
+
+test('잘못된 백업은 일부도 저장하지 않고 재접속 뒤 정상 목록을 유지한다', async ({ page }) => {
+  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  const before = await readStoredState(page, (s) => [s.getItem('jobFavorites'), s.getItem('manualJobs')]);
+  await page.locator('#importStateFile').setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({
+    schema: 'job-search-radar-state', version: 2, favorites: ['job:default'],
+    manualJobs: [{ id: 'bad', title: 'Bad job', url: 'https://example.com', tags: {} }]
+  })) });
+  await expect(page.locator('#emptyMessage')).toContainText('manualJobs[0].tags');
+  expect(await readStoredState(page, (s) => [s.getItem('jobFavorites'), s.getItem('manualJobs')])).toEqual(before);
+  await page.reload(); await expect(page.locator('.job-card')).toHaveCount(3);
+});
+
+test('두 탭의 관심·지원 변경과 해제는 함께 보존된다', async ({ page, context }) => {
+  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  const second = await context.newPage(); await useFeed(second); await second.goto('/'); await expect(second.locator('.job-card')).toHaveCount(3);
+  await Promise.all([
+    page.locator('.job-card').first().locator('.favorite').click(),
+    second.locator('.job-card').nth(1).locator('.job-state').selectOption('applied')
+  ]);
+  await expect(second.locator('.job-card').first().locator('.favorite')).toHaveText('★');
+  await expect(page.locator('.job-card').nth(1).locator('.job-state')).toHaveValue('applied');
+  await Promise.all([
+    second.locator('.job-card').first().locator('.favorite').click(),
+    page.locator('.job-card').nth(1).locator('.job-state').selectOption('')
+  ]);
+  await expect(page.locator('.job-card').first().locator('.favorite')).toHaveText('☆');
+  await expect(second.locator('.job-card').nth(1).locator('.job-state')).toHaveValue('');
+  await page.reload(); await expect(page.locator('.job-card').first().locator('.favorite')).toHaveText('☆');
+  await expect(page.locator('.job-card').nth(1).locator('.job-state')).toHaveValue('');
+});
+
+test('동시 백업 가져오기와 다른 탭의 지원 변경이 둘 다 남는다', async ({ page, context }) => {
+  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  const second = await context.newPage(); await useFeed(second); await second.goto('/'); await expect(second.locator('.job-card')).toHaveCount(3);
+  await Promise.all([
+    page.locator('#importStateFile').setInputFiles({ name: 'v1.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ schema: 'job-search-radar-state', version: 1, favorites: ['job:oneforma'] })) }),
+    second.locator('.job-card').first().locator('.job-state').selectOption('planned')
+  ]);
+  await expect(page.locator('#toastText')).toContainText('백업 상태');
+  await expect.poll(() => readStoredState(page, (s) => JSON.parse(s.getItem('jobStates') || '{}')['job:default'])).toBe('planned');
+  expect(await readStoredState(page, (s) => JSON.parse(s.getItem('jobFavorites') || '[]'))).toContain('job:oneforma');
+});
+
+test('다른 탭의 변경은 열려 있는 상세와 현재 검색 편집을 보존한다', async ({ page, context }) => {
+  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  const second = await context.newPage(); await useFeed(second); await second.goto('/'); await expect(second.locator('.job-card')).toHaveCount(3);
+  await page.locator('.job-card').first().locator('.details').click(); await expect(page.locator('#detailsDialog')).toBeVisible();
+  await second.locator('[data-job-id="job:oneforma"] .favorite').click();
+  await expect.poll(() => readStoredState(page, (s) => JSON.parse(s.getItem('jobFavorites') || '[]'))).toContain('job:oneforma');
+  await expect(page.locator('#detailsDialog')).toBeVisible();
+  await page.locator('#closeDetails').click();
+  await page.locator('#query').fill('unique local editor');
+  await second.locator('.job-card').first().locator('.favorite').click();
+  await expect(page.locator('#query')).toHaveValue('unique local editor');
+});
+
+test('IndexedDB 열기 실패는 정상 피드를 읽기 전용으로 표시하고 백업을 허용한다', async ({ page }) => {
+  await page.addInitScript(() => { Object.defineProperty(indexedDB, 'open', { value: () => { throw new Error('simulated storage unavailable'); } }); });
+  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  await expect(page.locator('#storageStatus')).toBeVisible();
+  await expect(page.locator('#importStateBtn')).toBeDisabled(); await expect(page.locator('.favorite').first()).toBeDisabled();
+  await expect(page.locator('#exportStateBtn')).toBeEnabled();
+  const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#exportStateBtn').click()]);
+  expect(await download.path()).toBeTruthy();
+});
+
+test('저장 용량 실패는 기존 관심 상태를 유지하고 읽기 전용으로 전환한다', async ({ page }) => {
+  await page.addInitScript(() => {
+    const put = IDBObjectStore.prototype.put;
+    IDBObjectStore.prototype.put = function (...args) {
+      if (globalThis.failStateWrites && this.name === 'state') throw new DOMException('simulated full disk', 'QuotaExceededError');
+      return put.apply(this, args);
+    };
+  });
+  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  await page.evaluate(() => { globalThis.failStateWrites = true; });
+  await page.locator('.job-card').first().locator('.favorite').click();
+  await expect(page.locator('#storageStatus')).toBeVisible();
+  await expect(page.locator('.job-card').first().locator('.favorite')).toHaveText('☆');
+  expect(await readStoredState(page, (s) => JSON.parse(s.getItem('jobFavorites') || '[]'))).toEqual([]);
+  await page.evaluate(() => { globalThis.failStateWrites = false; });
+  await page.locator('#retryStorage').click(); await expect(page.locator('#storageStatus')).toBeHidden();
+  await page.locator('.job-card').first().locator('.favorite').click(); await expect(page.locator('.job-card').first().locator('.favorite')).toHaveText('★');
+});
+
+test('수집 실패 뒤 기존 피드 성공은 경고를 유지하고 다음 수집 성공 때 해제한다', async ({ page }) => {
+  await useFeed(page); let failing = true;
+  await page.route('**/api/refresh', (route) => route.fulfill({ status: failing ? 500 : 200, contentType: 'application/json', body: JSON.stringify(failing ? { error: 'collection failed' } : feed(defaultJobs)) }));
+  await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  await page.locator('#refreshBtn').click();
+  await expect(page.locator('#loadErrorBanner')).toBeVisible(); await expect(page.locator('#loadErrorText')).toContainText('새 수집에 실패하여 마지막 목록');
+  await expect(page.locator('.job-card')).toHaveCount(3);
+  failing = false; await page.locator('#refreshBtn').click(); await expect(page.locator('#loadErrorBanner')).toBeHidden();
+});
+
+test('모든 정적 모듈을 HTML 대신 JavaScript로 제공하고 검색 입력은 한 번에 반영한다', async ({ page }) => {
+  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  for (const file of ['state-storage.js', 'backup-rules.js', 'filter-rules.js', 'sort-rules.js', 'manual-job.js', 'compensation-ui.js']) {
+    const response = await page.request.get('/' + file); expect(response.ok()).toBe(true); expect(response.headers()['content-type']).toContain('javascript');
+  }
+  const start = Date.now(); await page.locator('#query').fill('no matching role');
+  await expect(page.locator('.job-card')).toHaveCount(0);
+  console.log(`Search debounce + fixture render: ${Date.now() - start}ms`);
+});
+
+test('BroadcastChannel이 없어도 storage 알림으로 다른 탭의 관심 상태를 동기화한다', async ({ page, context }) => {
+  await context.addInitScript(() => { globalThis.BroadcastChannel = undefined; });
+  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  const other = await context.newPage(); await useFeed(other); await other.goto('/'); await expect(other.locator('.job-card')).toHaveCount(3);
+  await page.locator('[data-job-id="job:default"] .favorite').click();
+  await expect(other.locator('[data-job-id="job:default"] .favorite')).toHaveText('★');
+});
+
+test('백업 저장 트랜잭션이 실패하면 관심 상태와 화면 필터를 함께 복원한다', async ({ page }) => {
+  await page.addInitScript(() => {
+    const put = IDBObjectStore.prototype.put;
+    IDBObjectStore.prototype.put = function (...args) {
+      if (globalThis.failImport && this.name === 'state') throw new DOMException('simulated full disk', 'QuotaExceededError');
+      return put.apply(this, args);
+    };
+  });
+  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  await page.evaluate(() => { globalThis.failImport = true; });
+  await page.locator('#importStateFile').setInputFiles({ name: 'valid.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({
+    schema: 'job-search-radar-state', version: 2, favorites: ['job:default'], filtersByMarket: { overseas_remote: { query: 'uncommitted import' } }
+  })) });
+  await expect(page.locator('#storageStatus')).toBeVisible();
+  await expect(page.locator('#query')).toHaveValue('');
+  expect(await readStoredState(page, (s) => JSON.parse(s.getItem('jobFavorites') || '[]'))).toEqual([]);
+});
+
+test('멈춘 브라우저 API 요청은 15초 뒤 정적 피드로 복구한다', async ({ page }) => {
+  await useFeed(page);
+  await page.route('**/api/jobs', () => {});
+  await page.goto('/');
+  await expect(page.locator('.job-card')).toHaveCount(3, { timeout: 20000 });
+});
 
 test('기본 추천이 렌더링되고 검토 우선순위로 표시된다', async ({ page }) => {
   await useFeed(page);
@@ -705,7 +876,7 @@ for (const legacySort of ['score', 'distance']) {
     await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
     await expect(page.locator('#domesticLocality')).toHaveValue('전주·완주');
     await expect(page.locator('#sort')).toHaveValue('distance');
-    const migrated = await page.evaluate(() => ({
+    const migrated = await readStoredState(page, (localStorage) => ({
       version: localStorage.getItem('jobFilterSchemaVersion'),
       domestic: JSON.parse(localStorage.getItem('jobFiltersByMarket') || '{}').domestic
     }));
@@ -758,7 +929,7 @@ test('v7 국내 필터가 과거 기본값과 조금이라도 다르면 사용�
   await expect(page.locator('#domesticProvince')).toHaveValue('');
   await expect(page.locator('#domesticLocality')).toHaveValue('');
   await expect(page.locator('#sort')).toHaveValue('distance');
-  const stored = await page.evaluate(() => ({
+  const stored = await readStoredState(page, (localStorage) => ({
     version: localStorage.getItem('jobFilterSchemaVersion'),
     domestic: JSON.parse(localStorage.getItem('jobFiltersByMarket') || '{}').domestic
   }));
@@ -839,7 +1010,7 @@ test('구형 국내 필터의 null 값은 exact 기본값으로 간주하지 않
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
   await page.goto('/');
 
-  const stored = await page.evaluate(() => ({
+  const stored = await readStoredState(page, (localStorage) => ({
     version: localStorage.getItem('jobFilterSchemaVersion'),
     domestic: JSON.parse(localStorage.getItem('jobFiltersByMarket') || '{}').domestic
   }));
@@ -953,6 +1124,8 @@ test('카드 상태 변경과 상세 닫기 뒤에도 키보드 포커스가 작
   await expect(targetCard().locator('.job-state')).toBeFocused();
 
   await targetCard().locator('.dismiss').click();
+  // IndexedDB commits asynchronously; inspect focus after the hide has committed.
+  await expect(targetCard()).toHaveCount(0);
   const focusedAfterHide = await page.evaluate(() => ({
     className: document.activeElement?.className || '',
     jobId: document.activeElement?.closest?.('.job-card')?.dataset?.jobId || ''
@@ -1211,7 +1384,12 @@ test('상태 백업/가져오기는 지원함 상태와 필터를 복원한다',
   const backupPath = await download.path();
   expect(backupPath).toBeTruthy();
 
-  await page.evaluate(() => localStorage.clear());
+  await page.evaluate(async () => {
+    localStorage.clear();
+    const db = await new Promise((resolve) => { const r = indexedDB.open('job-search-radar', 1); r.onsuccess = () => resolve(r.result); });
+    await new Promise((resolve, reject) => { const tx = db.transaction('state', 'readwrite'); tx.objectStore('state').clear(); tx.oncomplete = resolve; tx.onabort = () => reject(tx.error); });
+    db.close();
+  });
   await page.reload();
   await expect(page.locator('#source')).toHaveValue('');
   await page.locator('#importStateFile').setInputFiles(backupPath);
@@ -1253,13 +1431,13 @@ test('LinkedIn Job Alert parser JSON을 기존 가져오기 동선으로 중복 
   await page.locator('#importStateFile').setInputFiles(file);
   await expect(page.locator('#toastText')).toContainText('LinkedIn 알림 공고 1개');
   await expect(page.locator('.job-card', { hasText: 'Korean AI Content Reviewer' })).toBeVisible();
-  let saved = await page.evaluate(() => JSON.parse(localStorage.getItem('manualJobs') || '[]'));
+  let saved = await readStoredState(page, (localStorage) => JSON.parse(localStorage.getItem('manualJobs') || '[]'));
   expect(saved.filter((item) => item.id === 'linkedin-alert:1234567890')).toHaveLength(1);
   expect(saved.find((item) => item.id === 'linkedin-alert:1234567890').postedAt).toBe('');
   expect(saved.find((item) => item.id === 'linkedin-alert:1234567890').recommendationEligible).toBe(false);
 
   await page.locator('#importStateFile').setInputFiles(file);
-  saved = await page.evaluate(() => JSON.parse(localStorage.getItem('manualJobs') || '[]'));
+  saved = await readStoredState(page, (localStorage) => JSON.parse(localStorage.getItem('manualJobs') || '[]'));
   expect(saved.filter((item) => item.id === 'linkedin-alert:1234567890')).toHaveLength(1);
 });
 
@@ -1289,10 +1467,10 @@ test('collector 병합으로 ID가 바뀌어도 legacyIds가 관심·지원·숨
     }));
   });
   await page.goto('/');
-  await expect.poll(async () => page.evaluate(() => JSON.parse(localStorage.getItem('jobFavorites') || '[]')))
+  await expect.poll(async () => readStoredState(page, (localStorage) => JSON.parse(localStorage.getItem('jobFavorites') || '[]')))
     .toContain('job:merged-local-planned');
 
-  const migrated = await page.evaluate(() => ({
+  const migrated = await readStoredState(page, (localStorage) => ({
     favorites: JSON.parse(localStorage.getItem('jobFavorites') || '[]'),
     hidden: JSON.parse(localStorage.getItem('jobHidden') || '[]'),
     states: JSON.parse(localStorage.getItem('jobStates') || '{}'),
@@ -1893,7 +2071,7 @@ test('해외 탭에서 직접 추가한 공고는 기본 지원범위 필터에 
   await expect(page.locator('#eligibility')).toHaveValue('');
   await expect(page.locator('.job-card', { hasText: 'Manual Korean AI Role' })).toBeVisible();
   await expect(page.locator('#toastText')).toContainText('공고를 추가했습니다');
-  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('manualJobs') || '[]')[0]);
+  const saved = await readStoredState(page, (localStorage) => JSON.parse(localStorage.getItem('manualJobs') || '[]')[0]);
   expect(saved.eligibilityCode).toBe('unknown');
   expect(saved.marketScopes).toEqual(['overseas_remote']);
 });
@@ -1915,7 +2093,7 @@ test('국내 탭에서 직접 추가한 공고는 현재 지역 필터를 근거
   await expect(page.locator('#domesticProvince')).toHaveValue('');
   await expect(page.locator('#domesticLocality')).toHaveValue('');
   await expect(page.locator('.job-card', { hasText: 'Manual Jeonju Role' })).toBeVisible();
-  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('manualJobs') || '[]')[0]);
+  const saved = await readStoredState(page, (localStorage) => JSON.parse(localStorage.getItem('manualJobs') || '[]')[0]);
   expect(saved.marketScopes).toEqual(['domestic']);
   expect(saved.domesticRegion.province).toBe('');
   expect(saved.domesticRegion.city).toBe('');
@@ -1936,7 +2114,7 @@ test('국내 탭에서 원격으로 직접 추가한 공고는 해외·원격 �
 
   await expect(page.locator('#marketOverseas')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('.job-card', { hasText: 'Manual Remote Role' })).toBeVisible();
-  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('manualJobs') || '[]')[0]);
+  const saved = await readStoredState(page, (localStorage) => JSON.parse(localStorage.getItem('manualJobs') || '[]')[0]);
   expect(saved.remote).toBe(true);
   expect(saved.marketScopes).toEqual(['overseas_remote']);
 });
