@@ -104,7 +104,10 @@ try {
       const valid = response(); await handler({ method }, valid);
       assert.equal(valid.code, 200, JSON.stringify(valid.payload));
       assert.ok(valid.payload.jobs.length > 0, 'API outage retains the shipped baseline');
-      assert.ok(valid.payload.sourceStatus.every((s) => !s.ok && !s.error.includes('is not defined')));
+      // The offline fixture must fail network collectors but the local,
+      // individually reviewed curated manifest is intentionally still available.
+      assert.ok(valid.payload.sourceStatus.every((s) => s.source === 'ChatGPT 수동 조사'
+        ? s.ok === true : (!s.ok && !String(s.error || '').includes('is not defined'))));
     }
   } finally { globalThis.fetch = originalFetch; }
   console.log('runtime, storage merge, backup and collection integration tests passed');

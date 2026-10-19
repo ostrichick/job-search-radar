@@ -898,7 +898,8 @@ function recentVerificationBadges(job, now = Date.now()) {
   if (payment.freshness === 'aging') badges.push({ state: 'aging', label: '근거 만료 임박' });
   if (payment.freshness === 'expired') badges.push({ state: 'expired', label: '지급 근거 만료' });
   if ((job.requirementsStatus || 'clear') === 'hard_check') badges.push({ state: 'hard', label: '미확인 핵심요건' });
-  if (!badges.length && recent(job.lastVerifiedAt || job.listingCheckedAt || job.verifiedAt, 1)) {
+  if (!badges.length && job.sourceListingState !== 'manual_original_review'
+      && recent(job.lastVerifiedAt || job.listingCheckedAt || job.verifiedAt, 1)) {
     badges.push({ state: 'recent',
       label: ['public_rss', 'public_rss_cached_detail'].includes(job.sourceListingState)
         ? 'RSS 목록 최근 확인' : '최근 검증됨' });
@@ -923,6 +924,8 @@ function renderVerificationHistory(job) {
   container.replaceChildren();
   const eventLabels = {
     first_seen: '처음 발견',
+    manual_source_reviewed: '원문 수동 재검토',
+    curated_record_changed: '수동 조사 기록 수정',
     verified_unchanged: '변경 없이 재검증',
     rss_list_seen: 'RSS 목록 재확인',
     verification_scope_changed: '확인 근거 범위 변경',
@@ -1150,9 +1153,13 @@ async function openDetails(job) {
   const priorDetail = rssScope && job.lastDetailVerifiedAt
     ? ` · 상세 마지막 교차 검증: ${new Date(job.lastDetailVerifiedAt).toLocaleString('ko-KR')} (이번 수집에서는 재검증 안 됨)`
     : '';
-  $('detailsVerifiedAt').textContent = checkedAt
-    ? `${rssScope ? 'RSS 목록 마지막 확인' : '모집 출처 마지막 확인'}: ${new Date(checkedAt).toLocaleString('ko-KR')}${priorDetail}${reviewNote}`
-    : `모집 확인 시각 미상${priorDetail}${reviewNote}`;
+  const collectionDates = ` · 최초 수집: ${job.firstSeenAt ? new Date(job.firstSeenAt).toLocaleDateString('ko-KR') : '미상'}` +
+    ` · 마지막 수집: ${job.lastSeenAt ? new Date(job.lastSeenAt).toLocaleDateString('ko-KR') : '미상'}`;
+  $('detailsVerifiedAt').textContent = job.sourceListingState === 'manual_original_review'
+    ? `원문 수동 검토: ${job.researchReviewedAt ? new Date(job.researchReviewedAt).toLocaleString('ko-KR') : '미상'} · 정기 수집으로 원문을 재확인하지 않음${collectionDates}`
+    : checkedAt
+      ? `${rssScope ? 'RSS 목록 마지막 확인' : '모집 출처 마지막 확인'}: ${new Date(checkedAt).toLocaleString('ko-KR')}${priorDetail}${reviewNote}${collectionDates}`
+      : `모집 확인 시각 미상${priorDetail}${reviewNote}${collectionDates}`;
   renderVerificationHistory(job);
   $('detailsDescription').textContent = job.description || '상세 설명이 제공되지 않았습니다.';
   $('detailsLink').href = job.url;

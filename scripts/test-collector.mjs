@@ -1128,7 +1128,7 @@ try {
     }
     throw new TypeError('CI simulated network timeout');
   };
-  const rssRecovered = await collectIncruit([]);
+  const rssRecovered = await collectIncruit([], { rssNow });
   assert.equal(rssRecovered.searchFailureCount, 2);
   assert.equal(rssRecovered.rssStatus, 'ok');
   assert.equal(rssRecovered.rssListOnlyCount, 1);
@@ -1158,7 +1158,7 @@ try {
   });
   previousDetail.lastVerifiedAt = '2026-10-09T02:00:00.000Z';
   previousDetail.lastDetailVerifiedAt = previousDetail.lastVerifiedAt;
-  const downgraded = await collectIncruit([previousDetail]);
+  const downgraded = await collectIncruit([previousDetail], { rssNow });
   assert.equal(downgraded.jobs.length, 1);
   const cached = downgraded.jobs[0];
   assert.equal(cached.sourceListingState, 'public_rss_cached_detail');
@@ -1173,7 +1173,7 @@ try {
   assert.ok(downgradedHistory.verificationHistory.some((item) => item.event === 'verification_scope_changed'));
   assert.ok(!downgradedHistory.verificationHistory.some((item) => item.event === 'content_changed'),
     'detail-to-RSS evidence downgrade is not an employer content edit');
-  const repeatedRss = await collectIncruit([downgradedHistory]);
+  const repeatedRss = await collectIncruit([downgradedHistory], { rssNow });
   const repeatedRssHistory = reconcileVerificationHistory(
     repeatedRss.jobs, [downgradedHistory], Date.parse('2026-10-19T08:00:00.000Z'))[0];
   assert.equal(repeatedRssHistory.lastDetailVerifiedAt, previousDetail.lastVerifiedAt);
@@ -1235,7 +1235,7 @@ try {
     }
     throw new Error('Unexpected public Incruit fixture route: ' + String(url));
   };
-  const rssWithDetailCollapse = await collectIncruit([]);
+  const rssWithDetailCollapse = await collectIncruit([], { rssNow });
   assert.equal(detailRequests, 10);
   assert.equal(rssWithDetailCollapse.searchFailureCount, 0);
   assert.equal(rssWithDetailCollapse.detailAttemptCount, 10);

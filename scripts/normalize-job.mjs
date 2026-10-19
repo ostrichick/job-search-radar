@@ -35,7 +35,12 @@ function normalizeJob(raw) {
     lastDetailVerifiedAt: raw.source === '인크루트' && raw.sourceListingState === 'public_detail'
       ? new Date().toISOString()
       : text(raw.lastDetailVerifiedAt),
-    verifiedAt: new Date().toISOString()
+    verifiedAt: raw.sourceListingState === 'manual_original_review' && raw.researchReviewedAt
+      ? new Date(raw.researchReviewedAt).toISOString() : new Date().toISOString(),
+    researchReviewedAt: raw.sourceListingState === 'manual_original_review' ? raw.researchReviewedAt : '',
+    researchSource: raw.sourceListingState === 'manual_original_review' ? raw.researchSource : '',
+    researchOpeningStatus: raw.sourceListingState === 'manual_original_review' ? raw.researchOpeningStatus : '',
+    researchNote: raw.sourceListingState === 'manual_original_review' ? raw.researchNote : ''
   };
   job.domesticRegion = domesticRegionFor(job);
   job.marketScopes = marketScopesFor(job);
@@ -114,9 +119,14 @@ function normalizeJob(raw) {
   job.paymentEvidenceNextReviewAt = paymentEvidence.nextReviewAt;
   job.paymentSummary = paymentEvidence.summary;
   job.paymentSignals = paymentEvidence.signals;
-  job.sourceSummary = quality.summary;
-  job.sourceEvidence = quality.evidence;
-  job.sourceReviewAt = quality.reviewedAt || '';
+  job.sourceSummary = raw.sourceListingState === 'manual_original_review'
+    ? `${raw.researchSource} 개별 원문을 ${raw.researchReviewedAt?.slice(0, 10)} 조사. 피드 갱신은 원문을 재확인하지 않음.`
+    : quality.summary;
+  job.sourceEvidence = raw.sourceListingState === 'manual_original_review'
+    ? [{ type: 'manual_original_review', label: '개별 검토 원문', url: job.url }]
+    : quality.evidence;
+  job.sourceReviewAt = raw.sourceListingState === 'manual_original_review'
+    ? raw.researchReviewedAt : (quality.reviewedAt || '');
   const listing = currentListingState(job);
   job.listingStatus = listing.code;
   job.listingLabel = listing.label;

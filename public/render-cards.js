@@ -1,5 +1,10 @@
 export function createCardRenderer({ $, activeMarketJobs, captureJobCardFocus, distanceSummary, domesticLocalityMatches, effectivePaymentEvidence, eligibilityDisplayLabel, escapeHtml, filteredJobs, formatDate, formatDeadline, friendlyUiText, hideWithUndo, isBroadActiveView, jobMarketScopes, listingDisplayLabel, openDetails, paymentFreshnessLabel, persist, qualityClass, renderActiveFilters, renderCollectionCoverage, renderStats, renderVerificationBadges, requirementsDisplayLabel, restoreJobCardFocus, roleFitEvidenceFor, salarySummary, setHidden, setJobState, showStorageStatus, snapshotJob, syncStoredState, updateBatchUI, workplaceModeLabel, state, storage, renderCache }) {
 let renderWaiting = false;
+const isoDay = (raw) => {
+  const value = raw ? new Date(raw) : null;
+  return value && Number.isFinite(value.getTime())
+    ? value.toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' }) : '미상';
+};
 function render() {
   if (storage.pending) {
     if (!renderWaiting) {
@@ -84,6 +89,15 @@ function render() {
     requirementsBadge.className = `requirements-badge ${qualityClass('requirements', job.requirementsStatus || 'clear')}`;
     requirementsBadge.dataset.state = job.requirementsStatus || 'clear';
     renderVerificationBadges(node.querySelector('.verification-badges'), job);
+    const collection = node.querySelector('.collection-dates');
+    const firstCollected = isoDay(job.firstSeenAt);
+    const lastCollected = isoDay(job.lastSeenAt);
+    const sourceReviewed = job.researchReviewedAt ? isoDay(job.researchReviewedAt) : '';
+    const collectedAgo = job.firstSeenAt && Number.isFinite(Date.parse(job.firstSeenAt))
+      ? Math.max(0, Math.floor((Date.now() - Date.parse(job.firstSeenAt)) / 86400000)) : null;
+    collection.textContent = `최초 수집 ${firstCollected} · 마지막 수집 ${lastCollected}` +
+      (collectedAgo !== null ? ` · ${collectedAgo <= 3 ? '최근 추가' : '등록 후 ' + collectedAgo + '일'}` : '') +
+      (sourceReviewed ? ` · 원문 수동 검토 ${sourceReviewed} (정기 재검증 아님)` : '');
     const valueLine = node.querySelector('.decision-value');
     valueLine.textContent = `지금 볼 이유 · ${(job.applyValueReasons || []).slice(0, 3).map(friendlyUiText).join(' · ') || '추가 근거 확인 필요'}`;
     const unknownLine = node.querySelector('.decision-unknown');
@@ -118,7 +132,7 @@ function render() {
     node.querySelector('.description').textContent = job.description || '상세 설명 없음';
     const tagValues = [...new Set([...(state.newIds.has(job.id) ? ['신규'] : []), ...(job.duplicateCount > 1 ? [`중복 ${job.duplicateCount}개 통합`] : []), ...(job.fitWarning ? [friendlyUiText(job.fitWarning)] : []), ...(job.matchedKeywords || []), ...(job.tags || [])])].slice(0, 6);
     node.querySelector('.tags').innerHTML = tagValues.map((v) => `<span class="tag">${escapeHtml(v)}</span>`).join('');
-    node.querySelector('.posted').textContent = [formatDate(job.postedAt), formatDeadline(job)].filter(Boolean).join(' · ');
+    node.querySelector('.posted').textContent = [job.postedAt ? `게시일 ${isoDay(job.postedAt)}` : '게시일 미표시', formatDeadline(job)].filter(Boolean).join(' · ');
     const apply = node.querySelector('.apply');
     apply.href = job.url;
     apply.addEventListener('click', () => {

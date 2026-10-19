@@ -350,6 +350,19 @@
       {"type": "official_feed", "label": "고용24 채용정보 API", "url": "https://www.work24.go.kr/cm/e/a/0110/selectOpenApiSvcInfo.do?apiSvcId=000000000000000000000000000060&fullApiSvcId=000000000000000000000000000000%5E000000000000000000000000000001&upprApiSvcId=000000000000000000000000000059"}
     ]
   },
+  "ChatGPT 수동 조사": {
+    "kind": "manual",
+    "coverage": "manual",
+    "evidenceRefreshability": "manual",
+    "listingLabel": "ChatGPT 원문 개별 조사",
+    "paymentStatus": "unknown",
+    "paymentLabel": "계약·지급 직접 확인",
+    "paymentEvidenceState": "insufficient",
+    "paymentEvidenceLabel": "독립 지급 근거 부족",
+    "paymentConfidence": "low",
+    "summary": "ChatGPT가 공개 원문을 개별 조사한 이력이며 정기 피드 갱신이 원문을 재검수한다는 의미는 아닙니다.",
+    "evidence": []
+  },
   "직접 추가": {
     "kind": "manual",
     "coverage": "manual",

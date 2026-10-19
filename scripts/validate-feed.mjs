@@ -187,7 +187,11 @@ for (const job of feed.jobs) {
     assert.doesNotMatch(`${job.title || ''} ${job.description || ''}`, /전국\s*(?:채용|모집|근무|지역|대상)|전국채용/,
       `${job.id} nationwide posting must not be retained as a local commute job`);
     if (job.source === '사람인') {
-      assert.equal(job.workAddressEvidence, 'detail_html', `${job.id} Saramin workplace evidence must come from the public detail page`);
+      assert.ok(job.workAddressEvidence === 'detail_html' ||
+        (job.workAddressEvidence === 'search_card'
+          && job.sourceListingState === 'public_list'
+          && job.domesticRegion?.precision !== 'address'),
+      `${job.id} Saramin search-card fallback must not masquerade as verified detail address`);
     }
     if (job.source === '인크루트' && !['public_rss', 'public_rss_cached_detail'].includes(job.sourceListingState)) {
       assert.equal(job.workAddressEvidence, 'detail_crosschecked', `${job.id} Incruit workplace must be cross-checked between search and detail`);
