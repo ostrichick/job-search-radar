@@ -31,7 +31,8 @@ function sourceContentSnapshot(job) {
     description: stableSourceDescription(job.source, job._fullDescription || job.description),
     tags: Array.isArray(job.tags) ? job.tags.map(text).filter(Boolean).sort() : [],
     countryCode: text(job.countryCode),
-    sourceListingState: text(job.sourceListingState)
+    sourceListingState: text(job.sourceListingState),
+    ...(job.sourceListingState === 'manual_original_review' ? { researchRequirementChecks: job.researchRequirementChecks || [] } : {})
   };
 }
 

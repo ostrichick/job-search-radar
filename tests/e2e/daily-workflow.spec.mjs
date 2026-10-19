@@ -392,6 +392,7 @@ test('저장 용량 실패는 기존 관심 상태를 유지하고 읽기 전용
 });
 
 test('수집 실패 뒤 기존 피드 성공은 경고를 유지하고 다음 수집 성공 때 해제한다', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-10-04T12:00:00Z') });
   await useFeed(page); let failing = true;
   await page.route('**/api/refresh', (route) => route.fulfill({ status: failing ? 500 : 200, contentType: 'application/json', body: JSON.stringify(failing ? { error: 'collection failed' } : feed(defaultJobs)) }));
   await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
@@ -399,6 +400,17 @@ test('수집 실패 뒤 기존 피드 성공은 경고를 유지하고 다음 �
   await expect(page.locator('#loadErrorBanner')).toBeVisible(); await expect(page.locator('#loadErrorText')).toContainText('새 수집에 실패하여 마지막 목록');
   await expect(page.locator('.job-card')).toHaveCount(3);
   failing = false; await page.locator('#refreshBtn').click(); await expect(page.locator('#loadErrorBanner')).toBeHidden();
+});
+
+test('오래된 정적 피드가 200으로 응답해도 예약 갱신 지연을 경고한다', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-10-19T12:00:00Z') });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await useFeed(page);
+  await page.goto('/');
+  await expect(page.locator('.job-card')).toHaveCount(3);
+  await expect(page.locator('#loadErrorBanner')).toBeVisible();
+  await expect(page.locator('#loadErrorText')).toContainText('24시간 이상');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
 test('모든 정적 모듈을 HTML 대신 JavaScript로 제공하고 검색 입력은 한 번에 반영한다', async ({ page }) => {
@@ -1230,6 +1242,7 @@ test('상세 이전/다음과 근거 패널이 현재 필터 큐를 따른다', 
 });
 
 test('390px viewport에서 가로 overflow가 없다', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-10-04T12:00:00Z') });
   await page.setViewportSize({ width: 390, height: 844 });
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
   await page.goto('/');

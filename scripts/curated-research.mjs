@@ -47,6 +47,8 @@ export function normalizeCuratedLead(item, { now = new Date().toISOString() } = 
   if (item.postedAt && !postedAt) return null;
   const deadlineDate = item.deadlineDate ? isoDateOnly(item.deadlineDate) : null;
   if (item.deadlineDate && (!deadlineDate || deadlineDate < now.slice(0, 10))) return null;
+  const checks = item.requirementChecks ?? [];
+  if (!Array.isArray(checks) || checks.some((c) => !c || !['hard', 'routine', 'satisfied'].includes(c.kind) || typeof c.label !== 'string' || !c.label.trim())) return null;
   // The date describes a real source review, not a check on each scheduled refresh.
   return {
     id: 'curated:' + crypto.createHash('sha256').update(url).digest('hex').slice(0, 20),
@@ -60,7 +62,8 @@ export function normalizeCuratedLead(item, { now = new Date().toISOString() } = 
     tags: ['ChatGPT 원문 조사', ...Array.isArray(item.tags) ? item.tags.slice(0, 5) : []],
     sourceListingState: 'manual_original_review', researchReviewedAt: new Date(reviewed).toISOString(),
     researchSource: source, researchOpeningStatus: item.openingStatus,
-    researchNote: String(item.researchNote || '').slice(0, 350)
+    researchNote: String(item.researchNote || '').slice(0, 350),
+    researchRequirementChecks: checks.map((c) => ({ kind: c.kind, label: c.label.trim().slice(0, 180) }))
   };
 }
 

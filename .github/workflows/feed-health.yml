@@ -1,0 +1,28 @@
+name: Monitor published feed
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '47 */6 * * *'
+  workflow_run:
+    workflows: ["Refresh jobs and deploy Pages"]
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  health:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Verify published feed age and format
+        run: node scripts/check-feed-health.mjs "https://ostrichick.github.io/job-search-radar/jobs.json"
+      - name: Explain failed health check
+        if: failure()
+        run: echo 'Published feed is unavailable, malformed or older than 24 hours. Inspect the collection workflow; keep the last good feed while repairing collection.' >> "$GITHUB_STEP_SUMMARY"

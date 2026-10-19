@@ -40,7 +40,8 @@ function normalizeJob(raw) {
     researchReviewedAt: raw.sourceListingState === 'manual_original_review' ? raw.researchReviewedAt : '',
     researchSource: raw.sourceListingState === 'manual_original_review' ? raw.researchSource : '',
     researchOpeningStatus: raw.sourceListingState === 'manual_original_review' ? raw.researchOpeningStatus : '',
-    researchNote: raw.sourceListingState === 'manual_original_review' ? raw.researchNote : ''
+    researchNote: raw.sourceListingState === 'manual_original_review' ? raw.researchNote : '',
+    researchRequirementChecks: raw.sourceListingState === 'manual_original_review' && Array.isArray(raw.researchRequirementChecks) ? raw.researchRequirementChecks : []
   };
   job.domesticRegion = domesticRegionFor(job);
   job.marketScopes = marketScopesFor(job);
@@ -396,6 +397,13 @@ function normalizeJob(raw) {
   }
   if (/\bmust be\s+18\+|\b18\+\s+years?\s+old\b|\bat least\s+18\s+years?\s+old\b|\brequires?\b[^.]{0,60}\b18\s+years?\s+or\s+older\b/i.test(fullDescription)) {
     routineRequirements.push('만 18세 이상 요건 확인');
+  }
+  if (job.sourceListingState === 'manual_original_review') {
+    for (const check of job.researchRequirementChecks) {
+      if (check.kind === 'hard') { job.fitWarnings.push(check.label); job.score = Math.min(job.score, 19); }
+      else if (check.kind === 'routine') routineRequirements.push(check.label);
+      else if (check.kind === 'satisfied') satisfiedRequirements.push(check.label);
+    }
   }
   job.requirementChecks = [
     ...job.fitWarnings.map((label) => ({ kind: 'hard', label })),

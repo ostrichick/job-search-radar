@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import { feedHealth, maximumFeedAgeMs } from '../public/feed-health.js';
+import { validatePublishedFeed } from '../scripts/check-feed-health.mjs';
+const now=Date.parse('2026-10-19T12:00:00Z');
+const recent=new Date(now-maximumFeedAgeMs).toISOString();
+assert.equal(feedHealth(recent,now).ok,true);
+assert.equal(feedHealth(new Date(now-maximumFeedAgeMs-1).toISOString(),now).ok,false);
+assert.equal(feedHealth('',now).ok,false);
+assert.equal(feedHealth(new Date(now+600001).toISOString(),now).ok,false);
+assert.throws(()=>validatePublishedFeed({updatedAt:'2026-10-01',jobs:[],sourceStatus:[]},now));
+assert.throws(()=>validatePublishedFeed({updatedAt:recent,jobs:{}},now));
+assert.equal(validatePublishedFeed({updatedAt:recent,jobs:[],sourceStatus:[]},now).jobs,0);
+console.log('published feed age and structure checks passed');

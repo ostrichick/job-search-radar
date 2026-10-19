@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { normalizeCuratedLead, collectCuratedLeads } from './curated-research.mjs';
-import { normalizeJob, reconcileVerificationHistory } from './collect-jobs.mjs';
+import { normalizeJob, reconcileVerificationHistory, recommendationCollapseRisk } from './collect-jobs.mjs';
 
 const now = '2026-10-19T12:40:00.000Z';
 const sample = {
@@ -24,6 +24,20 @@ const sample = {
   researchNote: 'Original employer page individually inspected; deadline not shown.'
 };
 const item = normalizeCuratedLead(sample, { now });
+const structured = normalizeCuratedLead({ ...sample, requirementChecks: [
+  { kind: 'hard', label: '전문 QA 리드 역량 확인' }, { kind: 'routine', label: '주 20시간·태평양 시간대 중첩 확인' }
+] }, { now });
+const qualified = normalizeJob(structured);
+assert.equal(qualified.requirementsStatus, 'hard_check');
+assert.ok(qualified.score < 20);
+assert.ok(qualified.requirementChecks.some((c) => c.label === '주 20시간·태평양 시간대 중첩 확인'));
+assert.equal(normalizeCuratedLead({ ...sample, requirementChecks: [{ kind: 'unknown', label: 'invalid' }] }, { now }), null);
+const priorJobs = Array.from({ length: 6 }, (_, i) => ({ ...normalizeJob(item), id: `test:${i}`, url: `https://example.org/${i}` }));
+const corrected = priorJobs.map((job) => ({ ...job, requirementsStatus: 'hard_check', score: 19, lastChangeKind: 'curated_record_changed' }));
+assert.equal(recommendationCollapseRisk({ recommendationPolicyVersion: 3, jobs: corrected }, { recommendationPolicyVersion: 3, jobs: priorJobs }).collapse, false,
+  'documented manual requirement corrections explain losses without disabling the collapse guard');
+assert.equal(recommendationCollapseRisk({ recommendationPolicyVersion: 3, jobs: [] }, { recommendationPolicyVersion: 3, jobs: priorJobs }).collapse, true,
+  'unexplained disappearance remains blocked');
 assert.ok(item);
 assert.equal(item.postedAt, null);
 assert.equal(item.researchReviewedAt, sample.reviewedAt);

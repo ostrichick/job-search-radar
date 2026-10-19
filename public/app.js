@@ -1,4 +1,5 @@
 import { createCardRenderer } from './render-cards.js';
+import { feedHealth } from './feed-health.js';
 import { createRenderCache } from './render-cache.js';
 import { createCompensationUI } from './compensation-ui.js';
 import { createFilterRules } from './filter-rules.js';
@@ -1675,6 +1676,11 @@ function applyFeedData(data, detectNew = true) {
   renderSourceHealth(data.sourceStatus || []);
   state.loadError = null;
   $('loadErrorBanner').hidden = true;
+  const health = feedHealth(data.updatedAt);
+  if (!health.ok) {
+    $('loadErrorText').textContent = health.message;
+    $('loadErrorBanner').hidden = false;
+  }
   render();
 }
 

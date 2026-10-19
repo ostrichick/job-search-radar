@@ -27,7 +27,7 @@ function recommendationCollapseRisk(feed, baseline) {
     || (current.listingStatus === 'archived_missing' && current.sourceCoverage === 'bounded_window')
     || ['degraded', 'unstable'].includes(current.sourceReliabilityState)
     || current.sourceQualityTier === 'weak'
-    || (current.lastChangeKind === 'content_changed'
+    || (['content_changed', 'curated_record_changed'].includes(current.lastChangeKind)
       && (current.requirementsStatus === 'hard_check'
         || current.eligibilityCode === 'restricted'
         || Number(current.score || 0) < 20))
@@ -55,7 +55,7 @@ function recommendationCollapseRisk(feed, baseline) {
       ['source_error', 'talent_pool', 'expired', 'stale'].includes(current.listingStatus)
       || ['degraded', 'unstable'].includes(current.sourceReliabilityState)
       || current.sourceQualityTier === 'weak'
-      || (current.lastChangeKind === 'content_changed'
+      || (['content_changed', 'curated_record_changed'].includes(current.lastChangeKind)
         && (current.requirementsStatus === 'hard_check'
           || current.eligibilityCode === 'restricted'
           || Number(current.score || 0) < 20))

@@ -9,6 +9,7 @@
     }
   },
   "rewrites": [
+    { "source": "/feed-health.js", "destination": "/public/feed-health.js" },
     {
       "source": "/",
       "destination": "/public/index.html"

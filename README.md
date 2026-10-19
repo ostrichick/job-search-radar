@@ -145,3 +145,9 @@ node scripts/validate-feed.mjs public/jobs.json docs/jobs.json
 `public/`의 상태 저장·백업·필터·정렬·카드 렌더링 모듈과 `scripts/`의 네트워크·소스 어댑터·정규화·검증 이력·실종 보존·추천 방어·소스 품질 모듈을 분리했습니다. 기존 수집 진입점과 테스트용 export는 유지합니다.
 
 `scripts/validate-feed.mjs`는 ID 중복뿐 아니라 모든 공고의 지원범위 판정 근거, 모집 상태 판정 강도, 소스 coverage, 지급 신뢰 freshness/expiry, 필수요건 상태, content fingerprint, 검증 이력, sourceMetrics 지속성을 확인합니다. 공식 ATS 또는 공식 프로젝트 게시로 표시하는 공고는 마지막 확인 시각과 해당 공고의 직접 링크가 반드시 있어야 합니다. 비공식·집계 소스의 10점 미만 noise는 피드에 남지 않습니다. 같은 `recommendationPolicyVersion` 안에서는 직전 검증 피드와 비교해 설명되지 않는 추천 세트 급감을 차단하고, 의도적인 추천 정책 변경은 버전을 올려 명시적으로 재기준화합니다. OneForma는 한국어 taxonomy를 우선 사용하되, South Korea가 명시되고 본문이 “해당 위치의 언어 native/fluent”를 직접 요구하는 프로젝트는 taxonomy 누락으로 버리지 않고 포함한 뒤 거주·경력 하드요건으로 추천 여부를 별도 판정합니다.
+
+## 2026-10-19 리뷰 후 보완
+
+수동 조사 데이터는 `requirementChecks`에 `hard`(미확인 핵심요건), `routine`(확인할 조건), `satisfied`(충족 근거)를 구조화해 기록합니다. 핵심요건은 기존 하드요건 처리와 동일하게 추천에서 제외하며, 수집 오류와 구별되는 기록 변경 이력을 남깁니다. 조사일은 변경하지 않습니다. 기록에 근거가 있는 조건만 등록해야 합니다.
+
+피드가 24시간 넘게 갱신되지 않으면 기존 목록과 함께 경고합니다. 별도 `Monitor published feed` 워크플로는 배포 실행 완료 후 및 6시간 간격으로 공개 피드의 HTTP 응답·자료 구조·갱신 시각을 검사합니다. 실패는 Actions와 작업 요약에 표시하고, 알림 수신은 GitHub 알림 설정에 따릅니다. 테스트가 수집 전에 중단돼도 이 검사는 독립 실행됩니다.
