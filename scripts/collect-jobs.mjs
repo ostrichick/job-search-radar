@@ -12,6 +12,7 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { isDefaultRecommendation as recommendationRule } from '../public/recommendation-rules.js';
 import { incruitJeonbukRssUrl, parseIncruitJeonbukRss } from './incruit-rss.mjs';
+import { collectCuratedLeads } from './curated-research.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -1344,6 +1345,11 @@ function currentListingState(job) {
       verification: 'official_listed'
     };
   }
+  if (meta.kind === 'manual' && job.sourceListingState === 'manual_original_review') {
+    return { code: 'manual', label: '원문 수동 조사·모집 재확인 필요', stale: false,
+      reason: '명시된 일자에 원문을 개별 조사했으나 이후 자동 재검증하지 않음. 현재 모집 여부와 근무자격은 지원 전 다시 확인 필요',
+      basis: 'manual_original_review', verification: 'manual' };
+  }
   if (meta.kind === 'manual') return { code: 'manual', label: '직접 확인 필요', stale: false, reason: '사용자가 직접 추가한 공고라 자동 모집 확인 근거가 없음', basis: 'manual', verification: 'manual' };
   if (job.source === '인크루트' && ['public_rss', 'public_rss_cached_detail'].includes(job.sourceListingState)) {
     const cached = job.sourceListingState === 'public_rss_cached_detail';
@@ -1977,7 +1983,7 @@ function structuredLocalBoardCandidate(source, sourcePostingId, url, html, listH
     salaryProvenance: 'source_structured',
     url,
     postedAt: posting.datePosted || (listHint?.postedAt && !Number.isNaN(Date.parse(listHint.postedAt)) ? listHint.postedAt : null),
-    sourceListingState: 'public_detail',
+    sourceListingState: workAddressEvidence === 'search_card' ? 'public_list' : 'public_detail',
     description,
     tags: [],
     countryCode: 'KR',
@@ -2431,7 +2437,7 @@ function incruitRssListJob(candidate, previousJob = null) {
   });
 }
 
-async function collectIncruit(previousJobs = []) {
+async function collectIncruit(previousJobs = [], { rssNow = Date.now() } = {}) {
   const searchBase = 'https://job.incruit.com/jobdb_list/searchjob.asp?col=job&kw=';
   const candidates = [];
   const byId = new Map();
@@ -2450,7 +2456,7 @@ async function collectIncruit(previousJobs = []) {
   let rssFailureCode = '';
   try {
     const rssXml = await fetchText(incruitJeonbukRssUrl, { signal: AbortSignal.timeout(10000) });
-    const rss = parseIncruitJeonbukRss(rssXml);
+    const rss = parseIncruitJeonbukRss(rssXml, rssNow);
     rssCandidates = rss.candidates;
     rssItemCount = rss.itemCount;
     rssStatus = 'ok';
@@ -2567,6 +2573,10 @@ async function collectManual() {
   if (!Array.isArray(items)) throw new Error('data/manual-jobs.json must contain a JSON array');
   const collected = items.map((j, index) => normalizeJob({ ...j, id: j.id || `manual:${index}`, source: j.source || '직접 추가' }));
   return sourceCollection(collected, items.length);
+}
+async function collectChatGptResearch() {
+  const result = await collectCuratedLeads({ root });
+  return sourceCollection(result.jobs.map((job) => normalizeJob(job)), result.rawCount);
 }
 
 function dedupe(jobs) {
@@ -2813,6 +2823,7 @@ async function collectJobsOnce({ includeManual = true, persist = true, previousJ
     ['Arbeitnow', collectArbeitnow]
   ];
   if (work24AuthKey) sources.unshift(['고용24', () => collectWork24(work24AuthKey)]);
+  if (!sourceAdapters) sources.push(['ChatGPT 수동 조사', collectChatGptResearch]);
   if (includeManual) sources.push(['직접 추가', collectManual]);
   if (sourceAdapters) sources = sourceAdapters;
   let fallbackFeed = previousFeed && typeof previousFeed === 'object' ? previousFeed : null;

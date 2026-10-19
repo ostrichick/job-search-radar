@@ -128,6 +128,34 @@ function reconcileVerificationHistory(jobs, previousJobs = [], now = Date.now())
   return jobs.map((job) => {
     const previous = findPreviousJob(job, lookup);
     const fingerprint = job.contentFingerprint || contentFingerprint(job);
+    const isCurated = job.sourceListingState === 'manual_original_review';
+    // Curated records are read again at each refresh, but their original source
+    // is NOT revisited. Preserve review provenance separately from feed presence.
+    if (isCurated) {
+      const reviewedAt = job.researchReviewedAt || job.verifiedAt;
+      const unchangedReview = previous?.researchReviewedAt === reviewedAt;
+      const event = !previous ? 'first_seen'
+        : !unchangedReview ? 'manual_source_reviewed'
+          : previous.contentFingerprint !== fingerprint ? 'curated_record_changed' : null;
+      const history = appendLimitedHistory(previous?.verificationHistory || [], event ? {
+        at: event === 'manual_source_reviewed' ? reviewedAt : nowIso,
+        event, toStatus: job.listingStatus, fingerprint,
+        reason: event === 'first_seen' ? 'ChatGPT 수동 조사 공고 최초 등록; 원문 검토일 별도'
+          : event === 'manual_source_reviewed' ? '원문을 개별 재검토한 날짜가 갱신됨'
+            : '수동 조사 요약이 수정됨; 원문 자체의 변경을 의미하지 않음'
+      } : null);
+      return {
+        ...job, contentFingerprint: fingerprint,
+        firstSeenAt: previous?.firstSeenAt || nowIso,
+        lastSeenAt: nowIso,
+        lastVerifiedAt: reviewedAt,
+        listingCheckedAt: reviewedAt,
+        lastChangeKind: event || previous?.lastChangeKind || 'first_seen',
+        lastChangeAt: event ? nowIso : previous?.lastChangeAt || nowIso,
+        lastChangedFields: [],
+        verificationHistory: history
+      };
+    }
     if (!previous) {
       return {
         ...job,

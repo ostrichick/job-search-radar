@@ -1798,6 +1798,9 @@ test('자동 수집하지 못하는 플랫폼과 대체 경로를 시장별 수�
 });
 
 test('최근 검증·원문 변경을 카드에서 구분하고 상세 이력을 확인한다', async ({ page }) => {
+  // This fixture records 2026-10-04 events; pin the browser clock so the
+  // seven-day history window does not silently expire as calendar time passes.
+  await page.clock.install({ time: new Date('2026-10-10T12:00:00Z') });
   const changed = job({
     id: 'job:changed',
     title: 'Korean AI Reviewer - Updated',
@@ -1818,7 +1821,37 @@ test('최근 검증·원문 변경을 카드에서 구분하고 상세 이력을
   await expect(page.locator('#detailsHistory')).toContainText('description, salary');
 });
 
+test('ChatGPT 수동 조사는 실제 원문 검토일과 피드의 최초·최종 수집일을 구분한다', async ({ page }) => {
+  const curated = job({
+    id: 'job:curated-date',
+    source: 'ChatGPT 수동 조사', sourceKind: 'manual', sourceListingState: 'manual_original_review',
+    title: 'Korean AI Quality Reviewer – Hand Reviewed', company: 'Reviewed Example',
+    url: 'https://example.org/reviewed-korean-ai-role',
+    postedAt: null,
+    firstSeenAt: '2026-10-05T02:00:00.000Z',
+    lastSeenAt: '2026-10-19T06:00:00.000Z',
+    lastVerifiedAt: '2026-10-11T02:00:00.000Z',
+    listingCheckedAt: '2026-10-11T02:00:00.000Z',
+    researchReviewedAt: '2026-10-11T02:00:00.000Z',
+    listingStatus: 'manual', listingBasis: 'manual_original_review',
+    listingLabel: '원문 수동 조사·모집 재확인 필요',
+    listingReason: '원문 수동 조사 이후 원문 자동 재검증 없음',
+    listingVerification: 'manual',
+    recommendationEligible: true, score: 80
+  });
+  await useFeed(page, () => feed([curated]));
+  await page.goto('/');
+  await expect(page.locator('.job-card .collection-dates')).toContainText('최초 수집 2026-10-05');
+  await expect(page.locator('.job-card .collection-dates')).toContainText('마지막 수집 2026-10-19');
+  await expect(page.locator('.job-card .collection-dates')).toContainText('원문 수동 검토 2026-10-11 (정기 재검증 아님)');
+  await expect(page.locator('.job-card .posted')).toContainText('게시일 미표시');
+  await page.locator('.details').click();
+  await expect(page.locator('#detailsVerifiedAt')).toContainText('원문 수동 검토:');
+  await expect(page.locator('#detailsVerifiedAt')).toContainText('정기 수집으로 원문을 재확인하지 않음');
+});
+
 test('사라졌다 재등장한 공고를 별도 상태로 표시한다', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-10-10T12:00:00Z') });
   const reappeared = job({
     id: 'job:reappeared',
     title: 'Korean Search Evaluator - Returned',
@@ -1859,6 +1892,7 @@ test('근거 만료 임박은 저장된 오래된 freshness 값과 무관하게 
 });
 
 test('부분 소스 실패 후 복구 상태와 이력을 유지한다', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-10-10T12:00:00Z') });
   let current = {
     ...feed([job({
       id: 'job:recover',
@@ -1931,6 +1965,7 @@ test('추천 품질 게이트가 정상 후보 세트를 과도하게 축소하�
 });
 
 test('재등장·복구와 원문 변경이 같은 실행에서 함께 발생해도 카드에 둘 다 표시한다', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-10-10T12:00:00Z') });
   const returnedChanged = job({
     id: 'job:returned-changed',
     title: 'Korean AI Reviewer - Returned And Changed',

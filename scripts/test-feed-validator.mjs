@@ -91,7 +91,7 @@ try {
   expectRejected('list-only-workplace', (job) => {
     job.workAddressEvidence = 'public_list';
     job.domesticRegion.precision = 'city';
-  }, /Saramin workplace evidence must come from the public detail page/);
+  }, /Saramin search-card fallback must not masquerade as verified detail address/);
   expectRejected('outside-target-workplace', (job) => { job.domesticRegion.city = '군산시'; }, /must be in Jeonju or Wanju/);
   expectRejected('remote-local-row', (job) => { job.remote = true; }, /remote boolean must agree with canonical workplaceMode/);
   expectRejected('nationwide-row', (job) => { job.title = `전국 모집 ${job.title}`; }, /nationwide posting must not be retained/);
