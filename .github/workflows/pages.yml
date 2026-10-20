@@ -48,7 +48,7 @@ jobs:
             echo "main moved during collection; skip baseline persistence"
             exit 0
           fi
-          cp public/jobs.json docs/jobs.json
+          node scripts/format-feed-baseline.mjs public/jobs.json docs/jobs.json
           git add docs/jobs.json
           if git diff --cached --quiet -- docs/jobs.json; then
             echo "No feed baseline changes to persist."
