@@ -1885,6 +1885,8 @@ test('사라졌다 재등장한 공고를 별도 상태로 표시한다', async 
 });
 
 test('근거 만료 임박은 저장된 오래된 freshness 값과 무관하게 현재 시각으로 재계산한다', async ({ page }) => {
+  // A real-time clock turns this fixed fixture into "expired" after 2026-10-20.
+  await page.clock.install({ time: new Date('2026-10-10T12:00:00Z') });
   const aging = job({
     id: 'job:aging',
     title: 'Korean Reviewer - Aging Evidence',
