@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 
 const SOURCE_NAMES = new Set(['RWS TrainAI', 'Welo Global', 'OneForma', 'LILT Production',
   'Meridial', 'TELUS Digital', 'DataForce', 'Appen', 'Outlier', 'Mercor', 'DataAnnotation',
-  'OpenTrain', 'Company Careers',
+  'OpenTrain', 'Alignerr', 'Productive Playhouse', 'Company Careers',
   'KOWORK', 'JOBPLOY', 'Other original source']);
 const THIRTY_DAYS = 30 * 86400000;
 

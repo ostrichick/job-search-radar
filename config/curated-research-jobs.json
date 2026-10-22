@@ -166,6 +166,99 @@
           "label": "주 20시간·매일 태평양 시간대 4시간 중첩 가능 여부 확인"
         }
       ]
+    },
+    {
+      "originalSource": "Alignerr",
+      "url": "https://www.alignerr.com/jobs/7081ac4d-fff2-44f2-a035-16f3ee9d274f",
+      "title": "Korean Language Quality Analyst",
+      "company": "Alignerr (Labelbox)",
+      "location": "Remote",
+      "workplaceMode": "remote",
+      "type": "Freelance hourly contract; 10–40 hours/week",
+      "salary": "$20–40/hour (advertised, not guaranteed)",
+      "postedAt": null,
+      "deadlineDate": null,
+      "openingStatus": "listed",
+      "reviewedAt": "2026-10-22T04:55:20Z",
+      "researchSummary": "Evaluate AI-generated Korean text for fluency, accuracy, clarity and natural tone; flag grammar, register and cultural issues; write structured linguistic feedback. Remote and asynchronous with an Apply link on the company listing.",
+      "requirements": "Native or near-native Korean; strong written Korean and English; detail-oriented review skills. Prior AI work not required. No explicit Korea restriction or guaranteed task allocation is shown.",
+      "eligibilityNote": "Remote is advertised but Korea-resident application/contract availability was not separately verified. English writing strength and assessment process must be checked; the hourly rate and 10–40 hours are advertisement, not guaranteed work.",
+      "researchNote": "Individual company job page inspected October 22, 2026; no actual posting date, deadline or confirmation of immediate project assignment was displayed.",
+      "tags": ["Korean", "AI language quality", "Content review", "Remote"],
+      "requirementChecks": [
+        {"kind":"routine","label":"영어 작문·원문 검수 피드백 수행 능력 확인"},
+        {"kind":"routine","label":"한국 거주 지원 가능·실제 프로젝트 물량 확인"}
+      ]
+    },
+    {
+      "originalSource": "OpenTrain",
+      "url": "https://www.opentrain.ai/jobs/chatbot-response-quality-analyst--cmvgje7tw001r08l80o5wt9aq/",
+      "title": "Chatbot Response Quality Analyst",
+      "company": "OpenTrain (client not identified)",
+      "location": "Worldwide Remote",
+      "workplaceMode": "remote",
+      "type": "Contract; 16 weeks, 20+ hours per week",
+      "salary": "",
+      "postedAt": "2026-10-20",
+      "deadlineDate": null,
+      "openingStatus": "listed",
+      "reviewedAt": "2026-10-22T04:55:20Z",
+      "researchSummary": "Compare AI chatbot responses for factual accuracy, relevance and completeness, score quality using structured guidelines, write feedback, and escalate unclear cases. Listed as entry-level, worldwide remote, 16-week project, and at least 20 hours each week, working five days including some weekends.",
+      "requirements": "Fluent English is mandatory. Prior experience in QA, data annotation, testing or content evaluation is required, with chatbot and LLM evaluation as helpful. Pay is not stated.",
+      "eligibilityNote": "The public OpenTrain listing links to an application flow and says worldwide remote, but the client, actual pay and allocation are not identified. Advanced/fluent written and spoken English may be a mismatch; the candidate's level must be assessed.",
+      "researchNote": "Individual OpenTrain page inspected October 22, 2026, displayed posted October 20. Not treated as an employer-direct posting or confirmed task assignment.",
+      "tags": ["AI response evaluation", "Quality review", "English", "Remote"],
+      "requirementChecks": [
+        {"kind":"hard","label":"필수 유창한 영어 소통·문서 피드백 수준 확인"},
+        {"kind":"routine","label":"주 20시간 이상·주말 포함 근무 가능 여부 확인"},
+        {"kind":"routine","label":"고용주 실체·급여·프로젝트 배정 확인"}
+      ]
+    },
+    {
+      "originalSource": "OpenTrain",
+      "url": "https://www.opentrain.ai/jobs/llm-analytical-quality-analyst--cmvgje7ic001l08l8p9cr8p87/",
+      "title": "LLM Analytical Quality Analyst",
+      "company": "OpenTrain (client not identified)",
+      "location": "Worldwide Remote",
+      "workplaceMode": "remote",
+      "type": "Part-time contractor; 20+ hours/week",
+      "salary": "",
+      "postedAt": "2026-10-20",
+      "deadlineDate": null,
+      "openingStatus": "listed",
+      "reviewedAt": "2026-10-22T04:55:20Z",
+      "researchSummary": "Review AI reasoning and factual claims, research and fact-check source material, identify logical mistakes, and produce structured feedback and explanatory answers. Worldwide remote, entry-level listing, 20+ weekly hours.",
+      "requirements": "Fluent English reading and writing mandatory, independent research and quantitative/basic data analysis capabilities needed. Bachelor's degree, prior quality review/data annotation and Google Workspace/Excel are helpful rather than clearly required. Pay is not stated.",
+      "eligibilityNote": "The listing does not specifically use Korean, and the advanced English requirement may exceed the candidate's verified proficiency. OpenTrain is an intermediary and project allocation/client identity and payment are unconfirmed.",
+      "researchNote": "Original OpenTrain page inspected October 22, 2026. Posted date October 20 is explicitly displayed. Apply is available through platform login, not a guaranteed contract.",
+      "tags": ["LLM reasoning", "Fact-check", "Data evaluation", "Remote"],
+      "requirementChecks": [
+        {"kind":"hard","label":"필수 유창한 영어 읽기·쓰기 실무 능력 확인"},
+        {"kind":"routine","label":"원문 회사·급여·배정 및 주 20시간 조건 확인"}
+      ]
+    },
+    {
+      "originalSource": "Productive Playhouse",
+      "url": "https://productiveplayhouse.applytojob.com/apply/SsnCmSxUu9/Korean-AI-Product-Evaluator",
+      "title": "Korean - AI Product Evaluator (future-project talent pool)",
+      "company": "Productive Playhouse",
+      "location": "Remote",
+      "workplaceMode": "remote",
+      "type": "Future project talent pool; task-based independent contractor",
+      "salary": "$20/hour for work if project starts (advertised)",
+      "postedAt": null,
+      "deadlineDate": null,
+      "openingStatus": "unconfirmed",
+      "reviewedAt": "2026-10-22T04:55:20Z",
+      "researchSummary": "This is NOT an active job opening; it is an invitation to join a talent pool for an upcoming Korean chatbot evaluation project not yet launched. Possible future paid tasks involve written and voice interactions with AI models, assessing quality and recording feedback.",
+      "requirements": "Native expert Korean, strong English communication, experience with AI models, own smartphone and computer, willingness to record voice/video, training assessments and ability to start quickly if selected. Future project work arrives in batches and may pause.",
+      "eligibilityNote": "The employer explicitly permits applicants living outside the US but does not guarantee allocation or work authorization for each location. Do not count this as immediate available paid work; advertised $20/hour applies only if assigned work.",
+      "researchNote": "Employer's JazzHR application page personally inspected October 22; explicitly states project not yet launched and candidates are reviewed for a future pool, despite accepting applications.",
+      "tags": ["AI evaluation", "Korean", "Talent pool", "Future opportunity"],
+      "requirementChecks": [
+        {"kind":"hard","label":"즉시 유급 업무 아님: 아직 출시되지 않은 프로젝트 인재풀"},
+        {"kind":"routine","label":"영어·영상/음성 녹화 동의·프로젝트 배정 요건 확인"}
+      ]
     }
   ]
 }
