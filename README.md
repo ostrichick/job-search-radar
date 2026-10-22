@@ -24,7 +24,7 @@ npm start
 
 브라우저에서 `http://127.0.0.1:4317`을 엽니다.
 
-`local-server.mjs`는 데스크톱 바로가기용 로컬 서버이며 웹 배포에는 사용하지 않습니다. 현재 GitHub Pages는 Actions가 `public/` 정적 UI와 최신 `jobs.json`을 생성해 배포하고, `api/`는 Vercel 보조 배포에서만 사용합니다.
+`local-server.mjs`는 데스크톱 바로가기용 로컬 서버이며 웹 배포에는 사용하지 않습니다. 현재 GitHub Pages는 Actions가 `public/` 정적 UI와 최신 `jobs.json`을 생성해 배포합니다. 로컬 서버의 `/api/refresh`는 대시보드 자신의 주소(`127.0.0.1:4317`·`localhost:4317`)에서 보낸 요청만 받습니다.
 
 서버가 켜져 있는 동안 6시간마다 자동 갱신하며, 마지막 수집이 6시간 이상 지난 상태에서 서버를 시작해도 자동으로 다시 수집합니다. 화면의 **목록 새로고침** 버튼으로 현재 피드를 다시 읽을 수 있습니다.
 
@@ -47,7 +47,7 @@ npm start
 - 인크루트 공개 전주·완주 검색 + EUC-KR 상세 JobPosting — 검색 지역과 상세 posting ID/canonical URL/실제 주소가 같은 전주·완주 공고만 상세 검증
 - 인크루트가 공개한 [전북 RSS](https://www.incruit.com/rss/job.asp?ct=3&ty=2&cd=22) — 지역 검색 접근이 실패하더라도 최근 20개 목록 중 **전주·완주 근무지 하나만 명시된** 공고는 별도 낮은 근거로 유지. 다중 근무지·전북 전체·오래된 피드·형식 오류는 제외하고, RSS만 확인된 공고는 상세 미검증으로 기본 추천에서 제외. RSS 성공을 전체 검색 성공으로 집계하지 않음. RSS에 표시된 마감일은 게시일·RSS 작성일·요일이 일치할 때만 연도를 확정하고, 지난 확정 마감일은 현재 모집으로 표시하지 않음. 과거 상세 확인 공고가 RSS로만 확인되는 경우 이전 상세 정보를 **역사적 근거**로 별도 보존하고 상세 검증 시각을 갱신하지 않으며, 근거 범위의 변화는 고용주 원문 변경으로 취급하지 않음
 - 고용24 공식 채용정보 OPEN-API — `WORK24_AUTH_KEY`가 구성된 경우에만 전주·완주 수집 활성화
-- `data/manual-jobs.json`에 직접 추가한 공고
+- `data/manual-jobs.json`에 직접 편집해 추가한 공고(로컬 서버 전용, 화면의 **공고 추가**는 브라우저에 저장)
 
 LinkedIn과 Indeed는 직접 크롤링하지 않습니다. 두 플랫폼에서 발견한 공고는 화면의 **공고 추가**로 저장할 수 있습니다. Gmail Job Alert 자동 유입은 Gmail OAuth 토큰을 정적 웹앱에 넣지 않는 구조가 전제이며, 별도 서버/Apps Script 등 안전한 OAuth 보관 경로가 생길 때 연결합니다.
 
@@ -78,7 +78,6 @@ Welo Global/Welocalize, RWS, LILT, Meridial, OneForma는 **공식 모집원 여�
 
 ## 웹 배포
 
-- Vercel: `api/`의 서버리스 수집 API를 사용할 수 있는 보조 배포 구성이 남아 있습니다.
 - GitHub Pages가 현재 영구 서비스입니다. `.github/workflows/pages.yml`이 6시간마다 또는 `main` push/수동 실행 시 Node 24에서 테스트 → 최신 피드 생성 → 피드 검증 → 이전 피드 기준선 저장 → Pages artifact 배포를 수행합니다.
 - 배포 전에 단위 테스트와 영구 Playwright E2E를 모두 실행합니다. E2E는 결정론적 피드 fixture를 사용해 상태·필터·숨김 Undo·archived snapshot·상세 탐색·390px 레이아웃·빈/오류 복구·백업/가져오기뿐 아니라 검증 이력, 원문 변경, 사라짐→재등장, 부분 소스 실패→복구, 근거 expiry 재계산, 추천 세트 과도 축소를 회귀 방지합니다.
 - Pages 설정은 GitHub Actions(`build_type=workflow`) 방식입니다. 서버 측 실행이므로 개인 PC가 꺼져 있어도 갱신됩니다.

@@ -3,7 +3,6 @@ import { performance } from 'node:perf_hooks';
 
 const context = new AsyncLocalStorage();
 export const defaultNetworkOptions = Object.freeze({ requestTimeoutMs: 15000, sourceTimeoutMs: 60000, concurrency: 3, hostConcurrency: 2 });
-export const apiNetworkOptions = Object.freeze({ requestTimeoutMs: 8000, sourceTimeoutMs: 20000, totalTimeoutMs: 25000, concurrency: 3, hostConcurrency: 2 });
 
 export function abortable(promise, signal) {
   if (signal.aborted) return Promise.reject(signal.reason);

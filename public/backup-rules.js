@@ -38,6 +38,14 @@ export function validateJob(job, path = 'job', snapshot = false) {
   }
   return job;
 }
+// Shared by the browser loader and CI so a published feed cannot pass CI and
+// then be rejected by every visitor.
+export function validatePublicFeed(data) {
+  if (!data || !Array.isArray(data.jobs) || data.jobs.some((job) => !job || typeof job.id !== 'string' || typeof job.title !== 'string' || !httpUrl(job.url))) throw new Error('잘못된 공고 피드 형식');
+  data.jobs.forEach((job, index) => validateJob(job, `jobs[${index}]`));
+  if (data.sourceStatus !== undefined && (!Array.isArray(data.sourceStatus) || data.sourceStatus.some((s) => !s || typeof s.source !== 'string' || typeof s.ok !== 'boolean'))) throw new Error('잘못된 출처 상태 형식');
+  return data;
+}
 export function validateBackup(payload, normalizeManual = (job) => job) {
   check(object(payload) && payload.schema === 'job-search-radar-state' && [1, 2].includes(payload.version), 'backup.schema/version');
   const result = structuredClone(payload);

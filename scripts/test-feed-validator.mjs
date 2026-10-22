@@ -130,6 +130,14 @@ try {
   assert.match(`${invalidZeroScoreActive.stdout}\n${invalidZeroScoreActive.stderr}`, /zero-score collected noise/,
     'active zero-score intermediary row must fail the active-noise contract');
 
+  // The browser rejects the whole feed for one malformed record, so CI must too.
+  const relativeEvidence = structuredClone(baseline);
+  relativeEvidence.jobs[templateIndex].listingEvidence = [{ type: 'listing', label: 'relative', url: '/jobs/123' }];
+  const invalidRelativeEvidence = runValidator(relativeEvidence, 'invalid-relative-evidence');
+  assert.notEqual(invalidRelativeEvidence.status, 0, 'feed rejected by the browser loader must also fail CI validation');
+  assert.match(`${invalidRelativeEvidence.stdout}\n${invalidRelativeEvidence.stderr}`, /listingEvidence\[0\]\.url/,
+    'browser schema failure must name the offending field');
+
   console.log('feed validator tests passed');
 } finally {
   fs.rmSync(tempDir, { recursive: true, force: true });

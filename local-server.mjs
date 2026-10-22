@@ -1,9 +1,9 @@
-import { atomicWriteJson, withFileLock } from './scripts/file-storage.mjs';
 import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { collectJobs } from './scripts/collect-jobs.mjs';
+import { isTrustedLocalRequest } from './scripts/local-origin.mjs';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(root, 'public');
@@ -22,12 +22,6 @@ function send(res, status, body, type = 'application/json; charset=utf-8') {
   res.end(body);
 }
 
-async function readBody(req) {
-  const chunks = [];
-  for await (const chunk of req) chunks.push(chunk);
-  return Buffer.concat(chunks).toString('utf8');
-}
-
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
@@ -38,38 +32,9 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === 'POST' && url.pathname === '/api/refresh') {
+      if (!isTrustedLocalRequest(req.headers, port)) return send(res, 403, JSON.stringify({ error: 'Forbidden origin' }));
       const result = await collectJobs();
       return send(res, 200, JSON.stringify(result));
-    }
-
-    if (req.method === 'POST' && url.pathname === '/api/manual-jobs') {
-      const input = JSON.parse(await readBody(req));
-      const manualPath = path.join(root, 'data/manual-jobs.json');
-      const job = {
-        source: String(input.source || '직접 추가').slice(0, 40),
-        title: String(input.title || '').trim(),
-        company: String(input.company || '').trim(),
-        location: String(input.location || '').trim(),
-        remote: Boolean(input.remote),
-        type: String(input.type || ''),
-        salary: String(input.salary || ''),
-        url: String(input.url || '').trim(),
-        postedAt: input.postedAt || new Date().toISOString(),
-        description: String(input.description || '').trim(),
-        tags: Array.isArray(input.tags) ? input.tags : []
-      };
-      if (!job.title || !job.url) return send(res, 400, JSON.stringify({ error: 'title과 url은 필수입니다.' }));
-      if (!['http:', 'https:'].includes(new URL(job.url).protocol)) return send(res, 400, JSON.stringify({ error: 'HTTP/HTTPS URL required' }));
-      await withFileLock(manualPath, async () => {
-        let current;
-        try { current = JSON.parse(await fs.readFile(manualPath, 'utf8')); }
-        catch (error) { if (error.code !== 'ENOENT') throw error; current = []; }
-        if (!Array.isArray(current)) throw new Error('manual-jobs must be an array');
-        current.push(job);
-        await atomicWriteJson(manualPath, current);
-      });
-      const result = await collectJobs();
-      return send(res, 201, JSON.stringify({ ok: true, jobs: result.jobs.length }));
     }
 
     const requested = url.pathname === '/' ? '/index.html' : url.pathname;

@@ -9,8 +9,7 @@ import { fetchJson, fetchText, runSources } from './network.mjs';
 import { atomicWriteJson, withFileLock, singleFlight } from './file-storage.mjs';
 import { collectJobs, normalizeJob } from './collect-jobs.mjs';
 import { validateBackup, mergeStorageChanges } from '../public/backup-rules.js';
-import jobsHandler from '../api/jobs.mjs';
-import refreshHandler from '../api/refresh.mjs';
+import { isTrustedLocalRequest } from './local-origin.mjs';
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'job-radar-runtime-'));
@@ -95,21 +94,12 @@ try {
     assert.ok(failed.jobs.some((job) => job.source === 'Welo Global' && job.listingStatus === 'source_error'));
     console.log(`Controlled source benchmark: sequential=${Math.round(sequentialMs)}ms parallel=${Math.round(parallelMs)}ms (3 delayed fixture sources; not live performance)`);
   } finally { globalThis.Date = RealDate; }
-  const originalFetch = globalThis.fetch;
-  try {
-    globalThis.fetch = async () => { throw new Error('offline API fixture'); };
-    const response = () => ({ headers: {}, setHeader(k, v) { this.headers[k] = v; }, status(code) { this.code = code; return this; }, json(value) { this.payload = value; return this; } });
-    for (const [handler, method] of [[jobsHandler, 'GET'], [refreshHandler, 'POST']]) {
-      const invalid = response(); await handler({ method: 'DELETE' }, invalid); assert.equal(invalid.code, 405); assert.equal(invalid.headers.Allow, method);
-      const valid = response(); await handler({ method }, valid);
-      assert.equal(valid.code, 200, JSON.stringify(valid.payload));
-      assert.ok(valid.payload.jobs.length > 0, 'API outage retains the shipped baseline');
-      // The offline fixture must fail network collectors but the local,
-      // individually reviewed curated manifest is intentionally still available.
-      assert.ok(valid.payload.sourceStatus.every((s) => s.source === 'ChatGPT 수동 조사'
-        ? s.ok === true : (!s.ok && !String(s.error || '').includes('is not defined'))));
-    }
-  } finally { globalThis.fetch = originalFetch; }
+  // Local refresh runs a full collection, so only the dashboard's own origin may trigger it.
+  assert.equal(isTrustedLocalRequest({ host: '127.0.0.1:4317', origin: 'http://127.0.0.1:4317' }, 4317), true);
+  assert.equal(isTrustedLocalRequest({ host: 'localhost:4317', origin: 'http://localhost:4317' }, 4317), true);
+  assert.equal(isTrustedLocalRequest({ host: '127.0.0.1:4317', origin: 'https://evil.example' }, 4317), false, 'cross-site POST must be rejected');
+  assert.equal(isTrustedLocalRequest({ host: '127.0.0.1:4317' }, 4317), false, 'missing Origin must be rejected');
+  assert.equal(isTrustedLocalRequest({ host: 'evil.example:4317', origin: 'http://evil.example:4317' }, 4317), false, 'DNS-rebound Host must be rejected');
   console.log('runtime, storage merge, backup and collection integration tests passed');
 } finally {
   server.closeAllConnections(); await new Promise((resolve) => server.close(resolve));

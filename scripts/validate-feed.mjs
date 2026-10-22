@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { recommendationCollapseRisk } from './collect-jobs.mjs';
 import { isDefaultRecommendation as recommendationRule } from '../public/recommendation-rules.js';
+import { validatePublicFeed } from '../public/backup-rules.js';
 
 const target = process.argv[2] || './data/jobs.json';
 const feed = JSON.parse(fs.readFileSync(target, 'utf8'));
@@ -11,6 +12,8 @@ if (baselineTarget && fs.existsSync(baselineTarget)) {
   try { baseline = JSON.parse(fs.readFileSync(baselineTarget, 'utf8')); } catch { baseline = null; }
 }
 assert.ok(Array.isArray(feed.jobs) && feed.jobs.length > 0, 'feed must contain jobs');
+// Same schema gate as the browser loader; one bad record would blank the site.
+validatePublicFeed(feed);
 assert.ok(feed.sourceMetrics && typeof feed.sourceMetrics === 'object' && !Array.isArray(feed.sourceMetrics),
   'feed must persist sourceMetrics for long-term source quality tracking');
 if (feed.collectionGaps !== undefined) {

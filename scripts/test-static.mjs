@@ -9,10 +9,6 @@ const output = path.join(temporary, 'jobs.json');
 const baseline = await fs.readFile('docs/jobs.json', 'utf8');
 const publicBefore = await fs.readFile('public/jobs.json', 'utf8').catch(() => null);
 try {
-  const vercel = JSON.parse(await fs.readFile('vercel.json', 'utf8'));
-  for (const name of (await fs.readdir('public')).filter((name) => name.endsWith('.js'))) {
-    assert.ok(vercel.rewrites.some((route) => route.source === `/${name}` && route.destination === `/public/${name}`), `${name} needs a Vercel module route`);
-  }
   const build = spawnSync(process.execPath, ['scripts/build-static.mjs', '--fixture', 'docs/jobs.json', '--output', output], { encoding: 'utf8' });
   assert.equal(build.status, 0, build.stderr);
   assert.deepEqual(JSON.parse(await fs.readFile(output, 'utf8')), JSON.parse(baseline));

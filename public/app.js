@@ -6,7 +6,7 @@ import { createFilterRules } from './filter-rules.js';
 import { createSortRules } from './sort-rules.js';
 import { createManualJobRules } from './manual-job.js';
 import { createStateStorage } from './state-storage.js';
-import { validateBackup, validateJob, httpUrl } from './backup-rules.js';
+import { validateBackup, validatePublicFeed, httpUrl } from './backup-rules.js';
 const storage = await createStateStorage();
 import { mergeWorkflowState, reconcileNewIds } from './state-rules.js';
 import { hasRoleFitEvidence, isDefaultRecommendation as recommendationRule } from './recommendation-rules.js';
@@ -1687,11 +1687,7 @@ function applyFeedData(data, detectNew = true) {
 async function feedRequest(url, options = {}) {
   const response = await fetch(url, { ...options, cache: 'no-store', signal: AbortSignal.timeout(15000) });
   if (!response.ok) throw new Error(`${response.status}`);
-  const data = await response.json();
-  if (!data || !Array.isArray(data.jobs) || data.jobs.some((job) => !job || typeof job.id !== 'string' || typeof job.title !== 'string' || !httpUrl(job.url))) throw new Error('잘못된 공고 피드 형식');
-  data.jobs.forEach((job, index) => validateJob(job, `jobs[${index}]`));
-  if (data.sourceStatus !== undefined && (!Array.isArray(data.sourceStatus) || data.sourceStatus.some((s) => !s || typeof s.source !== 'string' || typeof s.ok !== 'boolean'))) throw new Error('잘못된 출처 상태 형식');
-  return data;
+  return validatePublicFeed(await response.json());
 }
 async function fetchFeed() {
   const staticPages = location.hostname.endsWith('.github.io');
