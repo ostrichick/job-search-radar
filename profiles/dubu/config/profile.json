@@ -1,0 +1,34 @@
+{
+  "homeCity": "전주",
+  "homeCountry": "KR",
+  "spokenLanguages": {
+    "es": "native",
+    "ko": "beginner",
+    "en": "unverified"
+  },
+  "interests": {
+    "online": ["marketing", "advertising", "translation", "content"],
+    "offline": ["marketing", "advertising", "translation", "interpreting", "content"]
+  },
+  "onlineInterpreting": false,
+  "historyRetentionDays": 60,
+  "historyMaxItems": 2000,
+  "collectors": {
+    "remotive": true,
+    "jobicy": true,
+    "remoteok": true,
+    "arbeitnow": true,
+    "korea": false,
+    "koreaAts": true,
+    "internationalAts": true,
+    "kowork": true,
+    "curatedResearch": true
+  },
+  "manualFile": "config/manual-jobs.json",
+  "upworkSearches": [
+    { "label": "Spanish translation", "url": "https://www.upwork.com/nx/search/jobs/?q=spanish%20translation" },
+    { "label": "Digital marketing", "url": "https://www.upwork.com/nx/search/jobs/?q=digital%20marketing" },
+    { "label": "Advertising and content", "url": "https://www.upwork.com/nx/search/jobs/?q=social%20media%20marketing" }
+  ],
+  "notes": "English fluency, work authorization, visa, qualifications and availability are not assumed. Listings are research leads, not verified eligibility."
+}

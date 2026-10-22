@@ -1,8 +1,11 @@
 node_modules/
 .vercel/
-data/jobs.json
-data/manual-jobs.json
-public/jobs.json
+/data/jobs.json
+/data/manual-jobs.json
+/public/jobs.json
+/public/feeds/
+# Dubu profile: public/jobs.json is the tracked history baseline (CI-updated).
+profiles/dubu/config/manual-jobs.json
 dashboard*.png
 deployed*.png
 test-results/

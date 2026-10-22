@@ -76,6 +76,10 @@ Welo Global/Welocalize, RWS, LILT, Meridial, OneForma는 **공식 모집원 여�
 - **검토 우선순위** — 일치 키워드와 관심 분야, 원격·지원 범위, 별도로 확인해야 할 경력·장비·거주 하드요건
 - 카드에는 **지금 볼 이유 / 아직 미확인**을 짧게 요약하고, 상세에서 같은 근거를 확장해 확인할 수 있습니다.
 
+## Dubu 프로필 (통합 진행 중)
+
+아내용 Dubu Job Radar의 수집기·규칙·단위 테스트는 `profiles/dubu/`에 있습니다. 규칙은 이 대시보드와 별개로 유지합니다. 배포 워크플로가 함께 수집해 `feeds/dubu.json`으로 공개하고, 이력 기준선 `profiles/dubu/public/jobs.json`을 자동 커밋합니다. 로컬 실행은 `npm run refresh:dubu`, 테스트는 `npm run test:dubu`입니다. 통합 단계와 결정 사항은 [`INTEGRATION_PLAN.md`](./INTEGRATION_PLAN.md)에 있습니다.
+
 ## 웹 배포
 
 - GitHub Pages가 현재 영구 서비스입니다. `.github/workflows/pages.yml`이 6시간마다 또는 `main` push/수동 실행 시 Node 24에서 테스트 → 최신 피드 생성 → 피드 검증 → 이전 피드 기준선 저장 → Pages artifact 배포를 수행합니다.

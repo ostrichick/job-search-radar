@@ -23,6 +23,9 @@ jobs:
           node-version: 24
       - name: Verify published feed age and format
         run: node scripts/check-feed-health.mjs "https://ostrichick.github.io/job-search-radar/jobs.json"
+      - name: Verify published Dubu feed age and format
+        if: success() || failure()
+        run: node profiles/dubu/scripts/check-feed-health.mjs "https://ostrichick.github.io/job-search-radar/feeds/dubu.json"
       - name: Explain failed health check
         if: failure()
         run: echo 'Published feed is unavailable, malformed or older than 24 hours. Inspect the collection workflow; keep the last good feed while repairing collection.' >> "$GITHUB_STEP_SUMMARY"

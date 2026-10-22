@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths-ignore:
       - docs/jobs.json
+      - profiles/dubu/public/jobs.json
   schedule:
     - cron: "17 */6 * * *"
   workflow_dispatch:
@@ -40,6 +41,15 @@ jobs:
         if: github.event_name != 'schedule'
       - run: npm run build:static
       - run: node scripts/validate-feed.mjs public/jobs.json docs/jobs.json
+      # Dubu profile. Its collector keeps the last good feed and exits non-zero
+      # when every source failed; that must not block the main deployment.
+      - name: Refresh Dubu feed
+        run: node profiles/dubu/scripts/collect.mjs || echo "::warning::Dubu collection wrote no new feed; publishing the last good Dubu feed"
+      - name: Publish Dubu feed
+        run: |
+          node --input-type=module -e "import {readFileSync} from 'node:fs';const f=JSON.parse(readFileSync('profiles/dubu/public/jobs.json','utf8'));if(!Array.isArray(f.jobs)||!Array.isArray(f.sourceStatus)||!f.updatedAt)process.exit(1)"
+          mkdir -p public/feeds
+          cp profiles/dubu/public/jobs.json public/feeds/dubu.json
       - name: Persist refreshed feed baseline
         shell: bash
         run: |
@@ -49,8 +59,8 @@ jobs:
             exit 0
           fi
           node scripts/format-feed-baseline.mjs public/jobs.json docs/jobs.json
-          git add docs/jobs.json
-          if git diff --cached --quiet -- docs/jobs.json; then
+          git add docs/jobs.json profiles/dubu/public/jobs.json
+          if git diff --cached --quiet -- docs/jobs.json profiles/dubu/public/jobs.json; then
             echo "No feed baseline changes to persist."
             exit 0
           fi
