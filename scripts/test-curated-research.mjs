@@ -30,6 +30,8 @@ const structured = normalizeCuratedLead({ ...sample, requirementChecks: [
 const qualified = normalizeJob(structured);
 assert.equal(qualified.requirementsStatus, 'hard_check');
 assert.ok(qualified.score < 20);
+assert.ok(qualified.fitWarnings.includes('전문 QA 리드 역량 확인'));
+assert.equal(qualified.fitWarning, qualified.fitWarnings.join(' · '));
 assert.ok(qualified.requirementChecks.some((c) => c.label === '주 20시간·태평양 시간대 중첩 확인'));
 assert.equal(normalizeCuratedLead({ ...sample, requirementChecks: [{ kind: 'unknown', label: 'invalid' }] }, { now }), null);
 const priorJobs = Array.from({ length: 6 }, (_, i) => ({ ...normalizeJob(item), id: `test:${i}`, url: `https://example.org/${i}` }));

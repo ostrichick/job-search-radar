@@ -326,7 +326,6 @@ function normalizeJob(raw) {
     }
   }
   job.fitWarnings = [...new Set(fitWarnings)];
-  job.fitWarning = job.fitWarnings.join(' · ');
   const routineRequirements = [...structuredRoutineRequirements];
   if (job.source === 'KRAFTON' && /Data Program Manager/i.test(job.title)) {
     routineRequirements.push('ML 논문 이해·기초 데이터 분석 역량 확인');
@@ -405,6 +404,8 @@ function normalizeJob(raw) {
       else if (check.kind === 'satisfied') satisfiedRequirements.push(check.label);
     }
   }
+  job.fitWarnings = [...new Set(job.fitWarnings)];
+  job.fitWarning = job.fitWarnings.join(' · ');
   job.requirementChecks = [
     ...job.fitWarnings.map((label) => ({ kind: 'hard', label })),
     ...[...new Set(routineRequirements)].map((label) => ({ kind: 'routine', label })),
