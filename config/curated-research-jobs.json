@@ -259,6 +259,126 @@
         {"kind":"hard","label":"즉시 유급 업무 아님: 아직 출시되지 않은 프로젝트 인재풀"},
         {"kind":"routine","label":"영어·영상/음성 녹화 동의·프로젝트 배정 요건 확인"}
       ]
+    },
+    {
+      "originalSource": "사람인",
+      "url": "https://m.saramin.co.kr/job-search/view?rec_idx=54907460",
+      "title": "마케팅·콘텐츠·AI 활용 기획 파트타임",
+      "company": "아이엠파트너스(IAM Partners)",
+      "location": "전북 전주시 덕진구",
+      "countryCode": "KR",
+      "workplaceMode": "onsite",
+      "type": "파트타임, 탄력근무 09:00~14:00(공고 표기)",
+      "salary": "시급 10,340원(공고 표기)",
+      "postedAt": null,
+      "deadlineDate": "2026-10-31",
+      "openingStatus": "listed",
+      "reviewedAt": "2026-10-22T00:00:00Z",
+      "researchSummary": "전주 현장 마케팅·콘텐츠 기획, AI 활용 및 공간 운영 관련 파트타임. 경력·학력 제한 없음으로 표기, 09:00~14:00 탄력근무, 시급 10,340원. 2026-10-31 마감.",
+      "requirements": "실제 마케팅 기획과 공간 운영 업무의 범위, 직접 영업·고객 응대 비중 및 근무시간을 확인해야 함. 교육·AI 평가 경력을 마케팅 실무 경력으로 간주하지 않음.",
+      "eligibilityNote": "AI·콘텐츠 연관성은 있으나 출근 및 대면 업무가 필요한 공고. 사용자의 직접 영업·반복 동시 소통 회피 선호와 맞는지 확인 필요.",
+      "researchNote": "2026-10-22 원문 개별 확인. 열람 날짜만 확인되어 reviewedAt은 해당 날짜의 자정 UTC로 인코딩했으며 실제 열람 시간을 의미하지 않음. 모집 개시일을 게시일로 단정하지 않음.",
+      "tags": ["전주", "오프라인", "콘텐츠", "AI 활용", "파트타임"],
+      "requirementChecks": [
+        {"kind":"routine","label":"직접 영업·고객 응대 및 공간 운영 업무 비중 확인"},
+        {"kind":"routine","label":"실근무시간·시급·근로조건 및 모집 상태 재확인"}
+      ]
+    },
+    {
+      "originalSource": "사람인",
+      "url": "https://m.saramin.co.kr/job-search/view?rec_idx=54902392",
+      "title": "국제문화·관광 프로젝트 기획 (6개월 인턴·계약)",
+      "company": "국제문화교류원(IICE)",
+      "location": "전북 전주시 덕진구",
+      "countryCode": "KR",
+      "workplaceMode": "onsite",
+      "type": "6개월 계약·인턴, 정규직 전환 가능성 표기",
+      "salary": "",
+      "postedAt": null,
+      "deadlineDate": "2026-10-30",
+      "openingStatus": "listed",
+      "reviewedAt": "2026-10-22T00:00:00Z",
+      "researchSummary": "문화·관광 프로젝트 기획 업무. 신입 지원 가능, 전문대 졸업 이상, 6개월 계약·인턴. 급여 면접 협의, 2026-10-30 마감.",
+      "requirements": "전문대 졸업 이상. 구체적인 프로젝트 운영·대외협력·행사 대응·근무 언어는 이미지형 상세공고에 추가 조건이 있을 수 있어 원문 재확인 필요.",
+      "eligibilityNote": "한국어 교육 및 영어·스페인어 역량과 주제상 접점은 있으나 기획 실무 경력을 검증하지 않았음. 잦은 대면 조율 업무 여부 확인 필요.",
+      "researchNote": "2026-10-22 원문 개별 확인. reviewedAt 시각은 열람 날짜 표기용 자정 UTC이며 실제 열람 시간이 아님. 급여 및 세부 업무 미확인.",
+      "tags": ["전주", "오프라인", "문화·관광", "기획", "인턴"],
+      "requirementChecks": [
+        {"kind":"satisfied","label":"공고의 전문대 졸업 이상 학력 조건(사용자 학사 학력 기준)"},
+        {"kind":"routine","label":"행사·대외 소통 업무 비중, 근무 언어 및 계약조건 확인"}
+      ]
+    },
+    {
+      "originalSource": "사람인",
+      "url": "https://m.saramin.co.kr/job-search/view?rec_idx=55238879",
+      "title": "블로그 콘텐츠 마케팅 담당자 (경력·포트폴리오 필수)",
+      "company": "코어솔루션",
+      "location": "전북 전주시 완산구",
+      "countryCode": "KR",
+      "workplaceMode": "onsite",
+      "type": "1년 계약직, 평일 09:00~18:00, 전환 가능성 표기",
+      "salary": "월 230만~250만원(별도 잡코리아 동일 공고 기준)",
+      "postedAt": null,
+      "deadlineDate": "2026-11-07",
+      "openingStatus": "listed",
+      "reviewedAt": "2026-10-22T00:00:00Z",
+      "researchSummary": "블로그 콘텐츠 마케팅 담당. 평일 현장 09:00~18:00, 1년 계약직. 관련 경력과 마케팅 포트폴리오 필요, 2026-11-07 마감. 월 230만~250만원은 사람인이 아닌 잡코리아 동일 공고의 급여 정보.",
+      "requirements": "전문대 졸업 이상, 관련 실무경력과 마케팅 포트폴리오 필수. 교육자료 제작·AI 어노테이션 경험만으로 상업용 콘텐츠 마케팅 실무 경력을 충족한다고 추정하지 않음.",
+      "eligibilityNote": "경력·포트폴리오가 주요 지원 장벽. 현장 근무 및 관련 경력 요건 충족 여부부터 확인 필요.",
+      "researchNote": "2026-10-22 사람인 및 별도 잡코리아 공고 확인. reviewedAt은 날짜 표기용. 급여는 잡코리아 교차확인 기준이며 사람인 원문 급여로 오인하지 않도록 주의.",
+      "tags": ["전주", "오프라인", "블로그", "콘텐츠", "마케팅"],
+      "requirementChecks": [
+        {"kind":"hard","label":"필수 마케팅 실무경력 및 제출 가능한 마케팅 포트폴리오 여부"},
+        {"kind":"routine","label":"잡코리아 교차확인 급여와 1년 계약조건 확인"}
+      ]
+    },
+    {
+      "originalSource": "전주교차로",
+      "url": "https://m.gyocharo.com/job/job_view.do?input_id=jkcr1766989054527&wanted_code=000000_000007",
+      "title": "가야전기직업전문학교 사무직 (여성 구인 표기)",
+      "company": "가야전기직업전문학교",
+      "location": "전북 전주시 완산구",
+      "countryCode": "KR",
+      "workplaceMode": "onsite",
+      "type": "사무·일반행정, 파트타임·시간 협의 가능",
+      "salary": "급여 협의",
+      "postedAt": null,
+      "deadlineDate": null,
+      "openingStatus": "listed",
+      "reviewedAt": "2026-10-22T00:00:00Z",
+      "researchSummary": "전주 직업전문학교 사무 및 일반 행정. 신입·학력 무관, 전기자격증 우대. 근무시간과 파트타임 협의 가능하며 이력서 지참 방문 지원 안내.",
+      "requirements": "원문에 '여성 사무직' 구인이라고 명시되어 지원 대상·실제 채용 기준 확인 필요. 사무·회계업무 범위 및 방문 지원 방식도 확인해야 함.",
+      "eligibilityNote": "성별 지원 조건 확인 전에는 사용자에게 적합한 공고로 판단할 수 없음. 급여 및 구체 근무시간 미확인.",
+      "researchNote": "2026-10-22 전주교차로 개별 원문 확인. reviewedAt은 날짜 표기용. 상시채용 표기는 있으나 실제 게시일·마감일을 확인하지 못함.",
+      "tags": ["전주", "오프라인", "사무행정", "파트타임 가능", "지원조건 확인"],
+      "requirementChecks": [
+        {"kind":"hard","label":"공고에 적힌 여성 사무직 구인 조건과 실제 지원 가능 여부"},
+        {"kind":"routine","label":"급여·근무시간·회계업무 및 방문접수 조건 확인"}
+      ]
+    },
+    {
+      "originalSource": "전주교차로",
+      "url": "https://m.gyocharo.com/job/job_view.do?input_id=jkcr1551253407255&wanted_code=000214_000202",
+      "title": "전북도시가스 서비스센터 사무행정 (기술직 별개)",
+      "company": "자원에너지(전북도시가스 지역서비스센터)",
+      "location": "전북 전주시 완산구·덕진구",
+      "countryCode": "KR",
+      "workplaceMode": "onsite",
+      "type": "사무직 1명(기술직 공고 혼재), 주 4일 표기",
+      "salary": "급여 협의",
+      "postedAt": null,
+      "deadlineDate": null,
+      "openingStatus": "listed",
+      "reviewedAt": "2026-10-22T00:00:00Z",
+      "researchSummary": "도시가스 서비스센터 사무행정 1명과 별도 현장 기술직 1명이 한 공고에 기재. 신입·학력 무관, 주 4일 근무 표기, 급여 협의.",
+      "requirements": "사무직과 기술직의 구분, 고객 전화·민원 처리 비중, 실제 고용형태·근무지·급여 및 주 4일 적용 여부 확인 필요.",
+      "eligibilityNote": "사무행정은 검토 가능하나 잦은 전화·고객 응대가 포함된다면 사용자의 반복 동시 소통 회피 선호와 맞지 않을 가능성이 있음.",
+      "researchNote": "2026-10-22 전주교차로 개별 원문 확인. reviewedAt은 날짜 표기용. 상시채용 표기만으로 실제 채용 상태를 보증하지 않으며 모집일·마감일 미확인.",
+      "tags": ["전주", "오프라인", "사무행정", "주 4일 표기", "고객 응대 확인"],
+      "requirementChecks": [
+        {"kind":"routine","label":"고객 전화·민원 응대와 반복적 대면소통 업무량"},
+        {"kind":"routine","label":"사무직 별도 지원 가능 여부·근무지·주 4일·급여 확인"}
+      ]
     }
   ]
 }
