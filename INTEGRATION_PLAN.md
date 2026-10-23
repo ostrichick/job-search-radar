@@ -33,7 +33,7 @@
 - 2b 3단계 완료: `6ca841a`. `/nicole-next/` 영어 화면, Nicole 고유 필터·통근권·숨김 관리·직접 추가·출처 링크와 개인 DB 읽기 전용 이전 구현. 공개 `/nicole/` 보존.
 - 2b 4단계 완료: `289dc74`. 원본 `dubu-job-radar` 보존, 1회 상태 이전 및 장애 경로를 격리된 E2E로 검증. 로컬 `npm.cmd run check` 통과, E2E 103/103 통과(기존 Munseong 77·Nicole classic 16·Nicole next 10).
 - 2b 승인 전 카드 표현 보정: `e94f0c9`. Nicole의 영어 보수·지원범위·우선순위 표기와 불필요한 거리 표시 수정. Nicole 새 E2E 10/10 통과, GitHub Actions 빌드·전체 E2E·Pages 배포 성공, 공개 1440px·390px 브라우저 확인 완료. 승인 비교 자료는 `docs/PHASE2B_APPROVAL.md`.
-- 남은 일: 2b 5단계 공개 `/nicole/` 전환은 사용자 승인 대기. 승인 전 `/nicole-next/`를 별도 공개하여 비교한다. 옛 Nicole 화면·코드는 삭제하지 않는다.
+- 2b 5단계 완료(사용자 승인 후): `70e1f76`. `/nicole/`에 공통 영어 화면 적용, `/nicole-classic/`에 옛 UI·코드 보관, `/nicole-next/`는 `/nicole/`로 이동. `npm.cmd run check`와 전체 Playwright 104/104 통과, [Actions 39937926682](https://github.com/ostrichick/job-search-radar/actions/runs/39937926682)에서 빌드·테스트·Pages 배포 성공. 공개 사이트 1440px·390px에서 Nicole/Munseong/classic 모두 공고 렌더링, 오류·수평 넘침 없음; `/`·`/dubu/`와 preview 이동 확인. 실제 사용자 IndexedDB 접근 없이 격리 브라우저로 이전 검증. **옛 코드 삭제는 별도 보관 기간 종료 확인 후에만 실행.**
 
 ## 단계
 
@@ -80,7 +80,7 @@
 | 백업·일괄 처리·시장 요약 | 있음 | 없음 | 두 사람 모두 사용 |
 | 저장소 | IndexedDB `job-search-radar`(키-값) | IndexedDB `dubu-job-radar`(문서) | 사람별 DB. Munseong은 기존 DB 유지, Nicole은 새 DB로 1회 변환 |
 
-#### 진행 단계 (단계마다 배포 가능, 5단계 전까지 공개 Nicole 화면은 지금 그대로)
+#### 진행 단계 (5단계 승인·전환 완료, classic 보관 중)
 
 1. **사람 설정과 피드 변환기 (화면 변화 없음)**
    - `profiles.js`: 사람별 이름·언어·피드 주소·저장소 이름·시장 탭 이름·기능 켜기/끄기.
@@ -99,7 +99,7 @@
 5. **전환**
    - `/nicole/`을 새 앱으로 교체하고, 옛 Nicole 화면은 `/nicole-classic/`에 한동안 보관해 문제가 생기면 되돌린다.
    - 공개 사이트를 데스크톱·390px로 확인하고, 격리된 브라우저에서 상태 변환을 확인(실제 사용자 데이터는 열거나 바꾸지 않음).
-   - 문제가 없으면 옛 Nicole 화면 코드와 테스트 삭제.
+   - 옛 Nicole 코드와 테스트는 보관을 유지하고, 사용자가 보관 기간 종료를 별도로 확인한 뒤에만 삭제한다.
 
 #### 위험과 대응
 

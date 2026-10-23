@@ -1,8 +1,8 @@
 # Nicole·Munseong 공통 화면 2b단계 — 5단계 전환 승인 자료
 
-2026-10-23. **1~4단계 코드 및 로컬 검증 완료 / 5단계 전환 승인 대기.**
+2026-10-23. **5단계 전환 승인 및 실행 완료.** 이 문서는 승인 당시 기능 비교와 캡처를 보존하며, 최종 공개 검증은 아래에 별도 기재한다.
 
-미리보기: https://ostrichick.github.io/job-search-radar/nicole-next/
+정식 화면: https://ostrichick.github.io/job-search-radar/nicole/ (`/nicole-next/`는 정식 화면으로 이동)
 
 - **데스크톱 1440×900**: [공개 미리보기 캡처](./phase2b/nicole-next-desktop-1440.png)
 - **모바일 390×844**: [공개 미리보기 캡처](./phase2b/nicole-next-mobile-390.png)
@@ -11,11 +11,11 @@
 
 캡처 4장은 후속 문구·거리 표시 보정 `e94f0c9`의 **배포 성공 이후 공개 `/nicole-next/`** 주소를 독립된 Playwright 브라우저에서 열어 촬영했다.
 
-이 화면은 `public/munseong/app.js`와 공통 모듈로 동작한다. Nicole은 영어, 밝은 배경과 짙은 녹색 테마, 별도 피드 및 별도 개인 저장소를 사용한다. 기존 공개 `/nicole/`, `/munseong/`, `/dubu/`, `/` 주소와 동작은 유지된다.
+이 화면은 `public/munseong/app.js`와 공통 모듈로 동작한다. Nicole은 영어, 밝은 배경과 짙은 녹색 테마, 별도 피드 및 별도 개인 저장소를 사용한다. 기존 Nicole 화면은 `/nicole-classic/`에 보관했고, `/`, `/dubu/`는 `/nicole/`로 이동한다.
 
 ## Nicole 기존 기능 비교
 
-| 기존 `/nicole/` | 새 `/nicole-next/` | 확인 근거 |
+| 보관된 `/nicole-classic/` | 정식 `/nicole/` | 확인 근거 |
 |---|---|---|
 | Online / In-person | 공통 시장 모델에 Nicole 탭 이름 적용 | 새 E2E |
 | 분야·시도 필터 | 공통 분야·시도 필터 및 고급 필터 | 새 E2E |
@@ -40,7 +40,7 @@
 
 지원 예정·지원함·확인함, 일괄 작업, 상태 백업·가져오기, 시장 요약을 Nicole에서도 사용할 수 있다. 시장 요약은 해당 탭의 공고가 20건 미만이면 접힌 상태로 시작한다. Nicole 피드에 원래 존재하지 않는 지급 신뢰 근거·검증 이력 상세 패널은 자동으로 숨긴다.
 
-## 검증과 승인 경계
+## 검증과 전환 기록
 
 - `npm.cmd run check`: 통과. 실제 Nicole 기준선 39건 변환 및 `validatePublicFeed` 확인.
 - 로컬 Playwright: **103/103 통과**(Munseong 77, 기존 Nicole 16, Nicole 미리보기 10). 390px 가로 넘침 검사 포함.
@@ -50,4 +50,4 @@
 - 원본 `dubu-job-radar` 상태 이전은 Playwright의 독립 브라우저에서만 시험했다. **실제 사용자 브라우저의 개인 저장소는 검사하지 않았다.** 변환 원본은 읽기만 하며, Nicole 새 DB `job-search-radar-nicole`로 복사한다.
 - 캡처는 Playwright의 신규 격리 브라우저 프로필에서 공개 미리보기 주소를 열어 생성한다.
 
-**승인 요청:** 이 미리보기 화면을 현재 `/nicole/` 주소로 전환해도 되는지 결정해야 한다. 승인 후 기존 Nicole 화면은 `/nicole-classic/`에 보관하고 `/nicole-next/`를 `/nicole/`로 이동하도록 변경한다. 옛 Nicole 코드 삭제는 별도 보관 기간 종료 확인 후에만 한다.
+**전환 완료:** 사용자 승인에 따라 커밋 `70e1f76`으로 `/nicole/` 공통 화면 전환, `/nicole-classic/` 옛 코드 보관, `/nicole-next/` 리다이렉트를 배포했다. [Actions 39937926682](https://github.com/ostrichick/job-search-radar/actions/runs/39937926682)에서 `npm run check`, Playwright 104/104, 정적 빌드 및 Pages 배포 성공. 공개 주소를 Playwright 독립 브라우저에서 1440px/390px 모두 확인: 새 Nicole·classic·Munseong 화면 공고 렌더링, 수평 넘침 없음, JavaScript/HTTP 오류 없음. `/nicole-next/` 검색문자열·해시 보존 및 `/`, `/dubu/` 이동 정상. 실제 사용자의 IndexedDB는 검사하지 않았으며, 옛 Nicole 코드·테스트·원본 DB는 삭제하지 않았다. **옛 코드 삭제는 별도 보관 종료 승인 후에만 한다.**
