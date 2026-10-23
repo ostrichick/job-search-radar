@@ -78,7 +78,7 @@ Welo Global/Welocalize, RWS, LILT, Meridial, OneForma는 **공식 모집원 여�
 
 ## Dubu 프로필 (통합 진행 중)
 
-아내용 Dubu Job Radar의 수집기·규칙·단위 테스트는 `profiles/dubu/`에 있습니다. 규칙은 이 대시보드와 별개로 유지합니다. 배포 워크플로가 함께 수집해 `feeds/dubu.json`으로 공개하고, 이력 기준선 `profiles/dubu/public/jobs.json`을 자동 커밋합니다. 로컬 실행은 `npm run refresh:dubu`, 테스트는 `npm run test:dubu`입니다. 통합 단계와 결정 사항은 [`INTEGRATION_PLAN.md`](./INTEGRATION_PLAN.md)에 있습니다.
+아내용 Dubu Job Radar 화면은 `public/dubu/`(사이트 주소 `/dubu/`)에 있고, 두 화면 상단의 `Asul / Dubu`로 오갑니다. 로컬에서는 `npm start` 후 `http://127.0.0.1:4317/dubu/`를 엽니다. 수집기·규칙·단위 테스트는 `profiles/dubu/`에 있습니다. 규칙은 이 대시보드와 별개로 유지합니다. 배포 워크플로가 함께 수집해 `feeds/dubu.json`으로 공개하고, 이력 기준선 `profiles/dubu/public/jobs.json`을 자동 커밋합니다. 로컬 실행은 `npm run refresh:dubu`, 테스트는 `npm run test:dubu`입니다. 통합 단계와 결정 사항은 [`INTEGRATION_PLAN.md`](./INTEGRATION_PLAN.md)에 있습니다.
 
 ## 웹 배포
 

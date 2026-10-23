@@ -37,7 +37,12 @@ const server = http.createServer(async (req, res) => {
       return send(res, 200, JSON.stringify(result));
     }
 
-    const requested = url.pathname === '/' ? '/index.html' : url.pathname;
+    // CI publishes the Dubu feed at /feeds/dubu.json; locally serve the tracked baseline.
+    if (req.method === 'GET' && url.pathname === '/feeds/dubu.json') {
+      return send(res, 200, await fs.readFile(path.join(root, 'profiles/dubu/public/jobs.json'), 'utf8'));
+    }
+    if (url.pathname === '/dubu') { res.writeHead(301, { Location: '/dubu/' }); return res.end(); }
+    const requested = url.pathname.endsWith('/') ? `${url.pathname}index.html` : url.pathname;
     const filePath = path.normalize(path.join(publicDir, requested));
     if (!filePath.startsWith(publicDir + path.sep)) return send(res, 403, 'Forbidden', 'text/plain; charset=utf-8');
     const data = await fs.readFile(filePath);

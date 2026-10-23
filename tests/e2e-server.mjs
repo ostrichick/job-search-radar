@@ -20,7 +20,8 @@ const server = http.createServer(async (request, response) => {
       response.end('{"error":"not available in deterministic e2e server"}');
       return;
     }
-    const relative = url.pathname === '/' ? 'index.html' : decodeURIComponent(url.pathname.slice(1));
+    // Directory URLs (/ and /dubu/) serve their index.html, as GitHub Pages does.
+    const relative = decodeURIComponent(url.pathname.slice(1)) + (url.pathname.endsWith('/') ? 'index.html' : '');
     const target = path.resolve(root, relative);
     if (!target.startsWith(root + path.sep) && target !== path.join(root, 'index.html')) {
       response.writeHead(403);
