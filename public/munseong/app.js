@@ -8,12 +8,17 @@ import { createManualJobRules } from './manual-job.js';
 import { createStateStorage } from './state-storage.js';
 import { validateBackup, validatePublicFeed, httpUrl } from './backup-rules.js';
 import { getProfile } from './profiles.js';
-import { adaptNicoleFeed, sourceForManual } from './nicole-feed.js';
-import { readOriginalNicoleState } from './nicole-migration.js';
-import { createNicoleUI } from './nicole-ui.js';
-import { localizeNicoleUI } from './i18n.js';
 const profile = getProfile(document.documentElement.dataset.profile);
 const isNicole = profile.id === 'nicole';
+// Keep Nicole-only translation, migration and UI modules out of Munseong's network waterfall.
+const nicoleModules = isNicole ? await Promise.all([
+  import('./nicole-feed.js'), import('./nicole-migration.js'), import('./nicole-ui.js'), import('./i18n.js')
+]) : null;
+const adaptNicoleFeed = nicoleModules?.[0].adaptNicoleFeed;
+const sourceForManual = nicoleModules?.[0].sourceForManual;
+const readOriginalNicoleState = nicoleModules?.[1].readOriginalNicoleState;
+const createNicoleUI = nicoleModules?.[2].createNicoleUI;
+const localizeNicoleUI = nicoleModules?.[3].localizeNicoleUI;
 const storage = await createStateStorage({ dbName: profile.dbName, initialize: isNicole ? readOriginalNicoleState : undefined });
 import { mergeWorkflowState, reconcileNewIds } from './state-rules.js';
 import { hasRoleFitEvidence, isDefaultRecommendation as recommendationRule } from './recommendation-rules.js';
@@ -188,7 +193,9 @@ function updateAdvancedFilterSummary() {
   const summary = $('advancedFiltersSummary');
   if (!summary) return;
   const active = activeFilterEntries().length;
-  summary.textContent = active ? `추가 필터 · 현재 조건 ${active}개` : '추가 필터';
+  summary.textContent = isNicole
+    ? (active ? `More filters · ${active} active` : 'More filters')
+    : (active ? `추가 필터 · 현재 조건 ${active}개` : '추가 필터');
 }
 
 const renderCache = createRenderCache();

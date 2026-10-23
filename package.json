@@ -10,7 +10,7 @@
     "test:dubu": "node --test \"profiles/dubu/tests/*.test.mjs\"",
     "parse:linkedin-alert": "node scripts/linkedin-alert-parser.mjs",
     "build:static": "node scripts/build-static.mjs",
-    "test": "node scripts/test-collector.mjs && node scripts/test-curated-research.mjs && node scripts/test-feed-health.mjs && node scripts/test-feed-validator.mjs && node scripts/test-state-rules.mjs && node scripts/test-linkedin-alert-parser.mjs && node scripts/test-runtime.mjs && node scripts/test-static.mjs && node scripts/test-feed-baseline-format.mjs && node scripts/test-shared-responses.mjs && npm run test:dubu",
+    "test": "node scripts/test-collector.mjs && node scripts/test-curated-research.mjs && node scripts/test-feed-health.mjs && node scripts/test-feed-validator.mjs && node scripts/test-state-rules.mjs && node scripts/test-nicole-feed.mjs && node scripts/test-nicole-integration.mjs && node scripts/test-linkedin-alert-parser.mjs && node scripts/test-runtime.mjs && node scripts/test-static.mjs && node scripts/test-feed-baseline-format.mjs && node scripts/test-shared-responses.mjs && npm run test:dubu",
     "test:e2e": "playwright test",
     "validate:feed": "node scripts/validate-feed.mjs",
     "check": "node scripts/check-syntax.mjs && npm test",
