@@ -1,4 +1,4 @@
-export function createCardRenderer({ $, activeMarketJobs, captureJobCardFocus, distanceSummary, domesticLocalityMatches, effectivePaymentEvidence, eligibilityDisplayLabel, escapeHtml, filteredJobs, formatDate, formatDeadline, friendlyUiText, hideWithUndo, isBroadActiveView, jobMarketScopes, listingDisplayLabel, openDetails, paymentFreshnessLabel, persist, qualityClass, renderActiveFilters, renderCollectionCoverage, renderStats, renderVerificationBadges, requirementsDisplayLabel, restoreJobCardFocus, roleFitEvidenceFor, salarySummary, setHidden, setJobState, showStorageStatus, snapshotJob, syncStoredState, updateBatchUI, workplaceModeLabel, state, storage, renderCache }) {
+export function createCardRenderer({ $, activeMarketJobs, captureJobCardFocus, distanceSummary, domesticLocalityMatches, effectivePaymentEvidence, eligibilityDisplayLabel, escapeHtml, filteredJobs, formatDate, formatDeadline, friendlyUiText, hideWithUndo, isBroadActiveView, jobMarketScopes, listingDisplayLabel, openDetails, paymentFreshnessLabel, persist, qualityClass, renderActiveFilters, renderCollectionCoverage, renderStats, renderVerificationBadges, requirementsDisplayLabel, restoreJobCardFocus, roleFitEvidenceFor, salarySummary, setHidden, setJobState, showStorageStatus, snapshotJob, syncStoredState, updateBatchUI, workplaceModeLabel, state, storage, renderCache, decorateCard, afterRender }) {
 let renderWaiting = false;
 const isoDay = (raw) => {
   const value = raw ? new Date(raw) : null;
@@ -172,11 +172,13 @@ function render() {
       dismiss.addEventListener('click', () => hideWithUndo(job));
     }
     node.querySelector('.details').addEventListener('click', () => openDetails(job));
+    decorateCard?.(node, job);
     container.appendChild(node);
   }
   updateBatchUI(visibleJobs);
   restoreJobCardFocus(focusSnapshot);
   showStorageStatus();
+  afterRender?.();
   } finally { renderCache.end(); }
 }
 

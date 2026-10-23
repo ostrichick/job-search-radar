@@ -1,6 +1,6 @@
 import { mergeStorageChanges, validateJob } from './backup-rules.js';
 
-const arrayKeys = ['jobDismissed', 'jobHidden', 'jobFavorites', 'jobNewIds', 'reviewedJobIds', 'knownJobIds', 'manualJobs'];
+const arrayKeys = ['jobDismissed', 'jobHidden', 'jobHiddenCompanies', 'jobHiddenSources', 'jobFavorites', 'jobNewIds', 'reviewedJobIds', 'knownJobIds', 'manualJobs'];
 const mapKeys = ['jobStates', 'trackedJobs', 'jobFilters', 'jobFiltersByMarket'];
 const scalarKeys = ['jobMarketTab', 'jobFilterSchemaVersion', 'jobAdvancedFiltersOpen'];
 const isObject = (v) => v && typeof v === 'object' && !Array.isArray(v);
@@ -32,13 +32,13 @@ function legacyState() {
   return { values, recovery };
 }
 
-export async function createStateStorage() {
-  const legacy = legacyState();
+export async function createStateStorage({ dbName = 'job-search-radar', initialize } = {}) {
+  const legacy = initialize ? { values: {}, recovery: [] } : legacyState();
   let db, values = legacy.values, base, revision = 0, failure = null, pending = Promise.resolve(), queued = 0;
   const listeners = new Set();
   try {
     db = await new Promise((resolve, reject) => {
-      const req = indexedDB.open('job-search-radar', 1);
+      const req = indexedDB.open(dbName, 1);
       let abandoned = false;
       const timer = setTimeout(() => { abandoned = true; reject(new Error('상태 저장소 응답 시간 초과')); }, 5000);
       req.onupgradeneeded = () => { req.result.createObjectStore('state'); req.result.createObjectStore('recovery', { autoIncrement: true }); };
@@ -47,18 +47,25 @@ export async function createStateStorage() {
       req.onblocked = () => { abandoned = true; clearTimeout(timer); reject(new Error('다른 탭이 상태 저장소 이전을 막고 있습니다.')); };
     });
     db.onversionchange = () => db.close();
-    const tx = db.transaction(['state', 'recovery'], 'readwrite'), done = finished(tx);
-    const current = await request(tx.objectStore('state').get('current'));
+    const current = await request(db.transaction('state', 'readonly').objectStore('state').get('current'));
     if (current) { values = current.values; revision = current.revision; }
     else {
-      tx.objectStore('state').put({ values, revision: 1, migrated: true }, 'current'); revision = 1;
-      for (const item of legacy.recovery) tx.objectStore('recovery').add(item);
+      // Read the Nicole source in its own read-only transaction before starting the new one.
+      const firstValues = initialize ? await initialize() : values;
+      const tx = db.transaction(['state', 'recovery'], 'readwrite'), done = finished(tx);
+      const latest = await request(tx.objectStore('state').get('current'));
+      if (latest) { values = latest.values; revision = latest.revision; }
+      else {
+        values = firstValues;
+        tx.objectStore('state').put({ values, revision: 1, migrated: true, source: initialize ? 'dubu-job-radar' : 'localStorage' }, 'current'); revision = 1;
+        for (const item of legacy.recovery) tx.objectStore('recovery').add(item);
+      }
+      await done;
     }
-    await done;
   } catch (error) { failure = error; }
   base = structuredClone(values);
   let channel;
-  try { channel = new BroadcastChannel('job-search-radar-state'); } catch { /* storage/focus fallback */ }
+  try { channel = new BroadcastChannel(`${dbName}-state`); } catch { /* storage/focus fallback */ }
   const api = {
     get readOnly() { return Boolean(failure); },
     get error() { return failure; },
@@ -85,7 +92,7 @@ export async function createStateStorage() {
         await done; revision = next.revision;
         if (queued === 1) { values = merged; base = structuredClone(merged); }
         channel?.postMessage(revision);
-        try { globalThis.localStorage.setItem('jobStateRevision', String(revision)); } catch { /* IndexedDB remains authoritative */ }
+        try { globalThis.localStorage.setItem(`${dbName}:revision`, String(revision)); } catch { /* IndexedDB remains authoritative */ }
       }).catch(async (error) => {
         failure = error;
         try {
@@ -115,7 +122,7 @@ export async function createStateStorage() {
   };
   const refresh = () => api.refresh().catch(() => {});
   if (channel) channel.onmessage = refresh;
-  globalThis.addEventListener?.('storage', (event) => { if (event.key === 'jobStateRevision') refresh(); });
+  globalThis.addEventListener?.('storage', (event) => { if (event.key === `${dbName}:revision` || (dbName === 'job-search-radar' && event.key === 'jobStateRevision')) refresh(); });
   globalThis.addEventListener?.('focus', refresh);
   return api;
 }

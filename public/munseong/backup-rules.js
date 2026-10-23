@@ -82,7 +82,7 @@ export function validateBackup(payload, normalizeManual = (job) => job) {
 // Missing map/set members are explicit removals, rather than an additive union.
 export function mergeStorageChanges(latest, before, after, mode = 'edit') {
   const result = { ...latest };
-  const sets = new Set(['jobFavorites', 'jobHidden', 'reviewedJobIds', 'jobNewIds', 'knownJobIds', 'jobDismissed']);
+  const sets = new Set(['jobFavorites', 'jobHidden', 'jobHiddenCompanies', 'jobHiddenSources', 'reviewedJobIds', 'jobNewIds', 'knownJobIds', 'jobDismissed']);
   const maps = new Set(['jobStates', 'trackedJobs', 'jobFiltersByMarket']);
   for (const key of new Set([...Object.keys(before), ...Object.keys(after)])) {
     if (before[key] === after[key]) continue;

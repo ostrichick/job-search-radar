@@ -13,10 +13,9 @@ const templateIndex = baseline.jobs.findIndex((job) =>
   && job.marketScopes?.includes('domestic')
   && job.domesticRegion?.province === '전북특별자치도'
   && ['전주시', '완주군'].includes(job.domesticRegion?.city)
-  && !['archived_missing', 'source_error'].includes(job.listingStatus)
 );
 
-assert.notEqual(templateIndex, -1, 'tracked feed must contain one active Jeonju/Wanju local-board row for validator regression tests');
+assert.notEqual(templateIndex, -1, 'tracked feed must contain one Jeonju/Wanju local-board row for validator regression tests');
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'job-feed-validator-'));
 const validator = path.join(root, 'scripts', 'validate-feed.mjs');
@@ -28,12 +27,15 @@ function saraminFeed() {
   row.platform = '사람인';
   row.sourcePostingId = '99999999';
   row.sourceKind = 'job_board';
+  row.listingStatus = 'current_feed';
+  row.score = Math.max(20, row.score || 0);
   row.url = 'https://www.saramin.co.kr/zf_user/jobs/view?rec_idx=99999999';
   row.workAddressEvidence = 'detail_html';
   row.remote = false;
   row.workplaceMode = 'onsite';
   row.marketScopes = ['domestic'];
   row.domesticRegion.evidenceLevel = 'source_structured';
+  refreshRecommendationSummary(feed);
   return feed;
 }
 
@@ -44,6 +46,8 @@ function incruitFeed() {
   row.platform = '인크루트';
   row.sourcePostingId = '2609110000252';
   row.sourceKind = 'job_board';
+  row.listingStatus = 'current_feed';
+  row.score = Math.max(20, row.score || 0);
   row.url = 'https://job.incruit.com/jobdb_info/jobpost.asp?job=2609110000252';
   row.workAddress = '전북특별자치도 전주시 완산구 쑥고개로 398-16';
   row.location = row.workAddress;
@@ -62,6 +66,7 @@ function incruitFeed() {
     evidenceLevel: 'source_structured',
     sourceAddress: row.workAddress
   };
+  refreshRecommendationSummary(feed);
   return feed;
 }
 

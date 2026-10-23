@@ -1,4 +1,4 @@
-export function createFilterRules({ state, currentFilterValues, jobMarketScopes, filterDefaults, salaryLabel, domesticLocalityMatches, compensationMatches, paymentEvidenceState, roleFitEvidenceFor }) {
+export function createFilterRules({ state, currentFilterValues, jobMarketScopes, filterDefaults, salaryLabel, domesticLocalityMatches, compensationMatches, paymentEvidenceState, roleFitEvidenceFor, isNicole = false }) {
 function jobMatchesFilters(job, values = currentFilterValues(), { market = state.marketTab, ignore = [] } = {}) {
   const skipped = ignore instanceof Set ? ignore : new Set(ignore);
   if (!jobMarketScopes(job).includes(market)) return false;
@@ -22,7 +22,19 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
   const minScore = Number(value('minScore') || 0);
   const haystack = [job.title, job.company, job.location, region.label, region.province, region.locality, job.description, job.category, salaryLabel(job), ...(job.tags || []), ...(job.matchedKeywords || [])].join(' ').toLowerCase();
   const jobState = state.jobStates[job.id] || '';
-  const hidden = state.hiddenIds.has(job.id);
+  const canonical = (text) => String(text || '').normalize('NFKC').replace(/\s+/g, ' ').trim().toLowerCase();
+  const hidden = state.hiddenIds.has(job.id) || (isNicole && (
+    state.hiddenCompanies?.has(canonical(job.company)) || state.hiddenSources?.has(canonical(job.source))));
+  if (isNicole) {
+    const collection = job.collectionState || 'unknown';
+    if (!skipped.has('archiveFilter') && value('archiveFilter') === 'current' && collection !== 'seen' && !job.manual) return false;
+    if (!skipped.has('archiveFilter') && value('archiveFilter') === 'archived' && collection !== 'not_seen') return false;
+    if (!skipped.has('archiveFilter') && value('archiveFilter') === 'unverified' && !['unverified', 'unknown'].includes(collection)) return false;
+    if (!skipped.has('languageFitFilter') && !['', 'all'].includes(value('languageFitFilter')) && (job.languageFitStatus || 'unknown') !== value('languageFitFilter')) return false;
+    if (!skipped.has('commuteFilter') && market === 'domestic' && !['', 'all'].includes(value('commuteFilter')) && (region.commuteClass || 'unknown') !== value('commuteFilter')) return false;
+    if (!skipped.has('savedOnly') && value('savedOnly') === 'true' && !state.favorites.has(job.id)) return false;
+    if (market === 'overseas_remote' && (job.category === 'interpreting' || /live\s*interpret|video\s*interpret|remote\s*interpreter|실시간\s*통역/i.test(`${job.title || ''} ${job.description || ''}`))) return false;
+  }
   if (!skipped.has('query') && q && !haystack.includes(q)) return false;
   if (!skipped.has('source') && source && job.source !== source && !(job.sources || []).includes(source)) return false;
   if (!skipped.has('category') && category && job.category !== category) return false;
