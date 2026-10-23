@@ -39,11 +39,18 @@ jobs:
         if: github.event_name != 'schedule'
       - run: npm run test:e2e
         if: github.event_name != 'schedule'
+      # The main collection records Remotive/Jobicy/Remote OK/Arbeitnow
+      # responses; the Dubu collection reuses them, so each API is queried
+      # once per refresh (four times a day).
       - run: npm run build:static
+        env:
+          SHARED_RESPONSE_DIR: ${{ runner.temp }}/shared-responses
       - run: node scripts/validate-feed.mjs public/jobs.json docs/jobs.json
       # Dubu profile. Its collector keeps the last good feed and exits non-zero
       # when every source failed; that must not block the main deployment.
       - name: Refresh Dubu feed
+        env:
+          SHARED_RESPONSE_DIR: ${{ runner.temp }}/shared-responses
         run: node profiles/dubu/scripts/collect.mjs || echo "::warning::Dubu collection wrote no new feed; publishing the last good Dubu feed"
       - name: Publish Dubu feed
         run: |

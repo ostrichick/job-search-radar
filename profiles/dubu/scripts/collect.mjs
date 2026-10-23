@@ -5,6 +5,7 @@ import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { collectCuratedResearch } from './curated-research.mjs';
+import { SHARED_SOURCE_URLS, loadSharedResponse } from '../../../scripts/shared-responses.mjs';
 import {
   assessEligibility, assessLanguageFit, classifyRole, dedupeJobs, excludeOnlineJobReason, excludeQualificationReason, extractLanguages, isoDate,
   requiresPhysicalAttendance, safePublicUrl, safeText, stableId,
@@ -12,10 +13,11 @@ import {
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SOURCES = [
-  { key: 'remotive', name: 'Remotive', url: 'https://remotive.com/api/remote-jobs?limit=500' },
-  { key: 'jobicy', name: 'Jobicy', url: 'https://jobicy.com/api/v2/remote-jobs?count=200' },
-  { key: 'remoteok', name: 'Remote OK', url: 'https://remoteok.com/api' },
-  { key: 'arbeitnow', name: 'Arbeitnow', url: 'https://www.arbeitnow.com/api/job-board-api' },
+  // Same URLs as the main collector so CI can reuse its responses.
+  { key: 'remotive', name: 'Remotive', url: SHARED_SOURCE_URLS.remotive },
+  { key: 'jobicy', name: 'Jobicy', url: SHARED_SOURCE_URLS.jobicy },
+  { key: 'remoteok', name: 'Remote OK', url: SHARED_SOURCE_URLS.remoteok },
+  { key: 'arbeitnow', name: 'Arbeitnow', url: SHARED_SOURCE_URLS.arbeitnow },
 ];
 
 function asText(value, limit = 400) { return safeText(value, limit); }
@@ -177,6 +179,11 @@ export function normalizeManual(payload, now) {
 }
 
 async function fetchJson(url, { fetchImpl = fetch, timeoutMs = 12000 } = {}) {
+  // In CI the main collector already queried this URL in the same refresh.
+  const shared = await loadSharedResponse(url);
+  if (shared) console.log(`Reused shared response (${shared.error ? 'failure' : 'ok'}): ${new URL(url).hostname}`);
+  if (shared?.error) throw new Error(`shared request failed: ${shared.error}`);
+  if (shared) return shared.body;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {

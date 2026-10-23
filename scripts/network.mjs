@@ -1,5 +1,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { performance } from 'node:perf_hooks';
+import { saveSharedResponse } from './shared-responses.mjs';
 
 const context = new AsyncLocalStorage();
 export const defaultNetworkOptions = Object.freeze({ requestTimeoutMs: 15000, sourceTimeoutMs: 60000, concurrency: 3, hostConcurrency: 2 });
@@ -53,7 +54,16 @@ async function fetchBody(url, options, format) {
     return await abortable(format === 'json' ? response.json() : charset ? response.arrayBuffer().then((body) => new TextDecoder(charset).decode(body)) : response.text(), signal);
   } finally { release?.(); budget.clear(); }
 }
-export const fetchJson = (url, options = {}) => fetchBody(url, options, 'json');
+export async function fetchJson(url, options = {}) {
+  try {
+    const body = await fetchBody(url, options, 'json');
+    await saveSharedResponse(url, { body });
+    return body;
+  } catch (error) {
+    await saveSharedResponse(url, { error }).catch(() => {});
+    throw error;
+  }
+}
 export const fetchText = (url, options = {}) => fetchBody(url, options, 'text');
 
 // Collect concurrently but expose results in declaration order. A timed-out task

@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { SHARED_SOURCE_URLS } from './shared-responses.mjs';
 export function createSourceAdapters({ fetchJson, fetchText, text, lower, decodeHtmlEntities, normalizeJob, relevantToProfile, sourceCollection, work24Deadline, work24EmploymentType, work24IsoDate, parseWork24ListXml, xmlTag }) {
 async function collectLeverBoard(site, source, company, { query = '', rowFilter = null } = {}) {
   const suffix = query ? `&${query}` : '';
@@ -452,7 +453,7 @@ async function collectWeWorkRemotely() {
 }
 
 async function collectJobicy() {
-  const data = await fetchJson('https://jobicy.com/api/v2/remote-jobs?count=200');
+  const data = await fetchJson(SHARED_SOURCE_URLS.jobicy);
   const rows = data.jobs ?? [];
   const collected = rows.map((j) => ({
     id: `jobicy:${j.id}`,
@@ -473,7 +474,7 @@ async function collectJobicy() {
 }
 
 async function collectRemoteOk() {
-  const data = await fetchJson('https://remoteok.com/api');
+  const data = await fetchJson(SHARED_SOURCE_URLS.remoteok);
   const rows = (Array.isArray(data) ? data : []).filter((j) => j?.position);
   const collected = rows.map((j) => ({
     id: `remoteok:${j.id}`,
@@ -494,7 +495,7 @@ async function collectRemoteOk() {
 }
 
 async function collectRemotive() {
-  const data = await fetchJson('https://remotive.com/api/remote-jobs?limit=200');
+  const data = await fetchJson(SHARED_SOURCE_URLS.remotive);
   const rows = data.jobs ?? [];
   const collected = rows.map((j) => ({
     id: `remotive:${j.id}`,
