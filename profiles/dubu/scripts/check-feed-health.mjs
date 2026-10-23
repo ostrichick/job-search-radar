@@ -1,4 +1,4 @@
-import { feedHealth } from '../../../public/dubu/feed-health.js';
+import { feedHealth } from '../../../public/nicole/feed-health.js';
 import { pathToFileURL } from 'node:url';
 export function validatePublishedFeed(feed, now = Date.now()) {
   if (!feed || !Array.isArray(feed.jobs) || !Array.isArray(feed.sourceStatus)) throw Error('Invalid published feed structure');

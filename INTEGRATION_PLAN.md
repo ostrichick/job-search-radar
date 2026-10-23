@@ -27,6 +27,7 @@
 - 2a단계 완료: `a6d67de`. 공개 사이트 `/dubu/`에서 공고 39건 표시, 데스크톱·390px 모두 가로 넘침·브라우저 오류 없음, 전환 양방향 동작 확인.
 - 옛 `dubu-job-radar`: `64a7343`부터 안내 페이지만 배포(하위 경로 포함 새 주소로 이동), 정기 수집과 별도 피드 점검 제거.
 - 공통 출처 단일 호출: CI에서 메인 수집이 Remotive·Jobicy·Remote OK·Arbeitnow 응답(실패 포함)을 `SHARED_RESPONSE_DIR`에 기록하고 Dubu 수집이 재사용. 각 API는 수집당 1회(하루 4회). 주소는 `scripts/shared-responses.mjs` 한 곳에서 관리(Remotive는 500건으로 통일). Dubu 전용 Jobicy 검색 3건은 별도 호출 유지. 로컬 실행은 각자 호출.
+- 이름·주소 변경(2026-10-23): 전환 메뉴 `Nicole / Munseong`. 첫 주소는 Nicole(`/nicole/`)로 이동, Munseong은 `/munseong/`, 예전 `/dubu/`는 `/nicole/`로 이동. 내부 수집기 경로(`profiles/dubu`, `feeds/dubu.json`)는 그대로.
 - 남은 일: 2b(화면 코드 통합)는 선택.
 
 ## 단계

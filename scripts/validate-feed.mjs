@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { recommendationCollapseRisk } from './collect-jobs.mjs';
-import { isDefaultRecommendation as recommendationRule } from '../public/recommendation-rules.js';
-import { validatePublicFeed } from '../public/backup-rules.js';
+import { isDefaultRecommendation as recommendationRule } from '../public/munseong/recommendation-rules.js';
+import { validatePublicFeed } from '../public/munseong/backup-rules.js';
 
 const target = process.argv[2] || './data/jobs.json';
 const feed = JSON.parse(fs.readFileSync(target, 'utf8'));

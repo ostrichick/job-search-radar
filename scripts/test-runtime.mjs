@@ -8,7 +8,7 @@ import { performance } from 'node:perf_hooks';
 import { fetchJson, fetchText, runSources } from './network.mjs';
 import { atomicWriteJson, withFileLock, singleFlight } from './file-storage.mjs';
 import { collectJobs, normalizeJob } from './collect-jobs.mjs';
-import { validateBackup, mergeStorageChanges } from '../public/backup-rules.js';
+import { validateBackup, mergeStorageChanges } from '../public/munseong/backup-rules.js';
 import { isTrustedLocalRequest } from './local-origin.mjs';
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

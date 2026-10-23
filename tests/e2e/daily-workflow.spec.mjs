@@ -287,7 +287,7 @@ test('손상 저장값은 원본을 보존하고 정상 관심 상태와 함께 
     localStorage.setItem('jobHidden', '{bad');
     localStorage.setItem('jobFavorites', '["job:default"]');
   });
-  await useFeed(page); await page.goto('/');
+  await useFeed(page); await page.goto('/munseong/');
   await expect(page.locator('.job-card')).toHaveCount(3);
   await expect(page.locator('#recoveryNotice')).toBeVisible();
   await expect(page.locator('.job-card').first().locator('.favorite')).toHaveText('★');
@@ -299,7 +299,7 @@ test('손상 저장값은 원본을 보존하고 정상 관심 상태와 함께 
 
 test('localStorage 원본을 다시 주입해도 IndexedDB 이전은 한 번만 수행한다', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('jobFavorites', '["job:default"]'));
-  await useFeed(page); await page.goto('/');
+  await useFeed(page); await page.goto('/munseong/');
   const favorite = page.locator('.job-card').first().locator('.favorite');
   await expect(favorite).toHaveText('★'); await favorite.click(); await expect(favorite).toHaveText('☆');
   await page.reload(); await expect(favorite).toHaveText('☆');
@@ -307,7 +307,7 @@ test('localStorage 원본을 다시 주입해도 IndexedDB 이전은 한 번만 
 });
 
 test('잘못된 백업은 일부도 저장하지 않고 재접속 뒤 정상 목록을 유지한다', async ({ page }) => {
-  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  await useFeed(page); await page.goto('/munseong/'); await expect(page.locator('.job-card')).toHaveCount(3);
   const before = await readStoredState(page, (s) => [s.getItem('jobFavorites'), s.getItem('manualJobs')]);
   await page.locator('#importStateFile').setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({
     schema: 'job-search-radar-state', version: 2, favorites: ['job:default'],
@@ -319,8 +319,8 @@ test('잘못된 백업은 일부도 저장하지 않고 재접속 뒤 정상 목
 });
 
 test('두 탭의 관심·지원 변경과 해제는 함께 보존된다', async ({ page, context }) => {
-  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
-  const second = await context.newPage(); await useFeed(second); await second.goto('/'); await expect(second.locator('.job-card')).toHaveCount(3);
+  await useFeed(page); await page.goto('/munseong/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  const second = await context.newPage(); await useFeed(second); await second.goto('/munseong/'); await expect(second.locator('.job-card')).toHaveCount(3);
   await Promise.all([
     page.locator('.job-card').first().locator('.favorite').click(),
     second.locator('.job-card').nth(1).locator('.job-state').selectOption('applied')
@@ -338,8 +338,8 @@ test('두 탭의 관심·지원 변경과 해제는 함께 보존된다', async 
 });
 
 test('동시 백업 가져오기와 다른 탭의 지원 변경이 둘 다 남는다', async ({ page, context }) => {
-  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
-  const second = await context.newPage(); await useFeed(second); await second.goto('/'); await expect(second.locator('.job-card')).toHaveCount(3);
+  await useFeed(page); await page.goto('/munseong/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  const second = await context.newPage(); await useFeed(second); await second.goto('/munseong/'); await expect(second.locator('.job-card')).toHaveCount(3);
   await Promise.all([
     page.locator('#importStateFile').setInputFiles({ name: 'v1.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ schema: 'job-search-radar-state', version: 1, favorites: ['job:oneforma'] })) }),
     second.locator('.job-card').first().locator('.job-state').selectOption('planned')
@@ -350,8 +350,8 @@ test('동시 백업 가져오기와 다른 탭의 지원 변경이 둘 다 남�
 });
 
 test('다른 탭의 변경은 열려 있는 상세와 현재 검색 편집을 보존한다', async ({ page, context }) => {
-  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
-  const second = await context.newPage(); await useFeed(second); await second.goto('/'); await expect(second.locator('.job-card')).toHaveCount(3);
+  await useFeed(page); await page.goto('/munseong/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  const second = await context.newPage(); await useFeed(second); await second.goto('/munseong/'); await expect(second.locator('.job-card')).toHaveCount(3);
   await page.locator('.job-card').first().locator('.details').click(); await expect(page.locator('#detailsDialog')).toBeVisible();
   await second.locator('[data-job-id="job:oneforma"] .favorite').click();
   await expect.poll(() => readStoredState(page, (s) => JSON.parse(s.getItem('jobFavorites') || '[]'))).toContain('job:oneforma');
@@ -364,7 +364,7 @@ test('다른 탭의 변경은 열려 있는 상세와 현재 검색 편집을 �
 
 test('IndexedDB 열기 실패는 정상 피드를 읽기 전용으로 표시하고 백업을 허용한다', async ({ page }) => {
   await page.addInitScript(() => { Object.defineProperty(indexedDB, 'open', { value: () => { throw new Error('simulated storage unavailable'); } }); });
-  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  await useFeed(page); await page.goto('/munseong/'); await expect(page.locator('.job-card')).toHaveCount(3);
   await expect(page.locator('#storageStatus')).toBeVisible();
   await expect(page.locator('#importStateBtn')).toBeDisabled(); await expect(page.locator('.favorite').first()).toBeDisabled();
   await expect(page.locator('#exportStateBtn')).toBeEnabled();
@@ -380,7 +380,7 @@ test('저장 용량 실패는 기존 관심 상태를 유지하고 읽기 전용
       return put.apply(this, args);
     };
   });
-  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  await useFeed(page); await page.goto('/munseong/'); await expect(page.locator('.job-card')).toHaveCount(3);
   await page.evaluate(() => { globalThis.failStateWrites = true; });
   await page.locator('.job-card').first().locator('.favorite').click();
   await expect(page.locator('#storageStatus')).toBeVisible();
@@ -395,7 +395,7 @@ test('수집 실패 뒤 기존 피드 성공은 경고를 유지하고 다음 �
   await page.clock.install({ time: new Date('2026-10-04T12:00:00Z') });
   await useFeed(page); let failing = true;
   await page.route('**/api/refresh', (route) => route.fulfill({ status: failing ? 500 : 200, contentType: 'application/json', body: JSON.stringify(failing ? { error: 'collection failed' } : feed(defaultJobs)) }));
-  await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  await page.goto('/munseong/'); await expect(page.locator('.job-card')).toHaveCount(3);
   await page.locator('#refreshBtn').click();
   await expect(page.locator('#loadErrorBanner')).toBeVisible(); await expect(page.locator('#loadErrorText')).toContainText('새 수집에 실패하여 마지막 목록');
   await expect(page.locator('.job-card')).toHaveCount(3);
@@ -406,7 +406,7 @@ test('오래된 정적 피드가 200으로 응답해도 예약 갱신 지연을 
   await page.clock.install({ time: new Date('2026-10-19T12:00:00Z') });
   await page.setViewportSize({ width: 390, height: 844 });
   await useFeed(page);
-  await page.goto('/');
+  await page.goto('/munseong/');
   await expect(page.locator('.job-card')).toHaveCount(3);
   await expect(page.locator('#loadErrorBanner')).toBeVisible();
   await expect(page.locator('#loadErrorText')).toContainText('24시간 이상');
@@ -414,9 +414,9 @@ test('오래된 정적 피드가 200으로 응답해도 예약 갱신 지연을 
 });
 
 test('모든 정적 모듈을 HTML 대신 JavaScript로 제공하고 검색 입력은 한 번에 반영한다', async ({ page }) => {
-  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  await useFeed(page); await page.goto('/munseong/'); await expect(page.locator('.job-card')).toHaveCount(3);
   for (const file of ['state-storage.js', 'backup-rules.js', 'filter-rules.js', 'sort-rules.js', 'manual-job.js', 'compensation-ui.js']) {
-    const response = await page.request.get('/' + file); expect(response.ok()).toBe(true); expect(response.headers()['content-type']).toContain('javascript');
+    const response = await page.request.get('/munseong/' + file); expect(response.ok()).toBe(true); expect(response.headers()['content-type']).toContain('javascript');
   }
   const start = Date.now(); await page.locator('#query').fill('no matching role');
   await expect(page.locator('.job-card')).toHaveCount(0);
@@ -425,8 +425,8 @@ test('모든 정적 모듈을 HTML 대신 JavaScript로 제공하고 검색 입�
 
 test('BroadcastChannel이 없어도 storage 알림으로 다른 탭의 관심 상태를 동기화한다', async ({ page, context }) => {
   await context.addInitScript(() => { globalThis.BroadcastChannel = undefined; });
-  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
-  const other = await context.newPage(); await useFeed(other); await other.goto('/'); await expect(other.locator('.job-card')).toHaveCount(3);
+  await useFeed(page); await page.goto('/munseong/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  const other = await context.newPage(); await useFeed(other); await other.goto('/munseong/'); await expect(other.locator('.job-card')).toHaveCount(3);
   await page.locator('[data-job-id="job:default"] .favorite').click();
   await expect(other.locator('[data-job-id="job:default"] .favorite')).toHaveText('★');
 });
@@ -439,7 +439,7 @@ test('백업 저장 트랜잭션이 실패하면 관심 상태와 화면 필터�
       return put.apply(this, args);
     };
   });
-  await useFeed(page); await page.goto('/'); await expect(page.locator('.job-card')).toHaveCount(3);
+  await useFeed(page); await page.goto('/munseong/'); await expect(page.locator('.job-card')).toHaveCount(3);
   await page.evaluate(() => { globalThis.failImport = true; });
   await page.locator('#importStateFile').setInputFiles({ name: 'valid.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({
     schema: 'job-search-radar-state', version: 2, favorites: ['job:default'], filtersByMarket: { overseas_remote: { query: 'uncommitted import' } }
@@ -452,13 +452,13 @@ test('백업 저장 트랜잭션이 실패하면 관심 상태와 화면 필터�
 test('멈춘 브라우저 API 요청은 15초 뒤 정적 피드로 복구한다', async ({ page }) => {
   await useFeed(page);
   await page.route('**/api/jobs', () => {});
-  await page.goto('/');
+  await page.goto('/munseong/');
   await expect(page.locator('.job-card')).toHaveCount(3, { timeout: 20000 });
 });
 
 test('기본 추천이 렌더링되고 검토 우선순위로 표시된다', async ({ page }) => {
   await useFeed(page);
-  await page.goto('/');
+  await page.goto('/munseong/');
   await expect(page.locator('.job-card')).toHaveCount(3);
   await expect(page.locator('.score').first()).toContainText('검토 우선순위');
   await expect(page.locator('.eligibility-badge').first()).toContainText('한국에서 지원 가능');
@@ -483,7 +483,7 @@ test('국내 일반 지역 공고는 추천에서 제외하되 전체 시장 탐
     decisionUnknowns: ['관심 업무와 직접 일치하는 근거 부족']
   });
   await useFeed(page, () => feed([roleFit, generic]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
 
   await expect(page.locator('.job-card')).toHaveCount(1);
@@ -507,7 +507,7 @@ test('시장 요약은 추천 필터 밖의 활성 공고와 주요 확인 필�
     decisionUnknowns: ['급여·단가']
   });
   await useFeed(page, () => feed([priority, lowScore]));
-  await page.goto('/');
+  await page.goto('/munseong/');
 
   await expect(page.locator('.job-card')).toHaveCount(1);
   await expect(page.locator('#scopeCount')).toContainText('숨김 제외 활성 전체 2개');
@@ -545,7 +545,7 @@ test('시장 요약의 상위 회사는 단순 공고 수가 아니라 실제 �
     recommendationEligible: true
   }));
   await useFeed(page, () => feed([...noisyCatalog, ...actionable]));
-  await page.goto('/');
+  await page.goto('/munseong/');
 
   const companyCard = page.locator('.market-pulse-card').filter({ hasText: '지원 후보 상위 회사' });
   await expect(companyCard).toContainText('Ready Co · 2개');
@@ -558,7 +558,7 @@ test('활성 전체 수와 전체 보기 버튼은 개인 숨김 공고를 제�
   const hidden = job({ id: 'job:scope-hidden', title: '숨긴 활성 공고', url: 'https://example.com/job/scope-hidden', score: 10, recommendationEligible: false });
   await page.addInitScript((hiddenId) => localStorage.setItem('jobHidden', JSON.stringify([hiddenId])), hidden.id);
   await useFeed(page, () => feed([visible, hidden]));
-  await page.goto('/');
+  await page.goto('/munseong/');
 
   await expect(page.locator('#scopeCount')).toContainText('숨김 제외 활성 전체 1개');
   await expect(page.locator('#marketPulseNote')).toContainText('활성 공고 2개');
@@ -576,7 +576,7 @@ test('적용 조건을 결과 위에서 확인하고 개별 또는 전체 해제
     score: 10, recommendationEligible: false
   });
   await useFeed(page, () => feed([priority, lowScore]));
-  await page.goto('/');
+  await page.goto('/munseong/');
 
   await expect(page.locator('#activeFilters')).toBeVisible();
   await expect(page.locator('#activeFilterChips')).toContainText('지원 범위: 한국 / 전 세계');
@@ -624,7 +624,7 @@ test('기본 정렬은 같은 점수에서 오늘 판단하기 쉬운 공고를 
     decisionUnknowns: []
   });
   await useFeed(page, () => feed([uncertain, ready]));
-  await page.goto('/');
+  await page.goto('/munseong/');
 
   await expect(page.locator('#sort option:checked')).toHaveText('오늘 먼저 볼 순');
   await expect(page.locator('.job-card .title').first()).toHaveText('Korean Reviewer - Ready to Review');
@@ -635,7 +635,7 @@ test('기본 정렬은 같은 점수에서 오늘 판단하기 쉬운 공고를 
 
 test('기본은 해외·원격이고 국내 탭에서 시도→시군구와 산정동 기준 거리를 구분한다', async ({ page }) => {
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
-  await page.goto('/');
+  await page.goto('/munseong/');
 
   await expect(page.locator('#marketOverseas')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('.job-card').filter({ hasText: 'Korean Remote Evaluator - Seoul' })).toHaveCount(1);
@@ -665,7 +665,7 @@ test('기본은 해외·원격이고 국내 탭에서 시도→시군구와 산�
 
 test('국내 거리 근거가 부족하면 정밀 거리를 만들지 않고 글로벌 원격은 국내에서 제외한다', async ({ page }) => {
   await useFeed(page, () => feed(domesticJobs));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
 
   const unknown = page.locator('.job-card').filter({ hasText: 'Korean Language AI Evaluator - Jeonju' });
@@ -679,7 +679,7 @@ test('국내 거리 근거가 부족하면 정밀 거리를 만들지 않고 글
 
 test('한국 대상 글로벌 원격은 국내에서 제외하고 국내 하이브리드는 거리 근거를 보여준다', async ({ page }) => {
   await useFeed(page, () => feed([appierRemoteJob, gangnamHybridJob]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
   await page.locator('#remote').selectOption('');
   await page.locator('#domesticProvince').selectOption('');
@@ -694,7 +694,7 @@ test('한국 대상 글로벌 원격은 국내에서 제외하고 국내 하이�
 
 test('전주·완주 로컬 기본 탐색은 출근형을 거리순으로 보고 읍면동까지 좁힐 수 있다', async ({ page }) => {
   await useFeed(page, () => feed([...defaultJobs, ...work24LocalJobs, appierRemoteJob]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
 
   await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
@@ -742,7 +742,7 @@ test('국내 거리 전체 보기에서는 글로벌 원격을 제외하고 국�
     domesticRegion: { ...work24LocalJobs[0].domesticRegion, lat: 35.8900, lon: 127.1600 }
   });
   await useFeed(page, () => feed([nearRolling, fartherImminent, work24LocalJobs[2], appierRemoteJob]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
   await page.locator('#remote').selectOption('');
   await page.locator('#domesticProvince').selectOption('');
@@ -790,7 +790,7 @@ test('지역 중심점 거리는 보수적 밴드로 정렬하고 지원 판단 
   });
 
   await useFeed(page, () => feed([coarse, exact]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
 
   await expect(page.locator('.job-card .title')).toHaveText(['정확 좌표 기반 사무 지원', '지역 중심점 기반 사무 지원']);
@@ -812,7 +812,7 @@ test('지역 중심점 거리는 보수적 밴드로 정렬하고 지원 판단 
 
 test('국내·해외 탭의 검색과 지역 필터는 서로 독립적으로 reload 후 유지된다', async ({ page }) => {
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#query').fill('Reviewer');
   await page.locator('#marketDomestic').click();
   await page.locator('#domesticProvince').selectOption('전북특별자치도');
@@ -839,7 +839,7 @@ test('국내·해외 탭의 검색과 지역 필터는 서로 독립적으로 re
 test('선택한 국내 지역 공고가 다음 피드에서 0건이 되어도 필터를 보존하고 명확히 안내한다', async ({ page }) => {
   let current = feed([...defaultJobs, ...domesticJobs]);
   await useFeed(page, () => current);
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
   await page.locator('#domesticProvince').selectOption('전북특별자치도');
   await page.locator('#domesticLocality').selectOption('전주시 덕진구');
@@ -864,7 +864,7 @@ test('2026 행정구역 변경 전 저장한 광주·전남 필터는 통합특�
     }));
   });
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await expect(page.locator('#marketDomestic')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('#domesticProvince')).toHaveValue('전남광주통합특별시');
   await expect(page.locator('#domesticProvince')).not.toContainText('전라남도');
@@ -879,7 +879,7 @@ for (const legacySort of ['score', 'distance']) {
       localStorage.setItem('jobFiltersByMarket', JSON.stringify({ domestic: filters }));
     }, { filters: legacyFilters });
     await useFeed(page, () => feed([...defaultJobs, ...domesticJobs, ...work24LocalJobs]));
-    await page.goto('/');
+    await page.goto('/munseong/');
 
     await expect(page.locator('#remote')).toHaveValue('local');
     await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
@@ -914,7 +914,7 @@ for (const legacySort of ['score', 'distance']) {
       localStorage.setItem('jobFiltersByMarket', JSON.stringify({ domestic: filters }));
     }, { filters: legacyFilters });
     await useFeed(page, () => feed([...defaultJobs, ...domesticJobs, ...work24LocalJobs]));
-    await page.goto('/');
+    await page.goto('/munseong/');
 
     await expect(page.locator('#remote')).toHaveValue('local');
     await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
@@ -931,7 +931,7 @@ test('v7 국내 필터가 과거 기본값과 조금이라도 다르면 사용�
     localStorage.setItem('jobFiltersByMarket', JSON.stringify({ domestic: filters }));
   }, { filters: customFilters });
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
-  await page.goto('/');
+  await page.goto('/munseong/');
 
   await expect(page.locator('#query')).toHaveValue('Jeonju');
   await expect(page.locator('#remote')).toHaveValue('');
@@ -948,7 +948,7 @@ test('v7 국내 필터가 과거 기본값과 조금이라도 다르면 사용�
 
 test('구형 백업의 정확한 국내 기본값도 import 시 같은 v8 마이그레이션을 적용한다', async ({ page }) => {
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs, ...work24LocalJobs]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   const legacyBackup = {
     schema: 'job-search-radar-state',
     version: 2,
@@ -980,7 +980,7 @@ test('구형 백업의 정확한 국내 기본값도 import 시 같은 v8 마이
 
 test('구형 백업의 재직렬화된 국내 기본값도 import 시 같은 v8 마이그레이션을 적용한다', async ({ page }) => {
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs, ...work24LocalJobs]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   const legacyBackup = {
     schema: 'job-search-radar-state',
     version: 2,
@@ -1017,7 +1017,7 @@ test('구형 국내 필터의 null 값은 exact 기본값으로 간주하지 않
     localStorage.setItem('jobFiltersByMarket', JSON.stringify({ domestic: filters }));
   }, { filters: customFilters });
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await expect.poll(() => readStoredState(page, (storage) => storage.getItem('jobFilterSchemaVersion'))).toBe('8');
 
   const stored = await readStoredState(page, (localStorage) => ({
@@ -1033,7 +1033,7 @@ test('구형 국내 필터의 null 값은 exact 기본값으로 간주하지 않
 
 test('구형 백업의 사용자 수정 국내 필터는 import 시 그대로 보존한다', async ({ page }) => {
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   const customFilters = { ...legacyDomesticFilterDefaults('distance'), query: 'Jeonju' };
   const legacyBackup = {
     schema: 'job-search-radar-state',
@@ -1064,7 +1064,7 @@ test('구형 백업의 사용자 수정 국내 필터는 import 시 그대로 �
 
 test('국내 통계와 동적 옵션은 실제 활성 필터 결과와 같은 공고 집합을 사용한다', async ({ page }) => {
   await useFeed(page, () => feed([domesticJobs[0], domesticJobs[1], gangnamHybridJob, appierRemoteJob]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
 
   await expect(page.locator('.job-card')).toHaveCount(2);
@@ -1089,7 +1089,7 @@ test('국내 통계와 동적 옵션은 실제 활성 필터 결과와 같은 �
 
 test('상태와 동적 소스 필터가 reload 후 유지된다', async ({ page }) => {
   await useFeed(page);
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.selectOption('#source', 'OneForma');
   await page.locator('.job-card').first().locator('.favorite').click();
   // The active button is rendered only after the IndexedDB commit completes.
@@ -1102,7 +1102,7 @@ test('상태와 동적 소스 필터가 reload 후 유지된다', async ({ page 
 
 test('관심·지원 상태·숨김은 내용 확인으로 간주하지 않고 상세 확인만 미확인에서 제외한다', async ({ page }) => {
   await useFeed(page);
-  await page.goto('/');
+  await page.goto('/munseong/');
   const targetTitle = 'AI Data Specialist - Korean';
   const target = () => page.locator('.job-card').filter({ hasText: targetTitle });
 
@@ -1124,7 +1124,7 @@ test('관심·지원 상태·숨김은 내용 확인으로 간주하지 않고 �
 
 test('카드 상태 변경과 상세 닫기 뒤에도 키보드 포커스가 작업 위치를 유지한다', async ({ page }) => {
   await useFeed(page);
-  await page.goto('/');
+  await page.goto('/munseong/');
 
   const targetTitle = await page.locator('.job-card').first().locator('.title').textContent();
   const targetCard = () => page.locator('.job-card').filter({ hasText: targetTitle || '' });
@@ -1154,7 +1154,7 @@ test('카드 상태 변경과 상세 닫기 뒤에도 키보드 포커스가 작
 
 test('일괄 관심은 미확인 상태를 유지하고 내용 확인함만 확인 상태를 바꾼다', async ({ page }) => {
   await useFeed(page);
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#selectVisible').check();
   await page.locator('#batchFavorite').click();
   await page.selectOption('#statusFilter', 'unreviewed');
@@ -1167,7 +1167,7 @@ test('일괄 관심은 미확인 상태를 유지하고 내용 확인함만 확�
 
 test('batch hide를 한 번에 되돌릴 수 있다', async ({ page }) => {
   await useFeed(page);
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#selectVisible').check();
   await page.locator('#batchHide').click();
   await expect(page.locator('.job-card')).toHaveCount(0);
@@ -1181,7 +1181,7 @@ test('숨김 undo는 NEW·미검토 상태도 원래대로 복구한다', async 
     localStorage.setItem('knownJobIds', JSON.stringify(['job:default', 'job:oneforma']));
   });
   await useFeed(page);
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.selectOption('#statusFilter', 'new');
   await expect(page.locator('.job-card')).toHaveCount(1);
   await expect(page.locator('.title')).toHaveText('Korean Content Reviewer');
@@ -1196,7 +1196,7 @@ test('숨김 undo는 NEW·미검토 상태도 원래대로 복구한다', async 
 
 test('지원 상태는 숨김과 복구 뒤에도 보존된다', async ({ page }) => {
   await useFeed(page);
-  await page.goto('/');
+  await page.goto('/munseong/');
   const target = () => page.locator('.job-card').filter({ hasText: 'AI Data Specialist - Korean' });
   await target().locator('.job-state').selectOption('applied');
   await target().locator('.dismiss').click();
@@ -1212,7 +1212,7 @@ test('지원 상태는 숨김과 복구 뒤에도 보존된다', async ({ page }
 test('관심 공고가 피드에서 사라져도 archived snapshot으로 남는다', async ({ page }) => {
   let current = feed(defaultJobs);
   await useFeed(page, () => current);
-  await page.goto('/');
+  await page.goto('/munseong/');
   const first = page.locator('.job-card').first();
   await first.locator('.favorite').click();
   await expect(first.locator('.favorite')).toHaveClass(/active/);
@@ -1228,7 +1228,7 @@ test('관심 공고가 피드에서 사라져도 archived snapshot으로 남는�
 
 test('상세 이전/다음과 근거 패널이 현재 필터 큐를 따른다', async ({ page }) => {
   await useFeed(page);
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('.job-card').first().locator('.details').click();
   await expect(page.locator('#detailsDialog')).toBeVisible();
   await expect(page.locator('#detailsTitle')).toHaveText('AI Data Specialist - Korean');
@@ -1245,7 +1245,7 @@ test('390px viewport에서 가로 overflow가 없다', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-10-04T12:00:00Z') });
   await page.setViewportSize({ width: 390, height: 844 });
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   expect(await page.locator('#advancedFilters').evaluate((element) => element.open)).toBe(false);
   await expect(page.locator('#advancedFiltersSummary')).toContainText('현재 조건 2개');
   const widths = await page.evaluate(() => ({
@@ -1287,7 +1287,7 @@ test('1440px 실제 브라우저에서 overflow·console 오류·이름 없는 �
     if (response.status() >= 400) failedResponses.push({ url: response.url(), status: response.status() });
   });
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
 
   const audit = await page.evaluate(() => {
@@ -1350,7 +1350,7 @@ test('빈 결과와 로드 오류에서 복구할 수 있다', async ({ page }) 
     if (mode === 'error') await route.fulfill({ status: 500, body: 'error' });
     else await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(feed(defaultJobs)) });
   });
-  await page.goto('/');
+  await page.goto('/munseong/');
   await expect(page.locator('#empty')).toBeVisible();
   await expect(page.locator('#emptyMessage')).toContainText('공고를 불러오지 못했습니다');
   mode = 'ok';
@@ -1369,7 +1369,7 @@ test('새로고침 실패 시 기존 공고를 유지하면서 상단에서 오�
     if (failRefresh) await route.fulfill({ status: 500, body: 'feed failed' });
     else await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(feed(defaultJobs)) });
   });
-  await page.goto('/');
+  await page.goto('/munseong/');
   await expect(page.locator('.job-card')).toHaveCount(3);
   failRefresh = true;
 
@@ -1382,7 +1382,7 @@ test('새로고침 실패 시 기존 공고를 유지하면서 상단에서 오�
 
 test('상태 백업/가져오기는 지원함 상태와 필터를 복원한다', async ({ page }) => {
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   const target = page.locator('.job-card').filter({ hasText: 'AI Data Specialist - Korean' });
   await target.locator('.job-state').selectOption('applied');
   await page.selectOption('#source', 'RWS TrainAI');
@@ -1423,7 +1423,7 @@ test('상태 백업/가져오기는 지원함 상태와 필터를 복원한다',
 
 test('LinkedIn Job Alert parser JSON을 기존 가져오기 동선으로 중복 없이 병합한다', async ({ page }) => {
   await useFeed(page);
-  await page.goto('/');
+  await page.goto('/munseong/');
   const alertPayload = [{
     id: 'linkedin-alert:1234567890',
     linkedinJobId: '1234567890',
@@ -1480,7 +1480,7 @@ test('collector 병합으로 ID가 바뀌어도 legacyIds가 관심·지원·숨
       'job:old-local-applied': { id: 'job:old-local-applied', title: 'old applied snapshot' }
     }));
   });
-  await page.goto('/');
+  await page.goto('/munseong/');
   await expect.poll(async () => readStoredState(page, (localStorage) => JSON.parse(localStorage.getItem('jobFavorites') || '[]')))
     .toContain('job:merged-local-planned');
 
@@ -1507,7 +1507,7 @@ test('collector 병합으로 ID가 바뀌어도 legacyIds가 관심·지원·숨
 
 test('지원 가치·미확인·필수요건 상태를 카드와 상세에서 빠르게 확인한다', async ({ page }) => {
   await useFeed(page);
-  await page.goto('/');
+  await page.goto('/munseong/');
   const rws = page.locator('.job-card').filter({ hasText: 'AI Data Specialist - Korean' });
   await expect(rws.locator('.decision-value')).toContainText('공식 채용 페이지 모집 확인');
   await expect(rws.locator('.decision-unknown')).toContainText('지급 평판');
@@ -1524,7 +1524,7 @@ test('지원 가치·미확인·필수요건 상태를 카드와 상세에서 �
 
 test('내 상태와 검증 필터는 서로 독립적으로 교집합 적용된다', async ({ page }) => {
   await useFeed(page);
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('.job-card').filter({ hasText: 'AI Data Specialist - Korean' }).locator('.favorite').click();
   await page.locator('.job-card').filter({ hasText: 'Korean Content Reviewer' }).locator('.favorite').click();
   await page.selectOption('#statusFilter', 'saved');
@@ -1549,7 +1549,7 @@ test('공식 ATS와 공식 플랫폼 게시를 구분하고 지급 근거 만료
     paymentSignals: [{ type: 'review_aggregate', direction: 'caution', recurrence: 'repeated', checkedAt: '2026-10-04', latestSourceAt: '2026-01-01', freshness: 'expired', maxAgeDays: 120, expiresAt: '2026-05-01T00:00:00.000Z', label: '오래된 리뷰', url: 'https://example.com/old-reviews' }]
   });
   await useFeed(page, () => feed([...defaultJobs, expired]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.selectOption('#listingFilter', 'official_listed');
   await expect(page.locator('.job-card')).toHaveCount(1);
   await expect(page.locator('.listing-badge')).toHaveAttribute('data-state', 'official_listed');
@@ -1587,7 +1587,7 @@ test('부분 소스 실패를 별도 경고하고 보존 공고로 바로 이동
     ]
   };
   await useFeed(page, () => partialFeed);
-  await page.goto('/');
+  await page.goto('/munseong/');
   await expect(page.locator('#sourceHealth')).toBeVisible();
   await expect(page.locator('#sourceHealth')).toContainText('OneForma');
   await expect(page.locator('#sourceHealth')).toContainText('근무지 확인 불가 2건 제외');
@@ -1637,7 +1637,7 @@ test('인크루트 일부 지역만 성공해도 보존 공고 수를 안내하�
     sourceMetrics: {}
   };
   await useFeed(page, () => partialFeed);
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
   await expect(page.locator('#sourceHealth')).toContainText('이전 1개 보존 · 현재 모집 미확인');
   await expect(page.locator('#showSourceErrors')).toHaveText('보존 공고 1개 보기');
@@ -1677,7 +1677,7 @@ test('사람인 한 지역 검색이 실패해도 성공 지역을 유지하고 
       searchFailureScopes: ['전주'], searchFailureReasons: { 전주: 'network_error' } }],
     sourceMetrics: {}
   }));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
   await expect(page.locator('#sourceHealth')).toContainText('사람인');
   await expect(page.locator('#sourceHealth')).toContainText('지역 검색 실패 1개(전주)');
@@ -1716,7 +1716,7 @@ test('RSS 성공 중 상세 수집 붕괴도 원문 미확인으로 경고하고
     ],
     sourceMetrics: {}
   }));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
   await expect(page.locator('#sourceHealth')).toContainText('상세 응답·검증 대량 실패');
   await expect(page.locator('#sourceHealth')).toContainText('이전 1개 보존 · 현재 모집 미확인');
@@ -1767,7 +1767,7 @@ test('인크루트 RSS 후퇴는 원문 변경이 아니라 근거 축소로, �
     { source: '인크루트', ok: true, count: 1, rssListOnlyCount: 1,
       searchFailureCount: 2, searchFailureScopes: ['전주', '완주'] }
   ] }));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
   await page.selectOption('#minScore', '0');
   await expect(page.locator('.listing-badge')).toContainText('RSS 확인·상세는 이전 기록');
@@ -1792,7 +1792,7 @@ test('자동 수집하지 못하는 플랫폼과 대체 경로를 시장별 수�
     ]
   };
   await useFeed(page, () => coverageFeed);
-  await page.goto('/');
+  await page.goto('/munseong/');
 
   await expect(page.locator('#collectionCoverage')).toBeVisible();
   await expect(page.locator('#collectionCoverageSummary')).toContainText('2개 출처');
@@ -1827,7 +1827,7 @@ test('최근 검증·원문 변경을 카드에서 구분하고 상세 이력을
     ]
   });
   await useFeed(page, () => feed([changed]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await expect(page.locator('.verification-badge[data-state="changed"]')).toHaveText('원문 변경됨');
   await page.locator('.details').click();
   await expect(page.locator('#detailsHistory')).toContainText('원문 변경');
@@ -1853,7 +1853,7 @@ test('ChatGPT 수동 조사는 실제 원문 검토일과 피드의 최초·최�
     recommendationEligible: true, score: 80
   });
   await useFeed(page, () => feed([curated]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await expect(page.locator('.job-card .collection-dates')).toContainText('최초 수집 2026-10-05');
   await expect(page.locator('.job-card .collection-dates')).toContainText('마지막 수집 2026-10-19');
   await expect(page.locator('.job-card .collection-dates')).toContainText('원문 수동 검토 2026-10-11 (정기 재검증 아님)');
@@ -1878,7 +1878,7 @@ test('사라졌다 재등장한 공고를 별도 상태로 표시한다', async 
     ]
   });
   await useFeed(page, () => feed([reappeared]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await expect(page.locator('.verification-badge[data-state="reappeared"]')).toHaveText('재등장');
   await page.locator('.details').click();
   await expect(page.locator('#detailsHistory')).toContainText('재등장');
@@ -1901,7 +1901,7 @@ test('근거 만료 임박은 저장된 오래된 freshness 값과 무관하게 
     }]
   });
   await useFeed(page, () => feed([aging]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await expect(page.locator('.verification-badge[data-state="aging"]')).toHaveText('근거 만료 임박');
   await expect(page.locator('.payment-badge')).toHaveAttribute('data-freshness', 'aging');
 });
@@ -1923,7 +1923,7 @@ test('부분 소스 실패 후 복구 상태와 이력을 유지한다', async (
     sourceStatus: [{ source: 'RWS TrainAI', ok: false, count: 0, preserved: 1, error: '503' }]
   };
   await useFeed(page, () => current);
-  await page.goto('/');
+  await page.goto('/munseong/');
   await expect(page.locator('#sourceHealth')).toBeVisible();
 
   current = feed([job({
@@ -1972,7 +1972,7 @@ test('추천 품질 게이트가 정상 후보 세트를 과도하게 축소하�
     recommendationEligible: false
   });
   await useFeed(page, () => feed([...good, degraded, hard]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   await expect(page.locator('.job-card')).toHaveCount(6);
   await expect(page.locator('#stats')).toContainText('6개');
   await expect(page.locator('.title', { hasText: 'Unreliable Source' })).toHaveCount(0);
@@ -2006,7 +2006,7 @@ test('재등장·복구와 원문 변경이 같은 실행에서 함께 발생해
     ]
   });
   await useFeed(page, () => feed([returnedChanged, recoveredChanged]));
-  await page.goto('/');
+  await page.goto('/munseong/');
   const returnedCard = page.locator('.job-card', { hasText: 'Returned And Changed' });
   await expect(returnedCard.locator('.verification-badge[data-state="changed"]')).toHaveText('원문 변경됨');
   await expect(returnedCard.locator('.verification-badge[data-state="reappeared"]')).toHaveText('재등장');
@@ -2026,7 +2026,7 @@ test('검증 이력이 새 피드로 교체되어도 이전 사건을 유지한�
     ]
   })]);
   await useFeed(page, () => current);
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('.details').click();
   await expect(page.locator('#detailsHistory')).toContainText('원문 변경');
   await page.locator('#detailsDialog').evaluate((dialog) => dialog.close());
@@ -2073,7 +2073,7 @@ test('보수는 카드·상세에서 우선 노출되고 공개 수준으로 바
     decisionUnknowns: ['급여·단가']
   });
   await useFeed(page, () => feed([amountJob, basisOnlyJob, undisclosedJob]));
-  await page.goto('/');
+  await page.goto('/munseong/');
 
   const amountCard = page.locator('.job-card', { hasText: 'Hourly Pay' });
   await expect(amountCard.locator('.compensation-value')).toHaveText('$10/시간');
@@ -2109,7 +2109,7 @@ test('보수는 카드·상세에서 우선 노출되고 공개 수준으로 바
 
 test('해외 탭에서 직접 추가한 공고는 기본 지원범위 필터에 가려지지 않고 즉시 보인다', async ({ page }) => {
   await useFeed(page);
-  await page.goto('/');
+  await page.goto('/munseong/');
   await expect(page.locator('#eligibility')).toHaveValue('likely');
 
   await page.locator('#addJobBtn').click();
@@ -2129,7 +2129,7 @@ test('해외 탭에서 직접 추가한 공고는 기본 지원범위 필터에 
 
 test('국내 탭에서 직접 추가한 공고는 현재 지역 필터를 근거처럼 저장하지 않고 즉시 보인다', async ({ page }) => {
   await useFeed(page);
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
   await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
   await expect(page.locator('#domesticLocality')).toHaveValue('전주·완주');
@@ -2154,7 +2154,7 @@ test('국내 탭에서 직접 추가한 공고는 현재 지역 필터를 근거
 
 test('국내 탭에서 원격으로 직접 추가한 공고는 해외·원격 범위로 이동해 표시한다', async ({ page }) => {
   await useFeed(page);
-  await page.goto('/');
+  await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
 
   await page.locator('#addJobBtn').click();

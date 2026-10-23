@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { isDefaultRecommendation as recommendationRule } from '../public/recommendation-rules.js';
+import { isDefaultRecommendation as recommendationRule } from '../public/munseong/recommendation-rules.js';
 
 const root = process.cwd();
 const baseline = JSON.parse(fs.readFileSync(path.join(root, 'docs', 'jobs.json'), 'utf8'));

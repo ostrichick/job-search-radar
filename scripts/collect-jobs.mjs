@@ -10,7 +10,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { isDefaultRecommendation as recommendationRule } from '../public/recommendation-rules.js';
+import { isDefaultRecommendation as recommendationRule } from '../public/munseong/recommendation-rules.js';
 import { incruitJeonbukRssUrl, parseIncruitJeonbukRss } from './incruit-rss.mjs';
 import { collectCuratedLeads } from './curated-research.mjs';
 

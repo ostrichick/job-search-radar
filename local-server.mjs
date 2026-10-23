@@ -41,7 +41,7 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'GET' && url.pathname === '/feeds/dubu.json') {
       return send(res, 200, await fs.readFile(path.join(root, 'profiles/dubu/public/jobs.json'), 'utf8'));
     }
-    if (url.pathname === '/dubu') { res.writeHead(301, { Location: '/dubu/' }); return res.end(); }
+    if (['/nicole', '/munseong', '/dubu'].includes(url.pathname)) { res.writeHead(301, { Location: `${url.pathname}/` }); return res.end(); }
     const requested = url.pathname.endsWith('/') ? `${url.pathname}index.html` : url.pathname;
     const filePath = path.normalize(path.join(publicDir, requested));
     if (!filePath.startsWith(publicDir + path.sep)) return send(res, 403, 'Forbidden', 'text/plain; charset=utf-8');

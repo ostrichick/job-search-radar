@@ -27,7 +27,7 @@ test.beforeEach(async ({ page }) => {
 
 test('relative collection labels use an explicit clock at the 3-day and 7-day boundaries', async ({ page }) => {
   await page.clock.setSystemTime(new Date('2026-10-23T12:00:00Z'));
-  await page.goto('/dubu/');
+  await page.goto('/nicole/');
   await expect(page.locator('#list-online .job-card').first()).toContainText('Added within 7 days');
   await page.clock.setSystemTime(new Date('2026-10-27T12:00:00Z'));
   await page.reload();
@@ -39,7 +39,7 @@ test('two tabs preserve independent saves, explicit removal and concurrent manua
   await page.unroute('**/feeds/dubu.json');
   await context.route('**/feeds/dubu.json', (route) => route.fulfill({ json: { ...feed, jobs: [feed.jobs[0], { ...feed.jobs[0], id: 'fixture:second', title: 'Spanish Content Editor', url: 'https://example.org/second' }] } }));
   const other = await context.newPage();
-  await Promise.all([page.goto('/dubu/'), other.goto('/dubu/')]);
+  await Promise.all([page.goto('/nicole/'), other.goto('/nicole/')]);
   await Promise.all([page.locator('.bookmark-button').first().click(), other.locator('.bookmark-button').nth(1).click()]);
   for (const p of [page, other]) await expect(p.locator('.bookmark-button[aria-pressed=true]')).toHaveCount(2);
   await other.locator('.bookmark-button').first().click();
@@ -64,7 +64,7 @@ test('storage notifications preserve two-tab hiding and restoration without Broa
   await page.unroute('**/feeds/dubu.json');
   await context.route('**/feeds/dubu.json', (route) => route.fulfill({ json: { ...feed, jobs: [feed.jobs[0], { ...feed.jobs[0], id: 'fixture:second', title: 'Spanish Content Editor', url: 'https://example.org/second' }] } }));
   const other = await context.newPage();
-  await Promise.all([page.goto('/dubu/'), other.goto('/dubu/')]);
+  await Promise.all([page.goto('/nicole/'), other.goto('/nicole/')]);
   await page.locator('#list-online .hide-toggle').first().click();
   const pendingHide = page.getByRole('button', { name: 'Hide this job', exact: true });
   await pendingHide.focus();
@@ -90,7 +90,7 @@ test('legacy state migrates once and source upgrades preserve saved and hidden I
     localStorage.setItem('nicole-job-radar:hidden:v1', '{"jobs":["old-index"],"companies":[],"sources":[]}');
   });
   await page.route('**/feeds/dubu.json', (route) => route.fulfill({ json: { ...feed, jobs: [{ ...feed.jobs[0], id: 'curated:new', legacyIds: ['old-index'] }] } }));
-  await page.goto('/dubu/');
+  await page.goto('/nicole/');
   await expect(page.locator('#hidden-count')).toHaveText('1 hidden');
   await page.locator('#hidden-manager > summary').click();
   await page.getByRole('button', { name: /Restore hidden job/ }).click();
@@ -103,7 +103,7 @@ test('legacy state migrates once and source upgrades preserve saved and hidden I
 });
 
 test('failed state writes leave committed bookmarks unchanged', async ({ page }) => {
-  await page.goto('/dubu/');
+  await page.goto('/nicole/');
   await expect(page.locator('#list-online .bookmark-button')).toHaveAttribute('aria-pressed', 'false');
   await page.evaluate(() => { IDBObjectStore.prototype.put = function () { throw new DOMException('Quota exceeded', 'QuotaExceededError'); }; });
   await page.locator('#list-online .bookmark-button').click();
@@ -115,13 +115,13 @@ test('failed state writes leave committed bookmarks unchanged', async ({ page })
 
 test('unavailable IndexedDB still shows the feed and disables personal changes', async ({ page }) => {
   await page.addInitScript(() => { indexedDB.open = () => { throw Error('Storage unavailable'); }; });
-  await page.goto('/dubu/');
+  await page.goto('/nicole/');
   await expect(page.locator('#list-online .bookmark-button')).toBeDisabled();
   await expect(page.locator('#feed-message')).toContainText('read-only');
 });
 
 test('Dubu Job Radar is branded in English and foreign-friendly original-site links remain direct', async ({ page }) => {
-  await page.goto('/dubu/');
+  await page.goto('/nicole/');
   await expect(page).toHaveTitle(/Dubu Job Radar/);
   await expect(page.locator('.brand-words')).toContainText('DUBU');
   await expect(page.locator('#panel-online .collection-date-note')).toContainText('Added to Radar');
@@ -146,7 +146,7 @@ test('manual original-page research distinguishes source review from repeated fe
   await page.route('**/feeds/dubu.json', (route) => route.fulfill({ json: {
     ...feed, jobs: [researched],
   } }));
-  await page.goto('/dubu/');
+  await page.goto('/nicole/');
   await page.locator('#tab-offline').click();
   const card = page.locator('#list-offline .job-card');
   await expect(card).toContainText('Source last reviewed 2026-10-16');
@@ -159,7 +159,7 @@ test('manual original-page research distinguishes source review from repeated fe
 test('online avoids live interpreting; offline includes nationwide and retains historical jobs', async ({ page }) => {
   const errors = [];
   page.on('pageerror', (err) => errors.push(err.message));
-  await page.goto('/dubu/');
+  await page.goto('/nicole/');
   await expect(page.locator('#tab-count-online')).toHaveText('1');
   await page.locator('#tab-offline').click();
   await expect(page.locator('#tab-count-offline')).toHaveText('4');
@@ -179,7 +179,7 @@ test('online avoids live interpreting; offline includes nationwide and retains h
 });
 
 test('manual Upwork lead appears immediately and survives reload', async ({ page }) => {
-  await page.goto('/dubu/');
+  await page.goto('/nicole/');
   await page.locator('#manual-entry > summary').click();
   await page.locator('#manual-title').fill('Spanish content microproject');
   await page.locator('#manual-url').fill('https://www.upwork.com/jobs/~fixture-only');
@@ -192,7 +192,7 @@ test('manual Upwork lead appears immediately and survives reload', async ({ page
 });
 
 test('hiding a job persists and restoring brings the listing back', async ({ page }) => {
-  await page.goto('/dubu/');
+  await page.goto('/nicole/');
   await expect(page.locator('#list-online .job-card')).toHaveCount(1);
   await page.locator('#list-online .hide-toggle').click();
   await page.getByRole('button', { name: 'Hide this job', exact: true }).click();
@@ -208,7 +208,7 @@ test('hiding a job persists and restoring brings the listing back', async ({ pag
 });
 
 test('company and source blocks work across tabs and the saved-only filter', async ({ page }) => {
-  await page.goto('/dubu/');
+  await page.goto('/nicole/');
   await page.locator('#list-online .bookmark-button').click();
   await page.locator('#saved-online').check();
   await page.locator('#list-online .hide-toggle').click();
@@ -232,7 +232,7 @@ test('company and source blocks work across tabs and the saved-only filter', asy
 });
 
 test('hiding Upwork hides only that manually saved platform and can be undone', async ({ page }) => {
-  await page.goto('/dubu/');
+  await page.goto('/nicole/');
   await page.locator('#manual-entry > summary').click();
   const add = async (title, url) => {
     await page.locator('#manual-title').fill(title);
@@ -258,22 +258,29 @@ test('hiding Upwork hides only that manually saved platform and can be undone', 
 
 test('narrow screen has no horizontal overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/dubu/');
+  await page.goto('/nicole/');
   await expect(page.locator('#tab-online')).toBeVisible();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
 });
 
-test('profile switch moves between Asul and Dubu on the same site', async ({ page }) => {
+test('site opens on Nicole and the switch moves between Nicole and Munseong', async ({ page }) => {
   await page.route('**/jobs.json?*', (route) => route.fulfill({ json: { updatedAt: '2026-10-19T11:00:00Z', jobs: [], sourceStatus: [] } }));
+  await page.goto('/');
+  await expect(page).toHaveURL(/\/nicole\/$/);
+  const nicoleSwitch = page.getByRole('navigation', { name: 'Choose whose jobs to view' });
+  await expect(nicoleSwitch.getByRole('link', { name: 'Nicole' })).toHaveAttribute('aria-current', 'page');
+  await nicoleSwitch.getByRole('link', { name: 'Munseong' }).click();
+  await expect(page).toHaveURL(/\/munseong\/$/);
+  const munseongSwitch = page.getByRole('navigation', { name: '누구의 공고를 볼지 선택' });
+  await expect(munseongSwitch.getByRole('link', { name: 'Munseong' })).toHaveAttribute('aria-current', 'page');
+  await munseongSwitch.getByRole('link', { name: 'Nicole' }).click();
+  await expect(page).toHaveURL(/\/nicole\/$/);
+  await expect(page.locator('#page-heading')).toBeVisible();
+});
+
+test('former Dubu address opens Nicole', async ({ page }) => {
   await page.goto('/dubu/');
-  const dubuSwitch = page.getByRole('navigation', { name: 'Choose whose jobs to view' });
-  await expect(dubuSwitch.getByRole('link', { name: 'Dubu' })).toHaveAttribute('aria-current', 'page');
-  await dubuSwitch.getByRole('link', { name: 'Asul' }).click();
-  await expect(page).toHaveURL(/127\.0\.0\.1:\d+\/$/);
-  const asulSwitch = page.getByRole('navigation', { name: '누구의 공고를 볼지 선택' });
-  await expect(asulSwitch.getByRole('link', { name: 'Asul' })).toHaveAttribute('aria-current', 'page');
-  await asulSwitch.getByRole('link', { name: 'Dubu' }).click();
-  await expect(page).toHaveURL(/\/dubu\/$/);
+  await expect(page).toHaveURL(/\/nicole\/$/);
   await expect(page.locator('#page-heading')).toBeVisible();
 });

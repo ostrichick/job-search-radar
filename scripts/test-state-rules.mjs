@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mergeWorkflowState, reconcileNewIds } from '../public/state-rules.js';
+import { mergeWorkflowState, reconcileNewIds } from '../public/munseong/state-rules.js';
 
 assert.equal(mergeWorkflowState('applied', 'planned'), 'applied');
 assert.equal(mergeWorkflowState('planned', 'applied'), 'applied');

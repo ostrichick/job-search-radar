@@ -1691,7 +1691,7 @@ async function feedRequest(url, options = {}) {
 }
 async function fetchFeed() {
   const staticPages = location.hostname.endsWith('.github.io');
-  const candidates = staticPages ? [`./jobs.json?ts=${Date.now()}`] : ['/api/jobs', `./jobs.json?ts=${Date.now()}`];
+  const candidates = staticPages ? [`../jobs.json?ts=${Date.now()}`] : ['/api/jobs', `../jobs.json?ts=${Date.now()}`];
   let lastError;
   for (const url of candidates) {
     try {

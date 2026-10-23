@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { feedHealth, maximumFeedAgeMs } from '../../../public/dubu/feed-health.js';
+import { feedHealth, maximumFeedAgeMs } from '../../../public/nicole/feed-health.js';
 import { validatePublishedFeed } from '../scripts/check-feed-health.mjs';
 const now=Date.parse('2026-10-19T12:00:00Z');
 const recent=new Date(now-maximumFeedAgeMs).toISOString();
