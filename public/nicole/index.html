@@ -1,162 +1,408 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f7f6f2">
-    <meta name="description" content="Find remote, freelance and in-person job opportunities across Korea and worldwide.">
-    <title>Dubu Job Radar | Discover opportunities</title>
-    <link rel="stylesheet" href="./styles.css">
-    <script type="module" src="./app.js"></script>
-  </head>
-  <body>
-    <a class="skip-link" href="#main">Skip to main content</a>
-    <svg aria-hidden="true" class="icon-definitions" xmlns="http://www.w3.org/2000/svg">
-      <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="7"/><path d="m16 16 5 5"/></symbol>
-      <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
-      <symbol id="icon-bookmark" viewBox="0 0 24 24"><path d="M6 4.5h12v16l-6-4-6 4z"/></symbol>
-      <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M20 10c0 5.3-8 11-8 11S4 15.3 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.7"/></symbol>
-      <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
-      <symbol id="icon-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 9a7.5 7.5 0 0 1 13-2l1 5M4 12l1 5a7.5 7.5 0 0 0 13-2"/></symbol>
-    </svg>
-
-    <div class="app-shell">
-      <nav class="profile-switch" aria-label="Choose whose jobs to view">
+<html lang="en" data-profile="nicole">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nicole's Job Radar</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23161c1a'/%3E%3Cpath d='M16 34h10l5-14 7 28 5-14h5' fill='none' stroke='%23d8ff65' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../munseong/styles.css">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <nav class="profile-switch" aria-label="Choose a job board">
         <a href="./" aria-current="page">Nicole</a>
         <a href="../munseong/">Munseong</a>
       </nav>
-      <header class="site-header">
-        <div class="brand" aria-label="Dubu Job Radar home">
-          <span class="brand-mark" aria-hidden="true">D<span>.</span></span>
-          <span class="brand-words"><strong>DUBU</strong><small>JOB RADAR</small></span>
-        </div>
-        <div class="header-meta"><span class="live-dot" aria-hidden="true"></span><span id="feed-date">Loading jobs…</span></div>
-      </header>
-
-      <main id="main">
-        <section class="intro" aria-labelledby="page-heading">
-          <div class="intro-copy">
-            <p class="eyebrow">CURATED OPPORTUNITIES · KOREA & WORLDWIDE</p>
-            <h1 id="page-heading">Your next opportunity,<br><em>without borders.</em></h1>
-            <p class="intro-description">Explore remote and freelance work worldwide, plus local openings near Jeonju and other cities across South Korea.</p>
-          </div>
-          <div class="intro-aside" aria-label="How this works">
-            <span class="aside-index">01 — 02</span>
-            <p>Explore more options.<br>Always check <strong>eligibility in the original listing.</strong></p>
-            <span class="aside-footnote">Job counts and updates appear after the feed loads.</span>
-          </div>
-        </section>
-
-        <section class="board" aria-labelledby="board-heading">
-          <div class="board-heading-row">
-            <div><p class="eyebrow">JOB DISCOVERY</p><h2 id="board-heading">Browse opportunities</h2></div>
-            <button class="refresh-button" type="button" id="refresh-button" aria-label="Refresh job listings">
-              <svg class="icon"><use href="#icon-refresh"/></svg><span>Refresh</span>
-            </button>
-          </div>
-
-          <div id="feed-message" class="feed-message" role="status" aria-live="polite" hidden></div>
-
-          <div class="tab-list" role="tablist" aria-label="Job type">
-            <button type="button" class="tab-button is-active" id="tab-online" role="tab" aria-controls="panel-online" aria-selected="true" tabindex="0" data-tab="online">
-              <span class="tab-number">01</span><span class="tab-label">Online · Remote / Freelance</span><span id="tab-count-online" class="tab-count">—</span>
-            </button>
-            <button type="button" class="tab-button" id="tab-offline" role="tab" aria-controls="panel-offline" aria-selected="false" tabindex="-1" data-tab="offline">
-              <span class="tab-number">02</span><span class="tab-label">In-person · Across Korea</span><span id="tab-count-offline" class="tab-count">—</span>
-            </button>
-          </div>
-
-          <section class="tab-panel" id="panel-online" role="tabpanel" aria-labelledby="tab-online" tabindex="0">
-            <div class="panel-intro"><div><h3>Work from anywhere</h3><p>Browse remote and freelance roles in marketing, advertising, content and translation. Verify language, location and eligibility requirements before applying.</p></div><span class="panel-pill">GLOBAL / REMOTE</span></div>
-            <div class="filters" aria-label="Online job filters">
-              <label class="search-field" for="search-online"><svg class="icon"><use href="#icon-search"/></svg><span class="sr-only">Search online jobs</span><input type="search" id="search-online" placeholder="Job title, company, language or keyword" autocomplete="off"></label>
-              <label class="select-field" for="category-online"><span>Field</span><select id="category-online"><option value="all">All fields</option><option value="marketing">Marketing</option><option value="advertising">Advertising</option><option value="translation">Translation</option><option value="content">Content</option><option value="other">Other</option></select></label>
-              <label class="select-field" for="archive-online"><span>History</span><select id="archive-online"><option value="all">All records</option><option value="current">Recently collected</option><option value="archived">Past records</option><option value="unverified">Collection unverified</option></select></label>
-              <label class="select-field" for="language-fit-online"><span>Language</span><select id="language-fit-online"><option value="all">All matches</option><option value="match">Potential match</option><option value="mismatch">Mismatch</option><option value="unknown">Unknown</option></select></label>
-              <label class="check-field" for="saved-online"><input type="checkbox" id="saved-online"><span>Saved only</span></label>
-            </div>
-            <div class="results-head"><p id="count-online" class="results-count" role="status" aria-live="polite">Loading jobs…</p><p class="results-note">Live interpreting roles excluded · Check requirements in original listings</p></div>
-            <p class="collection-date-note">Date guide: <strong>Posted</strong> is the source publication date; <strong>Added to Radar</strong> is when this listing was first collected; <strong>Last collected</strong> is the latest feed run that found it. Individually researched jobs also show when the original page was reviewed. A recent collection does not guarantee the vacancy is still open.</p>
-            <div class="jobs-grid" id="list-online" aria-label="Online jobs"></div>
-            <div class="more-wrap"><button type="button" id="more-online" class="more-button" hidden>Load more jobs</button></div>
-
-            <aside class="platform-section" aria-labelledby="platform-heading">
-              <div class="platform-heading"><div><p class="eyebrow">MANUAL SEARCH</p><h3 id="platform-heading">Explore more freelance platforms</h3><p>Some platforms cannot be collected automatically. Search directly using these links and save your searches in each platform account.</p></div><span class="manual-tag">Manual search</span></div>
-              <div class="platform-grid">
-                <a class="platform-card" href="https://www.upwork.com/nx/search/jobs/?q=spanish%20translation" target="_blank" rel="noopener noreferrer"><span class="platform-name">Upwork · Spanish</span><span class="platform-description">Browse Spanish translation and localization projects</span><svg class="icon"><use href="#icon-arrow"/></svg></a>
-                <a class="platform-card" href="https://www.upwork.com/nx/search/jobs/?q=digital%20marketing" target="_blank" rel="noopener noreferrer"><span class="platform-name">Upwork · Marketing</span><span class="platform-description">Browse digital marketing projects</span><svg class="icon"><use href="#icon-arrow"/></svg></a>
-                <a class="platform-card" href="https://www.proz.com/jobs" target="_blank" rel="noopener noreferrer"><span class="platform-name">ProZ</span><span class="platform-description">Freelance translation projects</span><svg class="icon"><use href="#icon-arrow"/></svg></a>
-                <a class="platform-card" href="https://www.workana.com/jobs" target="_blank" rel="noopener noreferrer"><span class="platform-name">Workana</span><span class="platform-description">Freelance marketing and translation projects</span><svg class="icon"><use href="#icon-arrow"/></svg></a>
-              </div>
-              <p class="platform-footnote">These are links for manual searching. They do not indicate that current platform listings were collected automatically.</p>
-            </aside>
-          </section>
-
-          <section class="tab-panel" id="panel-offline" role="tabpanel" aria-labelledby="tab-offline" tabindex="0" hidden>
-            <div class="panel-intro"><div><h3>From Jeonju to the rest of Korea</h3><p>Listings distinguish Jeonju and Wanju, nearby areas requiring a commute check, and other regions where relocation or remote arrangements may be needed.</p></div><span class="panel-pill">KOREA / ALL REGIONS</span></div>
-
-            <fieldset class="region-filter"><legend>Work location</legend><div class="region-options" id="region-options">
-              <button type="button" class="region-option is-selected" data-region="all" aria-pressed="true">All regions</button>
-              <button type="button" class="region-option" data-region="nearby" aria-pressed="false">Jeonju / Wanju</button>
-              <button type="button" class="region-option" data-region="expanded" aria-pressed="false">Nearby · Check commute</button>
-              <button type="button" class="region-option" data-region="relocation" aria-pressed="false">Other regions · Relocation / Remote negotiation</button>
-              <button type="button" class="region-option" data-region="unknown" aria-pressed="false">Location unknown</button>
-            </div></fieldset>
-
-            <div class="filters" aria-label="In-person job filters">
-              <label class="search-field" for="search-offline"><svg class="icon"><use href="#icon-search"/></svg><span class="sr-only">Search in-person jobs</span><input type="search" id="search-offline" placeholder="Job title, company, location or keyword" autocomplete="off"></label>
-              <label class="select-field" for="province-offline"><span>Province</span><select id="province-offline"><option value="all">All Korea</option><option value="서울">Seoul</option><option value="부산">Busan</option><option value="대구">Daegu</option><option value="인천">Incheon</option><option value="광주">Gwangju</option><option value="대전">Daejeon</option><option value="울산">Ulsan</option><option value="세종">Sejong</option><option value="경기">Gyeonggi</option><option value="강원">Gangwon</option><option value="충북">North Chungcheong</option><option value="충남">South Chungcheong</option><option value="전북">North Jeolla</option><option value="전남">South Jeolla</option><option value="경북">North Gyeongsang</option><option value="경남">South Gyeongsang</option><option value="제주">Jeju</option><option value="unknown">Unknown</option></select></label>
-              <label class="select-field" for="category-offline"><span>Field</span><select id="category-offline"><option value="all">All fields</option><option value="marketing">Marketing</option><option value="advertising">Advertising</option><option value="translation">Translation</option><option value="interpreting">Interpreting</option><option value="content">Content</option><option value="other">Other</option></select></label>
-              <label class="select-field" for="archive-offline"><span>History</span><select id="archive-offline"><option value="all">All records</option><option value="current">Recently collected</option><option value="archived">Past records</option><option value="unverified">Collection unverified</option></select></label>
-              <label class="select-field" for="language-fit-offline"><span>Language</span><select id="language-fit-offline"><option value="all">All matches</option><option value="match">Potential match</option><option value="mismatch">Mismatch</option><option value="unknown">Unknown</option></select></label>
-              <label class="check-field" for="saved-offline"><input type="checkbox" id="saved-offline"><span>Saved only</span></label>
-            </div>
-            <div class="results-head"><p id="count-offline" class="results-count" role="status" aria-live="polite">Loading jobs…</p><p class="results-note">Location groups reflect listing addresses · Confirm actual commute separately</p></div>
-            <p class="collection-date-note">Date guide: <strong>Posted</strong> is the source publication date; <strong>Added to Radar</strong> is when this listing was first collected; <strong>Last collected</strong> is the latest feed run that found it. Individually researched jobs also show when the original page was reviewed. A recent collection does not guarantee the vacancy is still open.</p>
-            <div class="jobs-grid" id="list-offline" aria-label="In-person jobs"></div>
-            <div class="more-wrap"><button type="button" id="more-offline" class="more-button" hidden>Load more jobs</button></div>
-            <aside class="platform-section" aria-labelledby="korea-platform-heading">
-              <div class="platform-heading"><div><p class="eyebrow">PRIORITY · JOBS FOR FOREIGNERS IN KOREA</p><h3 id="korea-platform-heading">Explore foreign-friendly job boards</h3><p>A small selection of public KOWORK postings now appears in the listings above. These links let you explore further. Confirm language, employment eligibility and visa requirements at the original site.</p></div><span class="manual-tag">Public leads + direct search</span></div>
-              <div class="platform-grid">
-                <a class="platform-card" href="https://kowork.kr/en" target="_blank" rel="noopener noreferrer"><span class="platform-name">KOWORK · Korea</span><span class="platform-description">Jobs for foreigners in Korea, including Spanish marketing and localization positions</span><svg class="icon"><use href="#icon-arrow"/></svg></a>
-                <a class="platform-card" href="https://kowork.kr/en?keyword=spanish" target="_blank" rel="noopener noreferrer"><span class="platform-name">KOWORK · Spanish</span><span class="platform-description">Explore Spanish-related jobs on KOWORK (verify search filters on site)</span><svg class="icon"><use href="#icon-arrow"/></svg></a>
-                <a class="platform-card" href="https://k-work.or.kr/empmnInfo/empmn/list.do" target="_blank" rel="noopener noreferrer"><span class="platform-name">K-WORK · Official</span><span class="platform-description">Public Korea SME and foreign-talent recruitment · Check language and visa</span><svg class="icon"><use href="#icon-arrow"/></svg></a>
-                <a class="platform-card" href="https://mcfamily.or.kr/en/jobs/opening" target="_blank" rel="noopener noreferrer"><span class="platform-name">Hanultari · Seoul</span><span class="platform-description">Multicultural-family and foreign-resident opportunities</span><svg class="icon"><use href="#icon-arrow"/></svg></a>
-                <a class="platform-card" href="https://www.jobploy.kr/en" target="_blank" rel="noopener noreferrer"><span class="platform-name">JOBPLOY</span><span class="platform-description">Foreign-national vacancies and employer information in Korea</span><svg class="icon"><use href="#icon-arrow"/></svg></a>
-                <a class="platform-card" href="https://www.peoplenjob.com/jobs?career_level=1" target="_blank" rel="noopener noreferrer"><span class="platform-name">PeopleNJob · Entry-level</span><span class="platform-description">Foreign companies · Beginner career filter · Verify Korean-language requirements</span><svg class="icon"><use href="#icon-arrow"/></svg></a>
-              </div>
-              <p class="platform-footnote">KOWORK: lightweight public-listing discovery (one listing page and up to six public detail checks per refresh). Only essential job labels and links are indexed, not full descriptions or images. Other portals remain direct searches. Save additional links with “Add a job manually”.</p>
-            </aside>
-          </section>
-
-          <details class="hidden-manager" id="hidden-manager">
-            <summary><span>Manage hidden items</span><span class="hidden-count" id="hidden-count">0 hidden</span></summary>
-            <div class="hidden-content"><p>Hidden jobs, companies and sources are excluded from the listings on this browser. Restore any item to show matching jobs again.</p><div id="hidden-list" class="hidden-list" aria-live="polite"></div><button type="button" id="restore-all" class="restore-all" hidden>Restore all hidden items</button></div>
-          </details>
-
-          <details class="manual-entry" id="manual-entry">
-            <summary><span>Add a job manually <small>Save listings you find on Upwork or elsewhere</small></span><span class="manual-count" id="manual-count">0 saved</span></summary>
-            <div class="manual-content">
-              <p>Sign in to a job platform, copy a listing URL and add it here. Manual entries are saved only in this browser and identified separately from collected jobs.</p>
-              <form id="manual-form" class="manual-form">
-                <label><span>Job title <strong>Required</strong></span><input id="manual-title" type="text" required maxlength="180" placeholder="e.g. Korean Translator"></label>
-                <label><span>Job URL <strong>Required</strong></span><input id="manual-url" type="url" required maxlength="2048" placeholder="https://…"></label>
-                <label><span>Company / Client</span><input id="manual-company" type="text" maxlength="160" placeholder="Optional"></label>
-                <label><span>Job type</span><select id="manual-market"><option value="online">Online · Freelance</option><option value="offline">In-person · Korea</option></select></label>
-                <label><span>Field</span><select id="manual-category"><option value="translation">Translation</option><option value="marketing">Marketing</option><option value="advertising">Advertising</option><option value="content">Content</option><option value="interpreting">Interpreting (in-person)</option><option value="other">Other</option></select></label>
-                <label><span>Work location</span><input id="manual-location" type="text" maxlength="160" placeholder="e.g. Jeonju / Remote / Optional"></label>
-                <label class="manual-notes"><span>Notes / Job description</span><textarea id="manual-description" rows="3" maxlength="2000" placeholder="Record details confirmed from the original listing."></textarea></label>
-                <div class="manual-actions"><button type="submit" class="manual-submit">Save job</button><span id="manual-feedback" role="status" aria-live="polite"></span></div>
-              </form>
-              <div id="manual-saved-list" class="manual-saved-list" aria-label="Manually added jobs"></div>
-            </div>
-          </details>
-
-          <details class="source-drawer" id="source-drawer"><summary><span>Collection status by source</span><span class="source-summary" id="source-summary">Checking…</span></summary><div class="source-detail"><p>Source status and last checked time. A failed or unverified collection does not mean there are no available jobs.</p><ul id="source-list" class="source-list"></ul></div></details>
-        </section>
-      </main>
-      <footer class="site-footer"><span>DUBU / JOB RADAR</span><p>Job details, compensation, deadlines and eligibility may change. Check original listings before applying. Saved and hidden items remain on this browser only.</p></footer>
+      <p class="eyebrow">NICOLE'S JOB RADAR</p>
+      <h1>Find your next opportunity in one place</h1>
+      <p class="lede">Explore jobs from multiple platforms, save opportunities, and track applications.</p>
     </div>
-    <noscript><p class="noscript">Enable JavaScript in your browser to view job listings.</p></noscript>
-  </body>
+    <div class="actions">
+      <button id="exportStateBtn" class="button secondary">Back up data</button>
+      <button id="importStateBtn" class="button secondary">Import data / alerts</button>
+      <input id="importStateFile" type="file" accept="application/json,.json" hidden>
+      <button id="addJobBtn" class="button secondary">Add a job</button>
+      <button id="refreshBtn" class="button primary">Refresh jobs</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="storageStatus" role="alert" class="panel" hidden><p id="storageStatusText"></p><button id="retryStorage" class="button secondary">Retry storage</button></section>
+    <section id="recoveryNotice" role="status" class="panel" hidden><p id="recoveryNoticeText"></p><button id="downloadRecovery" class="button secondary">Download recovery data</button></section>
+    <nav class="market-tabs" aria-label="Job location and work type">
+      <button id="marketOverseas" class="market-tab" type="button" aria-pressed="true" data-market="overseas_remote">Online / Remote</button>
+      <button id="marketDomestic" class="market-tab" type="button" aria-pressed="false" data-market="domestic">In-person / Korea</button>
+    </nav>
+    <section class="summary-block" aria-labelledby="workflowSummaryTitle">
+      <div class="section-heading"><h2 id="workflowSummaryTitle">My application progress</h2><span>Based on current filters</span></div>
+      <section class="stats" id="stats"></section>
+    </section>
+
+    <section id="marketPulse" class="panel market-pulse" aria-labelledby="marketPulseTitle">
+      <div class="market-pulse-head">
+        <div><p class="section-kicker">MARKET SNAPSHOT</p><h2 id="marketPulseTitle">Market overview</h2></div>
+        <div class="market-pulse-head-actions"><span>Based on collected listings</span><button id="marketPulseToggle" type="button" class="button compact secondary-light" aria-expanded="false">Show summary</button></div>
+      </div>
+      <div id="marketPulseCards" class="market-pulse-grid"></div>
+      <p id="marketPulseNote" class="market-pulse-note"></p>
+    </section>
+
+    <section class="panel filters">
+      <div class="field search-field">
+        <label for="query">Search</label>
+        <input id="query" type="search" placeholder="Job title, company, or keyword">
+      </div>
+      <div class="field">
+        <label for="source">Source</label>
+        <select id="source"><option value="">All sources</option></select>
+      </div>
+      <div class="field market-overseas-only">
+        <label for="eligibility">Eligible locations</label>
+        <select id="eligibility">
+          <option value="likely" selected>Korea / Worldwide</option>
+          <option value="">All locations</option>
+          <option value="korea">Open to applicants in Korea</option>
+          <option value="worldwide">Worldwide applicants</option>
+          <option value="restricted">Restricted countries</option>
+          <option value="unknown">Needs verification</option>
+        </select>
+      </div>
+      <div class="field market-domestic-only" hidden>
+        <label for="domesticProvince">Province / City</label>
+        <select id="domesticProvince"><option value="">All provinces / cities</option></select>
+      </div>
+      <div class="field market-domestic-only" hidden>
+        <label for="domesticLocality">City / District</label>
+        <select id="domesticLocality"><option value="">All cities / districts</option></select>
+      </div>
+      <div class="field market-domestic-only" hidden>
+        <label for="domesticNeighborhood">Neighborhood</label>
+        <select id="domesticNeighborhood"><option value="">All neighborhoods</option></select>
+      </div>
+      <div class="field">
+        <label for="compensationFilter">Pay information</label>
+        <select id="compensationFilter">
+          <option value="">All pay types</option>
+          <option value="amount">Pay amount listed</option>
+          <option value="hour">Hourly rate listed</option>
+          <option value="salary">Daily / Weekly / Monthly / Annual</option>
+          <option value="piece">Per task / batch</option>
+          <option value="basis_only">Pay basis only</option>
+          <option value="undisclosed">Pay not disclosed</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="statusFilter">My status</label>
+        <select id="statusFilter">
+          <option value="active">Exclude hidden</option>
+          <option value="all">All statuses</option>
+          <option value="new">New jobs</option>
+          <option value="unreviewed">Not reviewed</option>
+          <option value="saved">Saved jobs</option>
+          <option value="planned">Planning to apply</option>
+          <option value="applied">Applied</option>
+          <option value="hidden">Hidden jobs</option>
+        </select>
+      </div>
+      <details id="advancedFilters" class="advanced-filters" open>
+        <summary id="advancedFiltersSummary">More filters</summary>
+        <div class="advanced-filter-grid">
+          <div class="field">
+            <label for="category">Field</label>
+            <select id="category"><option value="">All fields</option></select>
+          </div>
+          <div class="field">
+            <label for="remote">Work setting</label>
+            <select id="remote">
+              <option value="">All settings</option>
+              <option value="local">On-site</option>
+              <option value="remote">Remote</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ageFilter">Date posted</label>
+            <select id="ageFilter">
+              <option value="">Any date</option>
+              <option value="7">Last 7 days</option>
+              <option value="14">Last 14 days</option>
+              <option value="30">Last 30 days</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="listingFilter">Listing status</label>
+            <select id="listingFilter">
+              <option value="active" selected>Listings to review</option>
+              <option value="verified_open">Official job page verified</option>
+              <option value="official_listed">Official project listing verified</option>
+              <option value="current_feed">Current board / aggregator feed</option>
+              <option value="stale">Older listings</option>
+              <option value="source_error">Source check failed</option>
+              <option value="archived_missing">Missing from current feed</option>
+              <option value="talent_pool">Talent pools</option>
+              <option value="expired">Confirmed closed</option>
+              <option value="all">All listings</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="sourceKindFilter">Source type</label>
+            <select id="sourceKindFilter">
+              <option value="">All sources</option>
+              <option value="official_ats">Official direct hiring</option>
+              <option value="official_government">Official government posting</option>
+              <option value="official_platform">Official project platform</option>
+              <option value="job_board">Job board</option>
+              <option value="aggregator">Aggregated feed</option>
+              <option value="manual">Manually added</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="paymentFilter">Payment evidence</label>
+            <select id="paymentFilter">
+              <option value="">All evidence</option>
+              <option value="exclude_caution">Exclude cautions</option>
+              <option value="has_caution">Caution signals present</option>
+              <option value="caution_repeated">Repeated caution signals</option>
+              <option value="mixed_caution">Conflicting signals</option>
+              <option value="caution_single">One reported concern</option>
+              <option value="policy_only">Official policy only</option>
+              <option value="evidence_expired">Evidence needs review</option>
+              <option value="insufficient">Insufficient evidence</option>
+              <option value="not_applicable">Not the paying party</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="requirementsFilter">Required qualifications</label>
+            <select id="requirementsFilter">
+              <option value="">All qualifications</option>
+              <option value="clear">No additional requirements detected</option>
+              <option value="routine_check">Routine check needed</option>
+              <option value="hard_check">Required criteria need review</option>
+            </select>
+          </div>
+          <div class="field nicole-only">
+            <label for="languageFitFilter">Language fit</label>
+            <select id="languageFitFilter">
+              <option value="all">All language fits</option>
+              <option value="match">Matches</option>
+              <option value="mismatch">Does not match</option>
+              <option value="unknown">Not verified</option>
+            </select>
+          </div>
+          <div class="field nicole-only">
+            <label for="commuteFilter">Commuting area</label>
+            <select id="commuteFilter">
+              <option value="all">All areas</option>
+              <option value="nearby">Jeonju / Wanju</option>
+              <option value="expanded">Nearby cities</option>
+              <option value="relocation">Other areas</option>
+              <option value="unknown">Location unknown</option>
+            </select>
+          </div>
+          <div class="field nicole-only">
+            <label for="archiveFilter">Collection status</label>
+            <select id="archiveFilter">
+              <option value="all">All collection statuses</option>
+              <option value="current">Current listings</option>
+              <option value="archived">Past listings</option>
+              <option value="unverified">Not yet verified</option>
+            </select>
+          </div>
+          <div class="field nicole-only saved-only-field">
+            <label for="savedOnly">Saved jobs</label>
+            <label class="check"><input id="savedOnly" type="checkbox"> Show saved only</label>
+          </div>
+          <div class="field">
+            <label for="minScore">Minimum review priority</label>
+            <select id="minScore">
+              <option value="0">All scores</option>
+              <option value="20" selected>Recommended 20+</option>
+              <option value="40">40+</option>
+              <option value="60">60+</option>
+              <option value="80">80+</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="sort">Sort by</label>
+            <select id="sort">
+              <option value="score">Priority for today</option>
+              <option value="distance" hidden>Nearest first</option>
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="company">Company name</option>
+              <option value="title">Job title</option>
+            </select>
+          </div>
+        </div>
+        <div id="activeFilters" class="active-filters" hidden aria-live="polite">
+          <div class="active-filter-head">
+            <strong>Active filters</strong>
+            <button id="clearActiveFilters" class="button compact secondary-light" type="button">Clear all filters</button>
+          </div>
+          <div id="activeFilterChips" class="active-filter-chips"></div>
+        </div>
+      </details>
+      <p id="distanceReference" class="distance-reference market-domestic-only" hidden></p>
+    </section>
+
+    <section id="batchBar" class="batch-bar" hidden aria-live="polite">
+      <label class="batch-select-all"><input id="selectVisible" type="checkbox"> Select visible jobs</label>
+      <strong id="selectedCount">0 selected</strong>
+      <div class="batch-actions">
+        <button id="batchFavorite" class="button compact">Save</button>
+        <button id="batchPlanned" class="button compact">Plan to apply</button>
+        <button id="batchApplied" class="button compact">Applied</button>
+        <button id="batchReviewed" class="button compact">Mark reviewed</button>
+        <button id="batchHide" class="button compact">Hide</button>
+        <button id="clearSelection" class="button compact secondary-light">Clear selection</button>
+      </div>
+    </section>
+
+    <section class="result-head">
+      <div>
+        <strong id="resultCount" tabindex="-1">0 jobs</strong>
+        <span id="scopeCount" class="scope-count"></span>
+        <span id="updatedAt"></span>
+      </div>
+      <div class="result-actions">
+        <button id="showAllActive" class="button compact secondary-light" type="button" hidden>Show active jobs excluding hidden</button>
+        <p class="source-note">Opening details, visiting the source, or marking reviewed records a review.</p>
+      </div>
+    </section>
+    <section id="sourceHealth" class="source-health" hidden aria-live="polite"></section>
+    <details id="collectionCoverage" class="collection-coverage" hidden>
+      <summary id="collectionCoverageSummary">Collection coverage</summary>
+      <div id="collectionCoverageList" class="collection-coverage-list"></div>
+    </details>
+    <section id="loadErrorBanner" class="load-error-banner" hidden role="alert">
+      <strong>Unable to load jobs</strong>
+      <span id="loadErrorText"></span>
+    </section>
+
+    <section id="jobs" class="job-grid" aria-live="polite"></section>
+    <section id="empty" class="empty" hidden>
+      <p id="emptyMessage">No jobs match your filters.</p>
+      <div class="empty-actions"><button id="resetFilters" class="button secondary-light">Reset filters</button><button id="retryLoad" class="button primary">Try again</button></div>
+    </section>
+    <div class="load-more-wrap"><button id="loadMore" class="button secondary load-more" hidden>Load more</button></div>
+    <section class="panel nicole-extra-panel" aria-label="Source collection status"><h2>Collection status by source</h2><ul id="nicoleSourceList"></ul></section>
+    <section id="nicoleHiddenManager" class="panel nicole-extra-panel" aria-label="Hidden jobs and sources" hidden></section>
+    <section id="nicolePlatformLinks" class="panel nicole-extra-panel" aria-label="Platforms to search manually" hidden></section>
+    <section id="nicoleManualEntries" class="panel nicole-extra-panel" aria-label="Manually added jobs" hidden></section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden><span id="toastText"></span><button id="undoHide">Undo</button></div>
+
+  <dialog id="addDialog" aria-labelledby="addDialogTitle">
+    <form id="addForm" method="dialog">
+      <div class="dialog-head"><h2 id="addDialogTitle">Add a job manually</h2><button type="button" id="closeDialog" class="icon" aria-label="Close add job dialog">×</button></div>
+      <p>Keep track of opportunities you found on LinkedIn, Indeed, or other sites.</p>
+      <div class="dialog-grid">
+        <label>Source<input name="source" placeholder="LinkedIn, Indeed, etc."></label>
+        <label>Job title *<input name="title" required></label>
+        <label>Company<input name="company"></label>
+        <label>Location<input name="location"></label>
+        <label class="wide">URL *<input name="url" type="url" required></label>
+        <label class="wide">Description<textarea name="description" rows="5"></textarea></label>
+        <label>Job type<select name="nicoleMarket"><option value="online">Online</option><option value="offline">In-person</option></select></label>
+        <label>Field<select name="nicoleCategory"><option value="translation">Translation</option><option value="marketing">Marketing</option><option value="advertising">Advertising</option><option value="interpreting">Interpreting</option><option value="content">Content</option><option value="other">Other</option></select></label>
+      </div>
+      <div class="dialog-actions"><button type="button" id="cancelDialog" class="button secondary">Cancel</button><button class="button primary" value="default">Save</button></div>
+    </form>
+  </dialog>
+
+  <template id="jobTemplate">
+    <article class="job-card">
+      <div class="job-top">
+        <div class="job-select-group"><label class="job-select-hit"><input class="job-select" type="checkbox"></label><div><span class="source"></span><span class="score"></span></div></div>
+        <div class="mini-actions"><button class="favorite" type="button" aria-label="Save job">☆</button><button class="dismiss" type="button" aria-label="Hide job">×</button></div>
+      </div>
+      <h2 class="title"></h2>
+      <p class="company"></p>
+      <div class="compensation" aria-label="Pay information">
+        <span class="compensation-label">Pay</span>
+        <strong class="compensation-value"></strong>
+        <span class="compensation-note"></span>
+      </div>
+      <div class="distance-summary" aria-label="Distance from reference location" hidden><span class="distance-label">Distance</span><strong class="distance-value"></strong><span class="distance-note"></span></div>
+      <div class="meta"></div>
+      <div class="quality-badges"><span class="listing-badge"></span><span class="eligibility-badge"></span><span class="trust-badge"></span><span class="payment-badge"></span><span class="requirements-badge"></span></div>
+      <div class="verification-badges" aria-label="Recent verification status"></div>
+      <p class="collection-dates"></p>
+      <div class="decision-strip"><div class="decision-value"></div><div class="decision-unknown"></div></div>
+      <p class="description"></p>
+      <div class="tags"></div>
+      <div class="workflow-row">
+        <select class="job-state" aria-label="Application status">
+          <option value="">No status</option>
+          <option value="planned">Planning to apply</option>
+          <option value="applied">Applied</option>
+        </select>
+      </div>
+      <div class="card-footer"><span class="posted"></span><button class="details">View details</button><a class="apply" target="_blank" rel="noopener noreferrer">Original ↗</a></div>
+    </article>
+  </template>
+
+  <dialog id="detailsDialog" class="details-dialog" aria-labelledby="detailsTitle">
+    <div class="dialog-head"><h2 id="detailsTitle"></h2><button type="button" id="closeDetails" class="icon" aria-label="Close job details">×</button></div>
+    <p id="detailsCompany" class="details-company"></p>
+    <div id="detailsCompensation" class="details-compensation" aria-label="Pay information">
+      <span class="compensation-label">Pay</span>
+      <strong id="detailsCompensationValue" class="compensation-value"></strong>
+      <span id="detailsCompensationNote" class="compensation-note"></span>
+    </div>
+    <div id="detailsDistance" class="details-distance" aria-label="Distance from reference location" hidden>
+      <span class="distance-label">Distance</span>
+      <strong id="detailsDistanceValue" class="distance-value"></strong>
+      <span id="detailsDistanceNote" class="distance-note"></span>
+    </div>
+    <div id="detailsMeta" class="meta"></div>
+    <section class="trust-panel" aria-labelledby="trustHeading">
+      <h3 id="trustHeading">Verification and decision evidence</h3>
+      <div id="detailsTrust" class="quality-badges"></div>
+      <div class="decision-callout">
+        <div><strong>Why review this job</strong><p id="detailsDecisionValue"></p></div>
+        <div><strong>Still unverified</strong><p id="detailsDecisionUnknown"></p></div>
+      </div>
+      <div class="decision-evidence-grid">
+        <article class="evidence-card">
+          <strong>Listing verification</strong>
+          <p id="detailsListingReason"></p>
+          <div id="detailsListingEvidence" class="evidence-links"></div>
+        </article>
+        <article class="evidence-card">
+          <strong>Source</strong>
+          <p id="detailsSourceSummary"></p>
+          <p id="detailsSourceHealth" class="evidence-meta"></p>
+          <div id="detailsEvidence" class="evidence-links"></div>
+        </article>
+        <article class="evidence-card">
+          <strong>Payment reliability</strong>
+          <p id="detailsPaymentSummary"></p>
+          <div id="detailsPaymentSignals" class="signal-list"></div>
+        </article>
+        <article class="evidence-card">
+          <strong>Eligibility</strong>
+          <p id="detailsEligibilityReason"></p>
+        </article>
+        <article class="evidence-card">
+          <strong>Review priority</strong>
+          <p id="detailsFitReasons"></p>
+          <p id="detailsFitWarnings" class="fit-warning"></p>
+        </article>
+        <article class="evidence-card">
+          <strong>Verification history</strong>
+          <p id="detailsHistorySummary"></p>
+          <div id="detailsHistory" class="history-list"></div>
+        </article>
+      </div>
+      <p id="detailsVerifiedAt" class="verified-at"></p>
+    </section>
+    <div id="detailsDescription" class="details-description"></div>
+    <p id="work24Attribution" class="source-note" hidden>Source: Work24 · This information is provided by Work24 (www.work24.go.kr), operated by the Korean Ministry of Employment and Labor. Unauthorized reproduction and distribution are prohibited.</p>
+    <div class="dialog-actions details-actions"><button id="prevDetails" class="button secondary-light" type="button">← Previous</button><button id="nextDetails" class="button secondary-light" type="button">Next →</button><a id="detailsLink" class="button primary" target="_blank" rel="noopener noreferrer">View original job ↗</a></div>
+  </dialog>
+  <script type="module" src="../munseong/app.js"></script>
+</body>
 </html>

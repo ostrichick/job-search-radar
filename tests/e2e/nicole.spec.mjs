@@ -18,8 +18,15 @@ test.beforeEach(async ({ page }) => {
   await page.route('**/feeds/dubu.json?*', (route) => route.fulfill({ json: feed }));
 });
 
-test('Nicole preview renders the shared app with her own feed and branding', async ({ page }) => {
-  await page.goto('/nicole-next/');
+test('former Nicole preview URL redirects to the integrated Nicole screen and keeps deep-link parameters', async ({ page }) => {
+  await page.goto('/nicole-next/?origin=old-preview#jobs');
+  await expect(page).toHaveURL(/\/nicole\/\?origin=old-preview#jobs$/);
+  await expect(page).toHaveTitle("Nicole's Job Radar");
+  await expect(page.locator('#marketOverseas')).toHaveText('Online');
+});
+
+test('Nicole shared screen renders the shared app with her own feed and branding', async ({ page }) => {
+  await page.goto('/nicole/');
   await expect(page).toHaveTitle("Nicole's Job Radar");
   await expect(page.locator('#marketOverseas')).toHaveText('Online');
   await expect(page.locator('#jobs .job-card')).toHaveCount(1);
@@ -33,7 +40,7 @@ test('Nicole preview renders the shared app with her own feed and branding', asy
 });
 
 test('Nicole filters retain language fit, commute, province and archived listings', async ({ page }) => {
-  await page.goto('/nicole-next/');
+  await page.goto('/nicole/');
   await page.locator('#marketDomestic').click();
   await expect(page.locator('#jobs .job-card')).toHaveCount(3);
   await page.locator('#languageFitFilter').selectOption('mismatch');
@@ -50,7 +57,7 @@ test('Nicole filters retain language fit, commute, province and archived listing
 });
 
 test('Nicole can save, hide company or source, restore and keep states after reload', async ({ page }) => {
-  await page.goto('/nicole-next/');
+  await page.goto('/nicole/');
   await page.locator('#jobs .favorite').first().click();
   await page.locator('#savedOnly').check();
   await expect(page.locator('#jobs .job-card')).toHaveCount(1);
@@ -64,7 +71,7 @@ test('Nicole can save, hide company or source, restore and keep states after rel
 });
 
 test('Manual Upwork and KOWORK jobs retain category, person market, source and saved state', async ({ page }) => {
-  await page.goto('/nicole-next/');
+  await page.goto('/nicole/');
   await page.locator('#addJobBtn').click();
   await page.locator('#addForm [name=title]').fill('Upwork test lead');
   await page.locator('#addForm [name=url]').fill('https://www.upwork.com/jobs/~test-lead');
@@ -92,15 +99,15 @@ test('Collection source drawer retains manual platform search links and states',
     ...feed, sourceStatus: [{ source: 'Upwork', status: 'manual', count: 0, checkedAt: '2026-10-23T12:00:00Z',
       manualSearches: [{ label: 'Spanish translation', url: 'https://www.upwork.com/nx/search/jobs/?q=spanish%20translation' }] }]
   } }));
-  await page.goto('/nicole-next/');
+  await page.goto('/nicole/');
   await expect(page.locator('#nicoleSourceList')).toContainText('Upwork');
   await expect(page.locator('#nicoleSourceList')).toContainText('Manual search');
   await expect(page.locator('#nicoleSourceList').getByRole('link', { name: /Spanish translation/ })).toHaveAttribute('href', /upwork\.com/);
 });
 
-test('Two Nicole preview tabs share saved and hidden state without touching Munseong DB', async ({ page, context }) => {
+test('Two Nicole shared screen tabs share saved and hidden state without touching Munseong DB', async ({ page, context }) => {
   const other = await context.newPage();
-  await Promise.all([page.goto('/nicole-next/'), other.goto('/nicole-next/')]);
+  await Promise.all([page.goto('/nicole/'), other.goto('/nicole/')]);
   await page.locator('#jobs .favorite').click();
   await expect(other.locator('#jobs .favorite.active')).toHaveCount(1);
   await other.locator('#jobs .mini-actions').getByRole('button', { name: 'Hide source' }).click();
@@ -110,22 +117,22 @@ test('Two Nicole preview tabs share saved and hidden state without touching Muns
   expect(dbNames).not.toContain('job-search-radar');
 });
 
-test('Nicole preview remains read-only if IndexedDB fails', async ({ page }) => {
+test('Nicole shared screen remains read-only if IndexedDB fails', async ({ page }) => {
   await page.addInitScript(() => { indexedDB.open = () => { throw new Error('Storage denied'); }; });
-  await page.goto('/nicole-next/');
+  await page.goto('/nicole/');
   await expect(page.locator('#jobs .job-card')).toHaveCount(1);
   await expect(page.locator('#storageStatus')).toBeVisible();
   await expect(page.locator('#addJobBtn')).toBeDisabled();
 });
 
-test('Nicole preview has no horizontal overflow at 390px', async ({ page }) => {
+test('Nicole shared screen has no horizontal overflow at 390px', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/nicole-next/');
+  await page.goto('/nicole/');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 });
 
 test('English interface has no remaining Korean outside listing data', async ({ page }) => {
-  await page.goto('/nicole-next/');
+  await page.goto('/nicole/');
   await expect(page.locator('#jobs .job-card')).toHaveCount(1);
   const findUiKorean = () => page.evaluate(() => {
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
@@ -148,9 +155,9 @@ test('English interface has no remaining Korean outside listing data', async ({ 
   expect(await findUiKorean()).toEqual([]);
 });
 
-test('first preview visit migrates original state once without modifying source document', async ({ page }) => {
+test('first shared screen visit migrates original state once without modifying source document', async ({ page }) => {
   await page.route('**/munseong/app.js', (route) => route.fulfill({ body: '', contentType: 'text/javascript' }));
-  await page.goto('/nicole-next/');
+  await page.goto('/nicole/');
   const original = {
     saved: ['online', 'manual:legacy'], hidden: { jobs: ['local'], companies: ['Example company'], sources: ['A platform'] },
     manual: [{ id: 'manual:legacy', title: 'Upwork research lead', url: 'https://www.upwork.com/jobs/~example', market: 'online', category: 'content', company: 'Test Client' }], revision: 4
