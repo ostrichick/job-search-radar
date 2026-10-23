@@ -340,6 +340,12 @@ export async function buildFeed({ root = ROOT, fetchImpl = fetch, readFileImpl =
   sourceStatus.push(recordStatus('JOBPLOY', 'manual', 0, now,
     'Foreigner-focused Korea jobs. Terms restrict unlicensed copying; use original-site search.',
     { url: 'https://www.jobploy.kr/en' }));
+  sourceStatus.push(recordStatus('Wanted', 'manual', 0, now,
+    'Additional Korean employer listings for Spanish-language content and marketing. Search on the original site; individual postings can already be closed.',
+    { url: 'https://www.wanted.co.kr/' }));
+  sourceStatus.push(recordStatus('ProZ', 'manual', 0, now,
+    'Specialist translation and localization jobs; verify deadlines, professional experience and ability to work from Korea on each original posting.',
+    { url: 'https://www.proz.com/translation-jobs' }));
   return { feed: { updatedAt: now, jobs, sourceStatus },
     excludedUrls: results.flatMap((x) => x.excludedUrls || []),
     successfulRequests: results.reduce((n, x) => n + x.successfulRequests, 0),
@@ -360,13 +366,21 @@ export function mergeHistoricalFeed(incoming, previous, { retentionDays = 60, ma
   const maxHistorical = Math.max(0, Math.min(10000, Number(maxItems) || 2000));
   const priorList = Array.isArray(previous?.jobs) ? previous.jobs : [];
   const explicitlyExcludedUrls = new Set(excludedUrls.map((url) => safePublicUrl(url)).filter(Boolean));
+  // Only an explicit calendar deadline can establish that a posting expired;
+  // absence from an API response does not establish closure.
+  const pastDeadline = (job) => {
+    if (job.sourceKind === 'manual') return false;
+    const deadline = isoDate(job.deadline);
+    return Boolean(deadline && (job.deadlineHasTime
+      ? Date.parse(deadline) < fetchedAt : deadline.slice(0, 10) < collectedAt.slice(0, 10)));
+  };
   const priorById = new Map(priorList.filter((j) => j && typeof j.id === 'string').map((j) => [j.id, j]));
   const priorByUrl = new Map(priorList.flatMap((job) => {
     const url = safePublicUrl(job?.url);
     return url ? [[url, job]] : [];
   }));
   const eligibleIncoming = incoming.jobs.filter((job) =>
-    !explicitlyExcludedUrls.has(safePublicUrl(job.url)) &&
+    !explicitlyExcludedUrls.has(safePublicUrl(job.url)) && !pastDeadline(job) &&
     (job.sourceKind === 'manual' ||
       (!excludeOnlineJobReason(job, { knownLanguages }) && !excludeQualificationReason(job))));
   const current = eligibleIncoming.map((job) => {
@@ -385,7 +399,7 @@ export function mergeHistoricalFeed(incoming, previous, { retentionDays = 60, ma
   const currentRole = new Set(current.map((x) => [x.company, x.title, x.location].map((v) => asText(v, 200).toLowerCase()).join('|')));
   const historical = priorList.flatMap((job) => {
     if (!job || typeof job.id !== 'string' || seenIds.has(job.id) || !safePublicUrl(job.url) ||
-      explicitlyExcludedUrls.has(safePublicUrl(job.url))) return [];
+      explicitlyExcludedUrls.has(safePublicUrl(job.url)) || pastDeadline(job)) return [];
     if (job.sourceKind === 'curated_research' &&
         (!isoDate(job.researchReviewedAt) ||
         fetchedAt - Date.parse(isoDate(job.researchReviewedAt)) > 30 * 86400_000 ||

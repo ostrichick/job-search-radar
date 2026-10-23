@@ -14,7 +14,7 @@ const MAX_RECORDS = 1000;
 const allowedSources = new Set(['KOWORK', 'Hanultari', 'JOBPLOY', 'K-WORK',
   'PeopleNJob', 'Company Careers', 'LinkedIn', 'ProZ', 'Upwork', 'Workana',
   'Saramin', 'JobKorea', '전주교차로', 'Other original source']);
-const tombstoneSources = new Set([...allowedSources, 'Arbeitnow', 'Remote OK']);
+const tombstoneSources = new Set([...allowedSources, 'Arbeitnow', 'Remote OK', 'Jobicy', 'Xsolla (Official ATS)']);
 
 function dateAt(value) {
   const date = reviewedDate(value);
@@ -49,8 +49,10 @@ export function normalizeCuratedResearch(item, { now = new Date().toISOString(),
       nowMs - reviewedMs > MAX_REVIEW_AGE_DAYS * 86400000) return null;
 
   const deadline = reviewedDate(item.deadline);
+  const deadlineHasTime = typeof item.deadline === 'string' && /T\d{2}:\d{2}/.test(item.deadline);
   // A deadline is a calendar day, not the first second of that day in UTC.
-  if (deadline && deadline.slice(0, 10) < now.slice(0, 10)) return null;
+  if (deadline && (deadlineHasTime ? Date.parse(deadline) < nowMs
+    : deadline.slice(0, 10) < now.slice(0, 10))) return null;
   if (item.applicationsClosed === true || item.homeCountryEligible === 'no' ||
       item.requiredKoreanLevel === 'business' ||
       item.requiredKoreanLevel === 'fluent' ||
@@ -97,7 +99,8 @@ export function normalizeCuratedResearch(item, { now = new Date().toISOString(),
     market: item.market, workplaceMode, category, location,
     province: item.market === 'offline' ? koreaProvince(location) : '',
     commuteClass: item.market === 'offline' ? commuteRegion(location) : '',
-    postedAt: reviewedDate(item.postedAt), deadline, pay: safeText(item.pay, 140) || null,
+    postedAt: reviewedDate(item.postedAt), deadline, deadlineHasTime,
+    pay: safeText(item.pay, 140) || null,
     description, languageRequirements,
     eligibility: safeText(item.eligibilityNote, 250) ||
       'Manually researched lead; confirm employment, location and language requirements at the original source.',

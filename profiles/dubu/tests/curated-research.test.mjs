@@ -48,6 +48,14 @@ test('expired, stale, senior, advanced Korean and unsupported residence research
   for (const entry of reject) assert.equal(normalizeCuratedResearch(entry, { now }), null);
 });
 
+test('timestamped quote deadlines expire at the stated instant, not the following calendar day', () => {
+  const entry = { ...valid, deadline: '2026-10-19T07:00:00Z' };
+  assert.equal(normalizeCuratedResearch(entry, { now }), null);
+  const future = normalizeCuratedResearch({ ...valid, deadline: '2026-10-19T17:00:00Z' }, { now });
+  assert.equal(future.deadlineHasTime, true);
+  assert.equal(future.deadline, '2026-10-19T17:00:00.000Z');
+});
+
 test('curated collector reads finite reviewed file, reports rejected items and never fetches external pages', async (t) => {
   const root = await mkdtemp(join(tmpdir(), 'dubu-curated-'));
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -57,17 +65,21 @@ test('curated collector reads finite reviewed file, reports rejected items and n
     { ...valid, url: 'https://example.com/expired', deadline: '2020-01-01' },
     { source: 'KOWORK', url: 'https://kowork.kr/en/post/7655', withdrawnFromRadar: true },
     { source: 'Remote OK', url: 'https://remoteok.com/remote-jobs/remote-marketing-and-sales-administrator-hunt-st-1137488', withdrawnFromRadar: true },
+    { source: 'Jobicy', url: 'https://jobicy.com/jobs/155891-senior-performance-marketer-full-remote-cyprus', withdrawnFromRadar: true },
+    { source: 'Xsolla (Official ATS)', url: 'https://jobs.lever.co/xsolla/f33b07cc-fe35-4e12-a81c-eaf1c69603a9', withdrawnFromRadar: true },
   ] }));
   const result = await collectCuratedResearch({ root, now });
   assert.equal(result.jobs.length, 1);
   assert.deepEqual(result.excludedUrls, [
     'https://kowork.kr/en/post/7655',
     'https://remoteok.com/remote-jobs/remote-marketing-and-sales-administrator-hunt-st-1137488',
+    'https://jobicy.com/jobs/155891-senior-performance-marketer-full-remote-cyprus',
+    'https://jobs.lever.co/xsolla/f33b07cc-fe35-4e12-a81c-eaf1c69603a9',
   ]);
   assert.equal(result.successfulRequests, 0);
   assert.equal(result.sourceStatus[0].status, 'manual');
   assert.match(result.sourceStatus[0].detail, /1 excluded/);
-  assert.match(result.sourceStatus[0].detail, /2 manually withdrawn/);
+  assert.match(result.sourceStatus[0].detail, /4 manually withdrawn/);
 });
 
 test('historical curated leads expire after 30 days or passed application deadline', () => {

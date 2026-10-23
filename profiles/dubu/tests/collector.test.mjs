@@ -316,6 +316,29 @@ test('history gate removes old ineligible listings while keeping legitimate prev
   assert.deepEqual(feed.jobs.map((j) => j.id), ['es']);
 });
 
+test('explicitly passed deadlines remove new and historical jobs; absence alone never implies expiry', () => {
+  const current = '2026-10-23T12:00:00.000Z';
+  const sample = (id, deadline, sourceKind = 'public_api') => ({
+    id, title: 'Content Marketing Coordinator', company: id, source: 'Jobicy',
+    url: `https://example.org/jobs/${id}`, category: 'marketing', market: 'online',
+    location: 'Anywhere', description: 'English content marketing role',
+    deadline, sourceKind, lastSeenAt: '2026-10-22T00:00:00.000Z'
+  });
+  const old = sample('old', '2026-10-22');
+  const today = sample('today', '2026-10-23');
+  const unknown = sample('unknown', null);
+  const manual = sample('manual', '2026-10-22', 'manual');
+  const timed = { ...sample('timed', '2026-10-23T10:30:00Z'), deadlineHasTime: true };
+  const later = { ...sample('later', '2026-10-23T18:10:00Z'), deadlineHasTime: true };
+  const next = mergeHistoricalFeed({ updatedAt: current, jobs: [old, today, unknown, manual, timed, later],
+    sourceStatus: [{ source: 'Jobicy', status: 'ok' }] }, { jobs: [old, today, unknown] });
+  assert.deepEqual(next.jobs.map((job) => job.id), ['today', 'unknown', 'manual', 'later']);
+  const historical = mergeHistoricalFeed({ updatedAt: current, jobs: [],
+    sourceStatus: [{ source: 'Jobicy', status: 'ok' }] }, { jobs: [old, today, unknown] });
+  assert.deepEqual(historical.jobs.map((job) => job.id), ['today', 'unknown']);
+  assert.ok(historical.jobs.every((job) => job.collectionState === 'not_seen'));
+});
+
 test('same prior ID updates firstSeenAt and lastSeenAt on refresh', () => {
   const prior = { id: 'a', url: 'https://example.com/a', company: 'Co', title: 'Marketing Manager',
     location: 'Anywhere', source: 'Jobicy', lastSeenAt: '2026-10-01T00:00:00.000Z', firstSeenAt: '2026-09-01T00:00:00.000Z' };

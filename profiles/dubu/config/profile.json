@@ -28,7 +28,9 @@
   "upworkSearches": [
     { "label": "Spanish translation", "url": "https://www.upwork.com/nx/search/jobs/?q=spanish%20translation" },
     { "label": "Digital marketing", "url": "https://www.upwork.com/nx/search/jobs/?q=digital%20marketing" },
-    { "label": "Advertising and content", "url": "https://www.upwork.com/nx/search/jobs/?q=social%20media%20marketing" }
+    { "label": "Advertising and content", "url": "https://www.upwork.com/nx/search/jobs/?q=social%20media%20marketing" },
+    { "label": "Spanish content and short video", "url": "https://www.upwork.com/nx/search/jobs/?q=spanish%20content%20creator" },
+    { "label": "Spanish localization QA", "url": "https://www.upwork.com/nx/search/jobs/?q=spanish%20localization%20qa" }
   ],
   "notes": "English fluency, work authorization, visa, qualifications and availability are not assumed. Listings are research leads, not verified eligibility."
 }
