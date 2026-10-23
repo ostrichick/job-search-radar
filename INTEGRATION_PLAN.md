@@ -28,7 +28,11 @@
 - 옛 `dubu-job-radar`: `64a7343`부터 안내 페이지만 배포(하위 경로 포함 새 주소로 이동), 정기 수집과 별도 피드 점검 제거.
 - 공통 출처 단일 호출: CI에서 메인 수집이 Remotive·Jobicy·Remote OK·Arbeitnow 응답(실패 포함)을 `SHARED_RESPONSE_DIR`에 기록하고 Dubu 수집이 재사용. 각 API는 수집당 1회(하루 4회). 주소는 `scripts/shared-responses.mjs` 한 곳에서 관리(Remotive는 500건으로 통일). Dubu 전용 Jobicy 검색 3건은 별도 호출 유지. 로컬 실행은 각자 호출.
 - 이름·주소 변경(2026-10-23): 전환 메뉴 `Nicole / Munseong`. 첫 주소는 Nicole(`/nicole/`)로 이동, Munseong은 `/munseong/`, 예전 `/dubu/`는 `/nicole/`로 이동. 내부 수집기 경로(`profiles/dubu`, `feeds/dubu.json`)는 그대로.
-- 남은 일: 2b(화면 코드 통합)는 선택.
+- 2b 1단계 완료: `38132db`. 사람별 설정과 Nicole 기준선 39건 공통 피드 변환·검증.
+- 2b 2단계 완료: `a6d1753`. 공통 앱의 영어 UI 사전과 동적 화면 문구 번역 준비.
+- 2b 3단계 완료: `6ca841a`. `/nicole-next/` 영어 화면, Nicole 고유 필터·통근권·숨김 관리·직접 추가·출처 링크와 개인 DB 읽기 전용 이전 구현. 공개 `/nicole/` 보존.
+- 2b 4단계 완료: `289dc74`. 원본 `dubu-job-radar` 보존, 1회 상태 이전 및 장애 경로를 격리된 E2E로 검증. 로컬 `npm.cmd run check` 통과, E2E 103/103 통과(기존 Munseong 77·Nicole classic 16·Nicole next 10).
+- 남은 일: 2b 5단계 공개 `/nicole/` 전환은 사용자 승인 대기. 승인 전 `/nicole-next/`를 별도 공개하여 비교한다. 옛 Nicole 화면·코드는 삭제하지 않는다.
 
 ## 단계
 
