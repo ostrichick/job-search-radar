@@ -25,6 +25,9 @@ test('Nicole preview renders the shared app with her own feed and branding', asy
   await expect(page.locator('#jobs .job-card')).toHaveCount(1);
   await expect(page.locator('#jobs')).toContainText('Nicole test online');
   await expect(page.locator('#jobs')).not.toContainText('Live video interpreter');
+  await expect(page.locator('#jobs .compensation-value').first()).toHaveText('Pay not listed');
+  await expect(page.locator('#jobs .distance-summary').first()).toBeHidden();
+  await expect(page.locator('#jobs .eligibility-badge').first()).toHaveText('Work eligibility unverified');
   await expect(page.locator('#nicolePlatformLinks')).toContainText('KOWORK');
   await expect(page.locator('#nicoleHiddenManager')).toBeVisible();
 });

@@ -35,6 +35,7 @@
 .nicole-extra-panel .hidden-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #d5e5d4; }
 .mini-actions { flex-wrap: wrap; }
 .mini-actions .button { padding: 4px 8px; font-size: 12px; }
+.distance-summary[hidden], #detailsDistance[hidden] { display: none !important; }
 .language-fit-badge, .region-nearby, .region-expanded, .region-relocation, .region-unknown { padding: 3px 8px; border-radius: 6px; background: #eaf5e8; color: #2a5d3f; }
 input, select, textarea { border-color: #cfdcce; background: #fcfefb; color: #24392a; }
 input:focus, select:focus, textarea:focus { outline-color: #65a878; }

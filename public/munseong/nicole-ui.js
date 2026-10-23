@@ -30,6 +30,18 @@ export function createNicoleUI({ state, storage, persist, mergeJobs, rerender })
     if (!toolbar) return;
     if (job.company && !['Company not specified', '회사 미상'].includes(job.company)) toolbar.append(editor('companies', job.company, 'Hide company'));
     toolbar.append(editor('sources', job.source, 'Hide source'));
+    const score = node.querySelector('.score');
+    if (score && !Number(job.score)) {
+      score.textContent = 'Not ranked';
+      score.title = 'The Nicole feed does not assign a review priority score.';
+    }
+    const pay = node.querySelector('.compensation-value');
+    if (pay && ['금액 미공개', '보수 미공개', '급여 미공개'].includes(pay.textContent.trim())) pay.textContent = 'Pay not listed';
+    const eligibility = node.querySelector('.eligibility-badge');
+    if (eligibility) {
+      eligibility.textContent = job.eligibilityCode === 'korea' ? 'Korea eligibility possible'
+        : job.eligibilityCode === 'restricted' ? 'Location restrictions apply' : 'Work eligibility unverified';
+    }
     const dates = node.querySelector('.collection-dates');
     if (dates) {
       const first = job.firstSeenAt?.slice(0, 10) || 'Not listed';
@@ -42,7 +54,8 @@ export function createNicoleUI({ state, storage, persist, mergeJobs, rerender })
     }
     const meta = node.querySelector('.meta');
     if (meta && job.languageRequirements) {
-      const text = Array.isArray(job.languageRequirements) ? job.languageRequirements.join(' · ') : String(job.languageRequirements);
+      const raw = Array.isArray(job.languageRequirements) ? job.languageRequirements.join(' · ') : String(job.languageRequirements);
+      const text = raw.replaceAll('공고 원문 확인 필요', 'Check original posting');
       const item = document.createElement('span'); item.textContent = `Languages: ${text}`;
       meta.append(item);
     }

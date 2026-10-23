@@ -1114,6 +1114,9 @@ async function openDetails(job) {
   $('detailsCompensation').classList.toggle('unknown', compensation.unknown);
   $('detailsCompensation').classList.toggle('limited', compensation.limited);
   $('detailsCompensationValue').textContent = compensation.value;
+  if (isNicole && ['금액 미공개', '보수 미공개', '급여 미공개'].includes(compensation.value.trim())) {
+    $('detailsCompensationValue').textContent = 'Pay not listed';
+  }
   $('detailsCompensationNote').textContent = compensation.note;
   const distance = distanceSummary(job);
   $('detailsDistance').hidden = !distance || state.marketTab !== 'domestic';
