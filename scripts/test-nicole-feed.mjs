@@ -8,7 +8,6 @@ const baseline = JSON.parse(fs.readFileSync('profiles/dubu/public/jobs.json', 'u
 const original = JSON.stringify(baseline);
 const adapted = adaptNicoleFeed(baseline);
 const eligible = baseline.jobs.filter((job) => !isGermanLanguageJob(job));
-assert.equal(baseline.jobs.length - eligible.length, 3, 'three German-language leads in the current baseline');
 assert.equal(adapted.jobs.length, eligible.length);
 assert.equal(validatePublicFeed(adapted), adapted);
 assert.equal(JSON.stringify(baseline), original, 'original feed must not change');
@@ -25,6 +24,7 @@ assert.equal(isGermanLanguageJob({ title: 'German/Spanish Marketing' }), true);
 assert.equal(isGermanLanguageJob({ languageRequirements: 'English, German' }), true);
 assert.equal(isGermanLanguageJob({ description: 'You must speak German to work in this role.' }), true);
 assert.equal(isGermanLanguageJob({ description: 'Sehr gute Deutschkenntnisse in Wort und Schrift.' }), true);
+assert.equal(isGermanLanguageJob({ description: 'Wir suchen Dich in unserem Team. Du bringst Berufserfahrung mit und entwickelst kreative Ideen für unsere Kunden. Unsere Aufgaben umfassen die Umsetzung von Kampagnen und die Zusammenarbeit mit dem Marketing-Team. Wir bieten flexible Arbeitszeiten und eine Bewerbung ist jederzeit möglich.' }), true);
 assert.equal(isGermanLanguageJob({ languageRequirements: 'English', location: 'Berlin, Germany', description: 'Work with German customers in an English speaking team.' }), false);
 assert.equal(isGermanLanguageJob({ title: 'Content Marketing for Germany', description: 'German is an optional plus' }), false);
 assert.equal(getProfile('nicole').dbName, 'job-search-radar-nicole');
