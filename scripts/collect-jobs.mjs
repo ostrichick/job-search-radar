@@ -1257,6 +1257,30 @@ function domesticLocationKey(job) {
   return [...admin, addressKey].filter(Boolean).join('|') || canonicalLocation(job.location);
 }
 
+// The stable id is derived from company, title and location scope, so equal ids
+// are the same posting. A live Saramin collection (2026-10-23) still produced
+// one id twice after the earlier merge steps; keep the first (best-ranked) row
+// and fold the other's sources, links and aliases into it so the feed stays valid.
+function mergeSameIdJobs(jobs) {
+  const byId = new Map();
+  const merged = [];
+  for (const job of jobs) {
+    const kept = byId.get(job.id);
+    if (!kept) {
+      const copy = { ...job };
+      byId.set(job.id, copy);
+      merged.push(copy);
+      continue;
+    }
+    kept.legacyIds = [...new Set([...(kept.legacyIds || []), ...(job.legacyIds || [])])].filter((id) => id !== kept.id);
+    kept.sources = [...new Set([...(kept.sources || [kept.source]), ...(job.sources || [job.source])].filter(Boolean))];
+    kept.alternateUrls = [...new Set([...(kept.alternateUrls || []), job.url, ...(job.alternateUrls || [])])]
+      .filter((url) => url && url !== kept.url);
+    kept.duplicateCount = (kept.duplicateCount || 1) + (job.duplicateCount || 1);
+  }
+  return merged;
+}
+
 function stableJobId(job) {
   const scope = domesticLocationKey(job)
     ? `domestic:${domesticLocationKey(job)}`
@@ -3037,11 +3061,11 @@ async function collectJobsOnce({ includeManual = true, persist = true, previousJ
       (job.source === source || (job.sources || []).includes(source))
       && isDefaultRecommendation(job)).length;
   }
-  const uniqueJobs = refreshTimeBasedEvidence(
+  const uniqueJobs = mergeSameIdJobs(refreshTimeBasedEvidence(
     applySourceMetricsToJobs(carryRecentlyMissing(currentJobs, carryFallbackJobs, now), sourceMetrics),
     now
   )
-    .sort((a, b) => (b.score - a.score) || ((Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0)));
+    .sort((a, b) => (b.score - a.score) || ((Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0))));
   const enrichedSourceStatus = sourceStatus.map((status) => ({
     ...status,
     qualityTier: sourceMetrics[status.source]?.qualityTier || 'unknown',
@@ -3158,6 +3182,7 @@ export {
   dedupe,
   carryForwardLegacyIds,
   carryRecentlyMissing,
+  mergeSameIdJobs,
   canonicalCompany,
   canonicalTitle,
   oneFormaCandidate,

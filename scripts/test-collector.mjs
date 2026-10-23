@@ -45,6 +45,7 @@ import {
   dedupe,
   carryForwardLegacyIds,
   carryRecentlyMissing,
+  mergeSameIdJobs,
   oneFormaCandidate,
   oneFormaSupportsKorean,
   enrichPaymentSignal,
@@ -2996,5 +2997,17 @@ assert.equal(mixedAgeEvidence.freshness, 'mixed_age');
 const manualCollection = await collectManual();
 assert.ok(Array.isArray(manualCollection.jobs), 'missing manual-jobs.json must behave as an empty optional source instead of a source failure');
 assert.equal(manualCollection.rawCount, manualCollection.jobs.length, 'manual source raw count must match the optional file contents');
+
+// Same stable id means the same posting: the feed keeps one row and folds in the other's links.
+const sameIdRows = mergeSameIdJobs([
+  { id: 'job:dup', source: '사람인', url: 'https://www.saramin.co.kr/a', legacyIds: ['saramin:1'], score: 30 },
+  { id: 'job:other', source: '알바몬', url: 'https://www.albamon.com/x', score: 20 },
+  { id: 'job:dup', source: '사람인', url: 'https://www.saramin.co.kr/b', legacyIds: ['saramin:2', 'job:dup'], score: 10 }
+]);
+assert.deepEqual(sameIdRows.map((job) => job.id), ['job:dup', 'job:other'], 'equal stable ids must collapse to one feed row in rank order');
+assert.equal(sameIdRows[0].url, 'https://www.saramin.co.kr/a', 'the best-ranked row stays primary');
+assert.deepEqual(sameIdRows[0].alternateUrls, ['https://www.saramin.co.kr/b']);
+assert.deepEqual(sameIdRows[0].legacyIds, ['saramin:1', 'saramin:2']);
+assert.equal(sameIdRows[0].duplicateCount, 2);
 
 console.log('collector tests passed');
