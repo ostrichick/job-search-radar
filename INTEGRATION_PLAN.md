@@ -32,6 +32,7 @@
 - 2b 2단계 완료: `a6d1753`. 공통 앱의 영어 UI 사전과 동적 화면 문구 번역 준비.
 - 2b 3단계 완료: `6ca841a`. `/nicole-next/` 영어 화면, Nicole 고유 필터·통근권·숨김 관리·직접 추가·출처 링크와 개인 DB 읽기 전용 이전 구현. 공개 `/nicole/` 보존.
 - 2b 4단계 완료: `289dc74`. 원본 `dubu-job-radar` 보존, 1회 상태 이전 및 장애 경로를 격리된 E2E로 검증. 로컬 `npm.cmd run check` 통과, E2E 103/103 통과(기존 Munseong 77·Nicole classic 16·Nicole next 10).
+- 2b 승인 전 카드 표현 보정: `e94f0c9`. Nicole의 영어 보수·지원범위·우선순위 표기와 불필요한 거리 표시 수정. Nicole 새 E2E 10/10 통과, GitHub Actions 빌드·전체 E2E·Pages 배포 성공, 공개 1440px·390px 브라우저 확인 완료. 승인 비교 자료는 `docs/PHASE2B_APPROVAL.md`.
 - 남은 일: 2b 5단계 공개 `/nicole/` 전환은 사용자 승인 대기. 승인 전 `/nicole-next/`를 별도 공개하여 비교한다. 옛 Nicole 화면·코드는 삭제하지 않는다.
 
 ## 단계
