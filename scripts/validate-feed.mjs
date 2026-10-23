@@ -49,7 +49,11 @@ assert.ok(!feed.domesticProvinceOptions.includes('광주광역시') && !feed.dom
   'retired province names must not remain as current domestic filter options');
 
 const ids = feed.jobs.map((job) => job.id);
-assert.equal(new Set(ids).size, ids.length, 'stable job ids must be unique');
+const duplicateIds = [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))];
+assert.equal(duplicateIds.length, 0, `stable job ids must be unique: ${duplicateIds.map((id) => {
+  const rows = feed.jobs.filter((job) => job.id === id);
+  return `${id} (${rows.map((job) => `${job.source}/${job.listingStatus}/${job.title}`.slice(0, 120)).join(' | ')})`;
+}).join('; ')}`);
 const localBoardSources = new Set(['알바몬', '알바천국', '잡코리아', '사람인', '인크루트']);
 
 for (const job of feed.jobs) {
