@@ -15,6 +15,7 @@ const nicoleModules = isNicole ? await Promise.all([
   import('./nicole-feed.js'), import('./nicole-migration.js'), import('./nicole-ui.js'), import('./i18n.js')
 ]) : null;
 const adaptNicoleFeed = nicoleModules?.[0].adaptNicoleFeed;
+const isGermanLanguageJob = nicoleModules?.[0].isGermanLanguageJob;
 const sourceForManual = nicoleModules?.[0].sourceForManual;
 const readOriginalNicoleState = nicoleModules?.[1].readOriginalNicoleState;
 const createNicoleUI = nicoleModules?.[2].createNicoleUI;
@@ -481,7 +482,7 @@ function mergeJobs() {
       archivedSnapshot: true
     });
   }
-  state.jobs = [...byId.values()];
+  state.jobs = [...byId.values()].filter((job) => !isNicole || job.manual || !isGermanLanguageJob(job));
 }
 
 function snapshotJob(id) {

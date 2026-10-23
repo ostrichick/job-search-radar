@@ -1,6 +1,16 @@
 import { validatePublicFeed } from './backup-rules.js';
 
 const clean = (value) => typeof value === 'string' ? value.trim() : '';
+const germanLanguage = /\b(?:german|deutsch|deutschkenntnisse|deutschsprachig)\b|독일어/i;
+const germanRequired = /\b(?:fluent|native|advanced|excellent|proficient|business[- ]level)\s+(?:in\s+)?german\b|\bgerman\s+(?:(?:language|speaking)\s+)?(?:skills?|fluency|proficiency)\b|\bgerman\s+(?:required|mandatory|essential|speaker|speaking)\b|\b(?:must|need\s+to)\s+speak\s+german\b|\bdeutschkenntnisse\b|\b(?:sehr\s+gute\w*|flie[ßs]end\w*|verhandlungssicher\w*)\s+deutsch\b|\b(?:sprichst|sprechen)\b.{0,24}\bdeutsch\b|독일어.{0,25}(?:필수|능통|원어민|요구)/i;
+
+// Filter German-language roles, not companies merely based in Germany or
+// English-language postings that mention German customers in their background.
+export function isGermanLanguageJob(job) {
+  return germanLanguage.test(clean(job?.title)) ||
+    germanLanguage.test(clean(job?.languageRequirements)) ||
+    germanRequired.test(clean(job?.description));
+}
 const provinces = [
   ['서울특별시', /서울|seoul/i], ['부산광역시', /부산|busan/i], ['대구광역시', /대구|daegu/i],
   ['인천광역시', /인천|incheon/i], ['대전광역시', /대전|daejeon/i], ['광주광역시', /광주|gwangju/i],
@@ -77,7 +87,7 @@ export function adaptNicoleFeed(raw) {
   if (!raw || !Array.isArray(raw.jobs)) throw new Error('Invalid Nicole feed');
   const data = {
     ...raw,
-    jobs: raw.jobs.map(adaptNicoleJob),
+    jobs: raw.jobs.filter((job) => !isGermanLanguageJob(job)).map(adaptNicoleJob),
     sourceStatus: (raw.sourceStatus || []).map((s) => ({
       ...s, ok: s.ok ?? ['ok', 'partial', 'manual'].includes(s.status)
     }))

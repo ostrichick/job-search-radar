@@ -18,6 +18,25 @@ test.beforeEach(async ({ page }) => {
   await page.route('**/feeds/dubu.json?*', (route) => route.fulfill({ json: feed }));
 });
 
+test('German-language roles are omitted but Germany-based English jobs remain', async ({ page }) => {
+  await page.route('**/feeds/dubu.json?*', (route) => route.fulfill({ json: {
+    ...feed, jobs: [
+      ...feed.jobs,
+      job('de-title', 'online', { title: 'German-speaking Marketing Coordinator', languageRequirements: 'German' }),
+      job('de-required', 'online', { languageRequirements: '', description: 'Fluent German required for this role.' }),
+      job('de-mixed', 'offline', { title: 'Sales & Marketing (German/Spanish)', languageRequirements: 'German/Spanish communication' }),
+      job('germany-english', 'online', { title: 'English Marketing in Germany', location: 'Berlin, Germany', languageRequirements: 'English', description: 'Serving German clients; all work in English.' })
+    ]
+  } }));
+  await page.goto('/nicole/');
+  await expect(page.locator('#jobs')).toContainText('English Marketing in Germany');
+  await expect(page.locator('#jobs')).not.toContainText('German-speaking Marketing Coordinator');
+  await expect(page.locator('#jobs .job-card')).toHaveCount(2);
+  await page.locator('#marketDomestic').click();
+  await expect(page.locator('#jobs')).not.toContainText('Sales & Marketing (German/Spanish)');
+  await expect(page.locator('#jobs .job-card')).toHaveCount(3);
+});
+
 test('former Nicole preview URL redirects to the integrated Nicole screen and keeps deep-link parameters', async ({ page }) => {
   await page.goto('/nicole-next/?origin=old-preview#jobs');
   await expect(page).toHaveURL(/\/nicole\/\?origin=old-preview#jobs$/);
