@@ -34,6 +34,7 @@
 - 2b 4단계 완료: `289dc74`. 원본 `dubu-job-radar` 보존, 1회 상태 이전 및 장애 경로를 격리된 E2E로 검증. 로컬 `npm.cmd run check` 통과, E2E 103/103 통과(기존 Munseong 77·Nicole classic 16·Nicole next 10).
 - 2b 승인 전 카드 표현 보정: `e94f0c9`. Nicole의 영어 보수·지원범위·우선순위 표기와 불필요한 거리 표시 수정. Nicole 새 E2E 10/10 통과, GitHub Actions 빌드·전체 E2E·Pages 배포 성공, 공개 1440px·390px 브라우저 확인 완료. 승인 비교 자료는 `docs/PHASE2B_APPROVAL.md`.
 - 2b 5단계 완료(사용자 승인 후): `70e1f76`. `/nicole/`에 공통 영어 화면 적용, `/nicole-classic/`에 옛 UI·코드 보관, `/nicole-next/`는 `/nicole/`로 이동. `npm.cmd run check`와 전체 Playwright 104/104 통과, [Actions 39937926682](https://github.com/ostrichick/job-search-radar/actions/runs/39937926682)에서 빌드·테스트·Pages 배포 성공. 공개 사이트 1440px·390px에서 Nicole/Munseong/classic 모두 공고 렌더링, 오류·수평 넘침 없음; `/`·`/dubu/`와 preview 이동 확인. 실제 사용자 IndexedDB 접근 없이 격리 브라우저로 이전 검증. **옛 코드 삭제는 별도 보관 기간 종료 확인 후에만 실행.**
+- 옛 Nicole 화면 제거(2026-10-23, 사용자 확인): `public/nicole-classic/` 코드와 classic E2E 삭제, `/nicole-classic/`은 `/nicole/`로 이동. 원본 IndexedDB `dubu-job-radar`와 새 화면의 1회 이전 코드는 유지(아직 새 화면을 열지 않은 기기의 목록 이전용). 피드 상태 검사 모듈은 `public/nicole/feed-health.js`로 옮김.
 
 ## 단계
 

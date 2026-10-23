@@ -155,6 +155,11 @@ test('English interface has no remaining Korean outside listing data', async ({ 
   expect(await findUiKorean()).toEqual([]);
 });
 
+test('retired classic address opens the shared Nicole screen', async ({ page }) => {
+  await page.goto('/nicole-classic/');
+  await expect(page).toHaveURL(/\/nicole\/$/);
+});
+
 test('first shared screen visit migrates original state once without modifying source document', async ({ page }) => {
   await page.route('**/munseong/app.js', (route) => route.fulfill({ body: '', contentType: 'text/javascript' }));
   await page.goto('/nicole/');

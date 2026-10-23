@@ -80,7 +80,7 @@ Welo Global/Welocalize, RWS, LILT, Meridial, OneForma는 **공식 모집원 여�
 
 사이트 첫 주소는 Nicole 화면(`public/nicole/`, 주소 `/nicole/`)으로 이동하고, 이 대시보드는 `public/munseong/`(주소 `/munseong/`)에 있습니다. 두 화면 상단의 `Nicole / Munseong`으로 오가며, 예전 `/dubu/` 주소는 `/nicole/`로 이동합니다. 로컬에서는 `npm start` 후 `http://127.0.0.1:4317/nicole/` 또는 `/munseong/`을 엽니다. 수집기·규칙·단위 테스트는 `profiles/dubu/`에 있습니다. 규칙은 이 대시보드와 별개로 유지합니다. 배포 워크플로가 함께 수집해 `feeds/dubu.json`으로 공개하고, 이력 기준선 `profiles/dubu/public/jobs.json`을 자동 커밋합니다. 로컬 실행은 `npm run refresh:dubu`, 테스트는 `npm run test:dubu`입니다. 통합 단계와 결정 사항은 [`INTEGRATION_PLAN.md`](./INTEGRATION_PLAN.md)에 있습니다.
 
-2026-10-23 승인된 화면 통합 2b 5단계부터 Nicole과 Munseong 화면은 `public/munseong/app.js` 및 공통 모듈을 사용합니다. Nicole은 영어와 별도 IndexedDB(`job-search-radar-nicole`)를 사용합니다. 기존 Nicole 앱과 원본 IndexedDB(`dubu-job-radar`)는 보존하며, 이전 Nicole 화면은 메뉴에 표시하지 않는 `/nicole-classic/`에서 열 수 있습니다. `/nicole-next/`는 `/nicole/`로 이동합니다. 기존 코드 삭제는 보관 종료를 별도 확인한 뒤 진행합니다.
+2026-10-23 승인된 화면 통합 2b 5단계부터 Nicole과 Munseong 화면은 `public/munseong/app.js` 및 공통 모듈을 사용합니다. Nicole은 영어와 별도 IndexedDB(`job-search-radar-nicole`)를 사용합니다. 원본 IndexedDB(`dubu-job-radar`)는 지우지 않으며, 각 기기에서 `/nicole/`을 처음 열 때 한 번 새 저장소로 옮겨집니다. 옛 Nicole 화면 코드는 사용자 확인에 따라 2026-10-23 삭제했고 `/nicole-classic/`·`/nicole-next/`는 `/nicole/`로 이동합니다.
 
 ## 웹 배포
 
