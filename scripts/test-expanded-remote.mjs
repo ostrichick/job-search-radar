@@ -44,6 +44,19 @@ const nicole = normalizeExpandedRemote('himalayas', { jobs: [{
 }] }, { now: new Date(now).toISOString(), homeCountry: 'KR', languages: { es: 'native', en: 'unverified', ko: 'beginner' } });
 assert.equal(nicole.length, 1);
 assert.equal(nicole[0].url, h.applicationLink, 'Himalayas Apply link must remain unchanged');
+const untranslatedKoreanRole = { ...h, title: 'Freelance Translators/Checkers - Korean to English - Surgery',
+  applicationLink: 'https://himalayas.app/companies/ulatus/jobs/korean-to-english-surgery',
+  companyName: 'Ulatus', description: 'Expert-level Korean-English medical translation required' };
+assert.equal(normalizeExpandedRemote('himalayas', { jobs: [untranslatedKoreanRole] }, {
+  now: new Date(now).toISOString(), homeCountry: 'KR', languages: { es: 'native', en: 'unverified', ko: 'beginner' }
+}).length, 0, 'Nicole must not receive Korean-fluency translation jobs with explicit language mismatch');
+const previousKoreanTranslation = { ...nicole[0], title: untranslatedKoreanRole.title,
+  company: 'Ulatus', source: 'Himalayas', languageFitStatus: 'mismatch',
+  url: untranslatedKoreanRole.applicationLink };
+assert.equal(mergeHistoricalFeed({ updatedAt: new Date(now).toISOString(), jobs: [],
+  sourceStatus: [{ source: 'Himalayas', status: 'ok' }] }, { jobs: [previousKoreanTranslation] },
+{ knownLanguages: { es: 'native', en: 'unverified', ko: 'beginner' } }).jobs.length, 0,
+  'historical mismatch must not re-enter Nicole after filtering new API jobs');
 const commonRemote = {
   id: 'bosnian-review', title: 'English to Bosnian (Cyrillic) Review Lead for UI, Marketing & Product Content',
   url: 'https://remotejobs.org/remote-jobs/bosnian-review',

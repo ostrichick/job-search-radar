@@ -155,6 +155,10 @@ function unsupportedTargetLanguageReview(title) {
   return Boolean(target && target[1].toLowerCase() !== 'spanish');
 }
 
+const expandedSourceLanguageMismatch = (job, knownLanguages) =>
+  ['Himalayas', 'RemoteJobs.org'].includes(job.source)
+  && (job.languageFitStatus || assessLanguageFit(job, knownLanguages).languageFitStatus) === 'mismatch';
+
 export function normalizeExpandedRemote(key, payload, options = {}) {
   return expandedRemoteCandidates(key, payload).flatMap((item) => {
     // The broad 'marketing' API query also returns non-Spanish translation
@@ -169,7 +173,7 @@ export function normalizeExpandedRemote(key, payload, options = {}) {
       postedAt: item.postedAt, listingExpiresAt: item.listingExpiresAt, pay: getPay([item.salary]),
       categories: item.tags, ...options
     });
-    return job ? [job] : [];
+    return job && !expandedSourceLanguageMismatch(job, options.languages) ? [job] : [];
   });
 }
 
@@ -417,6 +421,7 @@ export function mergeHistoricalFeed(incoming, previous, { retentionDays = 60, ma
   const eligibleIncoming = incoming.jobs.filter((job) =>
     !explicitlyExcludedUrls.has(safePublicUrl(job.url)) && !pastDeadline(job) &&
     !isFutureOnlyProductivePlayhouse(job) &&
+    !expandedSourceLanguageMismatch(job, knownLanguages) &&
     !(job.source === 'RemoteJobs.org' && unsupportedTargetLanguageReview(job.title)) &&
     (job.sourceKind === 'manual' ||
       (!excludeOnlineJobReason(job, { knownLanguages }) && !excludeQualificationReason(job))));
@@ -438,6 +443,7 @@ export function mergeHistoricalFeed(incoming, previous, { retentionDays = 60, ma
     if (!job || typeof job.id !== 'string' || seenIds.has(job.id) || !safePublicUrl(job.url) ||
       (job.source === 'RemoteJobs.org' && unsupportedTargetLanguageReview(job.title)) ||
       isFutureOnlyProductivePlayhouse(job) ||
+      expandedSourceLanguageMismatch(job, knownLanguages) ||
       explicitlyExcludedUrls.has(safePublicUrl(job.url)) || pastDeadline(job)) return [];
     if (job.sourceKind === 'curated_research' &&
         (!isoDate(job.researchReviewedAt) ||
