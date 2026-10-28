@@ -263,6 +263,32 @@
     "summary": "Arbeitnow 공개 Job Board API에서 가져오는 집계 공고입니다. 고용주의 공식 모집원 여부는 원문에서 별도 확인해야 합니다.",
     "evidence": [{"type": "official_feed", "label": "공개 API", "url": "https://www.arbeitnow.com/api/job-board-api"}]
   },
+  "Himalayas": {
+    "kind": "job_board",
+    "coverage": "bounded_window",
+    "evidenceRefreshability": "public_api",
+    "listingLabel": "Himalayas 공개 원격 채용",
+    "paymentStatus": "not_payer",
+    "paymentLabel": "지급 주체 아님",
+    "paymentEvidenceState": "not_applicable",
+    "paymentEvidenceLabel": "지급 주체 아님",
+    "paymentConfidence": "not_applicable",
+    "summary": "Himalayas 공개 API에서 한국 지원 가능 지역으로 검색한 원격 공고입니다. 응모 URL은 Himalayas 원문이며 실제 고용주 선발·지원 가능성은 확인 필요합니다.",
+    "evidence": [{"type": "official_feed", "label": "Himalayas 원격 채용 API와 출처 정책", "url": "https://himalayas.app/docs/remote-jobs-api"}]
+  },
+  "RemoteJobs.org": {
+    "kind": "job_board",
+    "coverage": "bounded_window",
+    "evidenceRefreshability": "public_api",
+    "listingLabel": "RemoteJobs.org 공개 원격 채용",
+    "paymentStatus": "not_payer",
+    "paymentLabel": "지급 주체 아님",
+    "paymentEvidenceState": "not_applicable",
+    "paymentEvidenceLabel": "지급 주체 아님",
+    "paymentConfidence": "not_applicable",
+    "summary": "RemoteJobs.org 공식 공개 API에서 한국 지원 허용 근거가 있는 원격 공고만 추렸습니다. 지원 조건과 실제 채용 여부는 원문 재확인 필요합니다.",
+    "evidence": [{"type": "official_feed", "label": "RemoteJobs.org 개발자 API", "url": "https://remotejobs.org/developers/api"}]
+  },
   "알바몬": {
     "kind": "job_board",
     "coverage": "bounded_window",

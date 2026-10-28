@@ -2756,7 +2756,8 @@ function dedupe(jobs) {
 function keepInFeed(job) {
   // Closed jobs belong in verification history and browser-held application
   // snapshots, not in the actionable published search feed.
-  if (job.listingStatus === 'expired' || hasPassedFixedDeadline(job)) return false;
+  if (job.listingStatus === 'expired' || hasPassedFixedDeadline(job)
+    || (job.listingExpiresAt && Date.parse(job.listingExpiresAt) < Date.now())) return false;
   return (Number(job.score || 0) >= 10 || isOfficialKind(job.sourceKind))
     || job.sourceKind === 'manual'
     || ['source_error', 'archived_missing'].includes(job.listingStatus);
@@ -2850,7 +2851,7 @@ function collectionGapsFor({ work24Configured = false } = {}) {
 
 const { appendLimitedHistory, sourceContentSnapshot, sourceFieldFingerprints, contentFingerprint, changedSourceFields, rebaseLegacyContentHistory, previousJobLookup, findPreviousJob, reconcileVerificationHistory } = createVerificationHistory({ text, stableSourceDescription, normalizedUrl, verificationHistoryLimit, contentFingerprintVersion, verificationCheckpointMs });
 const { normalizeJob } = createJobNormalizer({ stableSourceDescription, normalizeWorkplaceMode, text, classify, domesticRegionFor, marketScopesFor, marketSegmentFor, eligibilityFor, sourceMeta, extractSalary, isOfficialKind, derivePaymentEvidence, currentListingState, lower, profile, evidenceSnippet, extractLocalWorkPeriod, extractLocalWorkSchedule, localCompensationNotes, localMandatoryQualification, localPreferredConditions, scoreJob, contentFingerprintVersion, sourceFieldFingerprints, contentFingerprint, localDomesticBoardSources });
-const { collectLeverBoard, collectWeloGlobal, collectRws, collectTsmg, collectElevenLabs, collectLilt, collectKrafton, collectAppier, collectChannelCorp, work24Candidate, fallbackJobsForConfiguredSources, collectWork24, collectMeridial, oneFormaTerms, oneFormaSupportsKorean, oneFormaCandidate, collectOneForma, collectWeWorkRemotely, collectJobicy, collectRemoteOk, collectRemotive, collectArbeitnow } = createSourceAdapters({ fetchJson, fetchText, text, lower, decodeHtmlEntities, normalizeJob, relevantToProfile, sourceCollection, work24Deadline, work24EmploymentType, work24IsoDate, parseWork24ListXml, xmlTag });
+const { collectLeverBoard, collectWeloGlobal, collectRws, collectTsmg, collectElevenLabs, collectLilt, collectKrafton, collectAppier, collectChannelCorp, work24Candidate, fallbackJobsForConfiguredSources, collectWork24, collectMeridial, oneFormaTerms, oneFormaSupportsKorean, oneFormaCandidate, collectOneForma, collectWeWorkRemotely, collectJobicy, collectRemoteOk, collectRemotive, collectArbeitnow, collectHimalayas, collectRemoteJobsOrg } = createSourceAdapters({ fetchJson, fetchText, text, lower, decodeHtmlEntities, normalizeJob, relevantToProfile, sourceCollection, work24Deadline, work24EmploymentType, work24IsoDate, parseWork24ListXml, xmlTag });
 
 const { carryForwardLegacyIds, carryRecentlyMissing } = createMissingJobRules({ normalizedUrl, relevantToProfile, isOfficialKind, appendLimitedHistory, contentFingerprint, sourceMeta, derivePaymentEvidence, eligibilityFor, normalizeWorkplaceMode, domesticRegionFor, marketScopesFor, legacyLocalWorkAddressEvidence, extractSalary });
 const { recommendationCollapseRisk } = createRecommendationGuard({ isDefaultRecommendation, normalizedUrl });
@@ -2880,6 +2881,8 @@ async function collectJobsOnce({ includeManual = true, persist = true, previousJ
     ['Jobicy', collectJobicy],
     ['Remote OK', collectRemoteOk],
     ['Remotive', collectRemotive],
+    ['Himalayas', collectHimalayas],
+    ['RemoteJobs.org', collectRemoteJobsOrg],
     ['Arbeitnow', collectArbeitnow]
   ];
   if (work24AuthKey) sources.unshift(['고용24', () => collectWork24(work24AuthKey)]);

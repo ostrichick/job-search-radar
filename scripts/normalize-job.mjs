@@ -32,6 +32,7 @@ function normalizeJob(raw) {
     deadlineDate: text(raw.deadlineDate),
     deadlineLabel: text(raw.deadlineLabel),
     deadlineCloseOnHire: Boolean(raw.deadlineCloseOnHire),
+    listingExpiresAt: text(raw.listingExpiresAt),
     lastDetailVerifiedAt: raw.source === '인크루트' && raw.sourceListingState === 'public_detail'
       ? new Date().toISOString()
       : text(raw.lastDetailVerifiedAt),

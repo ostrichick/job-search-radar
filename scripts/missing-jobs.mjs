@@ -49,7 +49,8 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
     // terminal status, never turn that record back into an unverified opening.
     const closeAt = previous.deadlineType === 'fixed' && /^\d{4}-\d{2}-\d{2}$/.test(previous.deadlineDate || '')
       ? Date.parse(previous.deadlineDate + 'T23:59:59+09:00') : NaN;
-    if (previous.listingStatus === 'expired' || (Number.isFinite(closeAt) && closeAt < now)) continue;
+    if (previous.listingStatus === 'expired' || (Number.isFinite(closeAt) && closeAt < now)
+      || (previous.listingExpiresAt && Date.parse(previous.listingExpiresAt) < now)) continue;
     const sourceSpecificRelevant = previous.source !== 'OneForma'
       || previous.countryCode === 'KR'
       || (previous.tags || []).some((tag) => /korean|한국어/i.test(String(tag)));

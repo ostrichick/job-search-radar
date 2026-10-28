@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import { SHARED_SOURCE_URLS } from './shared-responses.mjs';
+import { EXPANDED_REMOTE_FEEDS, expandedRemoteCandidates } from './expanded-remote-sources.mjs';
 export function createSourceAdapters({ fetchJson, fetchText, text, lower, decodeHtmlEntities, normalizeJob, relevantToProfile, sourceCollection, work24Deadline, work24EmploymentType, work24IsoDate, parseWork24ListXml, xmlTag }) {
 async function collectLeverBoard(site, source, company, { query = '', rowFilter = null } = {}) {
   const suffix = query ? `&${query}` : '';
@@ -543,6 +544,38 @@ async function collectArbeitnow() {
   return sourceCollection(all, rawCount);
 }
 
+async function collectExpandedRemote(key) {
+  const collected = [];
+  const seen = new Set();
+  let rawCount = 0;
+  let successfulRequests = 0;
+  let failures = 0;
+  for (const url of EXPANDED_REMOTE_FEEDS[key]) {
+    try {
+      const data = await fetchJson(url);
+      const rows = key === 'himalayas' ? data?.jobs : data?.data;
+      if (!Array.isArray(rows)) throw new Error('Expanded source returned no job array');
+      rawCount += rows.length;
+      for (const candidate of expandedRemoteCandidates(key, data)) {
+        if (seen.has(candidate.url)) continue;
+        seen.add(candidate.url);
+        if (relevantToProfile(candidate)) collected.push(normalizeJob(candidate));
+      }
+      successfulRequests++;
+    } catch { failures++; }
+  }
+  if (!successfulRequests) throw new Error(key + ' all public API search requests failed');
+  return sourceCollection(collected, rawCount, {
+    searchAttemptCount: EXPANDED_REMOTE_FEEDS[key].length,
+    searchSuccessCount: successfulRequests,
+    searchFailureCount: failures,
+    discoveredCount: seen.size
+  });
+}
 
-return { collectLeverBoard, collectWeloGlobal, collectRws, collectTsmg, collectElevenLabs, collectLilt, collectKrafton, collectAppier, collectChannelCorp, work24Candidate, fallbackJobsForConfiguredSources, collectWork24, collectMeridial, oneFormaTerms, oneFormaSupportsKorean, oneFormaCandidate, collectOneForma, collectWeWorkRemotely, collectJobicy, collectRemoteOk, collectRemotive, collectArbeitnow };
+async function collectHimalayas() { return collectExpandedRemote('himalayas'); }
+async function collectRemoteJobsOrg() { return collectExpandedRemote('remotejobs'); }
+
+
+return { collectLeverBoard, collectWeloGlobal, collectRws, collectTsmg, collectElevenLabs, collectLilt, collectKrafton, collectAppier, collectChannelCorp, work24Candidate, fallbackJobsForConfiguredSources, collectWork24, collectMeridial, oneFormaTerms, oneFormaSupportsKorean, oneFormaCandidate, collectOneForma, collectWeWorkRemotely, collectJobicy, collectRemoteOk, collectRemotive, collectArbeitnow, collectHimalayas, collectRemoteJobsOrg };
 }

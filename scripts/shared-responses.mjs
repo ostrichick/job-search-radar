@@ -6,12 +6,15 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { EXPANDED_REMOTE_FEEDS } from './expanded-remote-sources.mjs';
 
 export const SHARED_SOURCE_URLS = Object.freeze({
   remotive: 'https://remotive.com/api/remote-jobs?limit=500',
   jobicy: 'https://jobicy.com/api/v2/remote-jobs?count=200',
   remoteok: 'https://remoteok.com/api',
-  arbeitnow: 'https://www.arbeitnow.com/api/job-board-api?page=1'
+  arbeitnow: 'https://www.arbeitnow.com/api/job-board-api?page=1',
+  ...Object.fromEntries(Object.entries(EXPANDED_REMOTE_FEEDS).flatMap(([name, urls]) =>
+    urls.map((url, index) => [name + index, url])))
 });
 const shared = new Set(Object.values(SHARED_SOURCE_URLS));
 const maxAgeMs = 60 * 60 * 1000;

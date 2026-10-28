@@ -6,6 +6,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { collectCuratedResearch } from './curated-research.mjs';
 import { SHARED_SOURCE_URLS, loadSharedResponse } from '../../../scripts/shared-responses.mjs';
+import { EXPANDED_REMOTE_FEEDS, expandedRemoteCandidates } from '../../../scripts/expanded-remote-sources.mjs';
 import {
   assessEligibility, assessLanguageFit, classifyRole, dedupeJobs, excludeOnlineJobReason, excludeQualificationReason, extractLanguages, isoDate,
   requiresPhysicalAttendance, safePublicUrl, safeText, stableId,
@@ -18,6 +19,8 @@ const SOURCES = [
   { key: 'jobicy', name: 'Jobicy', url: SHARED_SOURCE_URLS.jobicy },
   { key: 'remoteok', name: 'Remote OK', url: SHARED_SOURCE_URLS.remoteok },
   { key: 'arbeitnow', name: 'Arbeitnow', url: SHARED_SOURCE_URLS.arbeitnow },
+  { key: 'himalayas', name: 'Himalayas', url: EXPANDED_REMOTE_FEEDS.himalayas[0] },
+  { key: 'remotejobs', name: 'RemoteJobs.org', url: EXPANDED_REMOTE_FEEDS.remotejobs[0] },
 ];
 
 function asText(value, limit = 400) { return safeText(value, limit); }
@@ -28,7 +31,7 @@ function recordStatus(source, status, count, checkedAt, detail = '', extras = {}
 }
 
 function commonJob({ source, providerId, url, title, company, description, location,
-  restriction, postedAt, deadline, pay, categories, now, homeCountry, languages, onExcluded }) {
+  restriction, postedAt, deadline, listingExpiresAt, pay, categories, now, homeCountry, languages, onExcluded }) {
   const safeUrl = safePublicUrl(url);
   const cleanTitle = asText(title, 240);
   const cleanCompany = asText(company, 160);
@@ -62,9 +65,12 @@ function commonJob({ source, providerId, url, title, company, description, locat
   const languageFit = assessLanguageFit({ title: cleanTitle, description, category, languageRequirements }, languages);
   return {
     id: stableId(source, providerId, safeUrl),
-    title: cleanTitle, company: cleanCompany, source, url: safeUrl, description: cleanDescription,
+    // Himalayas requires its API applicationLink to be used unchanged, including
+    // the API attribution query parameter. Keep the normalized URL for identity.
+    title: cleanTitle, company: cleanCompany, source,
+    url: source === 'Himalayas' ? url : safeUrl, description: cleanDescription,
     location: cleanLocation, workplaceMode: 'remote', market: 'online', category,
-    postedAt: isoDate(postedAt), deadline: isoDate(deadline), pay,
+    postedAt: isoDate(postedAt), deadline: isoDate(deadline), listingExpiresAt: isoDate(listingExpiresAt), pay,
     languageRequirements, eligibility, eligibilityStatus: eligibilityDetail.status, eligibilityDetail,
     ...languageFit,
     verifiedAt: now, sourceKind: 'public_api',
@@ -144,6 +150,20 @@ export function normalizeArbeitnow(payload, options = {}) {
   });
 }
 
+export function normalizeExpandedRemote(key, payload, options = {}) {
+  return expandedRemoteCandidates(key, payload).flatMap((item) => {
+    const job = commonJob({
+      source: item.source,
+      providerId: item.sourcePostingId, url: item.url,
+      title: item.title, company: item.company, description: item.description,
+      location: item.location, restriction: item.location,
+      postedAt: item.postedAt, listingExpiresAt: item.listingExpiresAt, pay: getPay([item.salary]),
+      categories: item.tags, ...options
+    });
+    return job ? [job] : [];
+  });
+}
+
 function validateManualJob(item, now) {
   if (!item || typeof item !== 'object') return null;
   const url = safePublicUrl(item.url);
@@ -200,9 +220,13 @@ async function collectOne(source, { fetchImpl, timeoutMs, now, homeCountry, lang
   const normalize = {
     remotive: normalizeRemotive, jobicy: normalizeJobicy,
     remoteok: normalizeRemoteOk, arbeitnow: normalizeArbeitnow,
+    himalayas: (data, opts) => normalizeExpandedRemote('himalayas', data, opts),
+    remotejobs: (data, opts) => normalizeExpandedRemote('remotejobs', data, opts),
   }[source.key];
   const requests = source.key === 'jobicy'
     ? [source.url, `${source.url}&industry=marketing`, `${source.url}&tag=spanish`, `${source.url}&tag=translation`]
+    : EXPANDED_REMOTE_FEEDS[source.key]
+      ? EXPANDED_REMOTE_FEEDS[source.key]
     : [source.url];
   const collected = [];
   const excludedUrls = new Set();
@@ -283,7 +307,8 @@ export async function buildFeed({ root = ROOT, fetchImpl = fetch, readFileImpl =
   koreaCollector, koreaAtsCollector, koworkCollector, timeoutMs = 12000, now = new Date().toISOString() } = {}) {
   const profile = await readProfile(root, readFileImpl);
   const collectors = profile.collectors || {};
-  const sourceTasks = SOURCES.map((source) => collectors[source.key] === false
+  const sourceTasks = SOURCES.map((source) => (collectors[source.key] === false
+    || (EXPANDED_REMOTE_FEEDS[source.key] && collectors[source.key] !== true))
     ? Promise.resolve({ jobs: [], successfulRequests: 0, sourceStatus: [recordStatus(source.name, 'disabled', 0, now, '사용자 프로필에서 비활성화', { url: source.url })] })
     : collectOne(source, { fetchImpl, timeoutMs, now, homeCountry: profile.homeCountry, languages: profile.spokenLanguages }));
   // Work24 is outside this foreign-friendly board's normal collection scope.
@@ -370,6 +395,7 @@ export function mergeHistoricalFeed(incoming, previous, { retentionDays = 60, ma
   // absence from an API response does not establish closure.
   const pastDeadline = (job) => {
     if (job.sourceKind === 'manual') return false;
+    if (job.listingExpiresAt && Date.parse(job.listingExpiresAt) < fetchedAt) return true;
     const deadline = isoDate(job.deadline);
     return Boolean(deadline && (job.deadlineHasTime
       ? Date.parse(deadline) < fetchedAt : deadline.slice(0, 10) < collectedAt.slice(0, 10)));
