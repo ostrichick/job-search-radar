@@ -13,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { isDefaultRecommendation as recommendationRule } from '../public/munseong/recommendation-rules.js';
 import { incruitJeonbukRssUrl, parseIncruitJeonbukRss } from './incruit-rss.mjs';
 import { collectCuratedLeads } from './curated-research.mjs';
+import { isFutureOnlyProductivePlayhouse } from './expanded-remote-sources.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -2401,6 +2402,7 @@ function transientIncruitSearchFailure(error) {
 function preserveFailedSourceJobs(source, previousJobs = []) {
   return previousJobs
     .filter((job) => job.source === source
+      && !isFutureOnlyProductivePlayhouse(job)
       && job.listingStatus !== 'expired'
       && !hasPassedFixedDeadline(job)
       && (source !== '인크루트'
@@ -2756,6 +2758,7 @@ function dedupe(jobs) {
 function keepInFeed(job) {
   // Closed jobs belong in verification history and browser-held application
   // snapshots, not in the actionable published search feed.
+  if (isFutureOnlyProductivePlayhouse(job)) return false;
   if (job.listingStatus === 'expired' || hasPassedFixedDeadline(job)
     || (job.listingExpiresAt && Date.parse(job.listingExpiresAt) < Date.now())) return false;
   return (Number(job.score || 0) >= 10 || isOfficialKind(job.sourceKind))

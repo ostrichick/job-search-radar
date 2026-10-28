@@ -6,7 +6,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { collectCuratedResearch } from './curated-research.mjs';
 import { SHARED_SOURCE_URLS, loadSharedResponse } from '../../../scripts/shared-responses.mjs';
-import { EXPANDED_REMOTE_FEEDS, expandedRemoteCandidates } from '../../../scripts/expanded-remote-sources.mjs';
+import { EXPANDED_REMOTE_FEEDS, expandedRemoteCandidates, isFutureOnlyProductivePlayhouse } from '../../../scripts/expanded-remote-sources.mjs';
 import {
   assessEligibility, assessLanguageFit, classifyRole, dedupeJobs, excludeOnlineJobReason, excludeQualificationReason, extractLanguages, isoDate,
   requiresPhysicalAttendance, safePublicUrl, safeText, stableId,
@@ -416,6 +416,7 @@ export function mergeHistoricalFeed(incoming, previous, { retentionDays = 60, ma
   }));
   const eligibleIncoming = incoming.jobs.filter((job) =>
     !explicitlyExcludedUrls.has(safePublicUrl(job.url)) && !pastDeadline(job) &&
+    !isFutureOnlyProductivePlayhouse(job) &&
     !(job.source === 'RemoteJobs.org' && unsupportedTargetLanguageReview(job.title)) &&
     (job.sourceKind === 'manual' ||
       (!excludeOnlineJobReason(job, { knownLanguages }) && !excludeQualificationReason(job))));
@@ -436,6 +437,7 @@ export function mergeHistoricalFeed(incoming, previous, { retentionDays = 60, ma
   const historical = priorList.flatMap((job) => {
     if (!job || typeof job.id !== 'string' || seenIds.has(job.id) || !safePublicUrl(job.url) ||
       (job.source === 'RemoteJobs.org' && unsupportedTargetLanguageReview(job.title)) ||
+      isFutureOnlyProductivePlayhouse(job) ||
       explicitlyExcludedUrls.has(safePublicUrl(job.url)) || pastDeadline(job)) return [];
     if (job.sourceKind === 'curated_research' &&
         (!isoDate(job.researchReviewedAt) ||

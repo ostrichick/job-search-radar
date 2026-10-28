@@ -37,6 +37,12 @@ const validSourceUrl = (value, host) => {
 };
 const stableBoardId = (source, identifier) =>
   source + ':' + createHash('sha1').update(String(identifier)).digest('hex').slice(0, 20);
+export function isFutureOnlyProductivePlayhouse(job) {
+  const company = String(job?.company || job?.companyName || '').trim();
+  const title = String(job?.title || '').trim();
+  return /^Productive Playhouse$/i.test(company)
+    && /^Korean\s*[-–]\s*AI Product Evaluator(?:\s*\(future-project talent pool\))?$/i.test(title);
+}
 const salary = (min, max, currency, period) => {
   if (!Number.isFinite(Number(min)) && !Number.isFinite(Number(max))) return '';
   const values = [min, max].filter((item) => item !== null && item !== undefined && Number.isFinite(Number(item)));
@@ -56,9 +62,8 @@ export function expandedRemoteCandidates(key, payload, now = Date.now()) {
       if (/\b(?:internal job posting|employees only|internal applicants only)\b/i.test(job.title)) return [];
       const url = validSourceUrl(job.applicationLink, 'himalayas.app');
       if (!url || !job.title || !job.companyName) return [];
-      // Employer's original listing is explicitly for a future-project talent
-      // pool, not a currently allocated role. It is already tracked separately.
-      if (/^\/companies\/productive-playhouse\/jobs\/korean-ai-product-evaluator(?:-|\/|$)/i.test(new URL(url).pathname)) return [];
+      // This employer role is a future-project talent pool, not an active job.
+      if (isFutureOnlyProductivePlayhouse(job)) return [];
       return [{
         id: stableBoardId('himalayas', job.guid || url),
         source: 'Himalayas', sourcePostingId: job.guid || url, url,
@@ -106,7 +111,7 @@ export function expandedRemoteCandidates(key, payload, now = Date.now()) {
         location: geo.allowed_countries?.includes('KR') ? 'South Korea'
           : heading?.status === 'known' && heading.scope === 'worldwide'
             ? 'Worldwide'
-            : 'Remote (Korea eligibility requires direct confirmation)',
+          : 'Remote', // Unconfirmed worldwide metadata is not proof of KR eligibility.
         remote: true, workplaceMode: 'remote', type: job.type || 'Remote',
         description: job.description || '',
         postedAt: job.posted_at || null,

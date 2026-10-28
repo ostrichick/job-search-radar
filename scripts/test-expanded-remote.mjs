@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import { expandedRemoteCandidates } from './expanded-remote-sources.mjs';
-import { normalizeExpandedRemote } from '../profiles/dubu/scripts/collect.mjs';
-import { dedupe, normalizeJob } from './collect-jobs.mjs';
+import { expandedRemoteCandidates, isFutureOnlyProductivePlayhouse } from './expanded-remote-sources.mjs';
+import { normalizeExpandedRemote, mergeHistoricalFeed } from '../profiles/dubu/scripts/collect.mjs';
+import { dedupe, normalizeJob, carryRecentlyMissing, preserveFailedSourceJobs } from './collect-jobs.mjs';
 import { validateJob } from '../public/munseong/backup-rules.js';
 
 const now = Date.parse('2026-10-28T06:00:00Z');
@@ -20,6 +20,17 @@ const himalayas = expandedRemoteCandidates('himalayas', { jobs: [
   { ...h, expiryDate: now / 1000 - 1, applicationLink: 'https://himalayas.app/companies/test/jobs/expired' }
 ] }, now);
 assert.equal(himalayas.length, 1);
+const futurePool = { ...h, title: 'Korean - AI Product Evaluator', companyName: 'Productive Playhouse',
+  applicationLink: 'https://himalayas.app/companies/productive-playhouse/jobs/korean-ai-product-evaluator-2546261984?utm_source=api' };
+assert.equal(expandedRemoteCandidates('himalayas', { jobs: [futurePool] }, now).length, 0,
+  'an employer future-project talent pool must not enter active recruitment');
+const priorFuturePool = { ...normalizeJob({ ...himalayas[0], title: futurePool.title, company: futurePool.companyName,
+  url: futurePool.applicationLink }), listingStatus: 'current_feed', score: 78 };
+assert.equal(isFutureOnlyProductivePlayhouse(priorFuturePool), true);
+assert.equal(carryRecentlyMissing([], [priorFuturePool], now).length, 0,
+  'previous future-only posting must not survive as archived_missing');
+assert.equal(preserveFailedSourceJobs('Himalayas', [priorFuturePool]).length, 0,
+  'failed source must not resurrect prior future-only posting');
 assert.match(himalayas[0].id, /^himalayas:[0-9a-f]{20}$/);
 const normalized = dedupe([normalizeJob(himalayas[0])])[0];
 assert.equal(typeof normalized.id, 'string');
@@ -76,5 +87,23 @@ assert.equal(output.length, 1);
 assert.equal(output[0].source, 'RemoteJobs.org');
 assert.match(output[0].id, /^remotejobsorg:[0-9a-f]{20}$/);
 validateJob(normalizeJob(output[0]));
+const unknownGeo = { ...remote, id: 'uncertain-worldwide', title: 'Spanish Social Media Content Creator',
+  url: 'https://remotejobs.org/remote-jobs/uncertain-worldwide',
+  description: 'Create Spanish social media content',
+  applicant_location_requirements: { status: 'known', allowed_countries: [],
+    worldwide_permission_verified: true, work_arrangement: 'remote' },
+  location_normalization: { status: 'unknown' } };
+const [unknownCandidate] = expandedRemoteCandidates('remotejobs', { data: [unknownGeo] }, now);
+assert.equal(unknownCandidate.location, 'Remote', 'an unverified geo warning must not be embedded as location evidence');
+assert.equal(normalizeJob(unknownCandidate).eligibilityCode, 'unknown',
+  'main radar must not convert a location warning into verified Korean eligibility');
+const [nicoleUnknown] = normalizeExpandedRemote('remotejobs', { data: [unknownGeo] }, nicoleOptions);
+assert.equal(nicoleUnknown.eligibilityStatus, 'unknown',
+  'Nicole radar must not claim possible Korean eligibility from inferred worldwide metadata');
+assert.equal(mergeHistoricalFeed({ updatedAt: nicoleOptions.now, jobs: [],
+  sourceStatus: [{ source: 'Himalayas', status: 'ok' }] },
+{ jobs: [{ ...nicole[0], title: futurePool.title, company: futurePool.companyName,
+  url: futurePool.applicationLink }] }, { knownLanguages: nicoleOptions.languages }).jobs.length, 0,
+  'Nicole historical merge must not restore a future-project pool');
 assert.throws(() => expandedRemoteCandidates('himalayas', {}), /jobs array missing/);
 console.log('Expanded remote sources eligibility, expiry and attribution tests passed');

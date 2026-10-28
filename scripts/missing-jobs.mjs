@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { isFutureOnlyProductivePlayhouse } from './expanded-remote-sources.mjs';
 export function createMissingJobRules({ normalizedUrl, relevantToProfile, isOfficialKind, appendLimitedHistory, contentFingerprint, sourceMeta, derivePaymentEvidence, eligibilityFor, normalizeWorkplaceMode, domesticRegionFor, marketScopesFor, legacyLocalWorkAddressEvidence, extractSalary }) {
 function carryForwardLegacyIds(jobs, previousJobs = []) {
   const previousByRawId = new Map();
@@ -47,6 +48,7 @@ function carryRecentlyMissing(jobs, previousJobs = [], now = Date.now()) {
   for (const previous of previousJobs || []) {
     // Once closure is supported by a published deadline or an explicit
     // terminal status, never turn that record back into an unverified opening.
+    if (isFutureOnlyProductivePlayhouse(previous)) continue;
     const closeAt = previous.deadlineType === 'fixed' && /^\d{4}-\d{2}-\d{2}$/.test(previous.deadlineDate || '')
       ? Date.parse(previous.deadlineDate + 'T23:59:59+09:00') : NaN;
     if (previous.listingStatus === 'expired' || (Number.isFinite(closeAt) && closeAt < now)
