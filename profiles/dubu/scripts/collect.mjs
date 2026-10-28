@@ -150,8 +150,17 @@ export function normalizeArbeitnow(payload, options = {}) {
   });
 }
 
+function unsupportedTargetLanguageReview(title) {
+  const target = /^English\s+(?:to|into)\s+([A-Za-z-]+)(?:\s+\([^)]*\))?\s+(?:Review Lead|Translator|Translation|Linguist|Editor)\b/i.exec(title || '');
+  return Boolean(target && target[1].toLowerCase() !== 'spanish');
+}
+
 export function normalizeExpandedRemote(key, payload, options = {}) {
   return expandedRemoteCandidates(key, payload).flatMap((item) => {
+    // The broad 'marketing' API query also returns non-Spanish translation
+    // review leads because their titles contain "Marketing & Product Content".
+    // The requested target language is a hard job requirement, not a keyword.
+    if (unsupportedTargetLanguageReview(item.title)) return [];
     const job = commonJob({
       source: item.source,
       providerId: item.sourcePostingId, url: item.url,
@@ -407,6 +416,7 @@ export function mergeHistoricalFeed(incoming, previous, { retentionDays = 60, ma
   }));
   const eligibleIncoming = incoming.jobs.filter((job) =>
     !explicitlyExcludedUrls.has(safePublicUrl(job.url)) && !pastDeadline(job) &&
+    !(job.source === 'RemoteJobs.org' && unsupportedTargetLanguageReview(job.title)) &&
     (job.sourceKind === 'manual' ||
       (!excludeOnlineJobReason(job, { knownLanguages }) && !excludeQualificationReason(job))));
   const current = eligibleIncoming.map((job) => {
@@ -425,6 +435,7 @@ export function mergeHistoricalFeed(incoming, previous, { retentionDays = 60, ma
   const currentRole = new Set(current.map((x) => [x.company, x.title, x.location].map((v) => asText(v, 200).toLowerCase()).join('|')));
   const historical = priorList.flatMap((job) => {
     if (!job || typeof job.id !== 'string' || seenIds.has(job.id) || !safePublicUrl(job.url) ||
+      (job.source === 'RemoteJobs.org' && unsupportedTargetLanguageReview(job.title)) ||
       explicitlyExcludedUrls.has(safePublicUrl(job.url)) || pastDeadline(job)) return [];
     if (job.sourceKind === 'curated_research' &&
         (!isoDate(job.researchReviewedAt) ||

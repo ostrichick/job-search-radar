@@ -56,6 +56,9 @@ export function expandedRemoteCandidates(key, payload, now = Date.now()) {
       if (/\b(?:internal job posting|employees only|internal applicants only)\b/i.test(job.title)) return [];
       const url = validSourceUrl(job.applicationLink, 'himalayas.app');
       if (!url || !job.title || !job.companyName) return [];
+      // Employer's original listing is explicitly for a future-project talent
+      // pool, not a currently allocated role. It is already tracked separately.
+      if (/^\/companies\/productive-playhouse\/jobs\/korean-ai-product-evaluator(?:-|\/|$)/i.test(new URL(url).pathname)) return [];
       return [{
         id: stableBoardId('himalayas', job.guid || url),
         source: 'Himalayas', sourcePostingId: job.guid || url, url,

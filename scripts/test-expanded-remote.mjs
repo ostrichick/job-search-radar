@@ -33,6 +33,24 @@ const nicole = normalizeExpandedRemote('himalayas', { jobs: [{
 }] }, { now: new Date(now).toISOString(), homeCountry: 'KR', languages: { es: 'native', en: 'unverified', ko: 'beginner' } });
 assert.equal(nicole.length, 1);
 assert.equal(nicole[0].url, h.applicationLink, 'Himalayas Apply link must remain unchanged');
+const commonRemote = {
+  id: 'bosnian-review', title: 'English to Bosnian (Cyrillic) Review Lead for UI, Marketing & Product Content',
+  url: 'https://remotejobs.org/remote-jobs/bosnian-review',
+  company: { name: 'Test Agency' }, description: 'Review Bosnian translation and marketing text',
+  applicant_location_requirements: {
+    status: 'known', allowed_countries: ['KR'], work_arrangement: 'remote'
+  },
+  location_normalization: { status: 'known', scope: 'restricted', allowed_countries: ['KR'] }
+};
+const nicoleOptions = { now: new Date(now).toISOString(), homeCountry: 'KR',
+  languages: { es: 'native', en: 'unverified', ko: 'beginner' } };
+assert.equal(normalizeExpandedRemote('remotejobs', { data: [commonRemote] }, nicoleOptions).length, 0,
+  'foreign-language Review Lead must not pass because the title contains Marketing & Content');
+assert.equal(normalizeExpandedRemote('remotejobs', { data: [{
+  ...commonRemote, id: 'spanish-review', title: 'English to Spanish Review Lead for UI, Marketing & Product Content',
+  url: 'https://remotejobs.org/remote-jobs/spanish-review',
+  description: 'Review Spanish translations and product text'
+}] }, nicoleOptions).length, 1, 'Spanish review is relevant to this profile');
 const remote = {
   id: 'test1', title: 'Korean AI Data Labeler', url: 'https://remotejobs.org/remote-jobs/korean-labeler',
   company: { name: 'Test Agency' }, description: 'Review Korean AI annotations',
