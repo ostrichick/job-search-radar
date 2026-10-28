@@ -873,6 +873,13 @@ try {
   assert.equal(preserved[0].listingStatus, 'source_error');
   assert.equal(preserved[0].lastVerifiedAt, historical.lastVerifiedAt);
   assert.equal(preserved[0].score, 15);
+  assert.equal(preserveFailedSourceJobs('사람인', [
+    { ...historical, listingStatus: 'expired' },
+    { ...historical, id: 'past-deadline', deadlineType: 'fixed', deadlineDate: '2026-09-01' }
+  ]).length, 0, 'source outages must never restore confirmed closed or past-deadline jobs');
+  assert.equal(preservePartialLocalSearch('사람인', [
+    { ...historical, deadlineType: 'fixed', deadlineDate: '2026-09-01' }
+  ], [], 1).length, 0, 'partial source failures must not restore expired application windows');
   assert.equal(preservePartialLocalSearch('사람인', [historical], [], 0).length, 0,
     'complete search uses normal missing lifecycle');
   const metrics = buildSourceMetrics(
@@ -889,6 +896,26 @@ try {
   assert.equal(metrics.validJobRate, 1);
   assert.equal(requests.filter((url) => url.includes('loc_cd=113130')).length, 1,
     'do not retry an unavailable region aggressively');
+  const fallbackRequests = [];
+  globalThis.fetch = async (url) => {
+    const value = String(url);
+    fallbackRequests.push(value);
+    if (value.includes('is_param=1') && value.includes('loc_cd=113130%2C113140')) {
+      return body('<html><title>Area Jobs</title></html>');
+    }
+    if (value.includes('loc_cd=113130%2C113140')) return body(saraminListFixture);
+    if (value.includes('loc_cd=113080')) return body('<html><title>Empty Area</title></html>');
+    if (value.includes('rec_idx=55201442')) return body(saraminDetailFixture);
+    throw new Error('Unexpected Saramin fallback route: ' + value);
+  };
+  const shellFallback = await collectSaramin([]);
+  assert.equal(shellFallback.jobs.length, 1,
+    'a public Saramin regional page can recover a 200 response lacking job cards');
+  assert.equal(shellFallback.searchSuccessCount, 1);
+  assert.deepEqual(shellFallback.searchFailureReasons, { 완주: 'empty_search_response' },
+    'a second 200 response with no job cards must remain a failed regional check');
+  assert.equal(fallbackRequests.filter((url) => url.includes('loc_cd=113130')).length, 2,
+    'retry an empty 200 response once using the regular public area URL');
   globalThis.fetch = async () => { throw new TypeError('simulated both-region outage'); };
   await assert.rejects(collectSaramin([]), (error) => {
     assert.deepEqual(error.sourceRun?.searchFailureScopes, ['전주', '완주']);
@@ -1449,6 +1476,11 @@ assert.equal(collapseState.suspected, true);
 assert.equal(collapseState.referenceCount, 30);
 assert.equal(collapseState.discoveredCount, 3);
 assert.equal(collapseState.overlapCount, 3);
+const rotatedDiscovery = Array.from({ length: 35 }, (_, index) => ({ id: String(99000000 + index) }));
+const rotatedState = localDiscoveryCollapseState('잡코리아', rotatedDiscovery, collapseFixturePrevious);
+assert.equal(rotatedState.suspected, false,
+  'a full rolling search window with new IDs must not fail solely due to low overlap with older postings');
+assert.equal(rotatedState.overlapCount, 0, 'overlap should still be measured for diagnostics');
 
 const originalFetch = globalThis.fetch;
 const localBoardHtml = (id) => `<!doctype html><html><body>
@@ -1976,6 +2008,11 @@ assert.ok(carried.legacyIds.includes(priorUnknown.id), 'previous stable id must 
 
 const now = Date.parse('2026-10-04T00:00:00Z');
 const disappeared = { ...priorUnknown, id: 'job:old-missing', missingSince: '2026-10-03T00:00:00Z' };
+assert.equal(carryRecentlyMissing([], [{ ...disappeared, listingStatus: 'expired' }], now).length, 0,
+  'a confirmed closed posting must not return as an archived missing job');
+assert.equal(carryRecentlyMissing([], [{
+  ...disappeared, deadlineType: 'fixed', deadlineDate: '2026-10-02'
+}], now).length, 0, 'a passed, explicit application deadline must not be carried into the next feed');
 const withGracePeriod = carryRecentlyMissing([], [disappeared], now);
 assert.equal(withGracePeriod.length, 1);
 assert.equal(withGracePeriod[0].listingStatus, 'archived_missing');

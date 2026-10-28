@@ -1439,6 +1439,12 @@ function markPreservedSourceFailure(job) {
   };
 }
 
+function hasPassedFixedDeadline(job, now = Date.now()) {
+  if (job?.deadlineType !== 'fixed' || !/^\d{4}-\d{2}-\d{2}$/.test(job.deadlineDate || '')) return false;
+  const closeAt = Date.parse(job.deadlineDate + 'T23:59:59+09:00');
+  return Number.isFinite(closeAt) && closeAt < now;
+}
+
 function preservePartialIncruitFallback(previousJobs = [], collected = [], searchFailureCount = 0) {
   return preservePartialLocalSearch('인크루트', previousJobs, collected, searchFailureCount);
 }
@@ -1450,7 +1456,8 @@ function preservePartialLocalSearch(source, previousJobs = [], collected = [], i
     .filter((job) => job.source === source
       && /^\d+$/.test(text(job.sourcePostingId))
       && !seenPostingIds.has(text(job.sourcePostingId))
-      && !['archived_missing', 'expired', 'talent_pool'].includes(job.listingStatus))
+      && !['archived_missing', 'expired', 'talent_pool'].includes(job.listingStatus)
+      && !hasPassedFixedDeadline(job))
     .map(markPreservedSourceFailure);
 }
 
@@ -2071,12 +2078,12 @@ function localDiscoveryCollapseState(source, discoveredCandidates = [], previous
   const ratio = referenceCount ? discoveredCount / referenceCount : null;
   const overlapRatio = referenceCount ? overlapCount / referenceCount : null;
   return {
+    // A rolling search window can contain a full set of new postings after
+    // older ads close. Low ID overlap alone does not mean search collapsed:
+    // every newly found ad still has to pass its own detail/workplace check.
     suspected: referenceCount >= 10
       && discoveredCount > 0
-      && (
-        discoveredCount < Math.ceil(referenceCount * 0.5)
-        || overlapCount < Math.ceil(referenceCount * 0.5)
-      ),
+      && discoveredCount < Math.ceil(referenceCount * 0.5),
     referenceCount,
     discoveredCount,
     overlapCount,
@@ -2122,10 +2129,27 @@ async function collectStructuredLocalBoard({ source, searchUrls, idRegex, detail
       searchFailureReasons[scope] = incruitSearchFailureCode(error);
       continue;
     }
-    searchSuccessCount += 1;
-    const discovered = typeof spec.discover === 'function'
+    let discovered = typeof spec.discover === 'function'
       ? spec.discover(html).slice(0, spec.limit || perSearchLimit)
       : uniqueIds(html, idRegex, spec.limit || perSearchLimit).map((id) => ({ id }));
+    // Saramin sometimes responds HTTP 200 with a shell page containing no
+    // listing rows. Try its ordinary public regional URL once, then mark the
+    // region unavailable rather than treating an empty shell as a clean scan.
+    if (saraminPartialSearch && !discovered.length && spec.fallbackUrl) {
+      try {
+        const fallbackHtml = await fetchText(spec.fallbackUrl);
+        discovered = spec.discover(fallbackHtml).slice(0, spec.limit || perSearchLimit);
+      } catch {
+        // Preserve the original region failure in the feed diagnostics below.
+      }
+    }
+    if (saraminPartialSearch && !discovered.length) {
+      const scope = ['전주', '완주'][index] || '지역 ' + (index + 1);
+      searchFailureScopes.push(scope);
+      searchFailureReasons[scope] = 'empty_search_response';
+      continue;
+    }
+    searchSuccessCount += 1;
     for (const candidate of discovered) {
       const id = text(candidate?.id);
       if (!id) continue;
@@ -2352,8 +2376,16 @@ async function collectSaramin(previousJobs = []) {
   return collectStructuredLocalBoard({
     source: '사람인',
     searchUrls: [
-      { url: base + '113130%2C113140', discover: saraminAreaListCandidates, limit: 30 },
-      { url: base + '113080', discover: saraminAreaListCandidates, limit: 30 }
+      {
+        url: base + '113130%2C113140',
+        fallbackUrl: 'https://www.saramin.co.kr/zf_user/jobs/list/domestic?loc_cd=113130%2C113140&sort=RD&type=domestic',
+        discover: saraminAreaListCandidates, limit: 30
+      },
+      {
+        url: base + '113080',
+        fallbackUrl: 'https://www.saramin.co.kr/zf_user/jobs/list/domestic?loc_cd=113080&sort=RD&type=domestic',
+        discover: saraminAreaListCandidates, limit: 30
+      }
     ],
     idRegex: /id=["']rec-(\d+)/gi,
     detailUrl: (id) => 'https://www.saramin.co.kr/zf_user/jobs/view?rec_idx=' + id,
@@ -2369,6 +2401,8 @@ function transientIncruitSearchFailure(error) {
 function preserveFailedSourceJobs(source, previousJobs = []) {
   return previousJobs
     .filter((job) => job.source === source
+      && job.listingStatus !== 'expired'
+      && !hasPassedFixedDeadline(job)
       && (source !== '인크루트'
         || !['expired', 'archived_missing', 'talent_pool'].includes(job.listingStatus)))
     .map(markPreservedSourceFailure);
@@ -2720,12 +2754,12 @@ function dedupe(jobs) {
 }
 
 function keepInFeed(job) {
+  // Closed jobs belong in verification history and browser-held application
+  // snapshots, not in the actionable published search feed.
+  if (job.listingStatus === 'expired' || hasPassedFixedDeadline(job)) return false;
   return (Number(job.score || 0) >= 10 || isOfficialKind(job.sourceKind))
     || job.sourceKind === 'manual'
-    || ['source_error', 'archived_missing'].includes(job.listingStatus)
-    || (localDomesticBoardSources.has(job.source)
-      && job.listingStatus === 'expired'
-      && job.listingBasis === 'detail_http_terminal');
+    || ['source_error', 'archived_missing'].includes(job.listingStatus);
 }
 
 function isDefaultRecommendation(job) {

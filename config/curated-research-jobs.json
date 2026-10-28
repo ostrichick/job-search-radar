@@ -379,6 +379,54 @@
         {"kind":"routine","label":"고객 전화·민원 응대와 반복적 대면소통 업무량"},
         {"kind":"routine","label":"사무직 별도 지원 가능 여부·근무지·주 4일·급여 확인"}
       ]
+    },
+    {
+      "originalSource": "Other original source",
+      "url": "https://opsarmy.careers-page.com/jobs/724e52ad-4d46-472e-890c-33f49304aeb2",
+      "title": "Korean-speaking Human Transcription Reviewer (English audio)",
+      "company": "OpsArmy",
+      "location": "Remote, South Korea (listing identifies Incheon)",
+      "countryCode": "KR",
+      "workplaceMode": "remote",
+      "type": "Part-time remote",
+      "salary": "",
+      "postedAt": null,
+      "deadlineDate": null,
+      "openingStatus": "listed",
+      "reviewedAt": "2026-10-28T04:37:58.954Z",
+      "researchSummary": "Review AI-generated transcripts of spoken English, comparing audio to text and correcting grammar, punctuation, context, omissions, and formatting. The original employer page links to an application form.",
+      "requirements": "Native Korean and advanced English speaking, listening and proofreading required. Reliable internet and quiet workplace. Language instruction, editing or QA backgrounds encouraged.",
+      "eligibilityNote": "Employer page identifies Incheon and remote working; any narrower residence restrictions, screening and task allocation must be confirmed. Advanced English is a mandatory requirement.",
+      "researchNote": "Employer's original careers-page.com vacancy read 2026-10-28. No salary, publication date or closing deadline displayed; open application does not guarantee work.",
+      "tags": ["Korean", "English transcription", "AI quality review"],
+      "requirementChecks": [
+        {"kind": "hard", "label": "고급 영어 듣기·문법·교정 능력 필수"},
+        {"kind": "routine", "label": "한국 내 원격 지원 범위·실제 배정 업무량·보수 확인"}
+      ]
+    },
+    {
+      "originalSource": "Other original source",
+      "url": "https://iyuno.wd3.myworkdayjobs.com/ko-KR/Careers/job/Subtitle-Script-Editor_JR101365",
+      "title": "Subtitle / Script Editor (Korean proofreading)",
+      "company": "Iyuno",
+      "location": "서울특별시 (하이브리드 근무)",
+      "countryCode": "KR",
+      "workplaceMode": "hybrid",
+      "type": "정규직·상근",
+      "salary": "",
+      "postedAt": null,
+      "deadlineDate": "2026-10-31",
+      "openingStatus": "listed",
+      "reviewedAt": "2026-10-28T04:37:58.954Z",
+      "researchSummary": "Edit and proofread Korean subtitle/script caption files, check spelling and context, follow client style guides and give feedback to freelance editors. Company Workday listing specifies a closing date of October 31.",
+      "requirements": "Strong Korean orthography, consistent deadline-based editing and guideline accuracy; subtitle editing/review experience preferred. Full-time hybrid work in Seoul.",
+      "eligibilityNote": "Workday listing specifies Seoul hybrid work; commuting from Jeonju would require substantial arrangements. Check exact closing time and conditions directly.",
+      "researchNote": "Official Iyuno Workday listing inspected 2026-10-28; advertised 2026-10-31 close. Salary unpublished; do not interpret hybrid as fully remote.",
+      "tags": ["Korean", "proofreading", "subtitle", "Seoul", "hybrid"],
+      "requirementChecks": [
+        {"kind": "hard", "label": "서울 하이브리드 출근 가능 여부 확인"},
+        {"kind": "routine", "label": "자막 툴 경험·마감 정확 시각·급여 확인"}
+      ]
     }
   ]
 }
