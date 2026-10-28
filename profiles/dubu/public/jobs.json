@@ -1,6 +1,40 @@
 {
-  "updatedAt": "2026-10-28T05:44:47.974Z",
+  "updatedAt": "2026-10-28T12:57:05.723Z",
   "jobs": [
+    {
+      "id": "arbeitnow-2a09ef930747df01222b",
+      "title": "Senior Social Media Manager",
+      "company": "PAJ UG (haftungsbeschränkt)",
+      "source": "Arbeitnow",
+      "url": "https://www.arbeitnow.com/jobs/companies/paj-ug-haftungsbeschrankt/senior-social-media-manager-windeck-489452",
+      "description": "Senior Social Media Manager (m/w/d) – Vollzeit, 100 % remote PAJ ist einer der führenden Hersteller, Vertrieb und Berater rund um das Thema GPS-Ortung mit Sitz in Windeck-Hurst. Wir bieten GPS-Tracker für beinahe jeden Einsatzbereich an. PAJ ist ein sehr dynamisches und wachsendes Unternehmen mit vielen kreativen und engagierten Köpfen, innerhalb und außerhalb Deutschlands. Eine offene Kommunikationskultur und tolle Persönlichkeiten machen uns zu dem, wer wir sind. Wenn Du Abwechslung und Herausforderungen liebst, dann gehörst Du zu uns! Deine Aufgaben Du entwickelst eine klare Strategie und Vision für unsere Social-Media-Kanäle (Instagram, TikTok, Facebook, YouTube, LinkedIn) und setzt sie um Du baust einen einheitlichen Auftritt über alle Kanäle auf (Tonalität, Look, Content-Formate) Du planst und verantwortest den Redaktionsplan und produzierst Content selbst oder steuerst die Produktion Du testest verschiedene Formate und Strategien, misst die Ergebnisse und passt an Du steuerst Kooperationen mit Influencern und Creatorn Du arbeitest eng mit Marketing, Grafik und Video zusammen Du berichtest regelmäßig über Reichweite, Engagement und Ergebnisse Das bringst du mit Mindestens 2–3 Jahre Erfahrung im Social Media Management, idealerweise im E-Commerce oder für ein Produkt-Unternehmen Fundierte Kenntnisse im Paid und Organic Social Media Management (z. B. Meta Ads, TikTok Ads) Du kannst strategisch denken und gleichzeitig selbst umsetzen Du hast nachweisbare Erfolge beim Aufbau von Kanälen oder Communities Deutsch auf Muttersprachniveau, B2-C1 Englisch für die interne Kommunikation Sicherer Umgang mit gängigen Tools für Planung, Analyse und Content-Erstellung (z. B. Meta Business Suite, Canva, CapCut oder ähnliche) Gespür für Trends, Bild und Sprache Selbstständige und strukturierte Arbeitsweise, da du komplett remote arbeitest Find more English Speaking Jobs in Germany on Arbeitnow",
+      "location": "Windeck",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "marketing",
+      "postedAt": "2026-10-28T08:10:42.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": null,
+      "languageRequirements": "English, German",
+      "eligibility": "사업장 위치 Windeck · 한국 원격근무 가능 여부 확인 필요",
+      "eligibilityStatus": "unknown",
+      "eligibilityDetail": {
+        "status": "unknown",
+        "geoScope": "Unspecified",
+        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "mismatch",
+      "languageFitReason": "German: 현재 확인된 언어 역량으로는 직무 요구 수준을 충족한다고 판단하기 어렵습니다. 실제 능력과 요건 확인 필요.",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Arbeitnow의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "seen",
+      "firstSeenAt": "2026-10-28T12:57:05.723Z",
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
+    },
     {
       "id": "jobicy-371ed5cdcfc78bb3fc1d",
       "title": "Senior Performance Marketer (Full Remote - Greece)",
@@ -27,13 +61,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "English 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-27T18:02:15.253Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "jobicy-8300213c282c0b46ee94",
@@ -61,13 +95,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "English 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-27T18:02:15.253Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "jobicy-e455b87ca4933325b2df",
@@ -95,13 +129,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "English 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-27T18:02:15.253Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "himalayas-23f9ed4d8fc81981b9d2",
@@ -129,13 +163,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T05:25:41.333Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "himalayas-2179c2f42d5046ee8201",
@@ -163,13 +197,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T05:25:41.333Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "jobicy-fc6e1143d59dcf90d8e4",
@@ -197,13 +231,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "English 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-26T22:42:39.128Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "jobicy-3762140550c18d7ba54d",
@@ -231,13 +265,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "English 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-26T22:42:39.128Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "jobicy-97f5359387ff84066331",
@@ -265,13 +299,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "English 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-26T22:42:39.128Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "arbeitnow-015b572d7a68bdf2b194",
@@ -299,13 +333,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "English 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Arbeitnow의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-26T22:42:39.128Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "jobicy-c993e2e1dd0aad652a10",
@@ -333,13 +367,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-26T22:42:39.128Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "jobicy-a9ccff302334332785d4",
@@ -367,13 +401,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-26T22:42:39.128Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "jobicy-4064ba60bc7190f34122",
@@ -401,13 +435,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-26T22:42:39.128Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "jobicy-46def0a351bba677daca",
@@ -435,13 +469,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-26T13:05:13.850Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "jobicy-fe9146434cd8665636d8",
@@ -469,13 +503,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-26T13:05:13.850Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "himalayas-3eebc1670689144293c1",
@@ -503,13 +537,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T05:25:41.333Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "himalayas-41d58c8c3dd7d32379e0",
@@ -537,13 +571,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T05:25:41.333Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "greenhouse:krafton:8904989002",
@@ -564,14 +598,14 @@
       "description": "<div class=&quot;content-intro&quot;><p><span style=&quot;font-size: 10pt;&quot;>우리는 게이머의 로망을 실현하기 위해, 누구도 가지 않는 길을 갑니다.</span><br><span style=&quot;font-size: 10pt;&quot;>예상을 뛰어넘는 과감한 상상력과 기술로, 전 세계 팬들이 잊지 못할 세상을 만들기 위해 </span><span style=&quot;font-size: 10pt;&quot;>담대하게 도전하고 개척합니다.&nbsp;&nbsp;</span></p> <p><span style=&quot;font-size: 10pt;&quot;>We pioneer the path to players&#39; dreams.</span><br><span style=&quot;font-size: 10pt;&quot;>With bold imagination and breakthrough technology, </span><span style=&quot;font-size: 10pt;&quot;>we create unforgettable worlds for fans across the globe.</span></p> <hr> <p>&nbsp;</p></div><h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀(프로젝트)을 소개합니다.&nbsp;</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>배틀그라운드 모바일(PUBG Mobile)은 2018년 5월부터 한국 지역에서 서비스 되고 있는 PUBG의 모바일 버전 게임입니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>배틀그라운드 모바일 서비스 조직은 배틀그라운드 모바일의 전반적인 서비스 전략을 세우고, 실행하며, 게임 서비스를 위해 협업하는 많은 유관 부서의 커뮤니케이션 허브 역할을 수행 하고 있습니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>배틀그라운드 모바일 서비스 조직은 팬 분들께서 안정적으로 게임을 플레이 할 수 있는 환경을 마련하고, 즐거움을 느끼실 수 있는 콘텐츠를 기획하고 운영합니다.</span></li> </ul> <h4>&nbsp;</h4> <h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀과 함께할 미션을 소개합니다.</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;><strong>캠페인 운영</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>업데이트/시즌/콜라보/이스포츠 등 라이브 서비스 마케팅 캠페인 기획 참여 및 운영</span></li> <li><span style=&quot;font-size: 10pt;&quot;>디지털·SNS·인플루언서 등 멀티 채널 캠페인 운영 및 성과 측정</span></li> <li><span style=&quot;font-size: 10pt;&quot;>이스포츠 대회·리그 연계 마케팅 운영 지원 및 파트너(팀·선수·스트리머 등) 협업 실행</span></li> </ul> </li> <li><span style=&quot;font-size: 10pt;&quot;><strong>콘텐츠 &amp; 크리에이티브</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>YouTube·TikTok·Meta 등 주요 미디어 콘텐츠 제작 진행 및 운영</span></li> <li><span style=&quot;font-size: 10pt;&quot;>대행사·크리에이터 협업을 통한 콘텐츠 제작 및 일정 관리</span></li> </ul> </li> <li><span style=&quot;font-size: 10pt;&quot;><strong>데이터 분석 &amp; 리포팅</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>캠페인 성과 데이터 수집 및 정리</span></li> <li><span style=&quot;font-size: 10pt;&quot;>채널별(디지털·SNS·인플루언서) 성과 지표 트래킹 및 대시보드 업데이트</span></li> </ul> </li> </ul> <p>&nbsp;</p> <h3><span style=&quot;font-size: 12pt;&quot;><strong>이런 경험을 가진 분과 함께 성장하고 싶습니다! (필수요건)</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>마케팅 경력&nbsp;1년차 이상</span></li> <li><span style=&qu",
       "eligibility": "지원자격 확인 필요",
       "languageRequirements": "공고 원문 확인 필요",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "evidenceNote": "회사 공식 Greenhouse 채용목록 · Employment Type: Contractor · Sector: IP Franchise · Corp./Studios: KRAFTON · Job Category - Art:  · Job Category - Business & Service: Marketing · Job Category - Data:  · Job Category - Development Management:  · Job Category - Game Design:  · Job Category - Tech:  · Job Category - TA:  · Job Category - QA:  · Job Category - Sound:  · Job Category",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-26T13:05:13.850Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "himalayas-1fc6f3f8195f9e3cb6b0",
@@ -599,13 +633,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T05:25:41.333Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "himalayas-41d31d7309133473bae7",
@@ -633,13 +667,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "English 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T05:25:41.333Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "himalayas-54cf40fa1d93ac4f0a7d",
@@ -667,47 +701,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T05:25:41.333Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
-    },
-    {
-      "id": "jobicy-d79bed4415069b0407f2",
-      "title": "Localisation Project Manager",
-      "company": "Smartling",
-      "source": "Jobicy",
-      "url": "https://jobicy.com/jobs/156175-localisation-project-manager",
-      "description": "Overview Smartling is an AI-native translation platform that's redefining how the world's biggest brands go global — ranked #3 on Fast Company's Most Innovative Companies list . We're growing rapidly at scale and are backed by Battery Ventures, a global technology-focused investment firm. While most companies are still figuring out how to use AI, we've spent years building it into the core of our platform — and we're just getting started. We're looking for a Localisation Project Manager (Localisation Operations Specialist) based in Ireland to join our Managed Services team. In this role, you'll own the end-to-end localisation lifecycle for a portfolio of enterprise clients, serving as both their operational point of contact and a key contributor to how our team delivers value. This is a role for someone who brings real localisation experience, thrives in a fast-paced, remote-first environment, and is energized by the challenge of balancing operational precision with strong client relationships. You Will Act as your clients' embedded localisation operations expert, serving as the primary operational point of contact and trusted advisor for assigned accounts. Foster strong stakeholder relationships, navigate competing priorities, and coordinate cross-functional teams to ensure the successful execution and continuous improvement of clients' localization programs. Design and optimize localisation processes within Smartling’s platform and client-preferred project management and content management tools, overseeing the end-to-end job lifecycle and tailoring configurations to each client’s unique requirements, including effective use of AI tooling where applicable. Solve problems both independently and collaboratively, bringing a solutions-first mindset to client challenges and internal roadblocks. Proactively drive operational excellence by identifying and implementing process improvements, documenting best practices, and leveraging automation and AI-enabled solutions to streamline workflows, enhance scalability, and improve team efficiency You Have At least 2-3 years of experience in localisation or translation project management, ideally within a managed services or agency environment Solid understanding of localisation file formats, content types, and CAT/TMS tooling Strong client management skills: comfortable leading calls, navigating difficult conversations, and representing the team externally Proficiency with project management and reporting tools (e.g., Jira, Asana, Google Sheets, Looker, or equivalent) Experience coordinating with cross-functional teams across engineering, QA, and vendor management Excellent organizational and time management skills, with sharp attention to detail and the ability to manage competing priorities across time zones Strong written and verbal communication skills Preferred but not required Hands-on experience with Smartling or other TMS platforms (such as Phrase, XTM, or MemoQ) Experience supporting enterprise or SaaS clients in an operational or customer-facing role. Fluency or working proficiency in a second language Interest in language, technology, or global content strategy You Are Accountable. You take full ownership of your accounts, addressing issues promptly and documenting root causes and preventative actions for future improvement. Customer-Focused. You understand that client deadlines and requirements are real business commitments and consistently approach them with urgency, accountability, and care. Adaptable. You adjust effectively to changing scope, priorities, and unexpected client inputs without losing focus or execution quality. Communicative. You proactively stay ahead of client needs by sharing status updates, surfacing risks early, and contributing insights, guidance, and best practices. Process-Driven. You adhere to established processes while actively identifying opportunities to improve efficiency and consistency. You Will Enjoy Freedom - we are remote-first Growth - an opportunity to learn and advance your career Wealth - we offer a competitive salary Wellness - company-sponsored Health insurance plan & pension plan with company matching Balance - flexible PTO + 10 bank holidays! Generous parental leave Culture - an energetic, value-driven, and fun culture and team spirit Bonus - employee referral programs and Apple equipment Smartling is proud to be an equal-opportunity employer. We are committed to building an inclusive global team that represents a variety of backgrounds, perspectives, beliefs, skills, and experiences. To all recruitment agencies: Smartling does not accept unsolicited agency resumes. Please do not forward resumes to our jobs alias or Smartling employees. Smartling is not responsible for any fees related to unsolicited resumes. *To work from home, you must have a strong internet connection, a quiet space, and a professional (distraction and clutter-free) background.",
-      "location": "Ireland",
-      "workplaceMode": "remote",
-      "market": "online",
-      "category": "translation",
-      "postedAt": "2026-10-21T10:42:29.000Z",
-      "deadline": null,
-      "listingExpiresAt": null,
-      "pay": null,
-      "languageRequirements": "공고 원문 확인 필요",
-      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · Ireland",
-      "eligibilityStatus": "unknown",
-      "eligibilityDetail": {
-        "status": "unknown",
-        "geoScope": "Ireland",
-        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
-        "requiresVerification": true
-      },
-      "languageFitStatus": "unknown",
-      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
-      "sourceKind": "public_api",
-      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
-      "legacyIds": [],
-      "collectionState": "seen",
-      "firstSeenAt": "2026-10-22T04:56:50.212Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "himalayas-113e0775e11cc9597b4d",
@@ -735,13 +735,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T05:25:41.333Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "curated-f4d45af65962b435909b",
@@ -781,7 +781,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-23. NOT refreshed by the automated crawler. Recheck the original job for current availability. PeopleNJob individual posting read October 23, 2026. Employer client is not named; original says recruiting October 18 to November 17. Do not claim eligibility or that Spanish alone meets requirements.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-23T11:10:32.528Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "curated-c43db93536aa80badfee",
@@ -821,7 +821,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-22. NOT refreshed by the automated crawler. Recheck the original job for current availability. Individual JOBPLOY employer posting inspected 2026-10-22. The page explicitly displays Registration 2026-10-15; this is recorded as postedAt. Recruitment status and compensation are not otherwise verified. Original listing mixes one-day sample shoots",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-22T04:56:50.212Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "remote-ok-1322e8e170c3c5902acb",
@@ -829,7 +829,7 @@
       "company": "BlueTuskr",
       "source": "Remote OK",
       "url": "https://remoteok.com/remote-jobs/remote-graphic-designer-video-editor-bluetuskr-1137507",
-      "description": "Description BlueTuskr is a full-service e-commerce growth agency built exclusively for e-commerce brands. We combine paid media, owned media, creative, and analytics to help our clients scale profitably. Our team is made up of specialists who are deeply invested in their craft â and in the success of the brands they serve. This isn't a \"jack of all trades\" environment. We hire people who are exceptional at what they do, then give them the resources and autonomy to do it well. The Opportunity We're looking for a Graphic Designer and Video Editor who creates with conversion in mind. You know that a beautiful email that doesn't get clicks isn't finished yet, and that a product page is a sales tool first. This is a hands-on role for someone who has spent real time designing for e-commerce brands â emails, landing pages, website sections, and social/ad creative â and can explain exactly why each design choice was made. You'll design across a portfolio of e-commerce clients, working closely with our email, CRO, Shopify development, and paid media teams. You'll also use Claude and other AI tools as a real part of your workflow â to move faster on ideation, variations, and production, without sacrificing quality or brand consistency. This role starts part-time at 15 hours/week, with real room to grow as your client roster and responsibilities expand. What You'll Own Email & Retention Design Design campaign and automated flow emails (newsletters, welcome, abandoned cart, post-purchase, win-back, etc.) that are on-brand and built to drive clicks and revenue Design mobile-first, with clear hierarchy, scannable layouts, and strong calls to action Prepare email-ready files and specs (image slicing, live text vs. image text, alt text, dark mode considerations) for clean builds in Klaviyo and other email platforms Web Creative & CRO Support Design landing pages, homepage, and collection page sections, product page (PDP) modules, banners, and promotional assets for Shopify stores Partner with the CRO team to design test variations based on data, heatmaps, and hypotheses â not just personal taste Hand off dev-ready Figma files to our web developers, with desktop and mobile layouts, organized layers, and clear specs Social & Ad Creative Design static social and paid ad creative for Meta, TikTok, and other channels Create ad variations and iterations to support creative testing Video editing for social and ad use (resizing, trimming, captions, simple motion) where needed Process & Quality Follow each client's brand guidelines closely, and flag gaps or inconsistencies when guidelines are missing or unclear Apply design and e-commerce best practices (accessibility, contrast, legibility, load-friendly assets, platform specs) Present work with a clear rationale â why this layout, this hierarchy, this CTA â to internal teams and, when needed, clients Take feedback well, turn revisions around quickly, and keep work moving across multiple accounts and deadlines Use Claude and other AI tools to speed up concepting, copy-to-layout exploration, asset variations, and repetitive production tasks â while following client confidentiality and our AI use guidelines Who You Are Skills get you in the door. These are the qualities that make you right for this role: An exceptional designer with a strong eye for layout, typography, and color â your portfolio speaks for itself Conversion-minded â you think about what the customer needs to see, feel, and do next, not just what looks good Detail-obsessed â you catch the misaligned element, the off-brand color, and the typo before anyone else does A clear communicator who can explain the reasoning behind design choices and keeps the team updated without being chased Excellent at managing your time â you can juggle multiple clients and deadlines in a remote, async environment without dropping the ball AI-curious and AI-capable â you already use tools like Claude in your workflow and are excited to find new ways to work smarter Adaptable â you can shift between very different brand styles and still make each one feel right. What Success Looks Like In your first 90 days: You've learned the brand guidelines and design systems for your assigned client accounts You're consistently delivering email, web, and social designs on time with minimal revision rounds You've handed off at least one web project or CRO test variation to our Shopify dev team with clean, dev-ready files You've built AI into your workflow in a way that measurably speeds up production Internal teams trust your work and your reasoning, and come to you with ideas, not just requests Must-Have: 2â4 years of e-commerce digital design experience (email, website, social, etc.) A portfolio showing e-commerce work â ideally with context on goals and results Advanced proficiency in Figma Proficiency in Adobe Creative Suite (Photoshop, Illustrator, InDesign) Hands-on experience using Claude and/or other AI tools in a design workflow Experience designing for the web and supporting website creative (landing pages, site sections, PDPs) Strong understanding of conversion-focused design and e-commerce best practices Proven ability to follow and apply brand guidelines across multiple brands Strong written and spoken English for async communication with a U.S.-based team Strong Differentiators: Video editing skills (Premiere Pro, After Effects, CapCut, or similar) Experience designing for Klaviyo or other email platforms Familiarity with Shopify themes and how designs get built Experience designing A/B test variations or working with CRO data Paid social ad creative experience (Meta, TikTok) Agency background preferred This role is fully remote. Time Commitment and Availability Hours: 15 hours/week to start, with the opportunity to scale up as the role and client roster grow Availability: Between 9 a.m. and 6 p.m. EST Compensation $20â25 USD/hour, based on experience and portfolio. This is a part-time, remote contractor role starting at 15 hours/week. Video editing experience is a strong plus and is factored into the rate. Please mention the word **FUTURISTIC** and tag RNTIuMTY1LjU5LjE4 when applying to show you read the job post completely (#RNTIuMTY1LjU5LjE4). This is a beta feature to avoid spam applicants. Companies can search these words to find applicants that read this and see they're human.",
+      "description": "Description BlueTuskr is a full-service e-commerce growth agency built exclusively for e-commerce brands. We combine paid media, owned media, creative, and analytics to help our clients scale profitably. Our team is made up of specialists who are deeply invested in their craft â and in the success of the brands they serve. This isn't a \"jack of all trades\" environment. We hire people who are exceptional at what they do, then give them the resources and autonomy to do it well. The Opportunity We're looking for a Graphic Designer and Video Editor who creates with conversion in mind. You know that a beautiful email that doesn't get clicks isn't finished yet, and that a product page is a sales tool first. This is a hands-on role for someone who has spent real time designing for e-commerce brands â emails, landing pages, website sections, and social/ad creative â and can explain exactly why each design choice was made. You'll design across a portfolio of e-commerce clients, working closely with our email, CRO, Shopify development, and paid media teams. You'll also use Claude and other AI tools as a real part of your workflow â to move faster on ideation, variations, and production, without sacrificing quality or brand consistency. This role starts part-time at 15 hours/week, with real room to grow as your client roster and responsibilities expand. What You'll Own Email & Retention Design Design campaign and automated flow emails (newsletters, welcome, abandoned cart, post-purchase, win-back, etc.) that are on-brand and built to drive clicks and revenue Design mobile-first, with clear hierarchy, scannable layouts, and strong calls to action Prepare email-ready files and specs (image slicing, live text vs. image text, alt text, dark mode considerations) for clean builds in Klaviyo and other email platforms Web Creative & CRO Support Design landing pages, homepage, and collection page sections, product page (PDP) modules, banners, and promotional assets for Shopify stores Partner with the CRO team to design test variations based on data, heatmaps, and hypotheses â not just personal taste Hand off dev-ready Figma files to our web developers, with desktop and mobile layouts, organized layers, and clear specs Social & Ad Creative Design static social and paid ad creative for Meta, TikTok, and other channels Create ad variations and iterations to support creative testing Video editing for social and ad use (resizing, trimming, captions, simple motion) where needed Process & Quality Follow each client's brand guidelines closely, and flag gaps or inconsistencies when guidelines are missing or unclear Apply design and e-commerce best practices (accessibility, contrast, legibility, load-friendly assets, platform specs) Present work with a clear rationale â why this layout, this hierarchy, this CTA â to internal teams and, when needed, clients Take feedback well, turn revisions around quickly, and keep work moving across multiple accounts and deadlines Use Claude and other AI tools to speed up concepting, copy-to-layout exploration, asset variations, and repetitive production tasks â while following client confidentiality and our AI use guidelines Who You Are Skills get you in the door. These are the qualities that make you right for this role: An exceptional designer with a strong eye for layout, typography, and color â your portfolio speaks for itself Conversion-minded â you think about what the customer needs to see, feel, and do next, not just what looks good Detail-obsessed â you catch the misaligned element, the off-brand color, and the typo before anyone else does A clear communicator who can explain the reasoning behind design choices and keeps the team updated without being chased Excellent at managing your time â you can juggle multiple clients and deadlines in a remote, async environment without dropping the ball AI-curious and AI-capable â you already use tools like Claude in your workflow and are excited to find new ways to work smarter Adaptable â you can shift between very different brand styles and still make each one feel right. What Success Looks Like In your first 90 days: You've learned the brand guidelines and design systems for your assigned client accounts You're consistently delivering email, web, and social designs on time with minimal revision rounds You've handed off at least one web project or CRO test variation to our Shopify dev team with clean, dev-ready files You've built AI into your workflow in a way that measurably speeds up production Internal teams trust your work and your reasoning, and come to you with ideas, not just requests Must-Have: 2â4 years of e-commerce digital design experience (email, website, social, etc.) A portfolio showing e-commerce work â ideally with context on goals and results Advanced proficiency in Figma Proficiency in Adobe Creative Suite (Photoshop, Illustrator, InDesign) Hands-on experience using Claude and/or other AI tools in a design workflow Experience designing for the web and supporting website creative (landing pages, site sections, PDPs) Strong understanding of conversion-focused design and e-commerce best practices Proven ability to follow and apply brand guidelines across multiple brands Strong written and spoken English for async communication with a U.S.-based team Strong Differentiators: Video editing skills (Premiere Pro, After Effects, CapCut, or similar) Experience designing for Klaviyo or other email platforms Familiarity with Shopify themes and how designs get built Experience designing A/B test variations or working with CRO data Paid social ad creative experience (Meta, TikTok) Agency background preferred This role is fully remote. Time Commitment and Availability Hours: 15 hours/week to start, with the opportunity to scale up as the role and client roster grow Availability: Between 9 a.m. and 6 p.m. EST Compensation $20â25 USD/hour, based on experience and portfolio. This is a part-time, remote contractor role starting at 15 hours/week. Video editing experience is a strong plus and is factored into the rate. Please mention the word **FUTURISTIC** and tag RMTMuNzEuMjI2Ljk2 when applying to show you read the job post completely (#RMTMuNzEuMjI2Ljk2). This is a beta feature to avoid spam applicants. Companies can search these words to find applicants that read this and see they're human.",
       "location": "Remote",
       "workplaceMode": "remote",
       "market": "online",
@@ -849,13 +849,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "English 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Remote OK의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T01:38:30.324Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "curated-5596a60ad13a64729f62",
@@ -895,7 +895,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-19. NOT refreshed by the automated crawler. Recheck the original job for current availability. Hanultari page says posted 2026-10-13 and open until filled when checked on 2026-10-19. Included as an adjacent foreign-language opportunity, not a marketing role.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T09:16:03.065Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "himalayas-3c4fbfabad1ad367cb37",
@@ -923,13 +923,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean, English 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T05:25:41.333Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "himalayas-ac4566601b9308b45615",
@@ -957,13 +957,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean, English 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T05:25:41.333Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "himalayas-1641fb235da4fc2bf682",
@@ -991,13 +991,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T05:25:41.333Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "himalayas-c4f4228d6320d72ae8aa",
@@ -1025,13 +1025,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T05:25:41.333Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "himalayas-7104f07e7e8476e213de",
@@ -1059,13 +1059,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T05:25:41.333Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "remotive-070943a3485895acf31b",
@@ -1093,13 +1093,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Remotive의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T01:38:30.324Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "curated-4b8a5f01d6154b752949",
@@ -1139,7 +1139,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-19. NOT refreshed by the automated crawler. Recheck the original job for current availability. The listing shows registration on 2026-09-30 and deadline 2026-10-31. Detail page inspected on 2026-10-19; requirements are sparse, so confirm directly before applying.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T09:16:03.065Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "remotejobs-org-19c9d5545e36c07e2cd6",
@@ -1167,13 +1167,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "RemoteJobs.org의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T05:25:41.333Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "remotejobs-org-32e75a9fe025a73b81ca",
@@ -1201,13 +1201,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "RemoteJobs.org의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T05:25:41.333Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "remote-ok-dc31504e9e74c348f62e",
@@ -1215,7 +1215,7 @@
       "company": "Copenhagen Optimization",
       "source": "Remote OK",
       "url": "https://remoteok.com/remote-jobs/remote-marketing-student-assistant-copenhagen-optimization-1137381",
-      "description": "Marketing Student Assistant Are you studying marketing, communications or business and looking for a student job where you can build hands-on marketing experience and see how it all comes together in practice? Weâre looking for a structured and proactive Marketing Student Assistant to join our Brand &amp; Marketing team at Copenhagen Optimization. Youâll work alongside our Head of Marketing, Growth Marketing Manager and Content Strategist, helping us turn plans into action across digital, events, content and campaigns. Itâs a hands-on role with plenty of variety and room to take on more responsibility as you grow. What you'll work on Website &amp; digital: Update and maintain website content, event and campaign pages, and help keep everything accurate and up to date. Events: Support conferences and events around the world â from registrations and exhibitor portals to materials, print orders, attendee lists and deadlines. Content &amp; campaigns: Support campaign execution by preparing content assets, landing pages, lists and other campaign elements. Marketing coordination: Keep calendars, project pages, assets and plans organized, coordinate smaller deliverables and follow-ups, and help make sure the practical details don't fall between the cracks. Creative support: Help adapt or create simple marketing materials and visuals. Experience with Canva, Figma or similar tools is a plus. Who we're looking for You are studying marketing, communications, business or a related field , ideally with at least one or two years of your studies remaining. You like creating structure, following things through and seeing a task go from idea to done. Youâre dependable, attentive to detail and comfortable taking initiative. We donât expect you to know everything from day one â what matters is that youâre curious, eager to learn and interested in how marketing works in practice. You: Communicate confidently in English, both written and spoken. Work in a structured way and keep track of tasks and deadlines. Take initiative and care about the quality of what you deliver. Are comfortable working with digital tools. We use HubSpot, Notion, Dropbox and LinkedIn, but you don't need to know them all already. Are interested in marketing and keen to learn across different disciplines. Who is Copenhagen Optimization? Copenhagen Optimization is the company behind Better Airport , our software platform built for intelligent airport operations. We work with airports around the world to connect planning, resource management, staffing and day-of operations, enabling them to make better operational decisions every day. Founded in Copenhagen in 2014, we have offices in Copenhagen and Boston and customers across Europe, North America, Asia-Pacific and beyond. What we offer Approximately 15â20 hours per week , with flexibility around your studies, exams and personal life. Youâll join a small marketing team, work closely with experienced colleagues across the business and gain hands-on experience in international B2B marketing. Weâre looking for someone who wants to stay with us for the longer term, become part of the team and gradually take on more responsibility. Interested? Send us your application and CV and tell us a little about yourself, why this role interests you and what you think you'd bring to the team. We review applications on an ongoing basis and may fill the position once we've found the right person. Please mention the word **MARVELLOUS** and tag RNTIuMTY1LjU5LjE4 when applying to show you read the job post completely (#RNTIuMTY1LjU5LjE4). This is a beta feature to avoid spam applicants. Companies can search these words to find applicants that read this and see they're human.",
+      "description": "Marketing Student Assistant Are you studying marketing, communications or business and looking for a student job where you can build hands-on marketing experience and see how it all comes together in practice? Weâre looking for a structured and proactive Marketing Student Assistant to join our Brand &amp; Marketing team at Copenhagen Optimization. Youâll work alongside our Head of Marketing, Growth Marketing Manager and Content Strategist, helping us turn plans into action across digital, events, content and campaigns. Itâs a hands-on role with plenty of variety and room to take on more responsibility as you grow. What you'll work on Website &amp; digital: Update and maintain website content, event and campaign pages, and help keep everything accurate and up to date. Events: Support conferences and events around the world â from registrations and exhibitor portals to materials, print orders, attendee lists and deadlines. Content &amp; campaigns: Support campaign execution by preparing content assets, landing pages, lists and other campaign elements. Marketing coordination: Keep calendars, project pages, assets and plans organized, coordinate smaller deliverables and follow-ups, and help make sure the practical details don't fall between the cracks. Creative support: Help adapt or create simple marketing materials and visuals. Experience with Canva, Figma or similar tools is a plus. Who we're looking for You are studying marketing, communications, business or a related field , ideally with at least one or two years of your studies remaining. You like creating structure, following things through and seeing a task go from idea to done. Youâre dependable, attentive to detail and comfortable taking initiative. We donât expect you to know everything from day one â what matters is that youâre curious, eager to learn and interested in how marketing works in practice. You: Communicate confidently in English, both written and spoken. Work in a structured way and keep track of tasks and deadlines. Take initiative and care about the quality of what you deliver. Are comfortable working with digital tools. We use HubSpot, Notion, Dropbox and LinkedIn, but you don't need to know them all already. Are interested in marketing and keen to learn across different disciplines. Who is Copenhagen Optimization? Copenhagen Optimization is the company behind Better Airport , our software platform built for intelligent airport operations. We work with airports around the world to connect planning, resource management, staffing and day-of operations, enabling them to make better operational decisions every day. Founded in Copenhagen in 2014, we have offices in Copenhagen and Boston and customers across Europe, North America, Asia-Pacific and beyond. What we offer Approximately 15â20 hours per week , with flexibility around your studies, exams and personal life. Youâll join a small marketing team, work closely with experienced colleagues across the business and gain hands-on experience in international B2B marketing. Weâre looking for someone who wants to stay with us for the longer term, become part of the team and gradually take on more responsibility. Interested? Send us your application and CV and tell us a little about yourself, why this role interests you and what you think you'd bring to the team. We review applications on an ongoing basis and may fill the position once we've found the right person. Please mention the word **MARVELLOUS** and tag RMTMuNzEuMjI2Ljk2 when applying to show you read the job post completely (#RMTMuNzEuMjI2Ljk2). This is a beta feature to avoid spam applicants. Companies can search these words to find applicants that read this and see they're human.",
       "location": "Remote",
       "workplaceMode": "remote",
       "market": "online",
@@ -1235,13 +1235,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "English 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "sourceKind": "public_api",
       "evidenceNote": "Remote OK의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T01:38:30.324Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "curated-ab9d0394283f2b3ee7f5",
@@ -1281,7 +1281,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-19. NOT refreshed by the automated crawler. Recheck the original job for current availability. Original source marks this listing open until 2026-11-06. Includes non-marketing support duties, not purely a marketing position.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T04:26:47.534Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "shopback-79cd8b2620e69103cb52",
@@ -1311,40 +1311,12 @@
       "eligibility": "Check language, hiring eligibility and job requirements at the employer site.",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "evidenceNote": "ShopBack official Lever job posting feed. Job description is abbreviated; check original posting.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T03:31:34.791Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
-    },
-    {
-      "id": "greenhouse:krafton:8698655002",
-      "title": "[PUBG Franchise] PUBG: 배틀그라운드 한국 마케팅 담당 (1년 이상 / 계약직)",
-      "company": "KRAFTON",
-      "source": "KRAFTON (공식 채용)",
-      "sourceKind": "official_ats",
-      "url": "https://job-boards.greenhouse.io/krafton/jobs/8698655002",
-      "market": "offline",
-      "workplaceMode": "unknown",
-      "category": "marketing",
-      "location": "Seoul",
-      "province": "서울특별시",
-      "commuteClass": "relocation",
-      "postedAt": "2026-08-12",
-      "deadline": "",
-      "pay": "",
-      "description": "<div class=&quot;content-intro&quot;><p><span style=&quot;font-size: 10pt;&quot;>우리는 게이머의 로망을 실현하기 위해, 누구도 가지 않는 길을 갑니다.</span><br><span style=&quot;font-size: 10pt;&quot;>예상을 뛰어넘는 과감한 상상력과 기술로, 전 세계 팬들이 잊지 못할 세상을 만들기 위해 </span><span style=&quot;font-size: 10pt;&quot;>담대하게 도전하고 개척합니다.&nbsp;&nbsp;</span></p> <p><span style=&quot;font-size: 10pt;&quot;>We pioneer the path to players&#39; dreams.</span><br><span style=&quot;font-size: 10pt;&quot;>With bold imagination and breakthrough technology, </span><span style=&quot;font-size: 10pt;&quot;>we create unforgettable worlds for fans across the globe.</span></p> <hr> <p>&nbsp;</p></div><h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀(프로젝트)을 소개합니다.&nbsp;</strong></span></h3> <p id=&quot;1&quot; class=&quot;paragraph--da25a3913a1dd210&quot; data-paragraph=&quot;true&quot; data-type=&quot;p&quot;><span class=&quot;text--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot;>PUBG: BATTLEGROUNDS (PC/Console)의 한국 서비스를 담당하는 부서로,</span></p> <p id=&quot;2&quot; class=&quot;paragraph--da25a3913a1dd210&quot; data-paragraph=&quot;true&quot; data-type=&quot;p&quot;><span class=&quot;text--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot;>유저들에게 최상의 플레이 경험을 제공하기 위해 노력하고 있습니다.</span></p> <h4>&nbsp;</h4> <h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀과 함께할 미션을 소개합니다.</strong></span></h3> <ul> <li id=&quot;1&quot; class=&quot;paragraph--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot; data-paragraph=&quot;true&quot; data-type=&quot;p&quot;><span class=&quot;text--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot;>PUBG: BATTLEGROUNDS 한국 서비스의 마케팅 캠페인 기획 및 실행</span></li> <li id=&quot;2&quot; class=&quot;paragraph--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot; data-paragraph=&quot;true&quot; data-type=&quot;p&quot;><span class=&quot;text--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot;>주요 업데이트 및 시즌 이벤트 기반의 온·오프라인 마케팅 운영</span></li> <li id=&quot;3&quot; class=&quot;paragraph--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot; data-paragraph=&quot;true&quot; data-type=&quot;p&quot;><span class=&quot;text--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot;>공식 소셜 채널 콘텐츠 기획, 제작 및 운영</span></li> <li id=&quot;4&quot; class=&quot;paragraph--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot; data-paragraph=&quot;true&quot; data-type=&quot;p&quot;><span class=&quot;text--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot;>한국 시장 트렌드와 유저 반응을 반영한 로컬 콘",
-      "eligibility": "지원자격 확인 필요",
-      "languageRequirements": "공고 원문 확인 필요",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
-      "evidenceNote": "회사 공식 Greenhouse 채용목록 · Employment Type: Contractor · Sector: IP Franchise · Corp./Studios: KRAFTON · Job Category - Art:  · Job Category - Business & Service: Marketing · Job Category - Data:  · Job Category - Development Management:  · Job Category - Game Design:  · Job Category - Tech:  · Job Category - TA:  · Job Category - QA:  · Job Category - Sound:  · Job Category",
-      "languageFitStatus": "unknown",
-      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "legacyIds": [],
-      "collectionState": "seen",
-      "firstSeenAt": "2026-10-19T01:38:30.324Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "curated-07daeed6e2c83f6f9766",
@@ -1386,7 +1358,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-19. NOT refreshed by the automated crawler. Recheck the original job for current availability. KOWORK page accessible and inspected on 2026-10-19. No posting date/deadline shown; confirm whether Spanish alone is accepted and whether the role is still open.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T04:07:10.910Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "curated-1f9800509bb3522ae05b",
@@ -1428,7 +1400,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-19. NOT refreshed by the automated crawler. Recheck the original job for current availability. KOWORK individual posting accessed October 19, 2026. No publication date or application deadline available and English proficiency is not confirmed; do not treat this as guaranteed regular employment.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T12:39:52.522Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "curated-3c898fe47d680deb8a38",
@@ -1470,7 +1442,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-19. NOT refreshed by the automated crawler. Recheck the original job for current availability. KOWORK page was accessible and inspected on 2026-10-19, but no posting date or deadline was visible. Confirm the vacancy and work authorization with MyRealTrip before applying.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T09:16:03.065Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "curated-580baca867247b0c90cb",
@@ -1512,7 +1484,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-22. NOT refreshed by the automated crawler. Recheck the original job for current availability. Individual KOWORK employer job URL accessed 2026-10-22. The page does not show a posting date, deadline or compensation percentage. A sales commission is mentioned, but no earnings are guaranteed; no claim of current vacancy is made.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-22T04:56:50.212Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "curated-741bf8066b0654346551",
@@ -1554,7 +1526,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-19. NOT refreshed by the automated crawler. Recheck the original job for current availability. KOWORK page accessible and inspected on 2026-10-19. No posting date/deadline shown; video-production fit and current availability require confirmation.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T09:16:03.065Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "curated-9b5b24357b50bf22edf5",
@@ -1596,7 +1568,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-19. NOT refreshed by the automated crawler. Recheck the original job for current availability. Original KOWORK page was accessible and inspected on 2026-10-19. No posting date or deadline is visible; confirm current availability with the employer before applying.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T04:25:36.966Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "curated-9cc188a24d985a5e6ddf",
@@ -1638,7 +1610,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-22. NOT refreshed by the automated crawler. Recheck the original job for current availability. Individual KOWORK employer job URL inspected 2026-10-22. The listing has no confirmed posting date or deadline and displays contradictory Korean/basic Korean requirements across its multilingual text; availability, working arrangements and actual pay",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-22T04:56:50.212Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "curated-a0fec175ac7ef0810e85",
@@ -1680,7 +1652,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-19. NOT refreshed by the automated crawler. Recheck the original job for current availability. KOWORK page accessible and inspected on 2026-10-19. No post date/deadline shown; verify the opening and work authorization with the employer.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T04:07:10.910Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "curated-ba18b0cd9396d2985ebe",
@@ -1720,7 +1692,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-19. NOT refreshed by the automated crawler. Recheck the original job for current availability. Official company careers index and individual application page checked October 19, 2026. The index reads HIRING while the start date in the role description is in the past; no reliable posting date/deadline. Contract schedule is inconsistent on sourc",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T12:39:52.522Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "curated-c6ebf648457ff48a43b9",
@@ -1762,7 +1734,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-19. NOT refreshed by the automated crawler. Recheck the original job for current availability. KOWORK page accessible and inspected on 2026-10-19. No posting date/deadline shown; confirm current hiring status before applying.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T04:07:10.910Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "curated-f749096991d2dcbdc2dc",
@@ -1802,7 +1774,65 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-28. NOT refreshed by the automated crawler. Recheck the original job for current availability. Individual Wehome careers page checked 2026-10-28. No close date or pay shown. Office address listed in Mapo-gu, Seoul, so this is a relocation/commute lead rather than a Jeonju online job.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T04:47:49.197Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
+    },
+    {
+      "id": "kowork-7b3bb8b60d07aab9c06d",
+      "title": "[finshot] Hiring Foreign Marketers in China",
+      "company": "(주)핀샷",
+      "source": "KOWORK",
+      "url": "https://kowork.kr/en/post/8586",
+      "sourceKind": "public_listing_index",
+      "market": "offline",
+      "workplaceMode": "onsite",
+      "category": "advertising",
+      "location": "C동 811호, 330, Seongam-ro, Mapo-gu, Seoul",
+      "province": "서울특별시",
+      "commuteClass": "relocation",
+      "postedAt": null,
+      "deadline": null,
+      "pay": null,
+      "description": "KOWORK public job reference. Open the original page for requirements and current availability.",
+      "languageRequirements": "Verify on original KOWORK listing",
+      "languageFitStatus": "unknown",
+      "languageFitReason": "Public metadata was checked; language requirements still need confirmation.",
+      "eligibilityStatus": "unknown",
+      "eligibility": "Confirm exact language, employment and visa conditions on original listing.",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
+      "evidenceNote": "Minimal title, company, workplace and source link only. No description text or copyrighted images reproduced.",
+      "legacyIds": [],
+      "collectionState": "seen",
+      "firstSeenAt": "2026-10-28T12:57:05.723Z",
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
+    },
+    {
+      "id": "kowork-9c19e50b4145ad4d9570",
+      "title": "[Finshot] Hiring Filipino Foreign Marketers",
+      "company": "(주)핀샷",
+      "source": "KOWORK",
+      "url": "https://kowork.kr/en/post/8584",
+      "sourceKind": "public_listing_index",
+      "market": "offline",
+      "workplaceMode": "onsite",
+      "category": "advertising",
+      "location": "C동 811호, 330, Seongam-ro, Mapo-gu, Seoul",
+      "province": "서울특별시",
+      "commuteClass": "relocation",
+      "postedAt": null,
+      "deadline": null,
+      "pay": null,
+      "description": "KOWORK public job reference. Open the original page for requirements and current availability.",
+      "languageRequirements": "Verify on original KOWORK listing",
+      "languageFitStatus": "unknown",
+      "languageFitReason": "Public metadata was checked; language requirements still need confirmation.",
+      "eligibilityStatus": "unknown",
+      "eligibility": "Confirm exact language, employment and visa conditions on original listing.",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
+      "evidenceNote": "Minimal title, company, workplace and source link only. No description text or copyrighted images reproduced.",
+      "legacyIds": [],
+      "collectionState": "seen",
+      "firstSeenAt": "2026-10-28T12:57:05.723Z",
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "kowork-b2bfa805d07194f8c70a",
@@ -1826,12 +1856,12 @@
       "languageFitReason": "Public metadata was checked; language requirements still need confirmation.",
       "eligibilityStatus": "unknown",
       "eligibility": "Confirm exact language, employment and visa conditions on original listing.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "evidenceNote": "Minimal title, company, workplace and source link only. No description text or copyrighted images reproduced.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-23T00:44:14.150Z",
-      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "id": "kowork-d3d99fe264be46900a05",
@@ -1855,11 +1885,73 @@
       "languageFitReason": "Public metadata was checked; language requirements still need confirmation.",
       "eligibilityStatus": "unknown",
       "eligibility": "Confirm exact language, employment and visa conditions on original listing.",
-      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "verifiedAt": "2026-10-28T12:57:05.723Z",
       "evidenceNote": "Minimal title, company, workplace and source link only. No description text or copyrighted images reproduced.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-22T21:38:00.306Z",
+      "lastSeenAt": "2026-10-28T12:57:05.723Z"
+    },
+    {
+      "id": "greenhouse:krafton:8698655002",
+      "title": "[PUBG Franchise] PUBG: 배틀그라운드 한국 마케팅 담당 (1년 이상 / 계약직)",
+      "company": "KRAFTON",
+      "source": "KRAFTON (공식 채용)",
+      "sourceKind": "official_ats",
+      "url": "https://job-boards.greenhouse.io/krafton/jobs/8698655002",
+      "market": "offline",
+      "workplaceMode": "unknown",
+      "category": "marketing",
+      "location": "Seoul",
+      "province": "서울특별시",
+      "commuteClass": "relocation",
+      "postedAt": "2026-08-12",
+      "deadline": "",
+      "pay": "",
+      "description": "<div class=&quot;content-intro&quot;><p><span style=&quot;font-size: 10pt;&quot;>우리는 게이머의 로망을 실현하기 위해, 누구도 가지 않는 길을 갑니다.</span><br><span style=&quot;font-size: 10pt;&quot;>예상을 뛰어넘는 과감한 상상력과 기술로, 전 세계 팬들이 잊지 못할 세상을 만들기 위해 </span><span style=&quot;font-size: 10pt;&quot;>담대하게 도전하고 개척합니다.&nbsp;&nbsp;</span></p> <p><span style=&quot;font-size: 10pt;&quot;>We pioneer the path to players&#39; dreams.</span><br><span style=&quot;font-size: 10pt;&quot;>With bold imagination and breakthrough technology, </span><span style=&quot;font-size: 10pt;&quot;>we create unforgettable worlds for fans across the globe.</span></p> <hr> <p>&nbsp;</p></div><h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀(프로젝트)을 소개합니다.&nbsp;</strong></span></h3> <p id=&quot;1&quot; class=&quot;paragraph--da25a3913a1dd210&quot; data-paragraph=&quot;true&quot; data-type=&quot;p&quot;><span class=&quot;text--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot;>PUBG: BATTLEGROUNDS (PC/Console)의 한국 서비스를 담당하는 부서로,</span></p> <p id=&quot;2&quot; class=&quot;paragraph--da25a3913a1dd210&quot; data-paragraph=&quot;true&quot; data-type=&quot;p&quot;><span class=&quot;text--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot;>유저들에게 최상의 플레이 경험을 제공하기 위해 노력하고 있습니다.</span></p> <h4>&nbsp;</h4> <h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀과 함께할 미션을 소개합니다.</strong></span></h3> <ul> <li id=&quot;1&quot; class=&quot;paragraph--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot; data-paragraph=&quot;true&quot; data-type=&quot;p&quot;><span class=&quot;text--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot;>PUBG: BATTLEGROUNDS 한국 서비스의 마케팅 캠페인 기획 및 실행</span></li> <li id=&quot;2&quot; class=&quot;paragraph--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot; data-paragraph=&quot;true&quot; data-type=&quot;p&quot;><span class=&quot;text--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot;>주요 업데이트 및 시즌 이벤트 기반의 온·오프라인 마케팅 운영</span></li> <li id=&quot;3&quot; class=&quot;paragraph--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot; data-paragraph=&quot;true&quot; data-type=&quot;p&quot;><span class=&quot;text--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot;>공식 소셜 채널 콘텐츠 기획, 제작 및 운영</span></li> <li id=&quot;4&quot; class=&quot;paragraph--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot; data-paragraph=&quot;true&quot; data-type=&quot;p&quot;><span class=&quot;text--da25a3913a1dd210&quot; style=&quot;font-size: 10pt;&quot;>한국 시장 트렌드와 유저 반응을 반영한 로컬 콘",
+      "eligibility": "지원자격 확인 필요",
+      "languageRequirements": "공고 원문 확인 필요",
+      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "evidenceNote": "회사 공식 Greenhouse 채용목록 · Employment Type: Contractor · Sector: IP Franchise · Corp./Studios: KRAFTON · Job Category - Art:  · Job Category - Business & Service: Marketing · Job Category - Data:  · Job Category - Development Management:  · Job Category - Game Design:  · Job Category - Tech:  · Job Category - TA:  · Job Category - QA:  · Job Category - Sound:  · Job Category",
+      "languageFitStatus": "unknown",
+      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
+      "legacyIds": [],
+      "collectionState": "not_seen",
+      "firstSeenAt": "2026-10-19T01:38:30.324Z",
+      "lastSeenAt": "2026-10-28T05:44:47.974Z"
+    },
+    {
+      "id": "jobicy-d79bed4415069b0407f2",
+      "title": "Localisation Project Manager",
+      "company": "Smartling",
+      "source": "Jobicy",
+      "url": "https://jobicy.com/jobs/156175-localisation-project-manager",
+      "description": "Overview Smartling is an AI-native translation platform that's redefining how the world's biggest brands go global — ranked #3 on Fast Company's Most Innovative Companies list . We're growing rapidly at scale and are backed by Battery Ventures, a global technology-focused investment firm. While most companies are still figuring out how to use AI, we've spent years building it into the core of our platform — and we're just getting started. We're looking for a Localisation Project Manager (Localisation Operations Specialist) based in Ireland to join our Managed Services team. In this role, you'll own the end-to-end localisation lifecycle for a portfolio of enterprise clients, serving as both their operational point of contact and a key contributor to how our team delivers value. This is a role for someone who brings real localisation experience, thrives in a fast-paced, remote-first environment, and is energized by the challenge of balancing operational precision with strong client relationships. You Will Act as your clients' embedded localisation operations expert, serving as the primary operational point of contact and trusted advisor for assigned accounts. Foster strong stakeholder relationships, navigate competing priorities, and coordinate cross-functional teams to ensure the successful execution and continuous improvement of clients' localization programs. Design and optimize localisation processes within Smartling’s platform and client-preferred project management and content management tools, overseeing the end-to-end job lifecycle and tailoring configurations to each client’s unique requirements, including effective use of AI tooling where applicable. Solve problems both independently and collaboratively, bringing a solutions-first mindset to client challenges and internal roadblocks. Proactively drive operational excellence by identifying and implementing process improvements, documenting best practices, and leveraging automation and AI-enabled solutions to streamline workflows, enhance scalability, and improve team efficiency You Have At least 2-3 years of experience in localisation or translation project management, ideally within a managed services or agency environment Solid understanding of localisation file formats, content types, and CAT/TMS tooling Strong client management skills: comfortable leading calls, navigating difficult conversations, and representing the team externally Proficiency with project management and reporting tools (e.g., Jira, Asana, Google Sheets, Looker, or equivalent) Experience coordinating with cross-functional teams across engineering, QA, and vendor management Excellent organizational and time management skills, with sharp attention to detail and the ability to manage competing priorities across time zones Strong written and verbal communication skills Preferred but not required Hands-on experience with Smartling or other TMS platforms (such as Phrase, XTM, or MemoQ) Experience supporting enterprise or SaaS clients in an operational or customer-facing role. Fluency or working proficiency in a second language Interest in language, technology, or global content strategy You Are Accountable. You take full ownership of your accounts, addressing issues promptly and documenting root causes and preventative actions for future improvement. Customer-Focused. You understand that client deadlines and requirements are real business commitments and consistently approach them with urgency, accountability, and care. Adaptable. You adjust effectively to changing scope, priorities, and unexpected client inputs without losing focus or execution quality. Communicative. You proactively stay ahead of client needs by sharing status updates, surfacing risks early, and contributing insights, guidance, and best practices. Process-Driven. You adhere to established processes while actively identifying opportunities to improve efficiency and consistency. You Will Enjoy Freedom - we are remote-first Growth - an opportunity to learn and advance your career Wealth - we offer a competitive salary Wellness - company-sponsored Health insurance plan & pension plan with company matching Balance - flexible PTO + 10 bank holidays! Generous parental leave Culture - an energetic, value-driven, and fun culture and team spirit Bonus - employee referral programs and Apple equipment Smartling is proud to be an equal-opportunity employer. We are committed to building an inclusive global team that represents a variety of backgrounds, perspectives, beliefs, skills, and experiences. To all recruitment agencies: Smartling does not accept unsolicited agency resumes. Please do not forward resumes to our jobs alias or Smartling employees. Smartling is not responsible for any fees related to unsolicited resumes. *To work from home, you must have a strong internet connection, a quiet space, and a professional (distraction and clutter-free) background.",
+      "location": "Ireland",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "translation",
+      "postedAt": "2026-10-21T10:42:29.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": null,
+      "languageRequirements": "공고 원문 확인 필요",
+      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · Ireland",
+      "eligibilityStatus": "unknown",
+      "eligibilityDetail": {
+        "status": "unknown",
+        "geoScope": "Ireland",
+        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "unknown",
+      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
+      "verifiedAt": "2026-10-28T05:44:47.974Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "not_seen",
+      "firstSeenAt": "2026-10-22T04:56:50.212Z",
       "lastSeenAt": "2026-10-28T05:44:47.974Z"
     },
     {
@@ -3267,39 +3359,39 @@
       "source": "Remotive",
       "status": "ok",
       "count": 1,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "detail": "1/1 요청 완료. 1개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://remotive.com/api/remote-jobs?limit=500"
     },
     {
       "source": "Jobicy",
       "status": "ok",
-      "count": 12,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
-      "detail": "4/4 요청 완료. 12개 관련 공고. 출처 공고 URL 원문 확인 필요",
+      "count": 11,
+      "checkedAt": "2026-10-28T12:57:05.723Z",
+      "detail": "4/4 요청 완료. 11개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://jobicy.com/api/v2/remote-jobs?count=200"
     },
     {
       "source": "Remote OK",
       "status": "ok",
       "count": 2,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "detail": "1/1 요청 완료. 2개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://remoteok.com/api"
     },
     {
       "source": "Arbeitnow",
       "status": "ok",
-      "count": 1,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
-      "detail": "1/1 요청 완료. 1개 관련 공고. 출처 공고 URL 원문 확인 필요",
+      "count": 2,
+      "checkedAt": "2026-10-28T12:57:05.723Z",
+      "detail": "1/1 요청 완료. 2개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://www.arbeitnow.com/api/job-board-api?page=1"
     },
     {
       "source": "Himalayas",
       "status": "ok",
       "count": 13,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "detail": "9/9 요청 완료. 13개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://himalayas.app/jobs/api/search?q=korean&country=KR&sort=recent&page=1"
     },
@@ -3307,37 +3399,37 @@
       "source": "RemoteJobs.org",
       "status": "ok",
       "count": 2,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "detail": "5/5 요청 완료. 2개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://remotejobs.org/api/v1/jobs?q=korean&country=KR&eligibility=known&limit=50"
     },
     {
       "source": "KRAFTON",
       "status": "ok",
-      "count": 2,
-      "detail": "회사 공식 Greenhouse 목록 56건 확인, 한국 근무지·관련 직무·최근 90일 기준 2건 보존",
-      "checkedAt": "2026-10-28T05:44:47.974Z"
+      "count": 1,
+      "detail": "회사 공식 Greenhouse 목록 54건 확인, 한국 근무지·관련 직무·최근 90일 기준 1건 보존",
+      "checkedAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "source": "Appier",
       "status": "ok",
       "count": 0,
       "detail": "회사 공식 Greenhouse 목록 67건 확인, 한국 근무지·관련 직무·최근 90일 기준 0건 보존",
-      "checkedAt": "2026-10-28T05:44:47.974Z"
+      "checkedAt": "2026-10-28T12:57:05.723Z"
     },
     {
       "source": "ShopBack",
       "status": "ok",
       "count": 2,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "url": "https://jobs.lever.co/shopback-2",
-      "detail": "88 employer postings checked; 2 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
+      "detail": "85 employer postings checked; 2 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
     {
       "source": "Xsolla",
       "status": "error",
       "count": 0,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "url": "https://jobs.lever.co/xsolla",
       "detail": "The operation was aborted due to timeout"
     },
@@ -3345,7 +3437,7 @@
       "source": "Channel Corp.",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "url": "https://jobs.lever.co/zoyi",
       "detail": "63 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -3353,7 +3445,7 @@
       "source": "Match Group",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "url": "https://jobs.lever.co/matchgroup",
       "detail": "64 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -3361,7 +3453,7 @@
       "source": "Sahara AI",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "url": "https://jobs.ashbyhq.com/Sahara",
       "detail": "3 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -3369,37 +3461,37 @@
       "source": "Plaud",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "url": "https://jobs.ashbyhq.com/Plaud",
       "detail": "49 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
     {
       "source": "KOWORK",
       "status": "ok",
-      "count": 2,
+      "count": 6,
       "url": "https://kowork.kr/en",
-      "checkedAt": "2026-10-28T05:44:47.974Z",
-      "detail": "One public list with 15 cards, 6 limited detail checks. 2 profile-relevant leads. No full description copied; current opening status must be verified."
+      "checkedAt": "2026-10-28T12:57:05.723Z",
+      "detail": "One public list with 15 cards, 6 limited detail checks. 6 profile-relevant leads. No full description copied; current opening status must be verified."
     },
     {
       "source": "ChatGPT Research",
       "status": "manual",
       "count": 16,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "detail": "16 individually researched leads; 0 excluded or expired; 18 manually withdrawn from the radar. Not live-checked at each scheduled refresh."
     },
     {
       "source": "사용자 저장 공고",
       "status": "not_configured",
       "count": 0,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "detail": "config/manual-jobs.json 미생성. 선택 기능"
     },
     {
       "source": "Upwork",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "detail": "Upwork 공개 RSS 자동 수집 기능이 중단되어 검색 결과를 생성하지 않습니다. 계정 로그인 후 수동 검색 링크를 이용하세요.",
       "url": "https://www.upwork.com/nx/search/jobs/",
       "manualSearches": [
@@ -3429,7 +3521,7 @@
       "source": "K-WORK",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "detail": "Korean government SME/foreign talent job platform. Each listing needs language and visa verification. Original-site browsing only.",
       "url": "https://k-work.or.kr/empmnInfo/empmn/list.do"
     },
@@ -3437,7 +3529,7 @@
       "source": "Hanultari",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "detail": "Seoul multicultural-family job portal. Automatic republication restricted; verify jobs at original source.",
       "url": "https://mcfamily.or.kr/en/jobs/opening"
     },
@@ -3445,7 +3537,7 @@
       "source": "JOBPLOY",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "detail": "Foreigner-focused Korea jobs. Terms restrict unlicensed copying; use original-site search.",
       "url": "https://www.jobploy.kr/en"
     },
@@ -3453,7 +3545,7 @@
       "source": "Wanted",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "detail": "Additional Korean employer listings for Spanish-language content and marketing. Search on the original site; individual postings can already be closed.",
       "url": "https://www.wanted.co.kr/"
     },
@@ -3461,7 +3553,7 @@
       "source": "ProZ",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-10-28T05:44:47.974Z",
+      "checkedAt": "2026-10-28T12:57:05.723Z",
       "detail": "Specialist translation and localization jobs; verify deadlines, professional experience and ability to work from Korea on each original posting.",
       "url": "https://www.proz.com/translation-jobs"
     }
