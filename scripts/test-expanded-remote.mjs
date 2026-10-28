@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { expandedRemoteCandidates } from './expanded-remote-sources.mjs';
 import { normalizeExpandedRemote } from '../profiles/dubu/scripts/collect.mjs';
+import { dedupe, normalizeJob } from './collect-jobs.mjs';
+import { validateJob } from '../public/munseong/backup-rules.js';
 
 const now = Date.parse('2026-10-28T06:00:00Z');
 const h = {
@@ -18,6 +20,11 @@ const himalayas = expandedRemoteCandidates('himalayas', { jobs: [
   { ...h, expiryDate: now / 1000 - 1, applicationLink: 'https://himalayas.app/companies/test/jobs/expired' }
 ] }, now);
 assert.equal(himalayas.length, 1);
+assert.match(himalayas[0].id, /^himalayas:[0-9a-f]{20}$/);
+const normalized = dedupe([normalizeJob(himalayas[0])])[0];
+assert.equal(typeof normalized.id, 'string');
+assert.ok((normalized.legacyIds || []).every((id) => typeof id === 'string'));
+validateJob(normalized);
 assert.equal(himalayas[0].salary, 'USD 30–50 hourly');
 assert.equal(himalayas[0].listingExpiresAt, '2026-10-29T06:00:00.000Z');
 const nicole = normalizeExpandedRemote('himalayas', { jobs: [{
@@ -49,5 +56,7 @@ const output = expandedRemoteCandidates('remotejobs', { data: [
 ] }, now);
 assert.equal(output.length, 1);
 assert.equal(output[0].source, 'RemoteJobs.org');
+assert.match(output[0].id, /^remotejobsorg:[0-9a-f]{20}$/);
+validateJob(normalizeJob(output[0]));
 assert.throws(() => expandedRemoteCandidates('himalayas', {}), /jobs array missing/);
 console.log('Expanded remote sources eligibility, expiry and attribution tests passed');

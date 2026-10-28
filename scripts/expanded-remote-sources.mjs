@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 // Large public job catalogs. Search only location-eligible slices instead of
 // mirroring every job. Keep all public application links on the source board.
 // Himalayas data is refreshed daily; the scheduled runner reads it four times
@@ -34,6 +35,8 @@ const validSourceUrl = (value, host) => {
     return url.protocol === 'https:' && url.hostname === host ? url.href : '';
   } catch { return ''; }
 };
+const stableBoardId = (source, identifier) =>
+  source + ':' + createHash('sha1').update(String(identifier)).digest('hex').slice(0, 20);
 const salary = (min, max, currency, period) => {
   if (!Number.isFinite(Number(min)) && !Number.isFinite(Number(max))) return '';
   const values = [min, max].filter((item) => item !== null && item !== undefined && Number.isFinite(Number(item)));
@@ -54,6 +57,7 @@ export function expandedRemoteCandidates(key, payload, now = Date.now()) {
       const url = validSourceUrl(job.applicationLink, 'himalayas.app');
       if (!url || !job.title || !job.companyName) return [];
       return [{
+        id: stableBoardId('himalayas', job.guid || url),
         source: 'Himalayas', sourcePostingId: job.guid || url, url,
         title: job.title, company: job.companyName,
         location: regions.length ? regions.join(', ') : 'Worldwide',
@@ -93,6 +97,7 @@ export function expandedRemoteCandidates(key, payload, now = Date.now()) {
       const url = validSourceUrl(job.url, 'remotejobs.org');
       if (!url || !job.title || !job.company?.name) return [];
       return [{
+        id: stableBoardId('remotejobsorg', job.id || url),
         source: 'RemoteJobs.org', sourcePostingId: job.id || url, url,
         title: job.title, company: job.company.name,
         location: geo.allowed_countries?.includes('KR') ? 'South Korea'
