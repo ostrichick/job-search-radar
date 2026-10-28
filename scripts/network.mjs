@@ -79,8 +79,10 @@ export async function runSources(sources, networkOptions = {}) {
   try {
     await Promise.all(Array.from({ length: Math.min(options.concurrency, sources.length) }, async () => {
       while (cursor < sources.length) {
-        const index = cursor++, [, collector] = sources[index], started = performance.now();
-        const budget = timeout(options.sourceTimeoutMs), signal = AbortSignal.any([total.signal, budget.signal]);
+        const index = cursor++, [, collector, sourceOptions] = sources[index], started = performance.now();
+        const sourceTimeoutMs = sourceOptions?.sourceTimeoutMs ?? options.sourceTimeoutMs;
+        if (!Number.isInteger(sourceTimeoutMs) || sourceTimeoutMs < 1) throw new Error('Invalid source timeout override');
+        const budget = timeout(sourceTimeoutMs), signal = AbortSignal.any([total.signal, budget.signal]);
         try {
           signal.throwIfAborted();
           const result = await context.run({ options, hosts, signal }, () => abortable(Promise.resolve().then(collector), signal));

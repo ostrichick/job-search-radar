@@ -32,6 +32,12 @@ try {
   assert.equal(pool[0].error, undefined); assert.equal(peak, 2, 'per-host concurrency is bounded');
   const outcomes = await runSources([['hang', () => new Promise(() => {})], ['ok', async () => 'kept'], ['late', async () => { await delay(80); return 'ignored'; }]], { sourceTimeoutMs: 30, concurrency: 2 });
   assert.equal(outcomes[0].timedOut, true); assert.equal(outcomes[1].result, 'kept'); assert.equal(outcomes[2].result, undefined);
+  const overridden = await runSources([
+    ['default', async () => { await delay(65); return 'late'; }],
+    ['incruit-like', async () => { await delay(65); return 'done'; }, { sourceTimeoutMs: 250 }]
+  ], { sourceTimeoutMs: 25, concurrency: 2 });
+  assert.equal(overridden[0].timedOut, true, 'normal sources retain their existing timeout');
+  assert.equal(overridden[1].result, 'done', 'the longer publisher-specific budget permits a completed scan');
   const total = await runSources(Array.from({ length: 5 }, (_, i) => [String(i), () => new Promise(() => {})]), { sourceTimeoutMs: 200, totalTimeoutMs: 35, concurrency: 2 });
   assert.ok(total.every((r) => r.timedOut));
   let calls = 0;

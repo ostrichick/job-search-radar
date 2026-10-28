@@ -2873,7 +2873,9 @@ async function collectJobsOnce({ includeManual = true, persist = true, previousJ
     ['알바천국', () => collectAlba(fallbackJobs)],
     ['잡코리아', () => collectJobKorea(fallbackJobs)],
     ['사람인', () => collectSaramin(fallbackJobs)],
-    ['인크루트', () => collectIncruit(fallbackJobs)],
+    // Up to ~70 same-host detail checks (host concurrency 2). Give this
+    // source enough time without relaxing the budget for other publishers.
+    ['인크루트', () => collectIncruit(fallbackJobs), { sourceTimeoutMs: 120000 }],
     ['We Work Remotely', collectWeWorkRemotely],
     ['Jobicy', collectJobicy],
     ['Remote OK', collectRemoteOk],
