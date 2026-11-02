@@ -18,6 +18,28 @@ test.beforeEach(async ({ page }) => {
   await page.route('**/feeds/dubu.json?*', (route) => route.fulfill({ json: feed }));
 });
 
+test('Nicole local refresh requests new collection and replaces the displayed feed', async ({ page }) => {
+  let refreshCalls = 0;
+  await page.route('**/api/refresh?profile=nicole', (route) => {
+    refreshCalls++;
+    return route.fulfill({ json: { ...feed, jobs: [job('fresh-online')] } });
+  });
+  await page.goto('/nicole/');
+  await expect(page.locator('#jobs')).toContainText('Nicole test online');
+  await page.locator('#refreshBtn').click();
+  await expect(page.locator('#jobs')).toContainText('Nicole test fresh-online');
+  await expect(page.locator('#jobs')).not.toContainText('Nicole test online');
+  expect(refreshCalls).toBe(1);
+});
+
+test('Nicole local refresh failure retains the last known feed', async ({ page }) => {
+  await page.route('**/api/refresh?profile=nicole', (route) => route.fulfill({ status: 503, body: 'Upstream unavailable' }));
+  await page.goto('/nicole/');
+  await page.locator('#refreshBtn').click();
+  await expect(page.locator('#jobs')).toContainText('Nicole test online');
+  await expect(page.locator('#loadErrorBanner')).toBeVisible();
+});
+
 test('German-language roles are omitted but Germany-based English jobs remain', async ({ page }) => {
   await page.route('**/feeds/dubu.json?*', (route) => route.fulfill({ json: {
     ...feed, jobs: [
@@ -160,7 +182,7 @@ test('English interface has no remaining Korean outside listing data', async ({ 
       const node = walker.currentNode;
       const element = node.parentElement;
       if (!element || !/[가-힣]/.test(node.nodeValue || '')) continue;
-      if (element.closest('script, style, template, noscript, .title, .company, .description, .meta, .tags, .tag, .source, .trust-badge, .compensation-value, #detailsDescription')) continue;
+      if (element.closest('script, style, template, noscript, .title, .company, .description, .meta, .tags, .tag, .source, .trust-badge, .compensation-value, .workplace, #detailsDescription, #detailsWorkplace')) continue;
       if (element.closest('[hidden]')) continue;
       if (element.getClientRects().length === 0) continue;
       results.push({ element: element.outerHTML.slice(0, 140), text: node.nodeValue.trim().slice(0, 220) });

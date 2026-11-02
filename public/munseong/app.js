@@ -6,6 +6,7 @@ import { createFilterRules } from './filter-rules.js';
 import { createSortRules } from './sort-rules.js';
 import { createManualJobRules } from './manual-job.js';
 import { createStateStorage } from './state-storage.js';
+import { createFeedClient } from './feed-client.js';
 import { validateBackup, validatePublicFeed, httpUrl } from './backup-rules.js';
 import { getProfile } from './profiles.js';
 const profile = getProfile(document.documentElement.dataset.profile);
@@ -208,7 +209,7 @@ const matchingJobs = renderCache.wrap('matches', uncachedMatchingJobs, (options 
 const { filteredJobs } = createSortRules({ state, currentFilterValues, matchingJobs, distanceSummary, distanceSortBand, deadlinePriority, salarySummary });
 const { manualJobRecord } = createManualJobRules({  });
 const nicoleUi = isNicole ? createNicoleUI({ state, storage, persist, mergeJobs, rerender: () => render() }) : null;
-const { render } = createCardRenderer({ $, activeMarketJobs, captureJobCardFocus, distanceSummary, domesticLocalityMatches, effectivePaymentEvidence, eligibilityDisplayLabel, escapeHtml, filteredJobs, formatDate, formatDeadline, friendlyUiText, hideWithUndo, isBroadActiveView, jobMarketScopes, listingDisplayLabel, openDetails, paymentFreshnessLabel, persist, qualityClass, renderActiveFilters, renderCollectionCoverage, renderStats, renderVerificationBadges, requirementsDisplayLabel, restoreJobCardFocus, roleFitEvidenceFor, salarySummary, setHidden, setJobState, showStorageStatus, snapshotJob, syncStoredState, updateBatchUI, workplaceModeLabel, state, storage, renderCache, decorateCard: nicoleUi?.decorateCard, afterRender: () => { nicoleUi?.update(); if (isNicole) localizeNicoleUI(); } });
+const { render } = createCardRenderer({ $, activeMarketJobs, captureJobCardFocus, distanceSummary, domesticLocalityMatches, effectivePaymentEvidence, eligibilityDisplayLabel, escapeHtml, filteredJobs, formatDate, formatDeadline, friendlyUiText, hideWithUndo, isBroadActiveView, jobMarketScopes, listingDisplayLabel, openDetails, paymentFreshnessLabel, persist, qualityClass, renderActiveFilters, renderCollectionCoverage, renderStats, renderVerificationBadges, requirementsDisplayLabel, restoreJobCardFocus, roleFitEvidenceFor, salarySummary, setHidden, setJobState, showStorageStatus, snapshotJob, syncStoredState, updateBatchUI, workplaceDisplay, workplaceModeLabel, state, storage, renderCache, decorateCard: nicoleUi?.decorateCard, afterRender: () => { nicoleUi?.update(); if (isNicole) localizeNicoleUI(); } });
 nicoleUi?.initialize();
 let queryTimer;
 for (const id of controls) {
@@ -459,6 +460,13 @@ function domesticLocalityMatches(region = {}, value = '') {
 
 function workplaceModeLabel(job) {
   return ({ remote: '원격', hybrid: '하이브리드', onsite: '출근' })[job.workplaceMode] || '';
+}
+
+function workplaceDisplay(job) {
+  if (job.remote) return { value: isNicole ? 'Remote' : '원격', kind: 'remote' };
+  const label = job.domesticRegion?.label || String(job.location || '').trim();
+  if (label) return { value: label, kind: 'onsite' };
+  return { value: isNicole ? 'Location not listed' : '위치 미표시', kind: 'unknown' };
 }
 
 function mergeJobs() {
@@ -1111,6 +1119,10 @@ async function openDetails(job) {
   renderStats();
   $('detailsTitle').textContent = job.title;
   $('detailsCompany').textContent = job.company;
+  const detailWorkplace = workplaceDisplay(job);
+  $('detailsWorkplace').classList.toggle('remote', detailWorkplace.kind === 'remote');
+  $('detailsWorkplace').classList.toggle('unknown', detailWorkplace.kind === 'unknown');
+  $('detailsWorkplaceValue').textContent = detailWorkplace.value;
   const compensation = salarySummary(job);
   $('detailsCompensation').classList.toggle('unknown', compensation.unknown);
   $('detailsCompensation').classList.toggle('limited', compensation.limited);
@@ -1128,7 +1140,6 @@ async function openDetails(job) {
     $('detailsDistanceNote').textContent = distance.note;
   }
   $('detailsMeta').innerHTML = [
-    job.location,
     jobMarketScopes(job).includes('domestic') ? workplaceModeLabel(job) : '',
     job.type,
     job.workSchedule ? `근무 ${job.workSchedule}` : '',
@@ -1746,26 +1757,10 @@ function applyFeedData(data, detectNew = true) {
   render();
 }
 
-async function feedRequest(url, options = {}) {
-  const response = await fetch(url, { ...options, cache: 'no-store', signal: AbortSignal.timeout(15000) });
-  if (!response.ok) throw new Error(`${response.status}`);
-  const data = await response.json();
-  return isNicole ? adaptNicoleFeed(data) : validatePublicFeed(data);
-}
-async function fetchFeed() {
-  if (isNicole) return feedRequest(`${profile.feedUrl}?ts=${Date.now()}`);
-  const staticPages = location.hostname.endsWith('.github.io');
-  const candidates = staticPages ? [`../jobs.json?ts=${Date.now()}`] : ['/api/jobs', `../jobs.json?ts=${Date.now()}`];
-  let lastError;
-  for (const url of candidates) {
-    try {
-      return await feedRequest(url);
-    } catch (error) {
-      lastError = error;
-    }
-  }
-  throw new Error(`공고 데이터를 불러오지 못했습니다 (${lastError?.message || 'unknown'})`);
-}
+const { fetchFeed, refreshFeed } = createFeedClient({
+  profile, hostname: location.hostname,
+  normalizeFeed: isNicole ? adaptNicoleFeed : validatePublicFeed
+});
 
 async function load() {
   const data = await fetchFeed();
@@ -1779,17 +1774,7 @@ $('refreshBtn').addEventListener('click', async () => {
   button.disabled = true;
   button.textContent = staticPages ? '목록 확인 중…' : '수집 중…';
   try {
-    let data, collectionError;
-    if (staticPages || isNicole) {
-      data = await fetchFeed();
-    } else {
-      try {
-        data = await feedRequest('/api/refresh', { method: 'POST' });
-      } catch (error) {
-        collectionError = error;
-        data = await fetchFeed();
-      }
-    }
+    const { data, collectionError } = await refreshFeed();
     applyFeedData(data, true);
     if (collectionError) {
       state.loadError = collectionError.message;

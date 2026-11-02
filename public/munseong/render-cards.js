@@ -1,4 +1,4 @@
-export function createCardRenderer({ $, activeMarketJobs, captureJobCardFocus, distanceSummary, domesticLocalityMatches, effectivePaymentEvidence, eligibilityDisplayLabel, escapeHtml, filteredJobs, formatDate, formatDeadline, friendlyUiText, hideWithUndo, isBroadActiveView, jobMarketScopes, listingDisplayLabel, openDetails, paymentFreshnessLabel, persist, qualityClass, renderActiveFilters, renderCollectionCoverage, renderStats, renderVerificationBadges, requirementsDisplayLabel, restoreJobCardFocus, roleFitEvidenceFor, salarySummary, setHidden, setJobState, showStorageStatus, snapshotJob, syncStoredState, updateBatchUI, workplaceModeLabel, state, storage, renderCache, decorateCard, afterRender }) {
+export function createCardRenderer({ $, activeMarketJobs, captureJobCardFocus, distanceSummary, domesticLocalityMatches, effectivePaymentEvidence, eligibilityDisplayLabel, escapeHtml, filteredJobs, formatDate, formatDeadline, friendlyUiText, hideWithUndo, isBroadActiveView, jobMarketScopes, listingDisplayLabel, openDetails, paymentFreshnessLabel, persist, qualityClass, renderActiveFilters, renderCollectionCoverage, renderStats, renderVerificationBadges, requirementsDisplayLabel, restoreJobCardFocus, roleFitEvidenceFor, salarySummary, setHidden, setJobState, showStorageStatus, snapshotJob, syncStoredState, updateBatchUI, workplaceDisplay, workplaceModeLabel, state, storage, renderCache, decorateCard, afterRender }) {
 let renderWaiting = false;
 const isoDay = (raw) => {
   const value = raw ? new Date(raw) : null;
@@ -104,6 +104,11 @@ function render() {
     unknownLine.textContent = `미확인 · ${(job.decisionUnknowns || []).slice(0, 3).map(friendlyUiText).join(' · ') || '주요 미확인 항목 없음'}`;
     node.querySelector('.title').textContent = job.title;
     node.querySelector('.company').textContent = job.company;
+    const workplace = workplaceDisplay(job);
+    const workplaceNode = node.querySelector('.workplace');
+    workplaceNode.classList.toggle('remote', workplace.kind === 'remote');
+    workplaceNode.classList.toggle('unknown', workplace.kind === 'unknown');
+    node.querySelector('.workplace-value').textContent = workplace.value;
     const compensation = salarySummary(job);
     const compensationNode = node.querySelector('.compensation');
     compensationNode.classList.toggle('unknown', compensation.unknown);
@@ -120,7 +125,6 @@ function render() {
       node.querySelector('.distance-note').textContent = distance.note;
     }
     const meta = [
-      job.location,
       state.marketTab === 'domestic' ? workplaceModeLabel(job) : '',
       job.type,
       state.marketTab === 'domestic' && job.workSchedule ? `근무 ${job.workSchedule}` : '',

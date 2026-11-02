@@ -343,14 +343,14 @@ const RAW_FIELDS = [
   '#detailsDecisionValue', '#detailsDecisionUnknown',
   '.history-item small', '.signal-item small', '.signal-item a', '.signal-item > strong',
   '#detailsListingEvidence a', '.collection-gap-item > span', '.collection-gap-item > small',
-  '.trust-badge', '.job-card .compensation-value', '#detailsCompensationValue'
+  '.trust-badge', '.job-card .compensation-value', '#detailsCompensationValue', '#detailsWorkplaceValue'
 ].join(', ');
 
 const CARD_UI = [
   '.score', '.job-select', '.favorite', '.dismiss', '.job-state', '.details', '.apply',
   '.listing-badge', '.eligibility-badge', '.payment-badge', '.requirements-badge',
   '.verification-badges', '.compensation-label', '.compensation-note',
-  '.distance-summary', '.collection-dates', '.decision-strip',
+  '.workplace-label', '.distance-summary', '.collection-dates', '.decision-strip',
   '.decision-value', '.decision-unknown', '.posted'
 ].join(', ');
 const SOURCE_DETAILS = [
