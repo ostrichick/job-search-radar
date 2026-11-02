@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /** Public feeds only. Run at most daily for static GitHub Pages snapshots. */
-import { readFile, mkdir, rename, writeFile, stat, unlink } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { randomUUID } from 'node:crypto';
+import { atomicWriteJson } from '../../../scripts/file-storage.mjs';
 import { collectCuratedResearch } from './curated-research.mjs';
 import { SHARED_SOURCE_URLS, loadSharedResponse } from '../../../scripts/shared-responses.mjs';
 import { EXPANDED_REMOTE_FEEDS, expandedRemoteCandidates, isFutureOnlyProductivePlayhouse } from '../../../scripts/expanded-remote-sources.mjs';
@@ -160,7 +160,9 @@ const expandedSourceLanguageMismatch = (job, knownLanguages) =>
   && (job.languageFitStatus || assessLanguageFit(job, knownLanguages).languageFitStatus) === 'mismatch';
 
 export function normalizeExpandedRemote(key, payload, options = {}) {
-  return expandedRemoteCandidates(key, payload).flatMap((item) => {
+  const requestedNow = Date.parse(options.now);
+  const atTime = Number.isFinite(requestedNow) ? requestedNow : Date.now();
+  return expandedRemoteCandidates(key, payload, atTime).flatMap((item) => {
     // The broad 'marketing' API query also returns non-Spanish translation
     // review leads because their titles contain "Marketing & Product Content".
     // The requested target language is a hard job requirement, not a keyword.
@@ -208,7 +210,11 @@ function validateManualJob(item, now) {
 export function normalizeManual(payload, now) {
   const entries = Array.isArray(payload) ? payload : payload?.jobs;
   if (!Array.isArray(entries)) throw new Error('수동 공고 파일 형식: {"jobs":[]} 또는 배열 필요');
-  return { valid: entries.flatMap((x) => { const job = validateManualJob(x, now); return job ? [job] : []; }), invalid: entries.length - entries.filter((x) => validateManualJob(x, now)).length };
+  const valid = entries.flatMap((item) => {
+    const job = validateManualJob(item, now);
+    return job ? [job] : [];
+  });
+  return { valid, invalid: entries.length - valid.length };
 }
 
 async function fetchJson(url, { fetchImpl = fetch, timeoutMs = 12000 } = {}) {
@@ -487,22 +493,29 @@ export function mergeHistoricalFeed(incoming, previous, { retentionDays = 60, ma
 }
 
 export async function writeFeedAtomic(feed, filename) {
-  await mkdir(dirname(filename), { recursive: true });
-  const tmp = `${filename}.${process.pid}.${randomUUID()}.tmp`;
-  try {
-    await writeFile(tmp, `${JSON.stringify(feed, null, 2)}\n`, { encoding: 'utf8', flag: 'wx' });
-    await rename(tmp, filename);
-  } catch (err) {
-    await unlink(tmp).catch(() => {});
-    throw err;
-  }
+  return atomicWriteJson(filename, feed);
 }
 
-export async function run({ root = ROOT, ...options } = {}) {
+export async function run({ root = ROOT, outputPath = join(root, 'public/jobs.json'),
+  fallbackPath, ...options } = {}) {
   const { feed, successfulRequests, manualCount, excludedUrls } = await buildFeed({ root, ...options });
-  const filename = join(root, 'public/jobs.json');
+  const filename = resolve(outputPath);
   const existed = await stat(filename).then(() => true, () => false);
-  const previous = existed ? JSON.parse(await readFile(filename, 'utf8')) : null;
+  let previous = null;
+  if (existed) {
+    try {
+      previous = JSON.parse(await readFile(filename, 'utf8'));
+      if (!previous || typeof previous !== 'object' || !Array.isArray(previous.jobs)) {
+        throw new SyntaxError('Invalid existing feed structure');
+      }
+    } catch (error) {
+      // Only the explicitly supplied baseline may recover a corrupt local cache.
+      // Never overwrite an unreadable canonical feed with a new partial snapshot.
+      if (!(error instanceof SyntaxError) || !fallbackPath) throw error;
+      previous = null;
+    }
+  }
+  if (!previous && fallbackPath) previous = JSON.parse(await readFile(fallbackPath, 'utf8'));
   const previousJobs = Array.isArray(previous?.jobs) ? previous.jobs : [];
   const previousByUrl = new Map(previousJobs.map((job) => [safePublicUrl(job.url), job]));
   const curatedChanged = feed.jobs.some((job) => {
@@ -512,7 +525,7 @@ export async function run({ root = ROOT, ...options } = {}) {
       key !== 'legacyIds' && JSON.stringify(value) !== JSON.stringify(earlier[key]));
   });
   const withdrawnChanged = excludedUrls.some((url) => previousByUrl.has(safePublicUrl(url)));
-  if (existed && successfulRequests === 0 && manualCount === 0 && !curatedChanged && !withdrawnChanged) {
+  if (previous && successfulRequests === 0 && manualCount === 0 && !curatedChanged && !withdrawnChanged) {
     return { written: false, message: '모든 자동 소스가 실패했거나 미설정이므로 마지막으로 성공한 jobs.json 유지', feed };
   }
   const profile = await readProfile(root);

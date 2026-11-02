@@ -439,6 +439,62 @@ test('preserves last successfully written file if all upstream services fail', a
   assert.equal(await readFile(join(root, 'public/jobs.json'), 'utf8'), previous);
 });
 
+test('local refresh keeps the tracked Nicole baseline and uses it when the local cache is absent', async (t) => {
+  const root = await setup();
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await mkdir(join(root, 'public'));
+  await mkdir(join(root, 'data'));
+  const baseline = join(root, 'public/jobs.json');
+  const local = join(root, 'data/nicole-jobs.json');
+  const baselineText = JSON.stringify({ updatedAt: now, sourceStatus: [], jobs: [
+    { id: 'saved', source: 'Remotive', url: 'https://remotive.com/remote-jobs/saved',
+      company: 'SavedCo', title: 'Marketing Specialist', market: 'online',
+      category: 'marketing', lastSeenAt: now }
+  ] });
+  await writeFile(baseline, baselineText);
+  const failed = await run({ root, outputPath: local, fallbackPath: baseline, now,
+    fetchImpl: async () => { throw Error('offline'); },
+    koreaAtsCollector: async () => ({ jobs: [], sourceStatus: [] }) });
+  assert.equal(failed.written, false);
+  await assert.rejects(readFile(local, 'utf8'), { code: 'ENOENT' });
+  const fresh = await run({ root, outputPath: local, fallbackPath: baseline, now, fetchImpl: fakeFetch,
+    koreaAtsCollector: async () => ({ jobs: [], sourceStatus: [] }) });
+  assert.equal(fresh.written, true);
+  assert.ok(fresh.feed.jobs.some((job) => job.company === 'SavedCo'));
+  assert.equal(await readFile(baseline, 'utf8'), baselineText);
+  assert.deepEqual(JSON.parse(await readFile(local, 'utf8')).jobs, fresh.feed.jobs);
+});
+
+test('local refresh recovers an invalid local JSON cache using its tracked baseline', async (t) => {
+  const root = await setup();
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await mkdir(join(root, 'public'));
+  await mkdir(join(root, 'data'));
+  const baseline = join(root, 'public/jobs.json');
+  const local = join(root, 'data/nicole-jobs.json');
+  const baselineText = JSON.stringify({ updatedAt: now, sourceStatus: [], jobs: [] });
+  await writeFile(baseline, baselineText);
+  await writeFile(local, '{ invalid json');
+  const result = await run({ root, outputPath: local, fallbackPath: baseline, now,
+    fetchImpl: fakeFetch, koreaAtsCollector: async () => ({ jobs: [], sourceStatus: [] }) });
+  assert.equal(result.written, true);
+  assert.ok(Array.isArray(JSON.parse(await readFile(local, 'utf8')).jobs));
+  assert.equal(await readFile(baseline, 'utf8'), baselineText);
+});
+
+test('refuses to overwrite an invalid canonical feed without an explicit fallback', async (t) => {
+  const root = await setup();
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await mkdir(join(root, 'public'));
+  const filename = join(root, 'public/jobs.json');
+  for (const contents of ['{ invalid json', 'null']) {
+    await writeFile(filename, contents);
+    await assert.rejects(run({ root, now, fetchImpl: async () => { throw Error('offline'); },
+      koreaAtsCollector: async () => ({ jobs: [], sourceStatus: [] }) }), SyntaxError);
+    assert.equal(await readFile(filename, 'utf8'), contents);
+  }
+});
+
 test('upstream outage still applies curated additions, edits and withdrawals while preserving historical jobs', async (t) => {
   const root = await setup();
   t.after(() => rm(root, { recursive: true, force: true }));
