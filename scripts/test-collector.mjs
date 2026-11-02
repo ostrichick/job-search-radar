@@ -997,7 +997,7 @@ const incruitDetailFixture = `<!doctype html><html><head>
   <script type="application/ld+json">{
     "@context":"https://schema.org/","@type":"JobPosting","title":"방사선사 직원 모집",
     "description":"전주우리척병원 방사선사 직원 모집",
-    "datePosted":"2026-09-17","validThrough":"2026-10-31T23:59:59+09:00","employmentType":["FULL_TIME"],
+    "datePosted":"2026-09-17","validThrough":"2026-12-31T23:59:59+09:00","employmentType":["FULL_TIME"],
     "identifier":{"@type":"PropertyValue","name":"인크루트","value":"2609110000252"},
     "hiringOrganization":{"@type":"Organization","name":"전주우리척병원"},
     "jobLocation":{"@type":"Place","address":{"@type":"PostalAddress","streetAddress":"전라북도 전주시 완산구 쑥고개로 398-16","addressLocality":"전주시","addressRegion":"전라북도","addressCountry":"KR"}}
@@ -1091,7 +1091,7 @@ const rssNow = Date.parse('2026-10-10T07:15:00.000Z');
 const rssItem = (id, title, regions) => `<item>
 <title><![CDATA[[${title}] ${title} 채용]]></title>
 <link>https://job.incruit.com/jobdb_info/jobpost.asp?job=${id}</link>
-<description><![CDATA[▨ 회사명 : ${title}<br><br>▨ 지역 : |${regions}<br><br>▨ 마감일 : 10/30(금)]]></description>
+<description><![CDATA[▨ 회사명 : ${title}<br><br>▨ 지역 : |${regions}<br><br>▨ 마감일 : 12/30(수)]]></description>
 <author>${title}</author><pubDate>Fri, 09 Oct 2026 12:10:00 +0900</pubDate></item>`;
 const rssXml = (items, built = 'Sat, 10 Oct 2026 15:10:04 +0900') =>
   `<?xml version="1.0" encoding="utf-8" ?><rss version="2.0"><channel>
@@ -1134,15 +1134,15 @@ assert.equal(parsedRss.itemCount, 5);
 assert.deepEqual(parsedRss.candidates.map((item) => item.id), ['2610080004445']);
 assert.equal(parsedRss.candidates[0].listLocation, '전북특별자치도 전주시 덕진구');
 assert.equal(parsedRss.candidates[0].deadlineType, 'fixed');
-assert.equal(parsedRss.candidates[0].deadlineDate, '2026-10-30');
-assert.equal(parsedRss.candidates[0].deadlineLabel, '10/30(금)');
-const expiredRss = parseIncruitJeonbukRss(rssFixture.replace('10/30(금)', '10/09(금)'), rssNow);
+assert.equal(parsedRss.candidates[0].deadlineDate, '2026-12-30');
+assert.equal(parsedRss.candidates[0].deadlineLabel, '12/30(수)');
+const expiredRss = parseIncruitJeonbukRss(rssFixture.replace('12/30(수)', '10/09(금)'), rssNow);
 assert.equal(expiredRss.candidates[0].deadlineDate, '2026-10-09');
 assert.equal(currentListingState({ source: '인크루트', deadlineType: 'fixed',
   deadlineDate: expiredRss.candidates[0].deadlineDate,
   sourceListingState: 'public_rss', title: expiredRss.candidates[0].title }).code, 'expired',
 'RSS expiry must take priority over a recently refreshed RSS list');
-const ambiguousRss = parseIncruitJeonbukRss(rssFixture.replace('10/30(금)', '10/30(목)'), rssNow);
+const ambiguousRss = parseIncruitJeonbukRss(rssFixture.replace('12/30(수)', '12/30(목)'), rssNow);
 assert.equal(ambiguousRss.candidates[0].deadlineType, 'unknown',
   'incompatible weekday must not invent an expiry year');
 assert.throws(() => parseIncruitJeonbukRss(rssXml([rssItem('1', 'test', '전북>완주군')],
@@ -1192,7 +1192,7 @@ try {
   assert.equal(cached.sourceListingState, 'public_rss_cached_detail');
   assert.equal(cached.workAddressEvidence, 'historical_detail');
   assert.equal(cached.lastDetailVerifiedAt, previousDetail.lastDetailVerifiedAt);
-  assert.equal(cached.deadlineDate, '2026-10-30');
+  assert.equal(cached.deadlineDate, '2026-12-30');
   assert.equal(cached.listingBasis, 'public_rss_list');
   assert.equal(cached.domesticRegion.evidenceLevel, 'source_text',
     'last known detailed address must not masquerade as newly verified structured location');
