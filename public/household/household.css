@@ -70,7 +70,8 @@ main {max-width:1500px;margin:0 auto;padding:24px clamp(18px,5vw,72px) 60px}
 .tracking select,.tracking textarea {border:1px solid #cddbcf;border-radius:9px;background:#fff;padding:10px;color:#254331;min-width:0;width:100%;font-size:13px}
 .tracking textarea {resize:vertical;min-height:55px}
 .card .bottom {font-size:11px;line-height:1.6;color:#7c877e}
-.card.is-closed {background:#eceeed;border-color:#d3d7d2;color:#6b726c}
+.card.is-closed {background:#e7e9e7;border-color:#c9cdc8;color:#6b726c;filter:grayscale(1);opacity:.72;box-shadow:inset 4px 0 0 #aab1aa;transition:opacity .15s ease}
+.card.is-closed:hover,.card.is-closed:focus-within {opacity:.92}
 .card.is-closed h3 {color:#5a615b}
 .card.is-closed .benefit {color:#6d766e}
 .card.is-closed .summary,.card.is-closed .meta,.card.is-closed .detail-body,.card.is-closed .bottom {color:#7a817b}
