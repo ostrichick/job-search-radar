@@ -783,7 +783,7 @@ const saraminListFixture = `<!doctype html><html><body>
     <div class="col company_nm"><a class="str_tit">GT인더스트리</a></div>
     <div class="col notification_info"><div class="job_tit"><a class="str_tit" title="GT안전 · 철물건재 사무직 직원 채용모집"><span>GT안전 · 철물건재 사무직 직원 채용모집</span></a></div></div>
     <div class="col recruit_info"><ul><li><p class="work_place">전북 완주군</p></li><li><p class="career">경력무관 · 정규직</p></li><li><p class="education">고졸↑</p></li></ul></div>
-    <div class="col support_info"><p class="support_detail"><span class="date">~11.04(수)</span></p></div>
+    <div class="col support_info"><p class="support_detail"><span class="date">~12.31(목)</span></p></div>
   </div></div>
   <div id="rec-99999999" class="list_item"><div class="job_tit"><a title="전국 원격 사무직"><span>전국 원격 사무직</span></a></div><p class="work_place">전국</p></div>
 </body></html>`;
@@ -794,7 +794,7 @@ assert.deepEqual(saraminAreaListCandidates(saraminListFixture), [{
   listLocation: '전북 완주군',
   careerType: '경력무관 · 정규직',
   education: '고졸↑',
-  deadlineLabel: '~11.04(수)',
+  deadlineLabel: '~12.31(목)',
   evidence: 'public_area_list'
 }]);
 
@@ -802,7 +802,7 @@ const saraminDetailFixture = `<!doctype html><html><body>
   <div class="jv_header"><a class="company" title="GT인더스트리">GT인더스트리</a><h1 class="tit_job">GT안전 · 철물건재 사무직 직원 채용모집</h1></div>
   <main>핵심 정보 경력 경력무관(신입포함) 학력 고교졸업 이상 근무형태 정규직 수습기간 1개월 급여 면접 후 결정 출퇴근 시간 07:00~18:00 근무지역 전북 완주군
   상세요강 [주요업무] 거래처 전화 응대 및 주문 확인 [지원자격] 컴퓨터 기본 사용 가능자 [우대사항] - 경리 및 사무업무 경험자 - 고객응대 경험 있으신 분 [근무조건] - 근무형태 : 정규직(수습기간 1개월) - 근무요일/시간 : (월~금) 오전 9:00 ~ 오후 18:00 - 근무지역 : 전북 - 완주군 용진읍 - 급여 : 면접 후 협의 [전형절차] 서류전형
-  근무지위치 (55353) 전북 완주군 용진읍 용흥리 770-7 지도 보기 접수기간 및 방법 시작일 2026.10.05 07:00 마감일 2026.11.04 23:59</main>
+  근무지위치 (55353) 전북 완주군 용진읍 용흥리 770-7 지도 보기 접수기간 및 방법 시작일 2099.10.05 07:00 마감일 2099.12.31 23:59</main>
 </body></html>`;
 const saraminPosting = saraminHtmlJobPosting(saraminDetailFixture, {});
 assert.equal(saraminPosting.hiringOrganization.name, 'GT인더스트리');
@@ -826,7 +826,7 @@ assert.equal(saraminLocal.type, '정규직');
 assert.equal(saraminLocal.experience, '경력무관(신입포함)');
 assert.equal(saraminLocal.education, '고교졸업 이상');
 assert.equal(saraminLocal.deadlineType, 'fixed');
-assert.equal(saraminLocal.deadlineDate, '2026-11-04');
+assert.equal(saraminLocal.deadlineDate, '2099-12-31');
 assert.equal(saraminLocal.workSchedule, '(월~금) 오전 9:00 ~ 오후 18:00');
 assert.deepEqual(saraminLocal.preferredConditions, ['경리 및 사무업무 경험자', '고객응대 경험 있으신 분']);
 assert.deepEqual(saraminLocal.compensationNotes, ['급여 면접 후 결정', '수습기간 조건 확인']);
