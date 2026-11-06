@@ -2170,7 +2170,7 @@ test('국내 탭에서 원격으로 직접 추가한 공고는 해외·원격 �
   expect(saved.marketScopes).toEqual(['overseas_remote']);
 });
 
-test('한국어교육 필터는 점수·지역 기본 필터와 무관하게 수동 검증 공고를 보여준다', async ({ page }) => {
+test('한국어 관련 필터는 점수·지역 기본 필터와 무관하게 교육·에듀테크·CS 공고를 보여준다', async ({ page }) => {
   const teachingJobs = [
     job({
       id: 'job:teaching-remote',
@@ -2201,15 +2201,62 @@ test('한국어교육 필터는 점수·지역 기본 필터와 무관하게 수
       source: 'ChatGPT 수동 조사',
       sourceKind: 'manual',
       domesticRegion: { label: '전북특별자치도 군산시', province: '전북특별자치도', city: '군산시', locality: '군산시', neighborhood: '', precision: 'city', evidenceLevel: 'detail_html' }
+    }),
+    job({
+      id: 'job:korean-edtech',
+      title: 'Korean Learning Content Designer',
+      company: 'EdTech Co',
+      description: 'Design Korean language learning content',
+      tags: ['Korean edtech'],
+      score: 19,
+      recommendationEligible: false,
+      requirementsStatus: 'routine_check',
+      marketScopes: ['overseas_remote'],
+      eligibilityCode: 'korea',
+      source: 'ChatGPT 수동 조사',
+      sourceKind: 'manual'
+    }),
+    job({
+      id: 'job:korean-customer-support',
+      title: 'Korean Customer Support Specialist',
+      company: 'Global SaaS',
+      description: 'Support Korean-speaking customers',
+      tags: ['Korean customer support'],
+      score: 19,
+      recommendationEligible: false,
+      requirementsStatus: 'routine_check',
+      marketScopes: ['overseas_remote'],
+      eligibilityCode: 'worldwide',
+      source: 'ChatGPT 수동 조사',
+      sourceKind: 'manual'
+    }),
+    job({
+      id: 'job:keywords-cs',
+      title: 'Korean Customer Support Agent - Gaming',
+      company: 'Keywords Studios',
+      description: 'Support Korean-speaking game players by email and chat',
+      tags: ['Korean-Language-Customer-Service-Representative', 'Gaming-Support-Agent'],
+      score: 78,
+      recommendationEligible: true,
+      requirementsStatus: 'clear',
+      marketScopes: ['overseas_remote'],
+      eligibilityCode: 'korea',
+      source: 'RWS TrainAI',
+      sourceKind: 'job_board',
+      listingStatus: 'current_feed'
     })
   ];
   await useFeed(page, () => feed(teachingJobs));
   await page.goto('/munseong/');
   await expect(page.locator('.job-card')).toHaveCount(0);
   await page.locator('#teachingOnly').check();
-  await expect(page.locator('.job-card')).toHaveCount(2);
+  await expect(page.locator('.job-card')).toHaveCount(5);
   await expect(page.locator('#jobs')).toContainText('한국어브릿지');
   await expect(page.locator('#jobs')).toContainText('군장대학교');
+  await expect(page.locator('#jobs')).toContainText('Korean Learning Content Designer');
+  await expect(page.locator('#jobs')).toContainText('Korean Customer Support Specialist');
+  await expect(page.locator('#jobs')).toContainText('Keywords Studios');
   await page.locator('#teachingOnly').uncheck();
-  await expect(page.locator('.job-card')).toHaveCount(0);
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await expect(page.locator('#jobs')).toContainText('Keywords Studios');
 });

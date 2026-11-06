@@ -27,9 +27,10 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
   const hidden = state.hiddenIds.has(job.id) || (isNicole && (
     state.hiddenCompanies?.has(canonical(job.company)) || state.hiddenSources?.has(canonical(job.source))));
   if (teachingOnly) {
-    const teachingMatch = (job.tags || []).includes('Korean language teaching')
-      || /한국어교원|한국어\s*강사|한국어\s*선생님|한국어\s*튜터|세종학당/.test(`${job.title || ''}`);
-    if (!teachingMatch) return false;
+    const tagMatch = (job.tags || []).some((tag) => /korean[- ](language[- ]teaching|edtech|customer[- ]support|localization|content|curriculum|learning)/i.test(String(tag)));
+    const titleMatch = /\bKorean\s+(Language\s+)?(Teacher|Instructor|Tutor|Teaching|EdTech|Customer\s+Support|Support|Localization|Content|Curriculum|Learning|Quality)\b/i.test(job.title || '');
+    const koreanTitleMatch = /한국어교원|한국어\s*강사|한국어\s*선생님|한국어\s*튜터|세종학당|한국어\s*콘텐츠|한국어\s*고객|한국어\s*CS|에듀테크/i.test(job.title || '');
+    if (!tagMatch && !titleMatch && !koreanTitleMatch) return false;
     if (value('statusFilter') === 'active' && hidden) return false;
     if (value('listingFilter') === 'active' && ['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus)) return false;
     return true;

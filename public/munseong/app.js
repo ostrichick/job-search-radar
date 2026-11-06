@@ -100,7 +100,7 @@ const activeFilterLabels = {
   domesticProvince: '시·도', domesticLocality: '시·군·구', domesticNeighborhood: '읍·면·동',
   compensationFilter: '보수 정보', ageFilter: '게시 시점', listingFilter: '모집 상태',
   sourceKindFilter: '출처 검증', paymentFilter: '지급 신뢰 근거', requirementsFilter: '필수요건 확인',
-  minScore: '최소 검토 우선순위', statusFilter: '내 상태', teachingOnly: '한국어교육'
+  minScore: '최소 검토 우선순위', statusFilter: '내 상태', teachingOnly: '한국어 관련'
 };
 const filterDefaults = {
   overseas_remote: { query: '', source: '', category: '', remote: '', eligibility: 'likely', domesticProvince: '', domesticLocality: '', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score', statusFilter: 'active', teachingOnly: '' },
