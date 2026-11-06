@@ -90,7 +90,7 @@ function commitState(mode = 'edit') {
   return storage.commit(mode).catch(() => { syncStoredState(); showStorageStatus(); });
 }
 
-const controls = ['query', 'source', 'category', 'remote', 'eligibility', 'domesticProvince', 'domesticLocality', 'domesticNeighborhood', 'compensationFilter', 'ageFilter', 'listingFilter', 'sourceKindFilter', 'paymentFilter', 'requirementsFilter', 'minScore', 'sort', 'statusFilter', ...(isNicole ? ['languageFitFilter', 'commuteFilter', 'archiveFilter', 'savedOnly'] : [])];
+const controls = ['query', 'source', 'category', 'remote', 'eligibility', 'domesticProvince', 'domesticLocality', 'domesticNeighborhood', 'compensationFilter', 'ageFilter', 'listingFilter', 'sourceKindFilter', 'paymentFilter', 'requirementsFilter', 'minScore', 'sort', 'statusFilter', 'teachingOnly', ...(isNicole ? ['languageFitFilter', 'commuteFilter', 'archiveFilter', 'savedOnly'] : [])];
 const fallbackDomesticProvinceOptions = [
   '서울특별시', '전남광주통합특별시', '부산광역시', '대구광역시', '인천광역시', '대전광역시', '울산광역시', '세종특별자치시',
   '경기도', '충청북도', '충청남도', '경상북도', '경상남도', '제주특별자치도', '강원특별자치도', '전북특별자치도'
@@ -100,11 +100,11 @@ const activeFilterLabels = {
   domesticProvince: '시·도', domesticLocality: '시·군·구', domesticNeighborhood: '읍·면·동',
   compensationFilter: '보수 정보', ageFilter: '게시 시점', listingFilter: '모집 상태',
   sourceKindFilter: '출처 검증', paymentFilter: '지급 신뢰 근거', requirementsFilter: '필수요건 확인',
-  minScore: '최소 검토 우선순위', statusFilter: '내 상태'
+  minScore: '최소 검토 우선순위', statusFilter: '내 상태', teachingOnly: '한국어교육'
 };
 const filterDefaults = {
-  overseas_remote: { query: '', source: '', category: '', remote: '', eligibility: 'likely', domesticProvince: '', domesticLocality: '', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score', statusFilter: 'active' },
-  domestic: { query: '', source: '', category: '', remote: 'local', eligibility: '', domesticProvince: '전북특별자치도', domesticLocality: '전주·완주', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'distance', statusFilter: 'active' }
+  overseas_remote: { query: '', source: '', category: '', remote: '', eligibility: 'likely', domesticProvince: '', domesticLocality: '', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score', statusFilter: 'active', teachingOnly: '' },
+  domestic: { query: '', source: '', category: '', remote: 'local', eligibility: '', domesticProvince: '전북특별자치도', domesticLocality: '전주·완주', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'distance', statusFilter: 'active', teachingOnly: '' }
 };
 if (isNicole) {
   for (const market of Object.keys(filterDefaults)) Object.assign(filterDefaults[market], {
@@ -213,8 +213,10 @@ const { render } = createCardRenderer({ $, activeMarketJobs, captureJobCardFocus
 nicoleUi?.initialize();
 let queryTimer;
 for (const id of controls) {
-  if (id === 'savedOnly') $(id).checked = savedFilters[id] === 'true';
-  else if (!['source', 'category', 'domesticProvince', 'domesticLocality', 'domesticNeighborhood'].includes(id) && savedFilters[id] !== undefined) $(id).value = savedFilters[id];
+  const element = $(id);
+  if (!element) continue;
+  if (id === 'savedOnly' || id === 'teachingOnly') element.checked = savedFilters[id] === 'true';
+  else if (!['source', 'category', 'domesticProvince', 'domesticLocality', 'domesticNeighborhood'].includes(id) && savedFilters[id] !== undefined) element.value = savedFilters[id];
   const update = () => {
     state.visibleLimit = 60;
     state.selectedIds.clear();
@@ -228,7 +230,7 @@ for (const id of controls) {
     updateAdvancedFilterSummary();
     render();
   };
-  $(id).addEventListener('input', () => {
+  element.addEventListener('input', () => {
     clearTimeout(queryTimer);
     if (id === 'query') queryTimer = setTimeout(update, 150);
     else update();
@@ -304,7 +306,7 @@ function migrateLegacyState() {
 }
 
 function currentFilterValues() {
-  return Object.fromEntries(controls.map((id) => [id, id === 'savedOnly' ? ($('savedOnly')?.checked ? 'true' : '') : ($(id)?.value ?? '')]));
+  return Object.fromEntries(controls.map((id) => [id, id === 'savedOnly' ? ($('savedOnly')?.checked ? 'true' : '') : id === 'teachingOnly' ? ($('teachingOnly')?.checked ? 'true' : '') : ($(id)?.value ?? '')]));
 }
 
 function deadlineDaysRemaining(job, now = Date.now()) {
@@ -356,7 +358,7 @@ function applyFilterValues(values = {}) {
     const element = $(id);
     if (!element || ['source', 'category', 'domesticProvince', 'domesticLocality', 'domesticNeighborhood'].includes(id)) continue;
     const value = String(merged[id] ?? '');
-    if (id === 'savedOnly') { element.checked = value === 'true'; continue; }
+    if (id === 'savedOnly' || id === 'teachingOnly') { element.checked = value === 'true'; continue; }
     if (element.tagName === 'SELECT' && ![...element.options].some((option) => option.value === value)) continue;
     element.value = value;
   }
@@ -643,7 +645,7 @@ function showAllActiveJobs() {
     const element = $(id);
     if (!element) continue;
     if (element.tagName === 'SELECT' && ![...element.options].some((option) => option.value === String(value))) continue;
-    if (id === 'savedOnly') element.checked = false;
+    if (id === 'savedOnly' || id === 'teachingOnly') element.checked = String(value) === 'true';
     else element.value = String(value);
   }
   state.visibleLimit = 60;
@@ -655,6 +657,7 @@ function showAllActiveJobs() {
 }
 
 function activeFilterValueLabel(id, value) {
+  if (id === 'teachingOnly') return '적용 중';
   const element = $(id);
   if (element?.tagName === 'SELECT') return element.selectedOptions?.[0]?.textContent?.trim() || String(value);
   return String(value).trim();
@@ -698,7 +701,7 @@ function clearFilterConstraint(id) {
   if (!element) return;
   const nextValue = String(broad[id] ?? '');
   if (element.tagName === 'SELECT' && ![...element.options].some((option) => option.value === nextValue)) return;
-  if (id === 'savedOnly') element.checked = false;
+  if (id === 'savedOnly' || id === 'teachingOnly') element.checked = nextValue === 'true';
   else element.value = nextValue;
   if (id === 'domesticProvince') {
     $('domesticLocality').value = '';

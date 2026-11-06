@@ -34,6 +34,7 @@ main { padding: 24px clamp(20px, 5vw, 76px) 70px; }
 input, select, textarea { width: 100%; min-width: 0; min-height: 44px; border: 1px solid #d2d1ca; background: #fbfbf9; border-radius: 10px; padding: 10px 11px; color: #191a18; }
 input:focus, select:focus, textarea:focus { outline: 2px solid #b9d94f; outline-offset: 1px; }
 .check { display: flex; align-items: center; gap: 7px; font-size: 13px; color: #4d504b; white-space: nowrap; }.check input { width: auto; }
+.teaching-filter { display: flex; flex-direction: column; gap: 6px; }.teaching-filter > span:first-child { font-size: 13px; color: #686a67; font-weight: 700; }.teaching-filter .check { min-height: 44px; border: 1px solid #d2d1ca; border-radius: 10px; padding: 10px 11px; background: #fbfbf9; }
 .result-head { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 20px 2px 10px; color: #5b5e59; font-size: 13px; }.result-head strong { color: #181a17; font-size: 17px; margin-right: 8px; }.scope-count { margin-right: 12px; color: #666b64; font-weight: 700; }.result-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }.source-note { margin: 0; text-align: right; }
 .job-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
 .job-card { background: #fff; border: 1px solid #deddd7; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; min-height: 330px; transition: transform .15s ease, box-shadow .15s ease; }

@@ -3,41 +3,6 @@
   "method": "Individually reviewed public original pages. Never auto-refresh reviewedAt from the six-hour collector.",
   "jobs": [
     {
-      "originalSource": "Mercor",
-      "url": "https://work.mercor.com/jobs/list_AAABoGAkiMm1pHEH5l1GVbdH/pdf-annotation-transcription-experts-korean",
-      "title": "PDF Annotation & Transcription Experts – Korean",
-      "company": "Mercor",
-      "location": "Remote in South Korea",
-      "countryCode": "KR",
-      "workplaceMode": "remote",
-      "type": "Freelance independent contractor",
-      "salary": "$31/hour (source-listed rate)",
-      "postedAt": null,
-      "deadlineDate": null,
-      "openingStatus": "listed",
-      "reviewedAt": "2026-10-19T12:40:00.000Z",
-      "researchSummary": "Mark regions and reading order on authentic Korean PDF pages (tables, figures, diagrams, multicolumn text, handwritten areas); transcribe Korean text exactly and review annotation quality. Flexible remote work with weekly payment method described on the page. Location eligibility includes KOR alongside CAN, GBR, USA.",
-      "requirements": "Native Korean including Hangul, experience in AI training data or bilingual transcription/translation/editorial work; accuracy, PDF structure and consistent taxonomy use required. Hanja capability is relevant where it appears. Prior review experience preferred rather than guaranteed.",
-      "eligibilityNote": "KOR appears in the source location requirements. Formal screening, contractor terms, real hours and actual offer rate require direct confirmation; no exact posted date or closing date was shown.",
-      "researchNote": "Mercor original page had an application form and 'Early applicant' when inspected. Source displays an approximate 'posted 2 months ago', not a confirmed ISO posting date.",
-      "tags": [
-        "Korean",
-        "PDF annotation",
-        "AI data",
-        "quality review"
-      ],
-      "requirementChecks": [
-        {
-          "kind": "routine",
-          "label": "PDF 구조·Hanja 포함 한국어 전사 역량 확인"
-        },
-        {
-          "kind": "routine",
-          "label": "전문 영어 업무 이해·소통 수준 확인"
-        }
-      ]
-    },
-    {
       "originalSource": "DataAnnotation",
       "url": "https://www.dataannotation.tech/job-board/korean-expert",
       "title": "Korean Specialist",
@@ -136,66 +101,10 @@
     },
     {
       "originalSource": "OpenTrain",
-      "url": "https://www.opentrain.ai/jobs/korean-multimodal-image-evaluation-annotator--cmu5dz0fs00070agmqhx1zc4a/",
-      "title": "Korean-Speaking Image Evaluation Annotator",
-      "company": "OpenTrain (client unnamed)",
-      "location": "Worldwide Remote",
-      "workplaceMode": "remote",
-      "type": "Contract; 20+ hours/week for up to 16 weeks",
-      "salary": "",
-      "postedAt": "2026-09-17",
-      "deadlineDate": null,
-      "openingStatus": "listed",
-      "reviewedAt": "2026-10-19T12:40:00.000Z",
-      "researchSummary": "Review Korean-language visual examples and multimodal AI outputs, annotate imagery, assess cultural fit, research image provenance and produce clear grading feedback under rubrics.",
-      "requirements": "Korean fluency, functional English, image evaluation and editing skills, reverse-image/source or license research, 20+ weekly hours and at least four hours overlap with Pacific Time daily.",
-      "eligibilityNote": "Job page labels Remote Worldwide, but individual contract access and work hours are unverified. Fixed Pacific Time overlap and graphics/licensing experience may make this a stretch role.",
-      "researchNote": "Original posting date 2026-09-17 and Apply visible on 2026-10-19. Pay is NOT stated; do not assume zero pay or a specific rate.",
-      "tags": [
-        "Korean",
-        "multimodal evaluation",
-        "data annotation"
-      ],
-      "requirementChecks": [
-        {
-          "kind": "hard",
-          "label": "이미지 편집·출처 및 라이선스 조사 역량 확인"
-        },
-        {
-          "kind": "routine",
-          "label": "주 20시간·매일 태평양 시간대 4시간 중첩 가능 여부 확인"
-        }
-      ]
-    },
-    {
-      "originalSource": "Alignerr",
-      "url": "https://www.alignerr.com/jobs/7081ac4d-fff2-44f2-a035-16f3ee9d274f",
-      "title": "Korean Language Quality Analyst",
-      "company": "Alignerr (Labelbox)",
-      "location": "Remote",
-      "workplaceMode": "remote",
-      "type": "Freelance hourly contract; 10–40 hours/week",
-      "salary": "$20–40/hour (advertised, not guaranteed)",
-      "postedAt": null,
-      "deadlineDate": null,
-      "openingStatus": "listed",
-      "reviewedAt": "2026-10-22T04:55:20Z",
-      "researchSummary": "Evaluate AI-generated Korean text for fluency, accuracy, clarity and natural tone; flag grammar, register and cultural issues; write structured linguistic feedback. Remote and asynchronous with an Apply link on the company listing.",
-      "requirements": "Native or near-native Korean; strong written Korean and English; detail-oriented review skills. Prior AI work not required. No explicit Korea restriction or guaranteed task allocation is shown.",
-      "eligibilityNote": "Remote is advertised but Korea-resident application/contract availability was not separately verified. English writing strength and assessment process must be checked; the hourly rate and 10–40 hours are advertisement, not guaranteed work.",
-      "researchNote": "Individual company job page inspected October 22, 2026; no actual posting date, deadline or confirmation of immediate project assignment was displayed.",
-      "tags": ["Korean", "AI language quality", "Content review", "Remote"],
-      "requirementChecks": [
-        {"kind":"routine","label":"영어 작문·원문 검수 피드백 수행 능력 확인"},
-        {"kind":"routine","label":"한국 거주 지원 가능·실제 프로젝트 물량 확인"}
-      ]
-    },
-    {
-      "originalSource": "OpenTrain",
       "url": "https://www.opentrain.ai/jobs/chatbot-response-quality-analyst--cmvgje7tw001r08l80o5wt9aq/",
       "title": "Chatbot Response Quality Analyst",
       "company": "OpenTrain (client not identified)",
-      "location": "Worldwide Remote",
+      "location": "Remote, United States only (eligibility changed 2026-10-31)",
       "workplaceMode": "remote",
       "type": "Contract; 16 weeks, 20+ hours per week",
       "salary": "",
@@ -203,10 +112,10 @@
       "deadlineDate": null,
       "openingStatus": "listed",
       "reviewedAt": "2026-10-22T04:55:20Z",
-      "researchSummary": "Compare AI chatbot responses for factual accuracy, relevance and completeness, score quality using structured guidelines, write feedback, and escalate unclear cases. Listed as entry-level, worldwide remote, 16-week project, and at least 20 hours each week, working five days including some weekends.",
-      "requirements": "Fluent English is mandatory. Prior experience in QA, data annotation, testing or content evaluation is required, with chatbot and LLM evaluation as helpful. Pay is not stated.",
-      "eligibilityNote": "The public OpenTrain listing links to an application flow and says worldwide remote, but the client, actual pay and allocation are not identified. Advanced/fluent written and spoken English may be a mismatch; the candidate's level must be assessed.",
-      "researchNote": "Individual OpenTrain page inspected October 22, 2026, displayed posted October 20. Not treated as an employer-direct posting or confirmed task assignment.",
+      "researchSummary": "Compare AI chatbot responses for factual accuracy, relevance and completeness, score quality using structured guidelines, write feedback, and escalate unclear cases. Listed as entry-level, 16-week project, and at least 20 hours each week, working five days including some weekends.",
+      "requirements": "Fluent English is mandatory. Prior experience in QA, data annotation, testing or content evaluation is required, with chatbot and LLM evaluation as helpful. Pay is not stated. US-only eligibility as currently listed.",
+      "eligibilityNote": "Employer page re-checked 2026-10-31 now lists United States only; Korea/Worldwide eligibility no longer shown. Out of scope for Korea-based application unless listing changes.",
+      "researchNote": "Page inspected 2026-10-22 (posted Oct 20, worldwide remote). Re-checked 2026-10-31: location changed to United States only. reviewedAt kept per policy.",
       "tags": ["AI response evaluation", "Quality review", "English", "Remote"],
       "requirementChecks": [
         {"kind":"hard","label":"필수 유창한 영어 소통·문서 피드백 수준 확인"},
@@ -258,78 +167,6 @@
       "requirementChecks": [
         {"kind":"hard","label":"즉시 유급 업무 아님: 아직 출시되지 않은 프로젝트 인재풀"},
         {"kind":"routine","label":"영어·영상/음성 녹화 동의·프로젝트 배정 요건 확인"}
-      ]
-    },
-    {
-      "originalSource": "사람인",
-      "url": "https://m.saramin.co.kr/job-search/view?rec_idx=54907460",
-      "title": "마케팅·콘텐츠·AI 활용 기획 파트타임",
-      "company": "아이엠파트너스(IAM Partners)",
-      "location": "전북 전주시 덕진구",
-      "countryCode": "KR",
-      "workplaceMode": "onsite",
-      "type": "파트타임, 탄력근무 09:00~14:00(공고 표기)",
-      "salary": "시급 10,340원(공고 표기)",
-      "postedAt": null,
-      "deadlineDate": "2026-10-31",
-      "openingStatus": "listed",
-      "reviewedAt": "2026-10-22T00:00:00Z",
-      "researchSummary": "전주 현장 마케팅·콘텐츠 기획, AI 활용 및 공간 운영 관련 파트타임. 경력·학력 제한 없음으로 표기, 09:00~14:00 탄력근무, 시급 10,340원. 2026-10-31 마감.",
-      "requirements": "실제 마케팅 기획과 공간 운영 업무의 범위, 직접 영업·고객 응대 비중 및 근무시간을 확인해야 함. 교육·AI 평가 경력을 마케팅 실무 경력으로 간주하지 않음.",
-      "eligibilityNote": "AI·콘텐츠 연관성은 있으나 출근 및 대면 업무가 필요한 공고. 사용자의 직접 영업·반복 동시 소통 회피 선호와 맞는지 확인 필요.",
-      "researchNote": "2026-10-22 원문 개별 확인. 열람 날짜만 확인되어 reviewedAt은 해당 날짜의 자정 UTC로 인코딩했으며 실제 열람 시간을 의미하지 않음. 모집 개시일을 게시일로 단정하지 않음.",
-      "tags": ["전주", "오프라인", "콘텐츠", "AI 활용", "파트타임"],
-      "requirementChecks": [
-        {"kind":"routine","label":"직접 영업·고객 응대 및 공간 운영 업무 비중 확인"},
-        {"kind":"routine","label":"실근무시간·시급·근로조건 및 모집 상태 재확인"}
-      ]
-    },
-    {
-      "originalSource": "사람인",
-      "url": "https://m.saramin.co.kr/job-search/view?rec_idx=54902392",
-      "title": "국제문화·관광 프로젝트 기획 (6개월 인턴·계약)",
-      "company": "국제문화교류원(IICE)",
-      "location": "전북 전주시 덕진구",
-      "countryCode": "KR",
-      "workplaceMode": "onsite",
-      "type": "6개월 계약·인턴, 정규직 전환 가능성 표기",
-      "salary": "",
-      "postedAt": null,
-      "deadlineDate": "2026-10-30",
-      "openingStatus": "listed",
-      "reviewedAt": "2026-10-22T00:00:00Z",
-      "researchSummary": "문화·관광 프로젝트 기획 업무. 신입 지원 가능, 전문대 졸업 이상, 6개월 계약·인턴. 급여 면접 협의, 2026-10-30 마감.",
-      "requirements": "전문대 졸업 이상. 구체적인 프로젝트 운영·대외협력·행사 대응·근무 언어는 이미지형 상세공고에 추가 조건이 있을 수 있어 원문 재확인 필요.",
-      "eligibilityNote": "한국어 교육 및 영어·스페인어 역량과 주제상 접점은 있으나 기획 실무 경력을 검증하지 않았음. 잦은 대면 조율 업무 여부 확인 필요.",
-      "researchNote": "2026-10-22 원문 개별 확인. reviewedAt 시각은 열람 날짜 표기용 자정 UTC이며 실제 열람 시간이 아님. 급여 및 세부 업무 미확인.",
-      "tags": ["전주", "오프라인", "문화·관광", "기획", "인턴"],
-      "requirementChecks": [
-        {"kind":"satisfied","label":"공고의 전문대 졸업 이상 학력 조건(사용자 학사 학력 기준)"},
-        {"kind":"routine","label":"행사·대외 소통 업무 비중, 근무 언어 및 계약조건 확인"}
-      ]
-    },
-    {
-      "originalSource": "사람인",
-      "url": "https://m.saramin.co.kr/job-search/view?rec_idx=55238879",
-      "title": "블로그 콘텐츠 마케팅 담당자 (경력·포트폴리오 필수)",
-      "company": "코어솔루션",
-      "location": "전북 전주시 완산구",
-      "countryCode": "KR",
-      "workplaceMode": "onsite",
-      "type": "1년 계약직, 평일 09:00~18:00, 전환 가능성 표기",
-      "salary": "월 230만~250만원(별도 잡코리아 동일 공고 기준)",
-      "postedAt": null,
-      "deadlineDate": "2026-11-07",
-      "openingStatus": "listed",
-      "reviewedAt": "2026-10-22T00:00:00Z",
-      "researchSummary": "블로그 콘텐츠 마케팅 담당. 평일 현장 09:00~18:00, 1년 계약직. 관련 경력과 마케팅 포트폴리오 필요, 2026-11-07 마감. 월 230만~250만원은 사람인이 아닌 잡코리아 동일 공고의 급여 정보.",
-      "requirements": "전문대 졸업 이상, 관련 실무경력과 마케팅 포트폴리오 필수. 교육자료 제작·AI 어노테이션 경험만으로 상업용 콘텐츠 마케팅 실무 경력을 충족한다고 추정하지 않음.",
-      "eligibilityNote": "경력·포트폴리오가 주요 지원 장벽. 현장 근무 및 관련 경력 요건 충족 여부부터 확인 필요.",
-      "researchNote": "2026-10-22 사람인 및 별도 잡코리아 공고 확인. reviewedAt은 날짜 표기용. 급여는 잡코리아 교차확인 기준이며 사람인 원문 급여로 오인하지 않도록 주의.",
-      "tags": ["전주", "오프라인", "블로그", "콘텐츠", "마케팅"],
-      "requirementChecks": [
-        {"kind":"hard","label":"필수 마케팅 실무경력 및 제출 가능한 마케팅 포트폴리오 여부"},
-        {"kind":"routine","label":"잡코리아 교차확인 급여와 1년 계약조건 확인"}
       ]
     },
     {
@@ -405,27 +242,129 @@
       ]
     },
     {
-      "originalSource": "Other original source",
-      "url": "https://iyuno.wd3.myworkdayjobs.com/ko-KR/Careers/job/Subtitle-Script-Editor_JR101365",
-      "title": "Subtitle / Script Editor (Korean proofreading)",
-      "company": "Iyuno",
-      "location": "서울특별시 (하이브리드 근무)",
-      "countryCode": "KR",
-      "workplaceMode": "hybrid",
-      "type": "정규직·상근",
+      "originalSource": "OpenTrain",
+      "url": "https://www.opentrain.ai/jobs/korean-speaking-voice-actor-conversational-audio-recording--cmvryktxf004908jzkc2ayu4m/",
+      "title": "Audio Voice Annotation Trainer (Korean)",
+      "company": "OpenTrain (client unnamed)",
+      "location": "Worldwide Remote (South Korea in listed countries)",
+      "countryCode": "",
+      "workplaceMode": "remote",
+      "type": "Contract; part-time, 20+ hours/week",
       "salary": "",
-      "postedAt": null,
-      "deadlineDate": "2026-10-31",
+      "postedAt": "2026-10-28",
+      "deadlineDate": null,
       "openingStatus": "listed",
-      "reviewedAt": "2026-10-28T04:37:58.954Z",
-      "researchSummary": "Edit and proofread Korean subtitle/script caption files, check spelling and context, follow client style guides and give feedback to freelance editors. Company Workday listing specifies a closing date of October 31.",
-      "requirements": "Strong Korean orthography, consistent deadline-based editing and guideline accuracy; subtitle editing/review experience preferred. Full-time hybrid work in Seoul.",
-      "eligibilityNote": "Workday listing specifies Seoul hybrid work; commuting from Jeonju would require substantial arrangements. Check exact closing time and conditions directly.",
-      "researchNote": "Official Iyuno Workday listing inspected 2026-10-28; advertised 2026-10-31 close. Salary unpublished; do not interpret hybrid as fully remote.",
-      "tags": ["Korean", "proofreading", "subtitle", "Seoul", "hybrid"],
+      "reviewedAt": "2026-10-31T04:05:00.000Z",
+      "researchSummary": "Join scheduled group sessions and speak naturally in Korean (no script) to create multi-speaker conversational audio for a diarization project. Entry level; continued work may follow performance and project needs.",
+      "requirements": "Fluent Korean with clear spoken delivery; reliable attendance at scheduled group sessions; quiet recording space; external microphone with wired headphones or high-quality wired headset. Pay is NOT stated.",
+      "eligibilityNote": "Listing is worldwide remote and the structured data includes South Korea, but Korea-resident contracting, actual session hours and pay require direct confirmation. Entry-level Korean-voice role with no degree requirement stated.",
+      "researchNote": "Individual OpenTrain page inspected 2026-10-31; posted Oct 28, Apply available, validThrough Nov 29 per structured data. Pay not stated; do not assume a rate.",
+      "tags": ["Korean", "voice recording", "audio annotation", "Remote"],
       "requirementChecks": [
-        {"kind": "hard", "label": "서울 하이브리드 출근 가능 여부 확인"},
-        {"kind": "routine", "label": "자막 툴 경험·마감 정확 시각·급여 확인"}
+        {"kind": "routine", "label": "주 20시간 이상·정해진 그룹 세션 시간 참여 가능 여부 확인"},
+        {"kind": "routine", "label": "유선 마이크/헤드셋·조용한 녹음 환경 구비 여부 확인"},
+        {"kind": "routine", "label": "급여·실제 배정 업무량·한국 거주 계약 가능 여부 확인"}
+      ]
+    },
+    {
+      "originalSource": "Company Careers",
+      "url": "https://klp.korean.go.kr/certif/jobsearch/34966",
+      "title": "한국어브릿지 1:1 온라인 화상 한국어교원 강사(튜터)",
+      "company": "한국어브릿지 (KoreanBridge)",
+      "location": "Remote, South Korea",
+      "countryCode": "KR",
+      "workplaceMode": "remote",
+      "type": "Freelance online tutor; flexible schedule",
+      "salary": "수강료 정산 방식 (플랫폼 정산 지침)",
+      "postedAt": "2026-09-29",
+      "deadlineDate": "2026-11-15",
+      "openingStatus": "listed",
+      "reviewedAt": "2026-11-06T05:55:00.000Z",
+      "researchSummary": "1:1 및 소그룹 온라인 한국어 화상 수업을 진행하는 프리랜서 튜터 모집. 강사가 수업 스케줄을 선택하고 플랫폼 프로필 심사를 거쳐 등록된다.",
+      "requirements": "국립국어원 공인 한국어교원 자격증 1~3급 필수. 한국어교원 2급 소지자는 공식 요건을 충족한다. 프로필·경력 심사 및 화상 수업 환경 필요.",
+      "eligibilityNote": "전면 원격 프리랜서로 전주 거주에 적합하다. 공식 구인공고상 자격증이 필수이므로 2급 자격증 사본과 경력증명서를 준비해야 한다. 주 20시간 이상은 보장된 조건이 아니며 실제 수업 배정·수입은 플랫폼 심사와 수요에 따라 달라진다.",
+      "researchNote": "국립국어원 한국어교원 구인정보 상세(2026-09-29 게시, 접수 2026-10-01~11-15)와 한국어브릿지 공식 사이트를 2026-11-06 확인. 공고상 자격증 필수.",
+      "tags": ["Korean language teaching", "Korean tutor", "Remote", "Certificate 2급"],
+      "requirementChecks": [
+        {"kind": "hard", "label": "한국어교원 1~3급 자격증(2급 보유) 사본 제출"},
+        {"kind": "routine", "label": "화상 수업 환경과 실제 가능한 수업 시간 확인"},
+        {"kind": "routine", "label": "플랫폼 심사·수업 배정·정산률 확인"}
+      ]
+    },
+    {
+      "originalSource": "Company Careers",
+      "url": "https://www.jinhakpro.com/recruit/48875",
+      "title": "인도네시아 수라바야 세종학당 파견 한국어강사 겸 운영요원",
+      "company": "동서대학교 동서한국어교육원",
+      "location": "Surabaya, Indonesia (overseas dispatch)",
+      "countryCode": "",
+      "workplaceMode": "onsite",
+      "type": "Contract; 1-year renewable, full-time",
+      "salary": "연봉 내부규정 (자격·경력 종합평가)",
+      "postedAt": "2026-10-29",
+      "deadlineDate": "2026-11-10",
+      "openingStatus": "listed",
+      "reviewedAt": "2026-11-06T05:55:00.000Z",
+      "researchSummary": "인도네시아 페트라크리스찬대학과 연계한 수라바야 세종학당에 파견되어 한국어 수업과 행정 업무를 담당한다. 계약기간은 채용일로부터 1년 단위 재계약이다.",
+      "requirements": "한국어교원 자격증, 양성과정 이수, 학사+한국어교육 1년 이상 경력, K-티처 이수 중 하나. 영어 또는 인도네시아어 의사소통 가능. 현지 비자 발급을 위해 5년 이상 근무 경력(한국어교육 2년 이상), 석사 학위 이상, 만 65세 이하 요건이 추가로 명시됨. 한국어교원 2급과 세종학당 리마 경력은 기본 자격의 강점이다.",
+      "eligibilityNote": "기본 자격(2급 또는 학사+1년 경력)은 충족하지만, 공고에 현지 비자 발급 요건으로 5년 이상 근무 경력(한국어교육 2년 이상)·석사 학위 이상·만 65세 이하가 별도 명시되어 있다. 이 요건 충족이 확인되기 전에는 지원 적합성을 확정할 수 없다. 전주 거주자는 해외 파견 전임 근무를 전제로 검토해야 한다.",
+      "researchNote": "진학프로 동서대학교 공고(2026-10-29 게시, 접수 2026-10-29~11-10 16:00)를 2026-11-06 확인. 공고의 현지 비자 요건은 필수 확인 사항. 문의 parkjj@gdsu.dongseo.ac.kr / 051-320-4296.",
+      "tags": ["Korean language teaching", "Sejong Institute", "Overseas", "Certificate 2급"],
+      "requirementChecks": [
+        {"kind": "hard", "label": "한국어교원 2급 또는 학사+한국어교육 1년 이상 경력 충족"},
+        {"kind": "hard", "label": "현지 비자 요건: 5년 이상 근무 경력(한국어교육 2년 이상)"},
+        {"kind": "hard", "label": "현지 비자 요건: 석사 학위 이상·만 65세 이하"},
+        {"kind": "routine", "label": "해외 전임 파견·계약 조건·비자 발급 가능 여부 확인"}
+      ]
+    },
+    {
+      "originalSource": "Company Careers",
+      "url": "https://www.amazingtalker.co.kr/apply-to-teach/korean",
+      "title": "온라인 한국어 선생님 (AmazingTalker)",
+      "company": "AmazingTalker",
+      "location": "Remote (online platform)",
+      "countryCode": "KR",
+      "workplaceMode": "remote",
+      "type": "Freelance online tutor; flexible schedule",
+      "salary": "강사가 수업료 설정 (플랫폼 수수료 별도)",
+      "postedAt": null,
+      "deadlineDate": null,
+      "openingStatus": "listed",
+      "reviewedAt": "2026-11-06T05:55:00.000Z",
+      "researchSummary": "한국어 회화·시험·비즈니스·어린이 등 다양한 과정의 온라인 1:1 강사를 상시 모집한다. 강사가 수업료와 시간을 정하고 플랫폼이 학생을 매칭한다.",
+      "requirements": "유창한 한국어와 한국어 강의·개인교습·학원 경력 우대. 한국어교원 자격증은 필수로 표기되지 않았으며, 2급 소지자는 차별화 요소다.",
+      "eligibilityNote": "자격증 없이도 지원 가능한 상시 모집이지만, 수강생 매칭 전까지 수입이 보장되지 않는다. 원격 근무로 시간 활용이 가능하나 실제 배정·수입은 보장되지 않으며, 자체 교재 준비가 필요하다.",
+      "researchNote": "AmazingTalker 한국어 강사 모집 페이지를 2026-11-06 확인. 2026-11-04 신규 공고 다수 게시, 마감일 없는 상시 모집.",
+      "tags": ["Korean language teaching", "Korean tutor", "Remote", "Freelance"],
+      "requirementChecks": [
+        {"kind": "hard", "label": "유창한 한국어와 실제 한국어 강의 경험"},
+        {"kind": "routine", "label": "자체 교재·화상 수업 환경·수업료 책정 준비"},
+        {"kind": "routine", "label": "플랫폼 심사·학생 매칭·수수료 조건 확인"}
+      ]
+    },
+    {
+      "originalSource": "Other original source",
+      "url": "https://www.jinhakpro.com/recruit/49087",
+      "title": "군장대학교 국제교류원 어학센터 겨울학기 한국어교육 강사",
+      "company": "군장대학교 국제교류원",
+      "location": "전북 군산시 (군장대학교 국제교류원 어학센터)",
+      "countryCode": "KR",
+      "workplaceMode": "onsite",
+      "type": "시간강사; 주당 1일 수업, 학기 단위",
+      "salary": "주당 1일 수업 시 50,000원/학기 (복지수당)",
+      "postedAt": "2026-11-03",
+      "deadlineDate": "2026-11-16",
+      "openingStatus": "listed",
+      "reviewedAt": "2026-11-06T06:10:00.000Z",
+      "researchSummary": "2026 겨울학기 국제교류원 어학센터에서 한국어교육을 담당할 시간강사를 모집한다. 주당 1일 수업으로 학기 단위 위촉이며, 최종합격자는 별도 심사 없이 다음 학기 자동 연장이 가능하다.",
+      "requirements": "한국어교원 자격증 보유자 필수. 국내 외국인 유학생 대상 한국어 강의 경력자 우대. 한국어교원 2급 보유자는 자격 요건을 충족한다.",
+      "eligibilityNote": "전북 군산 대면 시간강사로 전주에서 통근 가능하다. 주당 1일 수업이라 다른 원격 업무와 병행할 수 있다. 학기 단위 계약이며 2026-12-03 오리엔테이션 참석이 필요하다.",
+      "researchNote": "군장대학교 원문 공고(2026-11-03)와 첨부 HWP 공고문을 2026-11-06 확인. 접수 2026-11-05~11-16 18:00, 이메일 jh1@kunjang.ac.kr 또는 방문 접수. 문의 063-450-8470, 8224.",
+      "tags": ["Korean language teaching", "Korean instructor", "Jeonbuk", "Gunsan", "Certificate 2급"],
+      "requirementChecks": [
+        {"kind": "hard", "label": "한국어교원 자격증 보유(2급 보유로 충족)"},
+        {"kind": "routine", "label": "주 1일 대면 수업을 위한 전주~군산 통근 가능 여부"},
+        {"kind": "routine", "label": "학기 단위 계약·2026-12-03 오리엔테이션 참석 확인"}
       ]
     }
   ]

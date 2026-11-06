@@ -1,9 +1,10 @@
 export function createFilterRules({ state, currentFilterValues, jobMarketScopes, filterDefaults, salaryLabel, domesticLocalityMatches, compensationMatches, paymentEvidenceState, roleFitEvidenceFor, isNicole = false }) {
 function jobMatchesFilters(job, values = currentFilterValues(), { market = state.marketTab, ignore = [] } = {}) {
   const skipped = ignore instanceof Set ? ignore : new Set(ignore);
-  if (!jobMarketScopes(job).includes(market)) return false;
   const region = job.domesticRegion || {};
   const value = (id) => String(values[id] ?? filterDefaults[market]?.[id] ?? '');
+  const teachingOnly = value('teachingOnly') === 'true';
+  if (!teachingOnly && !jobMarketScopes(job).includes(market)) return false;
   const q = value('query').trim().toLowerCase();
   const source = value('source');
   const category = value('category');
@@ -25,6 +26,14 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
   const canonical = (text) => String(text || '').normalize('NFKC').replace(/\s+/g, ' ').trim().toLowerCase();
   const hidden = state.hiddenIds.has(job.id) || (isNicole && (
     state.hiddenCompanies?.has(canonical(job.company)) || state.hiddenSources?.has(canonical(job.source))));
+  if (teachingOnly) {
+    const teachingMatch = (job.tags || []).includes('Korean language teaching')
+      || /한국어교원|한국어\s*강사|한국어\s*선생님|한국어\s*튜터|세종학당/.test(`${job.title || ''}`);
+    if (!teachingMatch) return false;
+    if (value('statusFilter') === 'active' && hidden) return false;
+    if (value('listingFilter') === 'active' && ['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus)) return false;
+    return true;
+  }
   if (isNicole) {
     const collection = job.collectionState || 'unknown';
     if (!skipped.has('archiveFilter') && value('archiveFilter') === 'current' && collection !== 'seen' && !job.manual) return false;

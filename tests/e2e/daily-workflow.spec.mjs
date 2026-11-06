@@ -2169,3 +2169,47 @@ test('국내 탭에서 원격으로 직접 추가한 공고는 해외·원격 �
   expect(saved.remote).toBe(true);
   expect(saved.marketScopes).toEqual(['overseas_remote']);
 });
+
+test('한국어교육 필터는 점수·지역 기본 필터와 무관하게 수동 검증 공고를 보여준다', async ({ page }) => {
+  const teachingJobs = [
+    job({
+      id: 'job:teaching-remote',
+      title: '한국어브릿지 온라인 한국어교원 강사',
+      company: 'KoreanBridge',
+      description: '한국어 화상 수업',
+      tags: ['Korean language teaching', '한국어'],
+      score: 19,
+      recommendationEligible: false,
+      requirementsStatus: 'hard_check',
+      marketScopes: ['overseas_remote'],
+      eligibilityCode: 'korea',
+      source: 'ChatGPT 수동 조사',
+      sourceKind: 'manual'
+    }),
+    job({
+      id: 'job:teaching-domestic',
+      title: '군장대학교 겨울학기 한국어교육 강사',
+      company: '군장대학교',
+      description: '한국어교육 시간강사',
+      tags: ['Korean language teaching', '한국어'],
+      score: 19,
+      recommendationEligible: false,
+      requirementsStatus: 'hard_check',
+      marketScopes: ['domestic'],
+      eligibilityCode: 'korea',
+      location: '전북 군산시',
+      source: 'ChatGPT 수동 조사',
+      sourceKind: 'manual',
+      domesticRegion: { label: '전북특별자치도 군산시', province: '전북특별자치도', city: '군산시', locality: '군산시', neighborhood: '', precision: 'city', evidenceLevel: 'detail_html' }
+    })
+  ];
+  await useFeed(page, () => feed(teachingJobs));
+  await page.goto('/munseong/');
+  await expect(page.locator('.job-card')).toHaveCount(0);
+  await page.locator('#teachingOnly').check();
+  await expect(page.locator('.job-card')).toHaveCount(2);
+  await expect(page.locator('#jobs')).toContainText('한국어브릿지');
+  await expect(page.locator('#jobs')).toContainText('군장대학교');
+  await page.locator('#teachingOnly').uncheck();
+  await expect(page.locator('.job-card')).toHaveCount(0);
+});
