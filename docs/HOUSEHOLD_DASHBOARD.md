@@ -8,7 +8,7 @@
 
 ## 데이터 업데이트
 
-`public/household/data/programs.json`의 `programs`를 편집합니다. 현재는 수집 자동화 없이 공식 자료를 대조한 39건을 표시합니다. `researchedAt`과 개별 `verifiedAt`은 **각 자료를 원문에서 실제 확인한 날짜에만** 변경합니다. 자동으로 오늘 날짜로 덮어쓰지 않습니다. 지난 모집은 종료 이력으로 남기며, 새 회차는 별도 공고 ID로 추가합니다. 종료된 카드는 회색(`.is-closed`)으로 표시됩니다.
+`public/household/data/programs.json`의 `programs`를 편집합니다. 현재는 수집 자동화 없이 공식 자료를 대조한 46건을 표시합니다. `researchedAt`과 개별 `verifiedAt`은 **각 자료를 원문에서 실제 확인한 날짜에만** 변경합니다. 자동으로 오늘 날짜로 덮어쓰지 않습니다. 지난 모집은 종료 이력으로 남기며, 새 회차는 별도 공고 ID로 추가합니다. 종료된 카드는 회색(`.is-closed`)으로 표시됩니다.
 
 프로그램에는 안정적인 `id`, 분야 `category`, 관할, 대상, 단위가 포함된 혜택 `value`, `start` / `end` / `periodType`, 요건 `conditions`, 확인 질문 `questions`, 공식 `officialUrl`, 신청 `applyUrl`, 근거 날짜 `verifiedAt`, 출처 해석 `sourceNote`가 필요합니다. `periodType: ongoing`은 **제도 소개가 상시 게시됨**이라는 의미이며 실제 모집 중이거나 자격이 확정되었다는 뜻이 아닙니다. 모집기간이 명시된 공고는 `periodType: dated`를 사용합니다.
 
