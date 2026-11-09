@@ -2256,6 +2256,10 @@ test('한국어 관련 필터는 점수·지역 기본 필터와 무관하게 �
   await expect(page.locator('#jobs')).toContainText('Korean Learning Content Designer');
   await expect(page.locator('#jobs')).toContainText('Korean Customer Support Specialist');
   await expect(page.locator('#jobs')).toContainText('Keywords Studios');
+  await page.locator('.job-card').first().locator('.review-toggle').click();
+  await page.locator('#statusFilter').selectOption('reviewed');
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await page.locator('#statusFilter').selectOption('all');
   await page.locator('#teachingOnly').uncheck();
   await expect(page.locator('.job-card')).toHaveCount(1);
   await expect(page.locator('#jobs')).toContainText('Keywords Studios');

@@ -32,6 +32,8 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
     const koreanTitleMatch = /한국어교원|한국어\s*강사|한국어\s*선생님|한국어\s*튜터|세종학당|한국어\s*콘텐츠|한국어\s*고객|한국어\s*CS|에듀테크/i.test(job.title || '');
     if (!tagMatch && !titleMatch && !koreanTitleMatch) return false;
     if (value('statusFilter') === 'active' && hidden) return false;
+    if (value('statusFilter') === 'reviewed' && !state.reviewedIds.has(job.id)) return false;
+    if (value('statusFilter') === 'unreviewed' && state.reviewedIds.has(job.id)) return false;
     if (value('listingFilter') === 'active' && ['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus)) return false;
     return true;
   }
