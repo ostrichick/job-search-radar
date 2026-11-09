@@ -1,4 +1,4 @@
-export function createFilterRules({ state, currentFilterValues, jobMarketScopes, filterDefaults, salaryLabel, domesticLocalityMatches, compensationMatches, paymentEvidenceState, roleFitEvidenceFor, isNicole = false }) {
+export function createFilterRules({ state, currentFilterValues, jobMarketScopes, filterDefaults, salaryLabel, domesticLocalityMatches, compensationMatches, paymentEvidenceState, roleFitEvidenceFor, profileFit, isNicole = false }) {
 function jobMatchesFilters(job, values = currentFilterValues(), { market = state.marketTab, ignore = [] } = {}) {
   const skipped = ignore instanceof Set ? ignore : new Set(ignore);
   const region = job.domesticRegion || {};
@@ -19,6 +19,7 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
   const sourceKindFilter = value('sourceKindFilter');
   const paymentFilter = value('paymentFilter');
   const requirementsFilter = value('requirementsFilter');
+  const fitFilter = value('fitFilter');
   const status = value('statusFilter');
   const minScore = Number(value('minScore') || 0);
   const haystack = [job.title, job.company, job.location, region.label, region.province, region.locality, job.description, job.category, salaryLabel(job), ...(job.tags || []), ...(job.matchedKeywords || [])].join(' ').toLowerCase();
@@ -35,6 +36,10 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
     if (value('statusFilter') === 'reviewed' && !state.reviewedIds.has(job.id)) return false;
     if (value('statusFilter') === 'unreviewed' && state.reviewedIds.has(job.id)) return false;
     if (value('listingFilter') === 'active' && ['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus)) return false;
+    if (fitFilter) {
+      const fitStatus = profileFit(job).status;
+      if (fitFilter === 'eligible' ? fitStatus === 'fail' : fitStatus !== fitFilter) return false;
+    }
     return true;
   }
   if (isNicole) {
@@ -76,6 +81,10 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
     if (paymentFilter && !['', 'exclude_caution', 'has_caution'].includes(paymentFilter) && paymentEvidence !== paymentFilter) return false;
   }
   if (!skipped.has('requirementsFilter') && requirementsFilter && (job.requirementsStatus || 'clear') !== requirementsFilter) return false;
+  if (!skipped.has('fitFilter') && fitFilter) {
+    const fitStatus = profileFit(job).status;
+    if (fitFilter === 'eligible' ? fitStatus === 'fail' : fitStatus !== fitFilter) return false;
+  }
   if (!skipped.has('minScore')) {
     if (job.score < minScore) return false;
     if (minScore >= 20 && !job.manual && (job.recommendationEligible === false || !roleFitEvidenceFor(job))) return false;

@@ -1,4 +1,4 @@
-export function createCardRenderer({ $, activeMarketJobs, captureJobCardFocus, distanceSummary, domesticLocalityMatches, effectivePaymentEvidence, eligibilityDisplayLabel, escapeHtml, filteredJobs, formatDate, formatDeadline, friendlyUiText, hideWithUndo, isBroadActiveView, jobMarketScopes, listingDisplayLabel, openDetails, paymentFreshnessLabel, persist, qualityClass, renderActiveFilters, renderCollectionCoverage, renderStats, renderVerificationBadges, requirementsDisplayLabel, restoreJobCardFocus, roleFitEvidenceFor, salarySummary, setHidden, setJobState, showStorageStatus, snapshotJob, syncStoredState, updateBatchUI, workplaceDisplay, workplaceModeLabel, state, storage, renderCache, decorateCard, afterRender }) {
+export function createCardRenderer({ $, activeMarketJobs, captureJobCardFocus, distanceSummary, domesticLocalityMatches, effectivePaymentEvidence, eligibilityDisplayLabel, escapeHtml, filteredJobs, formatDate, formatDeadline, friendlyUiText, hideWithUndo, isBroadActiveView, jobFingerprint, jobMarketScopes, listingDisplayLabel, openDetails, paymentFreshnessLabel, persist, profileFit, qualityClass, renderActiveFilters, renderCollectionCoverage, renderStats, renderVerificationBadges, requirementsDisplayLabel, restoreJobCardFocus, roleFitEvidenceFor, salarySummary, setHidden, setJobState, showStorageStatus, snapshotJob, syncStoredState, updateBatchUI, workplaceDisplay, workplaceModeLabel, state, storage, renderCache, decorateCard, afterRender }) {
 let renderWaiting = false;
 const isoDay = (raw) => {
   const value = raw ? new Date(raw) : null;
@@ -104,6 +104,17 @@ function render() {
     unknownLine.textContent = `미확인 · ${(job.decisionUnknowns || []).slice(0, 3).map(friendlyUiText).join(' · ') || '주요 미확인 항목 없음'}`;
     node.querySelector('.title').textContent = job.title;
     node.querySelector('.company').textContent = job.company;
+    const fit = profileFit(job);
+    const fitNode = node.querySelector('.profile-fit');
+    if (fitNode) {
+      const fitLabels = { high: '지원 가능성 높음', check: '확인 필요', fail: '지원 불가 확인' };
+      fitNode.hidden = false;
+      fitNode.className = `profile-fit ${fit.status}`;
+      fitNode.dataset.fitStatus = fit.status;
+      fitNode.innerHTML = `<strong>적합도 ${fit.score} · ${fitLabels[fit.status]}</strong>`
+        + (fit.reasons.length ? `<span>적합 · ${fit.reasons.slice(0, 3).map(escapeHtml).join(' · ')}</span>` : '')
+        + (fit.gaps.length ? `<span>확인 · ${fit.gaps.slice(0, 3).map(escapeHtml).join(' · ')}</span>` : '');
+    }
     const workplace = workplaceDisplay(job);
     const workplaceNode = node.querySelector('.workplace');
     workplaceNode.classList.toggle('remote', workplace.kind === 'remote');
@@ -142,6 +153,7 @@ function render() {
     apply.addEventListener('click', () => {
       if (storage.readOnly) return;
       state.reviewedIds.add(job.id);
+      state.reviewedFingerprints[job.id] = jobFingerprint(job);
       state.newIds.delete(job.id);
       persist();
       renderStats();
@@ -173,9 +185,15 @@ function render() {
       reviewToggle.setAttribute('aria-pressed', String(reviewed));
       reviewToggle.setAttribute('aria-label', `${job.title} ${reviewed ? '확인 취소' : '확인함'}`);
       reviewToggle.addEventListener('click', () => {
+        if (storage.readOnly) return;
         state.newIds.delete(job.id);
-        if (state.reviewedIds.has(job.id)) state.reviewedIds.delete(job.id);
-        else state.reviewedIds.add(job.id);
+        if (state.reviewedIds.has(job.id)) {
+          state.reviewedIds.delete(job.id);
+          delete state.reviewedFingerprints[job.id];
+        } else {
+          state.reviewedIds.add(job.id);
+          state.reviewedFingerprints[job.id] = jobFingerprint(job);
+        }
         persist();
         render();
       });

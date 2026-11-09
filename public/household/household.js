@@ -211,9 +211,12 @@ function renderCard(program) {
   const check = element('button', `check-button${checked ? ' active' : ''}`, checked ? '확인 취소' : '확인함');
   check.type = 'button';
   check.setAttribute('aria-label', `${program.title} ${checked ? '확인 취소' : '이미 확인함'}`);
+  check.setAttribute('aria-pressed', String(checked));
   check.addEventListener('click', () => {
     updateTracking(program.id, { status: state.tracking[program.id]?.status ?? 'none', checked: !checked, note: state.tracking[program.id]?.note ?? '' });
     renderPrograms();
+    const next = document.querySelector(`[data-program-id="${program.id}"] .check-button`);
+    (next || $('tracking') || $('resultCount'))?.focus?.({ preventScroll: true });
   });
   tracking.append(statusLabel, noteLabel, check);
   card.append(tracking, element('div', 'bottom', `공식 출처 마지막 확인 ${program.verifiedAt} · 현시점 조건·모집 일정은 변경 가능`));

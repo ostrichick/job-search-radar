@@ -9,6 +9,7 @@ import { createStateStorage } from './state-storage.js';
 import { createFeedClient } from './feed-client.js';
 import { validateBackup, validatePublicFeed, httpUrl } from './backup-rules.js';
 import { getProfile } from './profiles.js';
+import { classifyWorkplace, evaluateProfileFit } from './profile-fit.js';
 const profile = getProfile(document.documentElement.dataset.profile);
 const isNicole = profile.id === 'nicole';
 // Keep Nicole-only translation, migration and UI modules out of Munseong's network waterfall.
@@ -48,6 +49,7 @@ const state = {
   manualJobs: JSON.parse(storage.getItem('manualJobs') || '[]'),
   newIds: new Set(JSON.parse(storage.getItem('jobNewIds') || '[]')),
   reviewedIds: new Set(JSON.parse(storage.getItem('reviewedJobIds') || '[]')),
+  reviewedFingerprints: JSON.parse(storage.getItem('reviewedJobFingerprints') || '{}'),
   trackedJobs: JSON.parse(storage.getItem('trackedJobs') || '{}'),
   selectedIds: new Set(),
   visibleLimit: 60,
@@ -69,6 +71,7 @@ function syncStoredState() {
   state.hiddenCompanies = new Set(JSON.parse(storage.getItem('jobHiddenCompanies') || '[]'));
   state.hiddenSources = new Set(JSON.parse(storage.getItem('jobHiddenSources') || '[]'));
   state.reviewedIds = new Set(JSON.parse(storage.getItem('reviewedJobIds') || '[]'));
+  state.reviewedFingerprints = JSON.parse(storage.getItem('reviewedJobFingerprints') || '{}');
   state.newIds = new Set(JSON.parse(storage.getItem('jobNewIds') || '[]'));
   state.manualJobs = JSON.parse(storage.getItem('manualJobs') || '[]');
   state.trackedJobs = JSON.parse(storage.getItem('trackedJobs') || '{}');
@@ -82,7 +85,7 @@ function showStorageStatus() {
   panel.hidden = !storage.readOnly;
   if (storage.readOnly) {
     $('storageStatusText').textContent = `상태를 저장할 수 없어 읽기 전용으로 표시합니다. (${storage.error?.message || '저장소 오류'})`;
-    for (const el of document.querySelectorAll('#addJobBtn,#importStateBtn,#addForm button[type=submit],.favorite,.job-state,.dismiss,#addForm button[value=default],#batchFavorite,#batchPlanned,#batchApplied,#batchReviewed,#batchHide,#undoHide')) el.disabled = true;
+    for (const el of document.querySelectorAll('#addJobBtn,#importStateBtn,#addForm button[type=submit],.favorite,.job-state,.review-toggle,.dismiss,#addForm button[value=default],#batchFavorite,#batchPlanned,#batchApplied,#batchReviewed,#batchHide,#undoHide')) el.disabled = true;
   }
 }
 function commitState(mode = 'edit') {
@@ -90,7 +93,7 @@ function commitState(mode = 'edit') {
   return storage.commit(mode).catch(() => { syncStoredState(); showStorageStatus(); });
 }
 
-const controls = ['query', 'source', 'category', 'remote', 'eligibility', 'domesticProvince', 'domesticLocality', 'domesticNeighborhood', 'compensationFilter', 'ageFilter', 'listingFilter', 'sourceKindFilter', 'paymentFilter', 'requirementsFilter', 'minScore', 'sort', 'statusFilter', 'teachingOnly', ...(isNicole ? ['languageFitFilter', 'commuteFilter', 'archiveFilter', 'savedOnly'] : [])];
+const controls = ['query', 'source', 'category', 'remote', 'eligibility', 'domesticProvince', 'domesticLocality', 'domesticNeighborhood', 'compensationFilter', 'ageFilter', 'listingFilter', 'sourceKindFilter', 'paymentFilter', 'requirementsFilter', 'fitFilter', 'minScore', 'sort', 'statusFilter', 'teachingOnly', ...(isNicole ? ['languageFitFilter', 'commuteFilter', 'archiveFilter', 'savedOnly'] : [])];
 const fallbackDomesticProvinceOptions = [
   '서울특별시', '전남광주통합특별시', '부산광역시', '대구광역시', '인천광역시', '대전광역시', '울산광역시', '세종특별자치시',
   '경기도', '충청북도', '충청남도', '경상북도', '경상남도', '제주특별자치도', '강원특별자치도', '전북특별자치도'
@@ -100,11 +103,12 @@ const activeFilterLabels = {
   domesticProvince: '시·도', domesticLocality: '시·군·구', domesticNeighborhood: '읍·면·동',
   compensationFilter: '보수 정보', ageFilter: '게시 시점', listingFilter: '모집 상태',
   sourceKindFilter: '출처 검증', paymentFilter: '지급 신뢰 근거', requirementsFilter: '필수요건 확인',
+  fitFilter: '맞춤 적합도',
   minScore: '최소 검토 우선순위', statusFilter: '내 상태', teachingOnly: '한국어 관련'
 };
 const filterDefaults = {
-  overseas_remote: { query: '', source: '', category: '', remote: '', eligibility: 'likely', domesticProvince: '', domesticLocality: '', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score', statusFilter: 'active', teachingOnly: '' },
-  domestic: { query: '', source: '', category: '', remote: 'local', eligibility: '', domesticProvince: '전북특별자치도', domesticLocality: '전주·완주', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'distance', statusFilter: 'active', teachingOnly: '' }
+  overseas_remote: { query: '', source: '', category: '', remote: '', eligibility: 'likely', domesticProvince: '', domesticLocality: '', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', fitFilter: 'eligible', minScore: '20', sort: 'score', statusFilter: 'active', teachingOnly: '' },
+  domestic: { query: '', source: '', category: '', remote: 'local', eligibility: '', domesticProvince: '전북특별자치도', domesticLocality: '전주·완주', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', fitFilter: 'eligible', minScore: '20', sort: 'distance', statusFilter: 'active', teachingOnly: '' }
 };
 if (isNicole) {
   for (const market of Object.keys(filterDefaults)) Object.assign(filterDefaults[market], {
@@ -204,12 +208,12 @@ const renderCache = createRenderCache();
 const distanceSummary = renderCache.wrap('distance', calculateDistanceSummary);
 const { salaryLabel, salarySummary: uncachedSalarySummary, compensationMatches } = createCompensationUI({  });
 const salarySummary = renderCache.wrap('salary', uncachedSalarySummary);
-const { jobMatchesFilters, matchingJobs: uncachedMatchingJobs } = createFilterRules({ state, currentFilterValues, jobMarketScopes, filterDefaults, salaryLabel, domesticLocalityMatches, compensationMatches, paymentEvidenceState, roleFitEvidenceFor, isNicole });
+const { jobMatchesFilters, matchingJobs: uncachedMatchingJobs } = createFilterRules({ state, currentFilterValues, jobMarketScopes, filterDefaults, salaryLabel, domesticLocalityMatches, compensationMatches, paymentEvidenceState, roleFitEvidenceFor, profileFit, isNicole });
 const matchingJobs = renderCache.wrap('matches', uncachedMatchingJobs, (options = {}) => JSON.stringify([state.marketTab, currentFilterValues(), options]));
-const { filteredJobs } = createSortRules({ state, currentFilterValues, matchingJobs, distanceSummary, distanceSortBand, deadlinePriority, salarySummary });
+const { filteredJobs } = createSortRules({ state, currentFilterValues, matchingJobs, distanceSummary, distanceSortBand, deadlinePriority, salarySummary, profileFit });
 const { manualJobRecord } = createManualJobRules({  });
 const nicoleUi = isNicole ? createNicoleUI({ state, storage, persist, mergeJobs, rerender: () => render() }) : null;
-const { render } = createCardRenderer({ $, activeMarketJobs, captureJobCardFocus, distanceSummary, domesticLocalityMatches, effectivePaymentEvidence, eligibilityDisplayLabel, escapeHtml, filteredJobs, formatDate, formatDeadline, friendlyUiText, hideWithUndo, isBroadActiveView, jobMarketScopes, listingDisplayLabel, openDetails, paymentFreshnessLabel, persist, qualityClass, renderActiveFilters, renderCollectionCoverage, renderStats, renderVerificationBadges, requirementsDisplayLabel, restoreJobCardFocus, roleFitEvidenceFor, salarySummary, setHidden, setJobState, showStorageStatus, snapshotJob, syncStoredState, updateBatchUI, workplaceDisplay, workplaceModeLabel, state, storage, renderCache, decorateCard: nicoleUi?.decorateCard, afterRender: () => { nicoleUi?.update(); if (isNicole) localizeNicoleUI(); } });
+const { render } = createCardRenderer({ $, activeMarketJobs, captureJobCardFocus, distanceSummary, domesticLocalityMatches, effectivePaymentEvidence, eligibilityDisplayLabel, escapeHtml, filteredJobs, formatDate, formatDeadline, friendlyUiText, hideWithUndo, isBroadActiveView, jobFingerprint: jobContentFingerprint, jobMarketScopes, listingDisplayLabel, openDetails, paymentFreshnessLabel, persist, profileFit, qualityClass, renderActiveFilters, renderCollectionCoverage, renderStats, renderVerificationBadges, requirementsDisplayLabel, restoreJobCardFocus, roleFitEvidenceFor, salarySummary, setHidden, setJobState, showStorageStatus, snapshotJob, syncStoredState, updateBatchUI, workplaceDisplay, workplaceModeLabel, state, storage, renderCache, decorateCard: nicoleUi?.decorateCard, afterRender: () => { nicoleUi?.update(); if (isNicole) localizeNicoleUI(); } });
 nicoleUi?.initialize();
 let queryTimer;
 for (const id of controls) {
@@ -258,6 +262,41 @@ function formatDate(value) {
   return date.toLocaleDateString('ko-KR');
 }
 
+function jobContentFingerprint(job) {
+  if (job?.contentFingerprint) return String(job.contentFingerprint);
+  return [job?.title, job?.company, job?.location, job?.description, job?.deadline, job?.salary, job?.url]
+    .map((value) => String(value || '')).join('|');
+}
+
+function markJobReviewed(id) {
+  const job = state.jobs.find((candidate) => candidate.id === id);
+  state.reviewedIds.add(id);
+  if (job) state.reviewedFingerprints[id] = jobContentFingerprint(job);
+  state.newIds.delete(id);
+}
+
+function reconcileReviewedFingerprints() {
+  const stored = state.reviewedFingerprints || {};
+  const next = {};
+  let invalidated = 0;
+  for (const job of state.jobs) {
+    if (!state.reviewedIds.has(job.id)) continue;
+    const fingerprint = jobContentFingerprint(job);
+    if (stored[job.id] && stored[job.id] !== fingerprint) {
+      state.reviewedIds.delete(job.id);
+      state.newIds.add(job.id);
+      invalidated++;
+    } else {
+      next[job.id] = fingerprint;
+    }
+  }
+  for (const [id, fingerprint] of Object.entries(stored)) {
+    if (state.reviewedIds.has(id) && !next[id]) next[id] = fingerprint;
+  }
+  state.reviewedFingerprints = next;
+  if (invalidated) persist();
+}
+
 let importing = false;
 function persist() {
   storage.setItem('jobFavorites', JSON.stringify([...state.favorites]));
@@ -268,6 +307,7 @@ function persist() {
     storage.setItem('jobHiddenSources', JSON.stringify([...state.hiddenSources]));
   }
   storage.setItem('reviewedJobIds', JSON.stringify([...state.reviewedIds]));
+  storage.setItem('reviewedJobFingerprints', JSON.stringify(state.reviewedFingerprints));
   storage.setItem('jobNewIds', JSON.stringify([...state.newIds]));
   storage.setItem('manualJobs', JSON.stringify(state.manualJobs));
   storage.setItem('trackedJobs', JSON.stringify(state.trackedJobs));
@@ -283,7 +323,14 @@ function migrateLegacyState() {
       if (!legacyId || legacyId === job.id) continue;
       if (state.favorites.delete(legacyId)) { state.favorites.add(job.id); changed = true; }
       if (state.hiddenIds.delete(legacyId)) { state.hiddenIds.add(job.id); changed = true; }
-      if (state.reviewedIds.delete(legacyId)) { state.reviewedIds.add(job.id); changed = true; }
+      if (state.reviewedIds.delete(legacyId)) {
+        state.reviewedIds.add(job.id);
+        if (state.reviewedFingerprints[legacyId]) {
+          state.reviewedFingerprints[job.id] = state.reviewedFingerprints[legacyId];
+          delete state.reviewedFingerprints[legacyId];
+        }
+        changed = true;
+      }
       if (state.newIds.delete(legacyId)) { state.newIds.add(job.id); changed = true; }
       if (state.trackedJobs[legacyId]) {
         if (!state.trackedJobs[job.id]) state.trackedJobs[job.id] = state.trackedJobs[legacyId];
@@ -465,10 +512,14 @@ function workplaceModeLabel(job) {
 }
 
 function workplaceDisplay(job) {
-  if (job.remote) return { value: isNicole ? 'Remote' : '원격', kind: 'remote' };
-  const label = job.domesticRegion?.label || String(job.location || '').trim();
-  if (label) return { value: label, kind: 'onsite' };
-  return { value: isNicole ? 'Location not listed' : '위치 미표시', kind: 'unknown' };
+  const workplace = classifyWorkplace(job);
+  if (workplace.group === 'remote') return { value: isNicole ? 'Remote' : '원격', kind: 'remote' };
+  if (workplace.group === 'unknown') return { value: isNicole ? 'Location not listed' : '위치 미확인', kind: 'unknown' };
+  return { value: workplace.display, kind: 'onsite', group: workplace.group };
+}
+
+function profileFit(job) {
+  return evaluateProfileFit(job, { isNicole });
 }
 
 function mergeJobs() {
@@ -622,7 +673,7 @@ function broadActiveFilterValues({ includeHidden = false } = {}) {
     query: '', source: '', category: '', remote: '', eligibility: '',
     domesticProvince: '', domesticLocality: '', domesticNeighborhood: '',
     compensationFilter: '', ageFilter: '', listingFilter: 'active',
-    sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '0',
+    sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', fitFilter: '', minScore: '0',
     sort: state.marketTab === 'domestic' ? 'distance' : 'score',
     statusFilter: includeHidden ? 'all' : 'active',
     ...(isNicole ? { languageFitFilter: 'all', commuteFilter: 'all', archiveFilter: 'all', savedOnly: '' } : {})
@@ -1116,7 +1167,7 @@ async function openDetails(job) {
   const openingFromList = !$('detailsDialog').open;
   if (openingFromList || !state.detailQueue.includes(job.id)) state.detailQueue = filteredJobs().map((item) => item.id);
   if (openingFromList) state.detailReturnFocus = captureJobCardFocus() || { jobId: job.id, selector: '.details', index: 0 };
-  if (!storage.readOnly) { state.reviewedIds.add(job.id); state.newIds.delete(job.id); }
+  if (!storage.readOnly) markJobReviewed(job.id);
   state.currentDetailId = job.id;
   await persist();
   renderStats();
@@ -1307,7 +1358,7 @@ async function applyBatch(action) {
     if (['favorite', 'planned', 'applied'].includes(action)) snapshotJob(id);
   }
   if (action === 'reviewed') {
-    for (const id of state.selectedIds) state.reviewedIds.add(id);
+    for (const id of state.selectedIds) markJobReviewed(id);
   }
   await persist();
   if (storage.readOnly) { render(); return; }
@@ -1349,6 +1400,7 @@ async function exportState() {
     jobStates: state.jobStates,
     hiddenIds: [...state.hiddenIds],
     reviewedIds: [...state.reviewedIds],
+    reviewedFingerprints: state.reviewedFingerprints,
     newIds: [...state.newIds],
     manualJobs: state.manualJobs,
     trackedJobs: state.trackedJobs,
@@ -1436,6 +1488,11 @@ async function importState(file) {
   mergeArraySet(state.favorites, payload.favorites);
   mergeArraySet(state.hiddenIds, payload.hiddenIds);
   mergeArraySet(state.reviewedIds, payload.reviewedIds);
+  if (payload.reviewedFingerprints && typeof payload.reviewedFingerprints === 'object' && !Array.isArray(payload.reviewedFingerprints)) {
+    for (const [id, fingerprint] of Object.entries(payload.reviewedFingerprints)) {
+      if (state.reviewedIds.has(id) && typeof fingerprint === 'string' && fingerprint) state.reviewedFingerprints[id] = fingerprint;
+    }
+  }
   mergeArraySet(state.newIds, payload.newIds);
   if (payload.jobStates && typeof payload.jobStates === 'object' && !Array.isArray(payload.jobStates)) {
     for (const [id, value] of Object.entries(payload.jobStates)) {
@@ -1475,6 +1532,7 @@ async function importState(file) {
   storage.setItem('jobMarketTab', state.marketTab);
   mergeJobs();
   migrateLegacyState();
+  reconcileReviewedFingerprints();
   state.newIds = reconcileNewIds(state.newIds, state.reviewedIds, new Set(state.jobs.map((job) => job.id)));
   persist();
   applyFilterValues(savedFiltersByMarket[state.marketTab] || filterDefaults[state.marketTab]);
@@ -1731,6 +1789,7 @@ function applyFeedData(data, detectNew = true) {
   state.meta = data;
   const known = migrateLegacyState();
   mergeJobs();
+  reconcileReviewedFingerprints();
   for (const id of new Set([
     ...state.favorites,
     ...Object.entries(state.jobStates).filter(([, value]) => ['planned', 'applied'].includes(value)).map(([id]) => id)

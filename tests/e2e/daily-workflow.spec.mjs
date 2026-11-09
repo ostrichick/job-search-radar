@@ -367,6 +367,7 @@ test('IndexedDB 열기 실패는 정상 피드를 읽기 전용으로 표시하�
   await useFeed(page); await page.goto('/munseong/'); await expect(page.locator('.job-card')).toHaveCount(3);
   await expect(page.locator('#storageStatus')).toBeVisible();
   await expect(page.locator('#importStateBtn')).toBeDisabled(); await expect(page.locator('.favorite').first()).toBeDisabled();
+  await expect(page.locator('.review-toggle').first()).toBeDisabled();
   await expect(page.locator('#exportStateBtn')).toBeEnabled();
   const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#exportStateBtn').click()]);
   expect(await download.path()).toBeTruthy();
@@ -1247,7 +1248,7 @@ test('390px viewport에서 가로 overflow가 없다', async ({ page }) => {
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
   await page.goto('/munseong/');
   expect(await page.locator('#advancedFilters').evaluate((element) => element.open)).toBe(false);
-  await expect(page.locator('#advancedFiltersSummary')).toContainText('현재 조건 2개');
+  await expect(page.locator('#advancedFiltersSummary')).toContainText('현재 조건 3개');
   const widths = await page.evaluate(() => ({
     inner: window.innerWidth,
     html: document.documentElement.scrollWidth,
@@ -2279,4 +2280,63 @@ test('공고 카드에서 확인함을 누르고 확인 여부로 필터링한�
   await page.locator('#statusFilter').selectOption('all');
   await page.locator('.job-card.is-reviewed .review-toggle').click();
   await expect(page.locator('.job-card.is-reviewed')).toHaveCount(0);
+});
+
+test('원문 내용이 바뀐 공고는 확인함 상태를 자동으로 해제한다', async ({ page }) => {
+  let current = feed([job({ id: 'changed', contentFingerprint: 'fingerprint-v1' })]);
+  await useFeed(page, () => current);
+  await page.goto('/munseong/');
+  const card = page.locator('.job-card[data-job-id="changed"]');
+  await card.locator('.review-toggle').click();
+  await expect(card).toHaveClass(/is-reviewed/);
+  current = feed([job({ id: 'changed', contentFingerprint: 'fingerprint-v2', title: 'Updated Korean AI Data Specialist' })]);
+  await page.reload();
+  await expect(page.locator('.job-card[data-job-id="changed"]')).not.toHaveClass(/is-reviewed/);
+  await expect(page.locator('.job-card[data-job-id="changed"] .review-toggle')).toHaveText('확인함');
+});
+
+test('맞춤 적합도는 확인된 부적격 공고를 기본 추천에서 숨기고 사유를 보여준다', async ({ page }) => {
+  await useFeed(page, () => feed([
+    job({ id: 'fit-ok', title: 'Korean AI Data Reviewer', score: 80, description: 'Evaluate Korean AI data.' }),
+    job({ id: 'fit-check', title: 'Korean AI Data Reviewer', score: 60, requirementsStatus: 'hard_check' }),
+    job({ id: 'fit-fail', title: 'Senior Korean AI Data Lead', score: 70, description: '10+ years of experience required.' })
+  ]));
+  await page.goto('/munseong/');
+  await expect(page.locator('.job-card')).toHaveCount(2);
+  await expect(page.locator('.job-card[data-job-id="fit-fail"]')).toHaveCount(0);
+  await expect(page.locator('.job-card[data-job-id="fit-check"] .profile-fit')).toHaveAttribute('data-fit-status', 'check');
+  await expect(page.locator('.job-card[data-job-id="fit-check"] .profile-fit')).toContainText('확인 필요');
+  await page.locator('#fitFilter').selectOption('fail');
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await expect(page.locator('.job-card .profile-fit')).toHaveAttribute('data-fit-status', 'fail');
+  await expect(page.locator('.job-card')).toContainText('Senior Korean AI Data Lead');
+  await page.locator('#fitFilter').selectOption('');
+  await expect(page.locator('.job-card')).toHaveCount(3);
+});
+
+test('국내 정렬은 원격→전북권→그 외→서울→수도권 순으로 근무지를 묶는다', async ({ page }) => {
+  const domestic = (id, location, extra = {}) => job({
+    id, source: '고용24', sourceKind: 'official_government', company: `회사 ${id}`, title: `Korean AI Data Reviewer ${id}`,
+    location, remote: false, workplaceMode: 'onsite', score: 50, marketScopes: ['domestic'], marketSegment: 'domestic',
+    description: 'Evaluate Korean AI data.', ...extra
+  });
+  await useFeed(page, () => feed([
+    domestic('seoul', 'Seoul, South Korea'),
+    domestic('metro', 'Seongnam, Gyeonggi, South Korea'),
+    domestic('other', 'Daejeon, South Korea'),
+    domestic('jeonbuk', '전북특별자치도 전주시 덕진구 산정동'),
+    { ...domestic('remote', 'Seoul, South Korea', { remote: true, workplaceMode: 'remote' }), location: 'Seoul, South Korea' }
+  ]));
+  await page.goto('/munseong/');
+  await page.locator('#marketDomestic').click();
+  await page.locator('#remote').selectOption('');
+  await page.locator('#domesticProvince').selectOption('');
+  await page.locator('#domesticLocality').selectOption('');
+  await page.locator('#sort').selectOption('fit');
+  await expect.poll(async () => (await page.locator('.job-card .workplace-value').allTextContents())).toEqual([
+    '원격', '전북권 · 전주', '그 외 · 대전', '서울', '수도권 · 성남'
+  ]);
+  const workplaceLabels = await page.locator('.job-card .workplace-value').allTextContents();
+  expect(workplaceLabels.join(' ')).not.toContain('South Korea');
+  expect(workplaceLabels.join(' ')).not.toContain('덕진구');
 });

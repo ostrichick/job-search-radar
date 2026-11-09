@@ -79,3 +79,57 @@ test('zero unexpected detail requests on public page failure', async () => {
   assert.equal(result.sourceStatus[0].status, 'error');
   assert.equal(total, 1);
 });
+
+test('KOWORK detail extracts structured metadata, expiry and visa/residence fields', () => {
+  const metadata = '<html><head><meta property="og:title" content="Spanish Content Marketer"/></head><body>' +
+    '<h1>Spanish Content Marketer</h1> Demo Studio Job Type Full-time Job Category Marketing/Ads ' +
+    'Work Model Hybrid Working Days Mon-Fri Work Time 09:00-18:00 Salary KRW 3,000,000 ' +
+    'Location Seoul, Republic of Korea Copy Address Save Share Job Detail Current Residence Korea residents only ' +
+    'Required Languages Spanish Fluent Preferred Languages Korean Intermediate Required Visas F-2, F-4, F-6 ' +
+    'Preferred Visas F-6 Job Description Full copyrighted description. Qualifications One year of experience. ' +
+    'Expire on 2026-12-31 Benefits Insurance</body></html>';
+  const detail = parseKoworkDetail(metadata, 'https://kowork.kr/en/post/9001', '2026-10-19T00:00:00Z');
+  assert.equal(detail.jobType, 'Full-time');
+  assert.equal(detail.salary, 'KRW 3,000,000');
+  assert.equal(detail.deadline, '2026-12-31');
+  assert.equal(detail.currentResidence, 'Korea residents only');
+  assert.equal(detail.requiredLanguages, 'Spanish Fluent');
+  assert.equal(detail.preferredLanguages, 'Korean Intermediate');
+  assert.equal(detail.requiredVisas, 'F-2, F-4, F-6');
+  assert.equal(detail.closed, false);
+
+  const expired = parseKoworkDetail(
+    metadata.replace('Expire on 2026-12-31', 'Expired position. Expire on 2026-01-01'),
+    'https://kowork.kr/en/post/9001', '2026-10-19T00:00:00Z');
+  assert.equal(expired.deadline, '2026-01-01');
+  assert.equal(expired.closed, true);
+});
+
+test('KOWORK collected jobs keep non-copying metadata and exclude expired detail pages', async () => {
+  const listing = '<html><a id="post-list-post-card-9001" href="/en/post/9001">' +
+    '<p>Spanish Content Marketer</p><p>Demo Studio</p><p>Marketing/Ads</p></a></html>';
+  const current = '<html><head><meta property="og:title" content="Spanish Content Marketer"/></head><body>' +
+    '<h1>Spanish Content Marketer</h1> Demo Studio Job Type Full-time Job Category Marketing/Ads ' +
+    'Work Model Hybrid Salary KRW 3,000,000 Location Seoul Copy Address Current Residence Korea residents only ' +
+    'Required Languages Spanish Fluent Preferred Languages Korean Intermediate Required Visas F-2, F-4, F-6 ' +
+    'Qualifications One year of experience. Expire on 2026-12-31 Benefits Insurance</body></html>';
+  const expired = current.replace('Expire on 2026-12-31', 'Expired position.');
+  let detailCalls = 0;
+  const mock = async (url) => {
+    if (url.endsWith('/en')) return { ok: true, text: async () => listing };
+    detailCalls++;
+    return { ok: true, text: async () => detailCalls === 1 ? current : expired };
+  };
+  const collected = await collectKoworkJobs({ fetchImpl: mock, now: '2026-10-19T00:00:00Z',
+    delayMs: 0, maxDetails: 2, seeds: ['9001', '9002'] });
+  assert.equal(collected.jobs.length, 1);
+  const job = collected.jobs[0];
+  assert.equal(job.deadline, '2026-12-31');
+  assert.equal(job.pay, 'KRW 3,000,000');
+  assert.match(job.description, /Current residence: Korea residents only/);
+  assert.match(job.description, /Required visas: F-2, F-4, F-6/);
+  assert.doesNotMatch(job.description, /Full copyrighted description/);
+  assert.match(job.languageRequirements, /Preferred: Korean Intermediate/);
+  assert.equal(job.eligibilityStatus, 'possible');
+  assert.equal(collected.excludedUrls.length, 1);
+});

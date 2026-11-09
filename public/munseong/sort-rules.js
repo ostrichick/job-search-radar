@@ -1,4 +1,6 @@
-export function createSortRules({ state, currentFilterValues, matchingJobs, distanceSummary, distanceSortBand, deadlinePriority, salarySummary }) {
+import { classifyWorkplace } from './profile-fit.js';
+
+export function createSortRules({ state, currentFilterValues, matchingJobs, distanceSummary, distanceSortBand, deadlinePriority, salarySummary, profileFit }) {
 function filteredJobs() {
   const values = currentFilterValues();
   let jobs = matchingJobs({ values });
@@ -9,6 +11,14 @@ function filteredJobs() {
     if (sort === 'oldest') return (Date.parse(a.postedAt) || 0) - (Date.parse(b.postedAt) || 0);
     if (sort === 'company') return a.company.localeCompare(b.company, 'ko');
     if (sort === 'title') return a.title.localeCompare(b.title, 'ko');
+    if (state.marketTab === 'domestic' && ['fit', 'score', 'distance'].includes(sort)) {
+      const groupDiff = classifyWorkplace(a).rank - classifyWorkplace(b).rank;
+      if (groupDiff) return groupDiff;
+    }
+    if (sort === 'fit') {
+      const fitDiff = profileFit(b).score - profileFit(a).score;
+      if (fitDiff) return fitDiff;
+    }
     if (sort === 'distance') {
       const aSummary = distanceSummary(a);
       const bSummary = distanceSummary(b);

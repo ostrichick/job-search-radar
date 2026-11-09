@@ -81,6 +81,48 @@ const UI = new Map(Object.entries({
   '출처 검증': 'Source verification',
   '지급 신뢰 근거': 'Payment evidence',
   '필수요건 확인': 'Required qualifications',
+  '맞춤 적합도': 'Fit',
+  '맞춤 추천': 'Recommended fit',
+  '지원 가능성 높음': 'Strong fit',
+  '지원 불가 확인': 'Not eligible',
+  '적합': 'Matches',
+  '확인': 'Check',
+  '전북권': 'Jeonbuk',
+  '원격 근무': 'Remote',
+  '해외 세종학당': 'Overseas Sejong',
+  '스페인어 원어민': 'Spanish native',
+  '한국어 원어민': 'Korean native',
+  'F-6 거주 자격': 'F-6 residence',
+  '한국 거주자 지원 가능': 'Korea residents eligible',
+  'F-6로 비자 후원 불필요': 'No visa sponsorship needed for F-6',
+  '스페인어권 시장': 'Spanish-speaking market',
+  '마케팅·SNS': 'Marketing / social',
+  '콘텐츠·영상': 'Content / video',
+  '번역·로컬라이제이션': 'Translation / localization',
+  '통역': 'Interpreting',
+  '고객지원': 'Customer support',
+  '한국어 교육': 'Korean teaching',
+  '에듀테크·교육과정': 'EdTech / curriculum',
+  'AI·언어평가': 'AI / language evaluation',
+  '번역·QA': 'Translation / QA',
+  '마감 경과': 'Deadline passed',
+  '5년 이상·시니어 요건': '5+ years or senior requirement',
+  '석사 학위 필수': "Master's degree required",
+  '일본어·중국어 필수': 'Japanese or Chinese required',
+  '한국어 중급 이상 필수': 'Intermediate+ Korean required',
+  '한국어 요구 수준 확인': 'Korean level needs checking',
+  '세일즈·매니저 직무': 'Sales / manager role',
+  '선호 비자 조건 확인': 'Preferred visa conditions need checking',
+  '원격 지원 국가 제한 확인': 'Remote country restriction needs checking',
+  '서울·수도권 출근·이주 검토': 'Seoul / capital area commute or relocation',
+  '그 외 지역 출근·이주 검토': 'Other area commute or relocation',
+  '위치 미확인': 'Location not listed',
+  '직무 관련성 확인': 'Role relevance needs checking',
+  '필수요건 확인 필요': 'Required criteria need checking',
+  '원문 공고 확인 필요': 'Original posting needs checking',
+  '상세 정보 부족': 'Limited detail',
+  '영어 C1/C2 요구 확인': 'English C1/C2 requirement needs checking',
+  '스페인어 고급 이상 필수': 'Advanced+ Spanish required',
   '최소 검토 우선순위': 'Minimum review priority',
   '내 상태': 'My status',
   '정렬': 'Sort',
@@ -260,6 +302,7 @@ const TEMPLATES = [
   [/^중복 (\d+)개 통합$/, '$1 duplicates merged'],
   [/^추가 필터 · 현재 조건 (\d+)개$/, 'More filters · $1 active'],
   [/^현재 연결된 공식 소스에서 (.+?) 공고를 확인하지 못했습니다\. 지역 조건을 넓히거나 나중에 다시 확인해 주세요\.$/, 'No jobs were found in $1 from the connected official sources. Broaden the area or check again later.'],
+  [/^적합도 (\d+)$/, 'Fit $1'],
   [/^검토 우선순위 (\d+)$/, 'Review priority $1'],
   [/^시장 탐색 후보 · 우선순위 (\d+)$/, 'Market candidate · Priority $1'],
   [/^최근 (\d+)개 검증 사건$/, '$1 recent verification events'],
@@ -349,7 +392,7 @@ const RAW_FIELDS = [
 const CARD_UI = [
   '.score', '.job-select', '.favorite', '.dismiss', '.job-state', '.details', '.apply',
   '.listing-badge', '.eligibility-badge', '.payment-badge', '.requirements-badge',
-  '.verification-badges', '.compensation-label', '.compensation-note',
+  '.verification-badges', '.compensation-label', '.compensation-note', '.profile-fit',
   '.workplace-label', '.distance-summary', '.collection-dates', '.decision-strip',
   '.decision-value', '.decision-unknown', '.posted'
 ].join(', ');
@@ -408,7 +451,7 @@ function translateCompound(text, element) {
   if (element?.matches('.collection-gap-item > small')) return text.replace(/^대체 경로 · /, 'Alternative route · ');
   if (element?.matches('.active-filter-chip')) {
     const chip = text.replace(/^([^:]+): ([\s\S]+) ×$/, (whole, label, value) =>
-      UI.has(label) ? `${UI.get(label)}: ${value} ×` : whole);
+      UI.has(label) ? `${UI.get(label)}: ${UI.has(value) ? UI.get(value) : value} ×` : whole);
     if (chip !== text) return chip;
     if (text.endsWith(' 조건 해제')) {
       for (const [label, english] of UI) {

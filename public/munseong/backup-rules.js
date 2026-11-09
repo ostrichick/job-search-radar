@@ -52,6 +52,12 @@ export function validateBackup(payload, normalizeManual = (job) => job) {
   for (const key of ['favorites', 'hiddenIds', 'reviewedIds', 'newIds', 'knownJobIds']) {
     if (result[key] !== undefined) check(Array.isArray(result[key]) && result[key].every(safeId), key);
   }
+  if (result.reviewedFingerprints !== undefined) {
+    check(object(result.reviewedFingerprints), 'reviewedFingerprints');
+    for (const [id, fingerprint] of Object.entries(result.reviewedFingerprints)) {
+      check(safeId(id) && typeof fingerprint === 'string', `reviewedFingerprints.${id}`);
+    }
+  }
   if (result.jobStates !== undefined) {
     check(object(result.jobStates), 'jobStates');
     for (const [id, v] of Object.entries(result.jobStates)) check(safeId(id) && ['planned', 'applied', ''].includes(v), `jobStates.${id}`);
@@ -83,7 +89,7 @@ export function validateBackup(payload, normalizeManual = (job) => job) {
 export function mergeStorageChanges(latest, before, after, mode = 'edit') {
   const result = { ...latest };
   const sets = new Set(['jobFavorites', 'jobHidden', 'jobHiddenCompanies', 'jobHiddenSources', 'reviewedJobIds', 'jobNewIds', 'knownJobIds', 'jobDismissed']);
-  const maps = new Set(['jobStates', 'trackedJobs', 'jobFiltersByMarket']);
+  const maps = new Set(['jobStates', 'trackedJobs', 'jobFiltersByMarket', 'reviewedJobFingerprints']);
   for (const key of new Set([...Object.keys(before), ...Object.keys(after)])) {
     if (before[key] === after[key]) continue;
     if (sets.has(key)) {

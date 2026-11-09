@@ -187,6 +187,16 @@
             </select>
           </div>
           <div class="field">
+            <label for="fitFilter">맞춤 적합도</label>
+            <select id="fitFilter">
+              <option value="">전체</option>
+              <option value="eligible" selected>맞춤 추천</option>
+              <option value="high">지원 가능성 높음</option>
+              <option value="check">확인 필요</option>
+              <option value="fail">지원 불가 확인</option>
+            </select>
+          </div>
+          <div class="field">
             <label for="minScore">최소 검토 우선순위</label>
             <select id="minScore">
               <option value="0">전체</option>
@@ -199,6 +209,7 @@
           <div class="field">
             <label for="sort">정렬</label>
             <select id="sort">
+              <option value="fit">맞춤 적합도</option>
               <option value="score">오늘 먼저 볼 순</option>
               <option value="distance" hidden>거리 가까운 순</option>
               <option value="newest">최신 순</option>
@@ -288,6 +299,7 @@
       </div>
       <h2 class="title"></h2>
       <p class="company"></p>
+      <div class="profile-fit" hidden></div>
       <div class="workplace" aria-label="근무지 정보">
         <span class="workplace-label">근무지</span>
         <strong class="workplace-value"></strong>

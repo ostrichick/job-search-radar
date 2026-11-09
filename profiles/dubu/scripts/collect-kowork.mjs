@@ -7,7 +7,7 @@ const ROOT = 'https://kowork.kr';
 const HOME = ROOT + '/en';
 const SEEDS = ['7322', '3448', '3322', '4193', '6527', '5036', '7244', '8102', '4814', '4490'];
 const UNRELATED = /\b(?:mongolian|mongolia|chinese-korean|japanese-korean|vietnamese|myanmar)\b/i;
-const KOREAN_MANDATORY = /\b(?:fluent|native|business|advanced|professional)\s+(?:in\s+)?korean\b|\bkorean\b.{0,45}\b(?:required|fluency|business|reports|meetings|interview|c1|c2)\b|한국어.{0,30}(?:능통|비즈니스|고급|유창|필수)|\btopik\s*(?:level\s*)?[4-6]\b/i;
+const KOREAN_MANDATORY = /\b(?:fluent|native|business|advanced|professional|intermediate)\s+(?:in\s+)?korean\b|\bkorean\b.{0,45}\b(?:required|fluency|business|reports|meetings|interview|c1|c2)\b|한국어.{0,30}(?:중급|능통|비즈니스|고급|유창|필수)|\btopik\s*(?:level\s*)?[3-6]\b/i;
 const OTHER_MANDATORY = /\b(?:chinese|japanese|hebrew|burmese|mongolian|italian|dutch|russian)\b/i;
 
 function decode(text) {
@@ -44,7 +44,30 @@ export function parseKoworkListing(html) {
   return cards;
 }
 
-export function parseKoworkDetail(html, url) {
+function isoDateFromText(value) {
+  const text = String(value || '').trim();
+  const iso = text.match(/(\d{4})\s*[-./년]\s*(\d{1,2})\s*[-./월]\s*(\d{1,2})/);
+  if (iso) return `${iso[1]}-${iso[2].padStart(2, '0')}-${iso[3].padStart(2, '0')}`;
+  const months = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
+  const named = text.match(/([A-Z][a-z]{2,8})\s+(\d{1,2}),?\s+(\d{4})/);
+  if (named) {
+    const month = months[named[1].slice(0, 3).toLowerCase()];
+    if (month) return `${named[3]}-${String(month).padStart(2, '0')}-${named[2].padStart(2, '0')}`;
+  }
+  const dayFirst = text.match(/(\d{1,2})\s+([A-Z][a-z]{2,8})\s+(\d{4})/);
+  if (dayFirst) {
+    const month = months[dayFirst[2].slice(0, 3).toLowerCase()];
+    if (month) return `${dayFirst[3]}-${String(month).padStart(2, '0')}-${dayFirst[1].padStart(2, '0')}`;
+  }
+  return '';
+}
+
+function deadlineFromBody(body) {
+  const match = body.match(/(?:Expire on|Expires on|Expiration Date|Application Deadline|Closing Date|Deadline|모집\s*마감|마감일)\s*:?\s*([0-9]{4}[.\-/년][0-9]{1,2}[.\-/월][0-9]{1,2}일?|[A-Z][a-z]{2,8}\s+\d{1,2},?\s+\d{4})/i);
+  return match ? isoDateFromText(match[1]) : '';
+}
+
+export function parseKoworkDetail(html, url, now = new Date().toISOString()) {
   const safe = safePublicUrl(url);
   if (!safe || new URL(safe).hostname !== 'kowork.kr' ||
       !/^\/en\/post\/\d+$/.test(new URL(safe).pathname)) return null;
@@ -55,15 +78,28 @@ export function parseKoworkDetail(html, url) {
   const job = body.indexOf(' Job Type ');
   const pos = job < 0 ? -1 : body.lastIndexOf(title, job);
   if (pos < 0 || job < 0) return null;
-  const company = body.slice(pos + title.length, job).trim().slice(0, 130);
+  const company = body.slice(pos + title.length, job).replace(/Expired position\.?/i, ' ').trim().slice(0, 130);
+  const deadline = deadlineFromBody(body);
+  const expiredText = /Expired position/i.test(body) ||
+    /(?:Applications Closed|Recruitment Closed|모집\s*마감)/i.test(body.slice(pos, job + 500));
+  const deadlinePassed = /^\d{4}-\d{2}-\d{2}$/.test(deadline) && deadline < String(now).slice(0, 10);
   return {
     url: safe, title, company,
-    category: field(body, ' Job Category ', [' Work Model ', ' Working Days ']),
-    mode: field(body, ' Work Model ', [' Working Days ', ' Work Time ', ' Salary ']),
+    jobType: field(body, ' Job Type ', [' Job Category ', ' Work Model ', ' Working Days ', ' Salary ', ' Location '], 100),
+    category: field(body, ' Job Category ', [' Work Model ', ' Working Days ', ' Salary ', ' Location ']),
+    mode: field(body, ' Work Model ', [' Working Days ', ' Work Time ', ' Salary ', ' Location ']),
+    workDays: field(body, ' Working Days ', [' Work Time ', ' Salary ', ' Location '], 120),
+    workTime: field(body, ' Work Time ', [' Salary ', ' Location ', ' Copy Address '], 120),
+    salary: field(body, ' Salary ', [' Location ', ' Copy Address ', ' Job Detail ', ' Job Description '], 160),
     location: field(body, ' Location ', [' Copy Address ', ' Save Share ', ' Job Detail '], 250),
-    qualification: field(body, ' Qualifications ', [' Preferred ', ' Etc ', ' Preferred Visas ', ' Benefits '], 3000),
-    requiredLanguages: field(body, ' Required Languages ', [' Preferred Languages ', ' Job Description ', ' Qualifications '], 450),
-    closed: /(?:Applications Closed|Recruitment Closed|모집\s*마감)/i.test(body.slice(pos, job + 350)),
+    currentResidence: field(body, ' Current Residence ', [' Required Languages ', ' Preferred Languages ', ' Required Visas ', ' Preferred Visas ', ' Job Description ', ' Qualifications '], 180),
+    requiredLanguages: field(body, ' Required Languages ', [' Preferred Languages ', ' Required Visas ', ' Job Description ', ' Qualifications '], 450),
+    preferredLanguages: field(body, ' Preferred Languages ', [' Required Visas ', ' Preferred Visas ', ' Job Description ', ' Qualifications '], 300),
+    requiredVisas: field(body, ' Required Visas ', [' Preferred Visas ', ' Current Residence ', ' Required Languages ', ' Job Description ', ' Qualifications '], 250),
+    preferredVisas: field(body, ' Preferred Visas ', [' Current Residence ', ' Required Languages ', ' Job Description ', ' Qualifications ', ' Benefits '], 250),
+    qualification: field(body, ' Qualifications ', [' Preferred ', ' Etc ', ' Required Languages ', ' Benefits '], 3000),
+    deadline,
+    closed: expiredText || deadlinePassed,
   };
 }
 
@@ -88,13 +124,27 @@ function toJob(post, now) {
     company: post.company, source: 'KOWORK', url: post.url, sourceKind: 'public_listing_index',
     market, workplaceMode: mode, category, location: post.location || 'Location unverified',
     province: koreaProvince(post.location), commuteClass: market === 'offline' ? commuteRegion(post.location) : '',
-    postedAt: null, deadline: null, pay: null,
-    description: 'KOWORK public job reference. Open the original page for requirements and current availability.',
-    languageRequirements: 'Verify on original KOWORK listing', languageFitStatus: 'unknown',
+    postedAt: null, deadline: post.deadline || null, pay: post.salary || null,
+    description: [
+      'KOWORK public metadata.',
+      post.jobType ? `Employment: ${post.jobType}.` : '',
+      post.mode ? `Work model: ${post.mode}.` : '',
+      post.category ? `Category: ${post.category}.` : '',
+      post.salary ? `Pay: ${post.salary}.` : '',
+      post.location ? `Location: ${post.location}.` : '',
+      post.currentResidence ? `Current residence: ${post.currentResidence}.` : '',
+      post.requiredVisas ? `Required visas: ${post.requiredVisas}.` : '',
+      post.preferredVisas ? `Preferred visas: ${post.preferredVisas}.` : '',
+      'Open the original page for the full description and current status.'
+    ].filter(Boolean).join(' '),
+    languageRequirements: [post.requiredLanguages ? `Required: ${post.requiredLanguages}` : '', post.preferredLanguages ? `Preferred: ${post.preferredLanguages}` : ''].filter(Boolean).join('; ') || 'Verify on original KOWORK listing',
+    languageFitStatus: 'unknown',
     languageFitReason: 'Public metadata was checked; language requirements still need confirmation.',
-    eligibilityStatus: 'unknown', eligibility: 'Confirm exact language, employment and visa conditions on original listing.',
+    eligibilityStatus: /(?:korea residents? only|대한민국|한국 거주)/i.test(post.currentResidence) ||
+      /F-6|international marriage|결혼이민/i.test(`${post.requiredVisas} ${post.preferredVisas}`) ? 'possible' : 'unknown',
+    eligibility: [post.currentResidence ? `Current residence: ${post.currentResidence}` : '', post.requiredVisas ? `Required visas: ${post.requiredVisas}` : '', post.preferredVisas ? `Preferred visas: ${post.preferredVisas}` : ''].filter(Boolean).join('; ') || 'Confirm exact language, employment and visa conditions on original listing.',
     verifiedAt: now,
-    evidenceNote: 'Minimal title, company, workplace and source link only. No description text or copyrighted images reproduced.',
+    evidenceNote: 'Minimal structured metadata and source link only. No description text or copyrighted images reproduced.',
   };
 }
 
@@ -131,7 +181,7 @@ export async function collectKoworkJobs({ fetchImpl = fetch, now = new Date().to
     if (n && delayMs) await new Promise((resolve) => setTimeout(resolve, delayMs));
     const url = ROOT + '/en/post/' + ids[n];
     try {
-      const post = parseKoworkDetail(await get(url), url);
+      const post = parseKoworkDetail(await get(url), url, now);
       if (!post) throw new Error('Detail format changed');
       const lead = toJob(post, now);
       if (lead) jobs.push(lead);

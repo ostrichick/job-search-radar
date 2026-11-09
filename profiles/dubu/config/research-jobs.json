@@ -291,14 +291,16 @@
       "deadline": null,
       "reviewedAt": "2026-10-19T09:02:00Z",
       "priority": "high",
-      "listingStatus": "unconfirmed",
+      "listingStatus": "expired",
       "languageRequirements": "Native Spanish accepted; effective communication in Korean or English required; English proficiency unverified",
       "essentialRequirements": "Overseas market research, social-media and travel/beauty trend research, local-language content localization, country-specific social channels, ad copy and keyword research, surveys/interviews and research documentation. The listing requires effective communication in Korean or English and a valid residence permit that allows the internship. New visa applications and visa sponsorship are not available. Full-time internship for 3 or 6 months; Monday–Friday 09:00–18:00.",
       "requiredKoreanLevel": "unknown",
       "homeCountryEligible": "unknown",
       "eligibilityNote": "The listing requires an already-valid Korean residence permit that allows this internship; visa sponsorship and new visa applications are unavailable. Effective communication in Korean or English is required, and English proficiency is unverified. No posting date/deadline is shown, so current availability is unconfirmed.",
       "researchSummary": "A Spanish-relevant overseas marketing internship involving local-market research, content localization, social media, ad copy and consumer research. Listed pay is KRW 2,260,000/month. On-site in Seocho-gu, Seoul; 3- or 6-month internship. Requires an existing eligible residence permit and effective communication in Korean or English.",
-      "researchNote": "KOWORK page was accessible and inspected on 2026-10-19, but no posting date or deadline was visible. Confirm the vacancy and work authorization with MyRealTrip before applying."
+      "researchNote": "KOWORK page was accessible and inspected on 2026-10-19, but no posting date or deadline was visible. Confirm the vacancy and work authorization with MyRealTrip before applying.",
+      "withdrawnFromRadar": true,
+      "withdrawalReason": "Manual browser check 2026-11-09: KOWORK page shows \"Expired position.\" Withdrawn from radar; no current opening claimed."
     },
     {
       "source": "JOBPLOY",
@@ -430,7 +432,7 @@
       "deadline": null,
       "reviewedAt": "2026-10-19T09:02:00Z",
       "priority": "low",
-      "listingStatus": "unconfirmed",
+      "listingStatus": "expired",
       "languageRequirements": "German/Spanish communication; fluent English required; English proficiency unverified",
       "languageFitStatus": "unknown",
       "languageFitReason": "The source writes German/Spanish without clarifying whether either language is accepted or both are required; fluent English is required but unverified.",
@@ -440,7 +442,9 @@
       "homeCountryEligible": "unknown",
       "eligibilityNote": "Lower-priority lead: fluent English and a bachelor's degree are mandatory, and the page does not clarify whether German/Spanish means either language or both. English ability and E-7 eligibility must be confirmed. No posting date/deadline is shown; current availability is unconfirmed.",
       "researchSummary": "Full-time product marketing/sales and international PR for a bio/pharmaceutical company, including conference and exhibition work. On-site in Seongnam, weekdays 09:00–18:00; salary not listed. Fluent English and a bachelor's degree are required; the German/Spanish language wording is ambiguous. Entry-level candidates are mentioned, but the role is a stretch if English or education requirements are not met.",
-      "researchNote": "KOWORK page accessible and inspected on 2026-10-19. No posting date/deadline shown; confirm whether Spanish alone is accepted and whether the role is still open."
+      "researchNote": "KOWORK page accessible and inspected on 2026-10-19. No posting date/deadline shown; confirm whether Spanish alone is accepted and whether the role is still open.",
+      "withdrawnFromRadar": true,
+      "withdrawalReason": "Manual browser check 2026-11-09: KOWORK page shows \"Expired position.\" Withdrawn from radar; no current opening claimed."
     },
     {
       "source": "Company Careers",

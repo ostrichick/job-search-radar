@@ -4,7 +4,12 @@
   "spokenLanguages": {
     "es": "native",
     "ko": "beginner",
-    "en": "unverified"
+    "en": "advanced"
+  },
+  "residency": {
+    "country": "KR",
+    "visa": "F-6 marriage visa",
+    "workAuthorization": "F-6 residence status"
   },
   "interests": {
     "online": ["marketing", "advertising", "translation", "content"],
@@ -34,5 +39,5 @@
     { "label": "Spanish content and short video", "url": "https://www.upwork.com/nx/search/jobs/?q=spanish%20content%20creator" },
     { "label": "Spanish localization QA", "url": "https://www.upwork.com/nx/search/jobs/?q=spanish%20localization%20qa" }
   ],
-  "notes": "English fluency, work authorization, visa, qualifications and availability are not assumed. Listings are research leads, not verified eligibility."
+  "notes": "F-6 marriage visa residence in Korea. English advanced, Spanish native, Korean beginner. Qualifications and availability are not assumed. Listings are research leads, not verified eligibility."
 }

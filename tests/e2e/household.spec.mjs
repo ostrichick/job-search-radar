@@ -94,6 +94,7 @@ test('복지정보를 이미 확인함으로 표시하고 확인 여부로 필�
   await card.getByRole('button', { name: /이미 확인함/ }).click();
   await expect(card).toHaveClass(/is-checked/);
   await expect(card.getByRole('button', { name: /확인 취소/ })).toBeVisible();
+  await expect(card.getByRole('button', { name: /확인 취소/ })).toBeFocused();
   await page.locator('#tracking').selectOption('checked');
   await expect(page.locator('.card')).toHaveCount(1);
   await expect(page.locator('#programs')).toContainText('2025년 귀속 근로장려금');
