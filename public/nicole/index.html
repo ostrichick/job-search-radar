@@ -182,6 +182,16 @@
               <option value="hard_check">Required criteria need review</option>
             </select>
           </div>
+          <div class="field">
+            <label for="fitFilter">Fit</label>
+            <select id="fitFilter">
+              <option value="">All fits</option>
+              <option value="eligible" selected>Recommended fit</option>
+              <option value="high">Strong fit</option>
+              <option value="check">Needs check</option>
+              <option value="fail">Not eligible</option>
+            </select>
+          </div>
           <div class="field nicole-only">
             <label for="languageFitFilter">Language fit</label>
             <select id="languageFitFilter">
@@ -227,6 +237,7 @@
           <div class="field">
             <label for="sort">Sort by</label>
             <select id="sort">
+              <option value="fit">Fit</option>
               <option value="score">Priority for today</option>
               <option value="distance" hidden>Nearest first</option>
               <option value="newest">Newest first</option>
@@ -321,6 +332,7 @@
       </div>
       <h2 class="title"></h2>
       <p class="company"></p>
+      <div class="profile-fit" hidden></div>
       <div class="workplace" aria-label="Workplace information">
         <span class="workplace-label">Workplace</span>
         <strong class="workplace-value"></strong>

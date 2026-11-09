@@ -80,6 +80,23 @@ test('Nicole shared screen renders the shared app with her own feed and branding
   await expect(page.locator('#nicoleHiddenManager')).toBeVisible();
 });
 
+test('Nicole fit filter hides confirmed disqualifiers and exposes the reason', async ({ page }) => {
+  await page.route('**/feeds/dubu.json?*', (route) => route.fulfill({ json: {
+    ...feed, jobs: [...feed.jobs, job('korean-required', 'online', {
+      title: 'Korean Content Marketer', description: 'TOPIK 4 required for this role.'
+    })]
+  } }));
+  await page.goto('/nicole/');
+  await expect(page.locator('#fitFilter')).toHaveValue('eligible');
+  await expect(page.locator('#jobs')).not.toContainText('Korean Content Marketer');
+  await page.locator('#fitFilter').selectOption('fail');
+  const card = page.locator('.job-card').filter({ hasText: 'Korean Content Marketer' });
+  await expect(card).toHaveCount(1);
+  await expect(card.locator('.profile-fit')).toContainText('Not eligible');
+  await page.locator('#fitFilter').selectOption('');
+  await expect(page.locator('#jobs')).toContainText('Korean Content Marketer');
+});
+
 test('Nicole filters retain language fit, commute, province and archived listings', async ({ page }) => {
   await page.goto('/nicole/');
   await page.locator('#marketDomestic').click();
