@@ -113,7 +113,7 @@ const filterDefaults = {
 if (isNicole) {
   for (const market of Object.keys(filterDefaults)) Object.assign(filterDefaults[market], {
     eligibility: '', remote: '', domesticProvince: '', domesticLocality: '', domesticNeighborhood: '',
-    listingFilter: 'all', minScore: '0', sort: 'newest', languageFitFilter: 'all',
+    listingFilter: 'all', minScore: '0', sort: 'fit', languageFitFilter: 'all',
     commuteFilter: 'all', archiveFilter: 'all', savedOnly: ''
   });
 }

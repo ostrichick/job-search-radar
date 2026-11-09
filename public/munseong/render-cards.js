@@ -112,8 +112,8 @@ function render() {
       fitNode.className = `profile-fit ${fit.status}`;
       fitNode.dataset.fitStatus = fit.status;
       fitNode.innerHTML = `<strong>적합도 ${fit.score} · ${fitLabels[fit.status]}</strong>`
-        + (fit.reasons.length ? `<span>적합 · ${fit.reasons.slice(0, 3).map(escapeHtml).join(' · ')}</span>` : '')
-        + (fit.gaps.length ? `<span>확인 · ${fit.gaps.slice(0, 3).map(escapeHtml).join(' · ')}</span>` : '');
+        + (fit.reasons.length ? `<span> 적합 · ${fit.reasons.slice(0, 3).map(escapeHtml).join(' · ')}</span>` : '')
+        + (fit.gaps.length ? `<span> 확인 · ${fit.gaps.slice(0, 3).map(escapeHtml).join(' · ')}</span>` : '');
     }
     const workplace = workplaceDisplay(job);
     const workplaceNode = node.querySelector('.workplace');
