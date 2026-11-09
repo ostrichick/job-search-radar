@@ -87,3 +87,19 @@ test('모바일 390px 화면에서 가로 넘침 없이 목록 및 기존 프로
   const nicoleWidth = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(nicoleWidth).toBeLessThanOrEqual(0);
 });
+
+test('복지정보를 이미 확인함으로 표시하고 확인 여부로 필터링한다', async ({ page }) => {
+  await page.goto('/household/');
+  const card = page.locator('[data-program-id="earned-income-2025-late"]');
+  await card.getByRole('button', { name: /이미 확인함/ }).click();
+  await expect(card).toHaveClass(/is-checked/);
+  await expect(card.getByRole('button', { name: /확인 취소/ })).toBeVisible();
+  await page.locator('#tracking').selectOption('checked');
+  await expect(page.locator('.card')).toHaveCount(1);
+  await expect(page.locator('#programs')).toContainText('2025년 귀속 근로장려금');
+  await page.locator('#tracking').selectOption('unchecked');
+  await expect(page.locator('#programs')).not.toContainText('2025년 귀속 근로장려금');
+  await page.locator('#tracking').selectOption('');
+  await card.getByRole('button', { name: /확인 취소/ }).click();
+  await expect(card).not.toHaveClass(/is-checked/);
+});

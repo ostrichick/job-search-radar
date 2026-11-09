@@ -2260,3 +2260,19 @@ test('한국어 관련 필터는 점수·지역 기본 필터와 무관하게 �
   await expect(page.locator('.job-card')).toHaveCount(1);
   await expect(page.locator('#jobs')).toContainText('Keywords Studios');
 });
+
+test('공고 카드에서 확인함을 누르고 확인 여부로 필터링한다', async ({ page }) => {
+  await useFeed(page);
+  await page.goto('/munseong/');
+  await expect(page.locator('.job-card')).toHaveCount(3);
+  await page.locator('.job-card').first().locator('.review-toggle').click();
+  await expect(page.locator('.job-card.is-reviewed')).toHaveCount(1);
+  await expect(page.locator('.job-card.is-reviewed .review-toggle')).toHaveText('확인 취소');
+  await page.locator('#statusFilter').selectOption('reviewed');
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await page.locator('#statusFilter').selectOption('unreviewed');
+  await expect(page.locator('.job-card')).toHaveCount(2);
+  await page.locator('#statusFilter').selectOption('all');
+  await page.locator('.job-card.is-reviewed .review-toggle').click();
+  await expect(page.locator('.job-card.is-reviewed')).toHaveCount(0);
+});

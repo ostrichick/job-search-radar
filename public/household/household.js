@@ -3,8 +3,8 @@ const DB_NAME = 'jeonju-household-support-v1';
 const DB_STORE = 'household';
 const BACKUP_VERSION = 1;
 const PROFILE_KEYS = ['selfBirthYear', 'spouseBirthYear', 'selfWork', 'spouseWork', 'housing', 'monthlyIncome', 'deposit', 'rent', 'assets', 'insurance'];
-const STATUS_VALUES = ['none', 'interested', 'preparing', 'applied', 'finished'];
-const STATUS_LABELS = { none: '아직 기록 없음', interested: '관심', preparing: '신청 준비', applied: '신청 완료 · 결과 대기', finished: '결과 확인 완료' };
+const STATUS_VALUES = ['none', 'checked', 'interested', 'preparing', 'applied', 'finished'];
+const STATUS_LABELS = { none: '아직 기록 없음', checked: '이미 확인함', interested: '관심', preparing: '신청 준비', applied: '신청 완료 · 결과 대기', finished: '결과 확인 완료' };
 const CATEGORY_LABELS = { work: '취업·훈련', housing: '주거', tax: '세금·환급', welfare: '복지', savings: '생활비 절약' };
 const $ = (id) => document.getElementById(id);
 
@@ -154,9 +154,11 @@ function addLink(parent, text, url) {
 function renderCard(program) {
   const period = periodInfo(program);
   const record = state.tracking[program.id] || { status: 'none', note: '' };
+  const checked = record.status === 'checked';
   const card = element('article', 'card');
   card.dataset.programId = program.id;
   if (period.type === 'closed') card.classList.add('is-closed');
+  card.classList.toggle('is-checked', checked);
   card.setAttribute('aria-label', `${program.title} · ${period.title}`);
   const top = element('div', 'card-top');
   top.append(element('span', 'chip', CATEGORY_LABELS[program.category] || program.category));
@@ -205,7 +207,14 @@ function renderCard(program) {
   note.setAttribute('aria-label', `${program.title} 개인 메모`);
   note.addEventListener('change', () => updateTracking(program.id, { status: state.tracking[program.id]?.status ?? 'none', note: note.value }));
   noteLabel.append(note);
-  tracking.append(statusLabel, noteLabel);
+  const check = element('button', `check-button${checked ? ' active' : ''}`, checked ? '확인 취소' : '확인함');
+  check.type = 'button';
+  check.setAttribute('aria-label', `${program.title} ${checked ? '확인 취소' : '이미 확인함'}`);
+  check.addEventListener('click', () => {
+    updateTracking(program.id, { status: checked ? 'none' : 'checked', note: state.tracking[program.id]?.note ?? '' });
+    renderPrograms();
+  });
+  tracking.append(statusLabel, noteLabel, check);
   card.append(tracking, element('div', 'bottom', `공식 출처 마지막 확인 ${program.verifiedAt} · 현시점 조건·모집 일정은 변경 가능`));
   return card;
 }
@@ -220,7 +229,7 @@ function renderStats() {
   $('totalCount').textContent = String(programs.length);
   $('openCount').textContent = String(programs.filter((p) => periodInfo(p).type === 'open').length);
   $('closedCount').textContent = String(programs.filter((p) => periodInfo(p).type === 'closed').length);
-  $('savedCount').textContent = String(Object.values(state.tracking).filter((p) => p.status && p.status !== 'none').length);
+  $('savedCount').textContent = String(Object.values(state.tracking).filter((p) => p.status && !['none', 'checked'].includes(p.status)).length);
 }
 
 function renderPrograms() {
@@ -233,8 +242,10 @@ function renderPrograms() {
     if (period === 'closed' && periodInfo(p).type !== 'closed') return false;
     if (period === 'active' && periodInfo(p).type !== 'open') return false;
     const status = state.tracking[p.id]?.status || 'none';
-    if (tracking === 'saved' && status === 'none') return false;
+    if (tracking === 'saved' && (status === 'none' || status === 'checked')) return false;
     if (tracking === 'done' && !['applied', 'finished'].includes(status)) return false;
+    if (tracking === 'checked' && status !== 'checked') return false;
+    if (tracking === 'unchecked' && status === 'checked') return false;
     return !query || [p.title, p.summary, p.audience, p.jurisdiction, ...p.conditions, ...p.questions].join(' ').toLowerCase().includes(query);
   }).sort((a, b) => periodInfo(a).sort - periodInfo(b).sort || ((a.end && b.end) ? a.end.localeCompare(b.end) : 0) || a.title.localeCompare(b.title, 'ko'));
   $('programs').replaceChildren(...matches.map(renderCard));

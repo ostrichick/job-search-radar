@@ -82,6 +82,7 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
     if (status === 'active' && hidden) return false;
     if (status === 'new' && !state.newIds.has(job.id)) return false;
     if (status === 'unreviewed' && state.reviewedIds.has(job.id)) return false;
+    if (status === 'reviewed' && !state.reviewedIds.has(job.id)) return false;
     if (status === 'saved' && !state.favorites.has(job.id)) return false;
     if (status === 'planned' && jobState !== 'planned') return false;
     if (status === 'applied' && jobState !== 'applied') return false;

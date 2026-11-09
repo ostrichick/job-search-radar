@@ -163,6 +163,23 @@ function render() {
     jobState.value = state.jobStates[job.id] || '';
     jobState.setAttribute('aria-label', `${job.title} 지원 상태`);
     jobState.addEventListener('change', () => setJobState(job.id, jobState.value));
+
+    const reviewToggle = node.querySelector('.review-toggle');
+    if (reviewToggle) {
+      const reviewed = state.reviewedIds.has(job.id);
+      node.querySelector('.job-card').classList.toggle('is-reviewed', reviewed);
+      reviewToggle.textContent = reviewed ? '확인 취소' : '확인함';
+      reviewToggle.classList.toggle('active', reviewed);
+      reviewToggle.setAttribute('aria-pressed', String(reviewed));
+      reviewToggle.setAttribute('aria-label', `${job.title} ${reviewed ? '확인 취소' : '확인함'}`);
+      reviewToggle.addEventListener('click', () => {
+        state.newIds.delete(job.id);
+        if (state.reviewedIds.has(job.id)) state.reviewedIds.delete(job.id);
+        else state.reviewedIds.add(job.id);
+        persist();
+        render();
+      });
+    }
     const dismiss = node.querySelector('.dismiss');
     if (state.hiddenIds.has(job.id)) {
       dismiss.textContent = '↶';

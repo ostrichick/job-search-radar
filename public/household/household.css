@@ -77,6 +77,10 @@ main {max-width:1500px;margin:0 auto;padding:24px clamp(18px,5vw,72px) 60px}
 .card.is-closed .summary,.card.is-closed .meta,.card.is-closed .detail-body,.card.is-closed .bottom {color:#7a817b}
 .card.is-closed .links a {color:#6a7a6e}
 .card.is-closed .assessment {background:#e2e4e0;color:#5f665f}
+.card.is-checked {background:#f5f6f2;border-color:#d7dbd2;opacity:.8}
+.card.is-checked h3 {color:#5f665f}
+.card.is-checked .check-button {background:#e8f0d9;border-color:#b9d18a;color:#3d5a2a}
+.check-button {min-height:40px;border:1px solid #cddbcf;border-radius:9px;background:#fff;color:#486452;font-weight:800;cursor:pointer;padding:8px 10px}
 .assessment {border-radius:9px;background:#eef3e9;padding:10px 12px;color:#446148;font-size:12px;line-height:1.65}
 .assessment.mismatch {background:#fff3e6;color:#895629}
 .empty {margin-top:20px;padding:40px;text-align:center;color:#738378;background:#f6f8f4;border-radius:12px}

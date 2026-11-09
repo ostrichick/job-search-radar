@@ -1263,7 +1263,7 @@ function captureJobCardFocus() {
   const active = document.activeElement;
   const card = active?.closest?.('.job-card');
   if (!card?.dataset?.jobId) return null;
-  const selectors = ['.favorite', '.dismiss', '.job-state', '.job-select', '.details', '.apply'];
+  const selectors = ['.favorite', '.dismiss', '.job-state', '.review-toggle', '.job-select', '.details', '.apply'];
   const selector = selectors.find((candidate) => active.matches?.(candidate)) || '.details';
   const cards = [...document.querySelectorAll('.job-card')];
   return { jobId: card.dataset.jobId, selector, index: Math.max(0, cards.indexOf(card)) };
