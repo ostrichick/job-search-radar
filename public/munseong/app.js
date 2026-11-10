@@ -489,7 +489,7 @@ function calculateDistanceSummary(job) {
       : '공고 위치 좌표 기준';
   return {
     value: addressBased ? `주소 기준 직선거리 약 ${rounded}km` : regionBased ? `지역 기준 직선거리 약 ${rounded}km` : `직선거리 약 ${rounded}km`,
-    note: `${targetEvidence} · ${reference.label}에서의 직선거리 · 실제 도로 이동거리 아님${precision === 'road' ? ' · 도로 중심 좌표라 실제 건물 위치와 다를 수 있음' : ''}${regionBased ? ' · 지역 중심점은 거리 구간을 보수적으로 판정' : ''}${region.coordinateSource ? ` · 좌표 ${region.coordinateSource}` : ''}`,
+    note: `${targetEvidence} · ${reference.label}에서의 직선거리 · 실제 도로 이동거리 아님${precision === 'road' ? ' · 도로 중심 좌표라 실제 건물 위치와 다를 수 있음' : ''}${regionBased && !addressBased ? ' · 지역 중심점은 거리 구간을 보수적으로 판정' : ''}${region.coordinateSource ? ` · 좌표 ${region.coordinateSource}` : ''}`,
     km,
     kind: addressBased || !regionBased ? 'exact' : 'region',
     coordinatePrecision: precision

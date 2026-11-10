@@ -748,6 +748,7 @@ test('주소·도로 좌표가 있으면 구 중심 대신 주소 기준 거리�
   await expect(addressCard.locator('.distance-note')).toContainText('공고 주소 좌표 기준');
   await expect(roadCard.locator('.distance-value')).toContainText('주소 기준 직선거리 약');
   await expect(roadCard.locator('.distance-note')).toContainText('도로 중심 좌표');
+  await expect(roadCard.locator('.distance-note')).not.toContainText('지역 중심점');
 });
 
 test('국내 거리 전체 보기에서는 글로벌 원격을 제외하고 국내 근무지만 거리순으로 정렬한다', async ({ page }) => {
