@@ -114,7 +114,7 @@ for (const job of feed.jobs) {
   assert.ok(job.requirementsLabel, `${job.id} must have a user-readable requirements label`);
   if (roleFitRecommendationPolicy && !['archived_missing', 'source_error'].includes(job.listingStatus)) {
     assert.equal(typeof job.roleFitEvidence, 'boolean', `${job.id} current recommendation policy must persist roleFitEvidence`);
-    assert.ok(['title_keyword_match', 'keyword_match', 'target_category', 'none'].includes(job.roleFitBasis),
+    assert.ok(['title_keyword_match', 'keyword_match', 'target_category', 'public_institution', 'none'].includes(job.roleFitBasis),
       `${job.id} current recommendation policy must identify roleFitBasis`);
   }
   assert.ok(job.contentFingerprint, `${job.id} must have a content fingerprint`);
@@ -314,7 +314,8 @@ for (const job of feed.jobs.filter((item) => ['public_rss', 'public_rss_cached_d
   assert.equal(job.listingVerification, 'intermediary', 'RSS does not verify official employer recruitment');
 }
 
-const unanchored = feed.jobs.filter((job) => job.score > 5 && job.category === '기타' && !(job.matchedKeywords || []).length);
+const unanchored = feed.jobs.filter((job) => job.score > 5 && job.category === '기타'
+  && !(job.matchedKeywords || []).length && job.roleFitBasis !== 'public_institution');
 assert.equal(unanchored.length, 0, 'unanchored jobs must not receive meaningful positive relevance');
 
 const fakeWorldwide = feed.jobs.filter((job) => job.eligibilityCode === 'worldwide' && /^remote$/i.test(job.location || ''));

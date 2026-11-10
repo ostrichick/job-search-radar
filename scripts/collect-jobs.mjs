@@ -15,6 +15,9 @@ import { incruitJeonbukRssUrl, parseIncruitJeonbukRss } from './incruit-rss.mjs'
 import { collectCuratedLeads } from './curated-research.mjs';
 import { isFutureOnlyProductivePlayhouse } from './expanded-remote-sources.mjs';
 import { ADDRESS_CACHE_FILE, addressCacheKey, loadAddressCache } from './address-geocoder.mjs';
+import { isShortTermHourlyJob } from './job-exclusions.mjs';
+import { collectJeonjuPublic } from './jeonju-public.mjs';
+import { collectJeonbukPublic } from './jeonbuk-public.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -1565,14 +1568,17 @@ function scoreJob(job) {
   const titleMatched = profile.includeKeywords.filter((keyword) => hasPhrase(title, keyword));
   const bodyMatched = matched.filter((keyword) => !titleMatched.includes(keyword));
   const localBoard = localDomesticBoardSources.has(job.source);
+  const publicInstitution = ['전주시 공공기관', '전북 공공기관'].includes(job.source);
   const roleMatched = localBoard ? titleMatched : matched;
-  const roleFitEvidence = roleMatched.length > 0
+  const roleFitEvidence = publicInstitution || roleMatched.length > 0
     || (!localBoard && job.category !== '기타');
-  const roleFitBasis = roleMatched.length > 0
-    ? localBoard ? 'title_keyword_match' : 'keyword_match'
-    : roleFitEvidence
-      ? 'target_category'
-      : 'none';
+  const roleFitBasis = publicInstitution
+    ? 'public_institution'
+    : roleMatched.length > 0
+      ? localBoard ? 'title_keyword_match' : 'keyword_match'
+      : roleFitEvidence
+        ? 'target_category'
+        : 'none';
   const excluded = profile.excludeKeywords.some((keyword) => hasPhrase(haystack, keyword));
   let score = 0;
   for (const keyword of titleMatched) {
@@ -1587,6 +1593,7 @@ function scoreJob(job) {
   score += profile.preferredKeywords.filter((keyword) => hasPhrase(title, keyword)).length * 2;
   if (job.category !== '기타') score += 10;
   if (isOfficialKind(job.sourceKind)) score += 8;
+  if (publicInstitution) score += 20;
   if (job.remote) score += 3;
   if (job.eligibilityCode === 'worldwide') score += 8;
   if (job.eligibilityCode === 'korea') score += 18;
@@ -1604,7 +1611,7 @@ function scoreJob(job) {
     else if (ageDays !== null && ageDays > 14) score -= 3;
   }
   if (excluded) score -= 40;
-  if (!roleMatched.length && job.category === '기타') score = Math.min(score, 5);
+  if (!publicInstitution && !roleMatched.length && job.category === '기타') score = Math.min(score, 5);
   if (!roleFitEvidence) score = Math.min(score, 15);
   return {
     score: Math.max(0, Math.min(100, score)),
@@ -2886,6 +2893,8 @@ async function collectJobsOnce({ includeManual = true, persist = true, previousJ
     ['LILT Production', collectLilt],
     ['Meridial', collectMeridial],
     ['OneForma', collectOneForma],
+    ['전주시 공공기관', () => collectJeonjuPublic({ fetchText, normalizeJob, sourceCollection })],
+    ['전북 공공기관', () => collectJeonbukPublic({ fetchText, normalizeJob, sourceCollection })],
     ['알바몬', () => collectAlbamon(fallbackJobs)],
     ['알바천국', () => collectAlba(fallbackJobs)],
     ['잡코리아', () => collectJobKorea(fallbackJobs)],
@@ -3096,7 +3105,8 @@ async function collectJobsOnce({ includeManual = true, persist = true, previousJ
   }
   const now = Date.now();
   const deduped = carryForwardLegacyIds(dedupe(jobs), carryFallbackJobs);
-  const reconciled = reconcileVerificationHistory(deduped, carryFallbackJobs, now);
+  const reconciled = reconcileVerificationHistory(deduped, carryFallbackJobs, now)
+    .filter((job) => !isShortTermHourlyJob(job));
   const keptCurrent = reconciled.filter(keepInFeed);
   const sourceNames = sources.map(([name]) => name);
   const sourceMetrics = buildSourceMetrics(
@@ -3120,6 +3130,7 @@ async function collectJobsOnce({ includeManual = true, persist = true, previousJ
     applySourceMetricsToJobs(carryRecentlyMissing(currentJobs, carryFallbackJobs, now), sourceMetrics),
     now
   )
+    .filter((job) => !isShortTermHourlyJob(job))
     .sort((a, b) => (b.score - a.score) || ((Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0))));
   const enrichedSourceStatus = sourceStatus.map((status) => ({
     ...status,

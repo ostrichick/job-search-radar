@@ -2343,6 +2343,24 @@ test('맞춤 적합도는 확인된 부적격 공고를 기본 추천에서 숨�
   await expect(page.locator('.job-card')).toHaveCount(3);
 });
 
+test('전주시 공공기관 공고는 기본 국내 필터에서 보인다', async ({ page }) => {
+  await useFeed(page, () => feed([job({
+    id: 'public-institution', source: '전주시 공공기관', sourceKind: 'official_government',
+    company: '전주시설관리공단', title: '2026년 제2회 전주시시설관리공단 직원 공개채용 공고',
+    location: '전북특별자치도 전주시', remote: false, workplaceMode: 'onsite', type: '공공기관 채용',
+    score: 46, category: '기타', roleFitEvidence: true, roleFitBasis: 'public_institution',
+    listingStatus: 'official_listed', listingLabel: '전주시 공식 채용공고',
+    marketScopes: ['domestic'], marketSegment: 'domestic',
+    domesticRegion: {
+      country: '대한민국', province: '전북특별자치도', city: '전주시', district: '', neighborhood: '',
+      locality: '전주시', label: '전북특별자치도 전주시', precision: 'city', evidenceLevel: 'source_text'
+    }
+  })]));
+  await page.goto('/munseong/');
+  await page.locator('#marketDomestic').click();
+  await expect(page.locator('.job-card').filter({ hasText: '전주시시설관리공단' })).toHaveCount(1);
+});
+
 test('국내 정렬은 원격→전북권→그 외→서울→수도권 순으로 근무지를 묶는다', async ({ page }) => {
   const domestic = (id, location, extra = {}) => job({
     id, source: '고용24', sourceKind: 'official_government', company: `회사 ${id}`, title: `Korean AI Data Reviewer ${id}`,
