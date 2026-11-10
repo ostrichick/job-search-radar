@@ -18,6 +18,8 @@ import { ADDRESS_CACHE_FILE, addressCacheKey, loadAddressCache } from './address
 import { isShortTermHourlyJob } from './job-exclusions.mjs';
 import { collectJeonjuPublic } from './jeonju-public.mjs';
 import { collectJeonbukPublic } from './jeonbuk-public.mjs';
+import { collectJbnuPublic } from './jbnu-public.mjs';
+import { collectJjuPublic } from './jju-public.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -1568,7 +1570,7 @@ function scoreJob(job) {
   const titleMatched = profile.includeKeywords.filter((keyword) => hasPhrase(title, keyword));
   const bodyMatched = matched.filter((keyword) => !titleMatched.includes(keyword));
   const localBoard = localDomesticBoardSources.has(job.source);
-  const publicInstitution = ['전주시 공공기관', '전북 공공기관'].includes(job.source);
+  const publicInstitution = ['전주시 공공기관', '전북 공공기관', '전북대학교', '전주대학교'].includes(job.source);
   const roleMatched = localBoard ? titleMatched : matched;
   const roleFitEvidence = publicInstitution || roleMatched.length > 0
     || (!localBoard && job.category !== '기타');
@@ -2895,6 +2897,8 @@ async function collectJobsOnce({ includeManual = true, persist = true, previousJ
     ['OneForma', collectOneForma],
     ['전주시 공공기관', () => collectJeonjuPublic({ fetchText, normalizeJob, sourceCollection })],
     ['전북 공공기관', () => collectJeonbukPublic({ fetchText, normalizeJob, sourceCollection })],
+    ['전북대학교', () => collectJbnuPublic({ fetchText, normalizeJob, sourceCollection })],
+    ['전주대학교', () => collectJjuPublic({ fetchText, normalizeJob, sourceCollection })],
     ['알바몬', () => collectAlbamon(fallbackJobs)],
     ['알바천국', () => collectAlba(fallbackJobs)],
     ['잡코리아', () => collectJobKorea(fallbackJobs)],

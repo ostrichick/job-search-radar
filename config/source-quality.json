@@ -435,5 +435,39 @@
       { "type": "official_source", "label": "전북특별자치도 일자리센터 공공기관 채용정보", "url": "https://www.1577-0365.or.kr/pro/orginfo" }
     ],
     "paymentSignals": []
+  },
+  "전북대학교": {
+    "kind": "official_government",
+    "coverage": "current_catalog",
+    "evidenceRefreshability": "public_html_structured_data",
+    "listingLabel": "전북대학교 교내채용",
+    "paymentStatus": "not_payer",
+    "paymentLabel": "지급 주체 아님",
+    "paymentEvidenceState": "not_applicable",
+    "paymentEvidenceLabel": "지급 주체 아님",
+    "paymentConfidence": "not_applicable",
+    "reviewedAt": "2026-11-10",
+    "summary": "전북대학교 공식 교내채용 게시판의 진행 중 공고를 확인합니다. 전주캠퍼스 기준으로 표시하며 자격·급여·근무지는 원문에서 다시 확인해야 합니다.",
+    "evidence": [
+      { "type": "official_source", "label": "전북대학교 교내채용", "url": "https://www.jbnu.ac.kr/web/news/notice/sub03.do" }
+    ],
+    "paymentSignals": []
+  },
+  "전주대학교": {
+    "kind": "official_government",
+    "coverage": "current_catalog",
+    "evidenceRefreshability": "public_html_structured_data",
+    "listingLabel": "전주대학교 채용",
+    "paymentStatus": "not_payer",
+    "paymentLabel": "지급 주체 아님",
+    "paymentEvidenceState": "not_applicable",
+    "paymentEvidenceLabel": "지급 주체 아님",
+    "paymentConfidence": "not_applicable",
+    "reviewedAt": "2026-11-10",
+    "summary": "전주대학교 공식 채용 게시판의 접수 중 공고를 확인합니다. 전주캠퍼스 기준으로 표시하며 자격·급여·근무지는 원문에서 다시 확인해야 합니다.",
+    "evidence": [
+      { "type": "official_source", "label": "전주대학교 채용 게시판", "url": "https://jj.ac.kr/jj/community/notice07.do?mode=list&article.offset=0&articleLimit=10" }
+    ],
+    "paymentSignals": []
   }
 }
