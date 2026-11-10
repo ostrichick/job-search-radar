@@ -9,10 +9,10 @@ test('가구 지원 목록은 공식 링크와 신청기한을 구분한다', as
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/household/');
   await expect(page.getByRole('heading', { name: /우리 집에 맞는 혜택을/ })).toBeVisible();
-  await expect(page.locator('#totalCount')).toHaveText('51');
+  await expect(page.locator('#totalCount')).toHaveText('54');
   await expect(page.locator('#closedCount')).toHaveText('11');
-  await expect(page.locator('.card')).toHaveCount(51);
-  await expect(page.getByRole('link', { name: '공식 근거 ↗' })).toHaveCount(51);
+  await expect(page.locator('.card')).toHaveCount(54);
+  await expect(page.getByRole('link', { name: '공식 근거 ↗' })).toHaveCount(54);
   await page.locator('#period').selectOption('closed');
   await expect(page.locator('.card')).toHaveCount(11);
   await expect(page.locator('#programs')).toContainText('2026 전주시 청년월세 지원');
@@ -75,7 +75,7 @@ test('모바일 390px 화면에서 가로 넘침 없이 목록 및 기존 프로
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/household/');
   await expect(page.getByRole('link', { name: 'Nicole · Jobs' })).toHaveAttribute('href', '../nicole/');
-  await expect(page.locator('.card')).toHaveCount(51);
+  await expect(page.locator('.card')).toHaveCount(54);
   const widths = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
   expect(widths.scroll).toBeLessThanOrEqual(widths.client);
   await page.goto('/munseong/');
