@@ -722,6 +722,34 @@ test('전주·완주 로컬 기본 탐색은 출근형을 거리순으로 보고
   await expect(page.locator('#work24Attribution')).toContainText('정보출처: 고용24');
 });
 
+test('주소·도로 좌표가 있으면 구 중심 대신 주소 기준 거리를 표시한다', async ({ page }) => {
+  const located = (id, title, coordinatePrecision, label) => job({
+    id, title, source: '고용24', sourceKind: 'official_government', company: '주소 테스트',
+    location: label, remote: false, workplaceMode: 'onsite', score: 50,
+    marketScopes: ['domestic'], marketSegment: 'domestic',
+    domesticRegion: {
+      country: '대한민국', province: '전북특별자치도', city: '전주시', district: '덕진구',
+      locality: '전주시 덕진구', label: '전북특별자치도 전주시 덕진구', precision: 'address',
+      evidenceLevel: 'source_structured', lat: coordinatePrecision === 'address' ? 35.8426855 : 35.8309981,
+      lon: coordinatePrecision === 'address' ? 127.0576629 : 127.0585753,
+      coordinatePrecision, coordinateLabel: label,
+      coordinateSource: 'OpenStreetMap Nominatim address search'
+    }
+  });
+  await useFeed(page, () => feed([
+    located('address-distance', '주소 거리 테스트', 'address', '전북 전주시 덕진구 견훤로 390'),
+    located('road-distance', '도로 거리 테스트', 'road', '전북 전주시 덕진구 안전로 154')
+  ]));
+  await page.goto('/munseong/');
+  await page.locator('#marketDomestic').click();
+  const addressCard = page.locator('.job-card').filter({ hasText: '주소 거리 테스트' });
+  const roadCard = page.locator('.job-card').filter({ hasText: '도로 거리 테스트' });
+  await expect(addressCard.locator('.distance-value')).toContainText('주소 기준 직선거리 약');
+  await expect(addressCard.locator('.distance-note')).toContainText('공고 주소 좌표 기준');
+  await expect(roadCard.locator('.distance-value')).toContainText('주소 기준 직선거리 약');
+  await expect(roadCard.locator('.distance-note')).toContainText('도로 중심 좌표');
+});
+
 test('국내 거리 전체 보기에서는 글로벌 원격을 제외하고 국내 근무지만 거리순으로 정렬한다', async ({ page }) => {
   const imminentDate = new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10);
   const nearRolling = job({

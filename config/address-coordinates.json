@@ -1,0 +1,1762 @@
+{
+  "덕진구 만성북로 21-26 (만성동, 전북콘텐츠기업육성센터) 303호": {
+    "lat": 35.8493339,
+    "lon": 127.0779127,
+    "displayName": "만성북로, 덕진구, 전주시, 전북특별자치도, 54856, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "완산구 온고을로 1 (서신동, 한국교직원공제회전북회관) .": {
+    "lat": 35.836428,
+    "lon": 127.1051206,
+    "displayName": "온고을로, 효자5동, 완산구, 전주시, 전북특별자치도, 54943, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전라북도 완주군 봉동읍 둔산리 924-31": {
+    "failed": true,
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전라북도 전주시 덕진구 원동로 20 (원동) 원동 산 189-16": {
+    "lat": 35.8689043,
+    "lon": 127.0481681,
+    "displayName": "원동로, 용정동, 덕진구, 전주시, 전북특별자치도, 54809, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군": {
+    "lat": 35.9039,
+    "lon": 127.1622,
+    "displayName": "완주군, 전북특별자치도, 대한민국",
+    "precision": "neighbourhood",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:40.980Z"
+  },
+  "전북 완주군 과학로 802 (봉동읍, 대림산업)": {
+    "lat": 35.9268504,
+    "lon": 127.1251273,
+    "displayName": "과학로, 명탄마을, 완주군, 전북특별자치도, 55334, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 과학로 886 (용암리, LS엠트론) LS엠트론 전주사업장": {
+    "lat": 35.9485526,
+    "lon": 127.1279978,
+    "displayName": "886, 과학로, 완주산업단지, 용암리, 완주군, 전북특별자치도, 55322, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 기지로 54 (갈산리) 1층 104호": {
+    "lat": 35.8385706,
+    "lon": 127.0535844,
+    "displayName": "기지로, 갈산리, 이서면, 완주군, 전북특별자치도, 55365, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 기지로 54, 2층, 3층": {
+    "lat": 35.8385706,
+    "lon": 127.0535844,
+    "displayName": "기지로, 갈산리, 이서면, 완주군, 전북특별자치도, 55365, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:40.980Z"
+  },
+  "전북 완주군 봉동읍 과학로 886 (용암리, LS엠트론)": {
+    "lat": 35.9485526,
+    "lon": 127.1279978,
+    "displayName": "886, 과학로, 완주산업단지, 용암리, 완주군, 전북특별자치도, 55322, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 봉동읍 과학로 886 LS엠트론 전주사업장": {
+    "lat": 35.9485526,
+    "lon": 127.1279978,
+    "displayName": "886, 과학로, 완주산업단지, 용암리, 완주군, 전북특별자치도, 55322, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 봉동읍 과학로 961 (둔산리, 하이즈복합재산업주식회사)": {
+    "lat": 35.9268504,
+    "lon": 127.1251273,
+    "displayName": "과학로, 명탄마을, 완주군, 전북특별자치도, 55334, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 봉동읍 둔산리 857-5": {
+    "failed": true,
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 봉동읍 둔산리 908-3번지 103호": {
+    "failed": true,
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 봉동읍 둔산리 924-31": {
+    "failed": true,
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 봉동읍 완주산단1로 42": {
+    "lat": 35.9407768,
+    "lon": 127.1396389,
+    "displayName": "완주산단1로, 완주산업단지, 봉동읍, 완주군, 전북특별자치도, 55322, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:40.980Z"
+  },
+  "전북 완주군 봉동읍 완주산단1로 99": {
+    "lat": 35.9407768,
+    "lon": 127.1396389,
+    "displayName": "완주산단1로, 완주산업단지, 봉동읍, 완주군, 전북특별자치도, 55322, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 봉동읍 완주산단2로 40 (용암리, ATLASBX)": {
+    "lat": 35.9580538,
+    "lon": 127.1302002,
+    "displayName": "완주산단2로, 완주산업단지, 둔산리, 완주군, 전북특별자치도, 55319, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 봉동읍 완주산단2로 51-19 (용암리, 동부정밀화학) LX판토스(팜한농 전주공장)": {
+    "lat": 35.9575175,
+    "lon": 127.129008,
+    "displayName": "완주산단2로, 완주산업단지, 둔산리, 완주군, 전북특별자치도, 55319, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 봉동읍 완주산단5로 100": {
+    "lat": 35.9437728,
+    "lon": 127.1386699,
+    "displayName": "완주산단5로, 완주산업단지, 용암리, 완주군, 전북특별자치도, 55322, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 봉동읍 완주산단5로 100 (용암리)": {
+    "lat": 35.9437728,
+    "lon": 127.1386699,
+    "displayName": "완주산단5로, 완주산업단지, 용암리, 완주군, 전북특별자치도, 55322, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 봉동읍 완주산단5로 163 현대자동차": {
+    "lat": 35.9490153,
+    "lon": 127.1373732,
+    "displayName": "163, 완주산단5로, 완주산업단지, 봉동읍, 완주군, 전북특별자치도, 55322, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 봉동읍 완주산단5로 248": {
+    "lat": 35.9437728,
+    "lon": 127.1386699,
+    "displayName": "완주산단5로, 완주산업단지, 용암리, 완주군, 전북특별자치도, 55322, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 봉동읍 완주산단5로 본사공장": {
+    "failed": true,
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 봉동읍 완주산단6로 132 (둔산리) (주)아이엠": {
+    "lat": 35.9601439,
+    "lon": 127.1173991,
+    "displayName": "완주산단6로, 완주산업단지, 장구리, 완주군, 전북특별자치도, 55315, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 봉동읍 완주산단6로 158 (둔산리, (주)라이코) (주)원효": {
+    "lat": 35.9601439,
+    "lon": 127.1173991,
+    "displayName": "완주산단6로, 완주산업단지, 장구리, 완주군, 전북특별자치도, 55315, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 봉동읍 완주산단6로 266": {
+    "lat": 35.9666447,
+    "lon": 127.1234191,
+    "displayName": "대주코레스, 266, 완주산단6로, 완주산업단지, 장구리, 완주군, 전북특별자치도, 55316, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 봉동읍 완주산단7로 27": {
+    "lat": 35.9553558,
+    "lon": 127.1295442,
+    "displayName": "완주산단7로, 완주산업단지, 봉동읍, 완주군, 전북특별자치도, 55319, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:40.980Z"
+  },
+  "전북 완주군 봉동읍 완주산단8로 80 티오켐": {
+    "lat": 35.9588065,
+    "lon": 127.119428,
+    "displayName": "완주산단8로, 완주산업단지, 둔산리, 완주군, 전북특별자치도, 55315, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 봉동읍 용암리 788": {
+    "failed": true,
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 봉동읍 용암리 841": {
+    "failed": true,
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 봉동읍 우동로 70": {
+    "lat": 35.9712878,
+    "lon": 127.118101,
+    "displayName": "우동로, 완주테크노밸리일반산업단지, 장구리, 완주군, 전북특별자치도, 55314, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 봉동읍 제내리 1242": {
+    "failed": true,
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 봉동읍 첨단산업3로 38": {
+    "lat": 35.9688748,
+    "lon": 127.1095891,
+    "displayName": "첨단산업3로, 완주테크노밸리제2일반산업단지, 장구리, 완주군, 전북특별자치도, 55314, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 봉동읍 테크노밸리2로 90": {
+    "lat": 35.9709111,
+    "lon": 127.1221941,
+    "displayName": "테크노밸리2로, 완주테크노밸리일반산업단지, 장구리, 완주군, 전북특별자치도, 55314, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 삼례로 376 (삼례리) 롯데리아 완주삼례": {
+    "lat": 35.9136071,
+    "lon": 127.0693058,
+    "displayName": "삼례로, 왕궁면, 삼례리, 완주군, 전북특별자치도, 55342, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 삼례읍 삼례로 376 롯데리아 완주삼례점": {
+    "lat": 35.9136071,
+    "lon": 127.0693058,
+    "displayName": "삼례로, 왕궁면, 삼례리, 완주군, 전북특별자치도, 55342, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 삼례읍 삼봉1로 8-4": {
+    "lat": 35.9243827,
+    "lon": 127.1243378,
+    "displayName": "삼봉1로, 명탄마을, 완주군, 전북특별자치도, 55334, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 삼례읍 삼봉1로 8-4 (수계리) 삼봉지구 현대자동차완주삼봉대리점": {
+    "failed": true,
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 삼례읍 수계리 1253-1": {
+    "failed": true,
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 소양면 전진로 1021": {
+    "lat": 35.848746,
+    "lon": 127.2620547,
+    "displayName": "전진로, 소양면, 완주군, 전북특별자치도, 55356, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 소양면 해월리 496-28": {
+    "failed": true,
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 완주산단5로 248 (용암리) 아이큐어 완주공장": {
+    "lat": 35.9437728,
+    "lon": 127.1386699,
+    "displayName": "완주산단5로, 완주산업단지, 용암리, 완주군, 전북특별자치도, 55322, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 완주산단9로 15 (둔산리) 롯데리아 완주봉동점": {
+    "lat": 35.961316,
+    "lon": 127.1271047,
+    "displayName": "용안빌딩, 15, 완주산단9로, 봉동읍, 완주군, 전북특별자치도, 55319, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 용진읍 용흥리 770-7": {
+    "failed": true,
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 이서면 오공로 11-12": {
+    "lat": 35.8373258,
+    "lon": 127.0579561,
+    "displayName": "오공로, 갈산리, 이서면, 완주군, 전북특별자치도, 54865, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 완주군 이서면 오공로 11-12 (갈산리) 하나에너지": {
+    "lat": 35.8373258,
+    "lon": 127.0579561,
+    "displayName": "오공로, 갈산리, 이서면, 완주군, 전북특별자치도, 54865, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 완주군 이서면 지사제로 191 카페캔버스": {
+    "lat": 35.8346087,
+    "lon": 127.0186122,
+    "displayName": "지사제로, 모고지, 용서리, 이서면, 완주군, 전북특별자치도, 55364, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시": {
+    "lat": 35.8237631,
+    "lon": 127.1472805,
+    "displayName": "전주시, 전북특별자치도, 대한민국",
+    "precision": "neighbourhood",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구": {
+    "lat": 35.8294,
+    "lon": 127.1342,
+    "displayName": "덕진구, 전주시, 전북특별자치도, 대한민국",
+    "precision": "neighbourhood",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 가련산로 18 리더빌딩 4층": {
+    "lat": 35.8437839,
+    "lon": 127.1136279,
+    "displayName": "가련산로, 덕진동2가, 덕진구, 전주시, 전북특별자치도, 54888, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 가련산로 27 (덕진동2가) 2층 메카PC하가점": {
+    "lat": 35.8469199,
+    "lon": 127.113988,
+    "displayName": "27, 가련산로, 덕진동2가, 덕진구, 전주시, 전북특별자치도, 54888, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 가련산로 30 (덕진동2가) 롯데리아전주하가디아이점": {
+    "lat": 35.8437839,
+    "lon": 127.1136279,
+    "displayName": "가련산로, 덕진동2가, 덕진구, 전주시, 전북특별자치도, 54888, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 가인로 28 (만성동)": {
+    "lat": 35.8423356,
+    "lon": 127.0733048,
+    "displayName": "가인로, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 견훤로 221-1": {
+    "lat": 35.8353296,
+    "lon": 127.1572807,
+    "displayName": "견훤로, 인후동1가, 덕진구, 전주시, 전북특별자치도, 55008, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 견훤로 390 (우아동3가, 대자인병원) 1층": {
+    "lat": 35.8459948,
+    "lon": 127.153412,
+    "displayName": "대자인병원, 390, 견훤로, 인후동2가, 덕진구, 전주시, 전북특별자치도, 54910, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 구렛들1길 28-13 (팔복동1가) 257-10 경원에프엔비": {
+    "lat": 35.8594082,
+    "lon": 127.100597,
+    "displayName": "구렛들1길, 팔복동4가, 덕진구, 전주시, 전북특별자치도, 54845, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 금암동 461-10": {
+    "failed": true,
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 기린대로 382 2층 스마트잇": {
+    "lat": 35.8488094,
+    "lon": 127.1148292,
+    "displayName": "기린대로, 덕진동2가, 덕진구, 전주시, 전북특별자치도, 54845, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 기린대로 800": {
+    "lat": 35.8488094,
+    "lon": 127.1148292,
+    "displayName": "기린대로, 덕진동2가, 덕진구, 전주시, 전북특별자치도, 54845, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 기지로 66": {
+    "lat": 35.8380915,
+    "lon": 127.0723716,
+    "displayName": "기지로, 중동, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 동부대로 1014 (송천동2가) 2층 sk매직": {
+    "lat": 35.8704683,
+    "lon": 127.1003224,
+    "displayName": "동부대로, 팔복동4가, 덕진구, 전주시, 전북특별자치도, 54830, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 동부대로 1566": {
+    "lat": 35.8704683,
+    "lon": 127.1003224,
+    "displayName": "동부대로, 팔복동4가, 덕진구, 전주시, 전북특별자치도, 54830, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 동부대로 722-19": {
+    "lat": 35.8704683,
+    "lon": 127.1003224,
+    "displayName": "동부대로, 팔복동4가, 덕진구, 전주시, 전북특별자치도, 54830, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 동부대로 812-3": {
+    "lat": 35.870055,
+    "lon": 127.1068472,
+    "displayName": "동부대로, 팔복동4가, 덕진구, 전주시, 전북특별자치도, 54830, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 동부대로 930": {
+    "lat": 35.870055,
+    "lon": 127.1068472,
+    "displayName": "동부대로, 팔복동4가, 덕진구, 전주시, 전북특별자치도, 54830, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 만성남로 43": {
+    "lat": 35.8402468,
+    "lon": 127.0716383,
+    "displayName": "만성남로, 중동, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 만성동로 78 톡톡라운지 전주": {
+    "lat": 35.8470326,
+    "lon": 127.0811781,
+    "displayName": "만성동로, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 만성동로 92, 1층 103호": {
+    "lat": 35.842494,
+    "lon": 127.0790784,
+    "displayName": "만성동로, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:40.980Z"
+  },
+  "전북 전주시 덕진구 만성로 88, 1동 401호": {
+    "lat": 35.8351648,
+    "lon": 127.0714866,
+    "displayName": "만성로, 중동, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 만성북로 51-25 스페이스온 지식산업센터": {
+    "lat": 35.8493339,
+    "lon": 127.0779127,
+    "displayName": "만성북로, 덕진구, 전주시, 전북특별자치도, 54856, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 만성서로 92 (만성동) 5층": {
+    "lat": 35.8428217,
+    "lon": 127.0708482,
+    "displayName": "만성서로, 중동, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 만성중앙로 11": {
+    "lat": 35.8448524,
+    "lon": 127.0743233,
+    "displayName": "만성중앙로, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 만성중앙로 37": {
+    "lat": 35.8438877,
+    "lon": 127.0742989,
+    "displayName": "만성중앙로, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 만성중앙로 54-47 (만성동) 107호": {
+    "lat": 35.8438877,
+    "lon": 127.0742989,
+    "displayName": "만성중앙로, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 만성중앙로 54-56 5층 506호": {
+    "lat": 35.8438877,
+    "lon": 127.0742989,
+    "displayName": "만성중앙로, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 만성중앙로 55": {
+    "lat": 35.8438877,
+    "lon": 127.0742989,
+    "displayName": "만성중앙로, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:40.980Z"
+  },
+  "전북 전주시 덕진구 만성중앙로 55 (만성동)": {
+    "lat": 35.8448524,
+    "lon": 127.0743233,
+    "displayName": "만성중앙로, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 만성중앙로 55 (만성동) 오케이타워": {
+    "lat": 35.8448524,
+    "lon": 127.0743233,
+    "displayName": "만성중앙로, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 만성중앙로 58 201호,202호": {
+    "lat": 35.8438877,
+    "lon": 127.0742989,
+    "displayName": "만성중앙로, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 명륜3길 17-1 (덕진동1가) 1층": {
+    "lat": 35.8427759,
+    "lon": 127.1279857,
+    "displayName": "명륜3길, 덕진동1가, 덕진구, 전주시, 전북특별자치도, 54893, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 명륜3길 22": {
+    "lat": 35.8427759,
+    "lon": 127.1279857,
+    "displayName": "명륜3길, 덕진동1가, 덕진구, 전주시, 전북특별자치도, 54893, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 무삼지로 87, 4층": {
+    "lat": 35.8275503,
+    "lon": 127.1655172,
+    "displayName": "무삼지로, 인후동1가, 덕진구, 전주시, 전북특별자치도, 55030, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 백제대로 563-1 (금암동, 씨누스) 코앞빌딩 3,4층": {
+    "lat": 35.8401322,
+    "lon": 127.1306007,
+    "displayName": "백제대로, 금암동, 덕진구, 전주시, 전북특별자치도, 54932, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 백제대로 566 전북은행빌딩": {
+    "lat": 35.839805,
+    "lon": 127.131696,
+    "displayName": "전북은행본점, 566, 백제대로, 금암동, 덕진구, 전주시, 전북특별자치도, 54932, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 백제대로 838 (우아동3가, 시그니처전주) 823호": {
+    "lat": 35.8401322,
+    "lon": 127.1306007,
+    "displayName": "백제대로, 금암동, 덕진구, 전주시, 전북특별자치도, 54932, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 상리로 45 나동 502호": {
+    "lat": 35.8513617,
+    "lon": 127.103264,
+    "displayName": "상리로, 팔복동1가, 덕진구, 전주시, 전북특별자치도, 54845, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 석소로 88 (우아동2가) 2층 메카 pc카페": {
+    "lat": 35.8314601,
+    "lon": 127.1682065,
+    "displayName": "석소로, 우아동2가, 덕진구, 전주시, 전북특별자치도, 55017, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 세병남로 25 롯데리아 전주에코점": {
+    "lat": 35.8720117,
+    "lon": 127.1272929,
+    "displayName": "25, 세병남로, 송천동2가, 덕진구, 전주시, 전북특별자치도, 55149, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 솔내1길 49-9, 힐링캠프빌라 1층": {
+    "lat": 35.8548653,
+    "lon": 127.1232266,
+    "displayName": "솔내1길, 송천동1가, 덕진구, 전주시, 전북특별자치도, 54837, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 솔내로 128": {
+    "lat": 35.8681911,
+    "lon": 127.1273801,
+    "displayName": "솔내로, 송천동2가, 덕진구, 전주시, 전북특별자치도, 54819, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 송천동1가 5층": {
+    "failed": true,
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 송천동2가 1301-6": {
+    "lat": 35.8712869,
+    "lon": 127.1211313,
+    "displayName": "송천동2가, 덕진구, 전주시, 전북특별자치도, 54827, 대한민국",
+    "precision": "neighbourhood",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:40.980Z"
+  },
+  "전북 전주시 덕진구 수리재길 48 (주)에프엘컴퍼니": {
+    "failed": true,
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 시천로 96-14 (주)다농": {
+    "lat": 35.8626783,
+    "lon": 127.1147511,
+    "displayName": "시천로, 팔복동1가, 덕진구, 전주시, 전북특별자치도, 54830, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 신복로 102": {
+    "lat": 35.8584695,
+    "lon": 127.1047938,
+    "displayName": "신복로, 팔복동1가, 덕진구, 전주시, 전북특별자치도, 54845, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 신복로 180 내쇼날모터스 BMW 전주 서비스 센터": {
+    "lat": 35.8584695,
+    "lon": 127.1047938,
+    "displayName": "신복로, 팔복동1가, 덕진구, 전주시, 전북특별자치도, 54845, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 신흥마을길 152": {
+    "lat": 35.8768831,
+    "lon": 127.0888879,
+    "displayName": "신흥마을길, 고랑동, 덕진구, 전주시, 전북특별자치도, 54849, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:40.980Z"
+  },
+  "전북 전주시 덕진구 아중4길 9-3": {
+    "lat": 35.8307946,
+    "lon": 127.1740133,
+    "displayName": "아중4길, 우아동2가, 덕진구, 전주시, 전북특별자치도, 55023, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 안전로 154 104호": {
+    "lat": 35.8273229,
+    "lon": 127.0616557,
+    "displayName": "안전로, 덕진구, 전주시, 완주군, 전북특별자치도, 54874, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 안전로 154, 3층 305호": {
+    "lat": 35.8273229,
+    "lon": 127.0616557,
+    "displayName": "안전로, 덕진구, 전주시, 완주군, 전북특별자치도, 54874, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 야전1길 71": {
+    "lat": 35.8658326,
+    "lon": 127.104667,
+    "displayName": "야전1길, 팔복동4가, 덕진구, 전주시, 전북특별자치도, 54830, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:40.980Z"
+  },
+  "전북 전주시 덕진구 오공로 33-14 (중동) 2층 고기녹소": {
+    "lat": 35.8356946,
+    "lon": 127.0660238,
+    "displayName": "오공로, 중동, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 우아동3가 734-17": {
+    "lat": 35.84854,
+    "lon": 127.15935,
+    "displayName": "우아동3가, 덕진구, 전주시, 전북특별자치도, 54908, 대한민국",
+    "precision": "neighbourhood",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:40.980Z"
+  },
+  "전북 전주시 덕진구 운암로 30": {
+    "lat": 35.8609076,
+    "lon": 127.0871673,
+    "displayName": "운암로, 여의동2가, 덕진구, 전주시, 전북특별자치도, 54849, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 원동로 20": {
+    "lat": 35.8689043,
+    "lon": 127.0481681,
+    "displayName": "원동로, 용정동, 덕진구, 전주시, 전북특별자치도, 54809, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 인교로 65 (우아동1가, 오케스트라찜질방) 4,5층": {
+    "lat": 35.8244738,
+    "lon": 127.1703925,
+    "displayName": "인교로, 우아동2가, 덕진구, 전주시, 전북특별자치도, 55028, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 인교로 65 오케스트라찜질방": {
+    "lat": 35.8244738,
+    "lon": 127.1703925,
+    "displayName": "인교로, 우아동2가, 덕진구, 전주시, 전북특별자치도, 55028, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 정여립로 1083 (만성동) 주식회사 전주방송": {
+    "lat": 35.8564504,
+    "lon": 127.0909796,
+    "displayName": "정여립로, 전주제2일반산업단지, 팔복동2가, 덕진구, 전주시, 전북특별자치도, 54849, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 조경단로 90": {
+    "lat": 35.8353047,
+    "lon": 127.136254,
+    "displayName": "조경단로, 금암동, 덕진구, 전주시, 전북특별자치도, 54931, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 중동 관할 구역 내": {
+    "failed": true,
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 초포다리로 136 르노트르 카페": {
+    "lat": 35.8458357,
+    "lon": 127.1528798,
+    "displayName": "초포다리로, 인후동2가, 덕진구, 전주시, 전북특별자치도, 54916, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 팔과정로 17 셰플러코리아(유)전주공장": {
+    "lat": 35.8684064,
+    "lon": 127.0963114,
+    "displayName": "팔과정로, 팔복동4가, 덕진구, 전주시, 전북특별자치도, 54849, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 팔달로 312 (진북동) 101호": {
+    "lat": 35.829175,
+    "lon": 127.1408304,
+    "displayName": "팔달로, 진북동, 덕진구, 전주시, 전북특별자치도, 54994, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 팔달로 320 (진북동, 스타저축은행) 스타저축은행": {
+    "lat": 35.829175,
+    "lon": 127.1408304,
+    "displayName": "팔달로, 진북동, 덕진구, 전주시, 전북특별자치도, 54994, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 팔복동1가 337-2 경제통상진흥원 본관 4층": {
+    "failed": true,
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 팔복동2가 333-14": {
+    "lat": 35.8544323,
+    "lon": 127.0952298,
+    "displayName": "팔복동2가, 덕진구, 전주시, 전북특별자치도, 54845, 대한민국",
+    "precision": "neighbourhood",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 팔복로 17-20, G동 2층": {
+    "lat": 35.8468346,
+    "lon": 127.1037202,
+    "displayName": "팔복로, 팔복동3가, 덕진구, 전주시, 전북특별자치도, 54845, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 덕진구 혁신로 595, 1층": {
+    "lat": 35.8453198,
+    "lon": 127.0567572,
+    "displayName": "혁신로, 덕진구, 전주시, 완주군, 전북특별자치도, 54865, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 덕진구 화암2길 25-9 1층 그레타10": {
+    "failed": true,
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 관선1길 58, 1층": {
+    "lat": 35.8195789,
+    "lon": 127.15674,
+    "displayName": "관선1길, 남노송동, 완산구, 전주시, 전북특별자치도, 55011, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 관선3길 21-15": {
+    "lat": 35.8209158,
+    "lon": 127.1544108,
+    "displayName": "관선3길, 풍남동2가, 완산구, 전주시, 전북특별자치도, 55011, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 기린대로 213 (서노송동, 대우빌딩) 2층": {
+    "lat": 35.8252782,
+    "lon": 127.1473112,
+    "displayName": "기린대로, 서노송동, 완산구, 전주시, 전북특별자치도, 54994, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 기린대로 213 (서노송동, 대우빌딩) LG유플러스 전주센터": {
+    "lat": 35.8252782,
+    "lon": 127.1473112,
+    "displayName": "기린대로, 서노송동, 완산구, 전주시, 전북특별자치도, 54994, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 기린대로 213 (서노송동) 대우빌딩 15, 16, 17 층": {
+    "lat": 35.8252782,
+    "lon": 127.1473112,
+    "displayName": "기린대로, 서노송동, 완산구, 전주시, 전북특별자치도, 54994, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 기린대로 77 (풍남동3가)": {
+    "lat": 35.8252782,
+    "lon": 127.1473112,
+    "displayName": "기린대로, 서노송동, 완산구, 전주시, 전북특별자치도, 54994, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 기린대로 85 (풍남동3가, 라한호텔전주) 전주라한호텔": {
+    "lat": 35.8252782,
+    "lon": 127.1473112,
+    "displayName": "기린대로, 서노송동, 완산구, 전주시, 전북특별자치도, 54994, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 노송광장로 29 현대해상빌딩 1층": {
+    "lat": 35.8233316,
+    "lon": 127.1479697,
+    "displayName": "노송광장로, 경원동3가, 완산구, 전주시, 전북특별자치도, 54994, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 노송광장로 37 편의점 내 아이코스 서비스센터": {
+    "lat": 35.8239861,
+    "lon": 127.1469434,
+    "displayName": "노송광장로, 서노송동, 완산구, 전주시, 전북특별자치도, 54994, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 다가동3가 53-5 일층 어시장": {
+    "failed": true,
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 당산로 111 (서신동, E마트) 탑텐 이마트 전주점": {
+    "lat": 35.8321943,
+    "lon": 127.1102682,
+    "displayName": "당산로, 서신동, 완산구, 전주시, 전북특별자치도, 54943, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 당산로 112 (서신동) 롯데리아 전주 서신점": {
+    "lat": 35.8321943,
+    "lon": 127.1102682,
+    "displayName": "당산로, 서신동, 완산구, 전주시, 전북특별자치도, 54943, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 마전3길12, 4층": {
+    "failed": true,
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 마전중앙로 13, 3층 301호": {
+    "lat": 35.8233298,
+    "lon": 127.1039326,
+    "displayName": "마전중앙로, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54964, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 모악로 4754 (평화동1가, 보람외과의원) 롯데리아 전주평화점": {
+    "lat": 35.7520655,
+    "lon": 127.1201999,
+    "displayName": "모악로, 원당, 평화2동, 완산구, 전주시, 전북특별자치도, 55362, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 모악로 4754 롯데리아 전주평화점": {
+    "lat": 35.7520655,
+    "lon": 127.1201999,
+    "displayName": "모악로, 원당, 평화2동, 완산구, 전주시, 전북특별자치도, 55362, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 모악산자락길 270-7": {
+    "lat": 35.7578639,
+    "lon": 127.1167128,
+    "displayName": "모악산자락길, 원당동, 평화2동, 완산구, 전주시, 전북특별자치도, 55362, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 백제대로 323 LG U+ 7층 에이치모바일": {
+    "lat": 35.8218986,
+    "lon": 127.1224105,
+    "displayName": "323, 백제대로, 중화산동2가, 중화산2동, 완산구, 전주시, 전북특별자치도, 54981, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 백제대로 325 온누리안과": {
+    "lat": 35.8222989,
+    "lon": 127.1223736,
+    "displayName": "325, 백제대로, 중화산동2가, 중화산2동, 완산구, 전주시, 전북특별자치도, 54981, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 백제대로 370 1층": {
+    "lat": 35.800589,
+    "lon": 127.1273434,
+    "displayName": "백제대로, 삼천1동, 완산구, 전주시, 전북특별자치도, 55084, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 백제대로 382 (서신동, VIPS) 2층 빕스": {
+    "lat": 35.8077392,
+    "lon": 127.1208326,
+    "displayName": "백제대로, 효자동1가, 효자2동, 완산구, 전주시, 전북특별자치도, 55054, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 서곡5길 22-5": {
+    "lat": 35.8370985,
+    "lon": 127.1015138,
+    "displayName": "서곡5길, 효자5동, 완산구, 전주시, 전북특별자치도, 54943, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:40.980Z"
+  },
+  "전북 전주시 완산구 서노송동 568-1": {
+    "lat": 35.8272525,
+    "lon": 127.1457493,
+    "displayName": "서노송동, 완산구, 전주시, 전북특별자치도, 54994, 대한민국",
+    "precision": "neighbourhood",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:40.980Z"
+  },
+  "전북 전주시 완산구 서노송동 568-54 대우빌딩 15층": {
+    "failed": true,
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 서노송동 568-95 대우빌딩": {
+    "failed": true,
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 서신동 766": {
+    "lat": 35.8338729,
+    "lon": 127.1150449,
+    "displayName": "서신동, 완산구, 전주시, 전북특별자치도, 대한민국",
+    "precision": "neighbourhood",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 서신로 44-7": {
+    "lat": 35.8349904,
+    "lon": 127.116251,
+    "displayName": "서신로, 서신동, 완산구, 전주시, 전북특별자치도, 54944, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 서신로 62 지리산빌딩": {
+    "lat": 35.8349904,
+    "lon": 127.116251,
+    "displayName": "서신로, 서신동, 완산구, 전주시, 전북특별자치도, 54944, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 석산1길 18-10": {
+    "lat": 35.820087,
+    "lon": 127.1030683,
+    "displayName": "석산1길, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54964, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 석산1길 18-10 2층": {
+    "lat": 35.820087,
+    "lon": 127.1030683,
+    "displayName": "석산1길, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54964, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 선너머1길 50 (중화산동2가, 전주문화방송) 전주문화방송": {
+    "lat": 35.8127424,
+    "lon": 127.1277636,
+    "displayName": "선너머1길, 중화산동1가, 중화산1동, 완산구, 전주시, 전북특별자치도, 54987, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 소태정3길 9": {
+    "failed": true,
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 쑥고개로 260": {
+    "lat": 35.804081,
+    "lon": 127.1070146,
+    "displayName": "쑥고개로, 효자동2가, 효자4동, 완산구, 전주시, 전북특별자치도, 55085, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 쑥고개로 315 4층 화승": {
+    "lat": 35.804081,
+    "lon": 127.1070146,
+    "displayName": "쑥고개로, 효자동2가, 효자4동, 완산구, 전주시, 전북특별자치도, 55085, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 쑥고개로 315, 6층": {
+    "lat": 35.804081,
+    "lon": 127.1070146,
+    "displayName": "쑥고개로, 효자동2가, 효자4동, 완산구, 전주시, 전북특별자치도, 55085, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 안행2길 33, 2층": {
+    "lat": 35.8013038,
+    "lon": 127.1289178,
+    "displayName": "안행2길, 삼천1동, 완산구, 전주시, 전북특별자치도, 55084, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 안행7길 6-3": {
+    "lat": 35.8022206,
+    "lon": 127.1335675,
+    "displayName": "안행7길, 서완산동2가, 완산구, 전주시, 전북특별자치도, 55047, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 어진길 51": {
+    "lat": 35.8174074,
+    "lon": 127.1511805,
+    "displayName": "어진길, 경원동2가, 완산구, 전주시, 전북특별자치도, 55042, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 온고을로 2 (서신동, 롯데백화점)": {
+    "lat": 35.836428,
+    "lon": 127.1051206,
+    "displayName": "온고을로, 효자5동, 완산구, 전주시, 전북특별자치도, 54943, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 온고을로 29 (서신동, KT빌딩) KT고객센터": {
+    "lat": 35.8346358,
+    "lon": 127.1080699,
+    "displayName": "온고을로, 서신동, 완산구, 전주시, 전북특별자치도, 54943, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 온고을로 29 (KT빌딩) KT전주센터": {
+    "lat": 35.8346358,
+    "lon": 127.1080699,
+    "displayName": "온고을로, 서신동, 완산구, 전주시, 전북특별자치도, 54943, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 온고을로 29 KT빌딩": {
+    "lat": 35.8346358,
+    "lon": 127.1080699,
+    "displayName": "온고을로, 서신동, 완산구, 전주시, 전북특별자치도, 54943, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 용머리로 45 (효자동1가) 몰오브효자 1층": {
+    "lat": 35.8069084,
+    "lon": 127.1155477,
+    "displayName": "몰 오브 효자, 45, 용머리로, 효자동1가, 효자3동, 완산구, 전주시, 전북특별자치도, 55081, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 용머리로 73, 2층 핵심인재평생교육원": {
+    "lat": 35.8070155,
+    "lon": 127.1182512,
+    "displayName": "효자프라자, 73, 용머리로, 효자동1가, 효자2동, 완산구, 전주시, 전북특별자치도, 55054, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:24.364Z"
+  },
+  "전북 전주시 완산구 우전로 240 (효자동2가)": {
+    "lat": 35.8222036,
+    "lon": 127.1016437,
+    "displayName": "우전로, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54964, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 우전로 240 롯데마트 전주점": {
+    "lat": 35.8222036,
+    "lon": 127.1016437,
+    "displayName": "우전로, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54964, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 은행로 71 (교동) 카페달곰": {
+    "lat": 35.8182979,
+    "lon": 127.1518569,
+    "displayName": "은행로, 풍남동1가, 완산구, 전주시, 전북특별자치도, 55042, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 전주객사3길 22 전주영화제작소": {
+    "lat": 35.8183917,
+    "lon": 127.1427655,
+    "displayName": "전주디지털독립영화관, 22, 전주객사3길, 고사동, 중앙동, 완산구, 전주시, 전북특별자치도, 54999, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 전주객사4길 32 (고사동) 아식스 전주객사점": {
+    "lat": 35.8187239,
+    "lon": 127.1434507,
+    "displayName": "전주객사4길, 고사동, 중앙동, 완산구, 전주시, 전북특별자치도, 54999, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 전주객사4길 74-50 (고사동, MEDICALTOWER) 이비스 스타일 앰배서더 전주 시티센터": {
+    "lat": 35.8181783,
+    "lon": 127.1438588,
+    "displayName": "전주객사4길, 중앙동2가, 중앙동, 완산구, 전주시, 전북특별자치도, 55038, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 전주객사4길 74-50 (고사동, MEDICALTOWER) 이비스 스타일 앰배서더 전주 시티센터 4F": {
+    "lat": 35.8181783,
+    "lon": 127.1438588,
+    "displayName": "전주객사4길, 중앙동2가, 중앙동, 완산구, 전주시, 전북특별자치도, 55038, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 중화산로 136, 1층": {
+    "lat": 35.8155289,
+    "lon": 127.1166506,
+    "displayName": "중화산로, 한신코아아파트, 중화산동2가, 중화산2동, 완산구, 전주시, 전북특별자치도, 54974, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 콩쥐팥쥐로 1599 (상림동) 하늘천숯불갈비 전주혁신점": {
+    "lat": 35.8222055,
+    "lon": 127.0835731,
+    "displayName": "콩쥐팥쥐로, 효자5동, 완산구, 전주시, 전북특별자치도, 55068, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 팔달로 171 (경원동1가, 전주호텔꽃심) 전주관광호텔꽃심": {
+    "lat": 35.8203937,
+    "lon": 127.146176,
+    "displayName": "팔달로, 중앙동3가, 중앙동, 완산구, 전주시, 전북특별자치도, 54999, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 팔달로 193 (고사동) 1층 롯데리아 전주고사점": {
+    "lat": 35.806886,
+    "lon": 127.1496205,
+    "displayName": "팔달로, 전동, 완산구, 전주시, 전북특별자치도, 55099, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 팔달로 204 (경원동3가, 신한은행)": {
+    "lat": 35.8206581,
+    "lon": 127.1463838,
+    "displayName": "신한은행, 팔달로, 경원동3가, 완산구, 전주시, 전북특별자치도, 54999, 대한민국",
+    "precision": "neighbourhood",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:40.980Z"
+  },
+  "전북 전주시 완산구 팔달로 204 (경원동3가, 신한은행) 신한은행 전주지점": {
+    "lat": 35.8203937,
+    "lon": 127.146176,
+    "displayName": "팔달로, 중앙동3가, 중앙동, 완산구, 전주시, 전북특별자치도, 54999, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 평화16길 6-4 (평화동1가) 1층 유씨티": {
+    "failed": true,
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 평화로 137, 1층": {
+    "lat": 35.784711,
+    "lon": 127.1327743,
+    "displayName": "평화로, 평화동2가, 평화2동, 완산구, 전주시, 전북특별자치도, 55123, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 평화로 137, 3층": {
+    "lat": 35.784711,
+    "lon": 127.1327743,
+    "displayName": "평화로, 평화동2가, 평화2동, 완산구, 전주시, 전북특별자치도, 55123, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 하거마3길 26, 1층": {
+    "lat": 35.7945128,
+    "lon": 127.1180862,
+    "displayName": "26, 하거마3길, 삼천동1가, 삼천2동, 완산구, 전주시, 전북특별자치도, 55089, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 홍산1길 21 서희스타힐스 상가 105동 206,207호": {
+    "lat": 35.8141795,
+    "lon": 127.1069414,
+    "displayName": "21, 홍산1길, 효자5동, 완산구, 전주시, 전북특별자치도, 54969, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 홍산4길 14 (효자동3가) 베이콜로지빵학개론": {
+    "lat": 35.8184691,
+    "lon": 127.1100526,
+    "displayName": "홍산4길, 효자5동, 완산구, 전주시, 전북특별자치도, 54968, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 홍산남로 11-10": {
+    "lat": 35.8157916,
+    "lon": 127.1068336,
+    "displayName": "홍산남로, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54969, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:40.980Z"
+  },
+  "전북 전주시 완산구 홍산남로 11-10 (효자동2가)": {
+    "lat": 35.8157916,
+    "lon": 127.1068336,
+    "displayName": "홍산남로, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54969, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 홍산남로 11-10 (효자동2가) .": {
+    "lat": 35.8157916,
+    "lon": 127.1068336,
+    "displayName": "홍산남로, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54969, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 홍산남로 11-10 (효자동2가) 금호타이어": {
+    "lat": 35.8157916,
+    "lon": 127.1068336,
+    "displayName": "홍산남로, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54969, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 홍산남로 47 (효자동3가) 1층 102호": {
+    "lat": 35.8157916,
+    "lon": 127.1068336,
+    "displayName": "홍산남로, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54969, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 홍산남로 59-19,202호": {
+    "lat": 35.8162652,
+    "lon": 127.1040459,
+    "displayName": "홍산남로, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54965, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:24.364Z"
+  },
+  "전북 전주시 완산구 홍산남로 72 (효자동3가) 1층": {
+    "lat": 35.8157916,
+    "lon": 127.1068336,
+    "displayName": "홍산남로, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54969, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 홍산로 260 (효자동3가, 엠스퀘어)": {
+    "lat": 35.8026127,
+    "lon": 127.1046437,
+    "displayName": "홍산로, 효자동2가, 효자4동, 완산구, 전주시, 전북특별자치도, 55065, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 홍산로 262 (효자동3가, 코아루성우아르데코) 1층 세라젬 웰카페": {
+    "lat": 35.7987554,
+    "lon": 127.1060341,
+    "displayName": "홍산로, 효자동2가, 효자4동, 완산구, 전주시, 전북특별자치도, 55085, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 홍산로 275 춘광빌딩3층 KGA에셋 다원지사": {
+    "lat": 35.8139803,
+    "lon": 127.1059858,
+    "displayName": "홍산로, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54969, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 홍산북로 15, 4층": {
+    "lat": 35.8185337,
+    "lon": 127.1041103,
+    "displayName": "홍산북로, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54965, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 홍산북로 46-21 성준빌딩 3층": {
+    "lat": 35.8185337,
+    "lon": 127.1041103,
+    "displayName": "홍산북로, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54965, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북 전주시 완산구 홍산북로 59-11 (효자동3가) 1층 소양자연뜰": {
+    "lat": 35.8185337,
+    "lon": 127.1041103,
+    "displayName": "홍산북로, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54965, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 효자동2가 1080 전주대학교": {
+    "lat": 35.8127648,
+    "lon": 127.089518,
+    "displayName": "전주대학교, 303, 천잠로, 효자동2가, 효자4동, 완산구, 전주시, 전북특별자치도, 55069, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:40.980Z"
+  },
+  "전북 전주시 완산구 효자동2가 1211-1": {
+    "lat": 35.8068278,
+    "lon": 127.0993165,
+    "displayName": "효자동2가, 효자4동, 완산구, 전주시, 전북특별자치도, 55065, 대한민국",
+    "precision": "neighbourhood",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북 전주시 완산구 후곡길 4 MOA학원": {
+    "failed": true,
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북특별자치도 완주군 구이면 구이로 1575": {
+    "lat": 35.7706537,
+    "lon": 127.1270501,
+    "displayName": "구이로, 평화2동, 완산구, 전주시, 완주군, 전북특별자치도, 55140, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북특별자치도 완주군 봉동읍 과학로 1001 다이소완주봉동점": {
+    "lat": 35.9267722,
+    "lon": 127.1249596,
+    "displayName": "과학로, 명탄마을, 완주군, 전북특별자치도, 55334, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 완주군 봉동읍 완주산단2로 282-22 쿠팡": {
+    "lat": 35.9472669,
+    "lon": 127.1311349,
+    "displayName": "완주산단2로, 완주산업단지, 용암리, 완주군, 전북특별자치도, 55322, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 완주군 봉동읍 완주산단5로 192 정석케미칼 (전주3공단내)": {
+    "lat": 35.9437728,
+    "lon": 127.1386699,
+    "displayName": "완주산단5로, 완주산업단지, 용암리, 완주군, 전북특별자치도, 55322, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북특별자치도 완주군 삼례읍 테크노밸리로 112-120 수계리 1349": {
+    "lat": 35.9515778,
+    "lon": 127.1146967,
+    "displayName": "테크노밸리로, 완주테크노밸리일반산업단지, 구암리, 완주군, 전북특별자치도, 55315, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 완주군 이서면 기지로 47 103호": {
+    "lat": 35.8385706,
+    "lon": 127.0535844,
+    "displayName": "기지로, 갈산리, 이서면, 완주군, 전북특별자치도, 55365, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 덕진구 과학로 20 (송천동2가 엘디엠시티)": {
+    "lat": 35.8757116,
+    "lon": 127.1264674,
+    "displayName": "과학로, 송천동2가, 덕진구, 전주시, 전북특별자치도, 55149, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 덕진구 권삼득로 333 3층 301-2, 302-1, 302-2호(덕진동1가, 원플러스)": {
+    "lat": 35.8468095,
+    "lon": 127.1225283,
+    "displayName": "권삼득로, 덕진동1가, 덕진구, 전주시, 전북특별자치도, 54888, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북특별자치도 전주시 덕진구 기린대로 382 2층. 201호": {
+    "lat": 35.8488094,
+    "lon": 127.1148292,
+    "displayName": "기린대로, 덕진동2가, 덕진구, 전주시, 전북특별자치도, 54845, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 덕진구 동부대로 1187 농수산시장내 (송천동2가)": {
+    "lat": 35.8698533,
+    "lon": 127.1158741,
+    "displayName": "동부대로, 송천동2가, 덕진구, 전주시, 전북특별자치도, 54827, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 덕진구 만성중앙로 58 2층": {
+    "lat": 35.8438877,
+    "lon": 127.0742989,
+    "displayName": "만성중앙로, 덕진구, 전주시, 전북특별자치도, 54870, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북특별자치도 전주시 덕진구 명륜4길 11-3 1층(덕진동1가)": {
+    "lat": 35.8439998,
+    "lon": 127.1265793,
+    "displayName": "명륜4길, 덕진동1가, 덕진구, 전주시, 전북특별자치도, 54893, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 덕진구 비석날로 20 (농협하나로마트)": {
+    "lat": 35.8624024,
+    "lon": 127.0850272,
+    "displayName": "비석날로, 여의동2가, 덕진구, 전주시, 전북특별자치도, 54849, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 덕진구 세병로 35 104호 재능교육": {
+    "lat": 35.8726003,
+    "lon": 127.1304837,
+    "displayName": "세병로, 송천동2가, 덕진구, 전주시, 전북특별자치도, 55148, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 덕진구 원동로 16": {
+    "lat": 35.8689043,
+    "lon": 127.0481681,
+    "displayName": "원동로, 용정동, 덕진구, 전주시, 전북특별자치도, 54809, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북특별자치도 전주시 덕진구 인후동1가 건산로 244 4층 (인후동1가)": {
+    "lat": 35.836342,
+    "lon": 127.1690549,
+    "displayName": "건산로, 우아동2가, 덕진구, 전주시, 전북특별자치도, 55017, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 완산구 기린대로 123(남노송동) 제일제과": {
+    "lat": 35.8252782,
+    "lon": 127.1473112,
+    "displayName": "기린대로, 서노송동, 완산구, 전주시, 전북특별자치도, 54994, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 완산구 당산로 11-1 상가2동 1층 1호 , 2호(서신동, 쌍용서신아파트)": {
+    "lat": 35.8321943,
+    "lon": 127.1102682,
+    "displayName": "당산로, 서신동, 완산구, 전주시, 전북특별자치도, 54943, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 완산구 모악로 4774 1층107호cuᄑᆞᅥᄋ화사거리점": {
+    "lat": 35.7520655,
+    "lon": 127.1201999,
+    "displayName": "모악로, 원당, 평화2동, 완산구, 전주시, 전북특별자치도, 55362, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 완산구 봉곡1길 1(효자동3가) 컴포즈커피전주대신정문점": {
+    "lat": 35.8133584,
+    "lon": 127.0971883,
+    "displayName": "1, 봉곡1길, 효자동2가, 효자4동, 완산구, 전주시, 전북특별자치도, 55060, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 완산구 석산2길 7 1층(효자동3가)": {
+    "lat": 35.820076,
+    "lon": 127.1051563,
+    "displayName": "석산2길, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54968, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 완산구 송정2길 3 cu삼천프리미엄점": {
+    "lat": 35.799517,
+    "lon": 127.1196525,
+    "displayName": "3, 송정2길, 삼천1동, 완산구, 전주시, 전북특별자치도, 55084, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 완산구 온고을로 2 (롯데백화점)": {
+    "lat": 35.836428,
+    "lon": 127.1051206,
+    "displayName": "온고을로, 효자5동, 완산구, 전주시, 전북특별자치도, 54943, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 완산구 용머리로 45(효자동1가) 쿠우쿠우전주효자점": {
+    "lat": 35.8069084,
+    "lon": 127.1155477,
+    "displayName": "몰 오브 효자, 45, 용머리로, 효자동1가, 효자3동, 완산구, 전주시, 전북특별자치도, 55081, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 완산구 중화산로 120 나다빌딩 2층 잇올 스파르타 전주 중화산센터": {
+    "lat": 35.8211898,
+    "lon": 127.1183326,
+    "displayName": "120, 중화산로, 중화산동2가, 중화산2동, 완산구, 전주시, 전북특별자치도, 54974, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북특별자치도 전주시 완산구 척동4길 11(효자동3가) 올리빈": {
+    "lat": 35.8222088,
+    "lon": 127.1006522,
+    "displayName": "척동4길, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54961, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북특별자치도 전주시 완산구 홍산로 238": {
+    "lat": 35.7987554,
+    "lon": 127.1060341,
+    "displayName": "홍산로, 효자동2가, 효자4동, 완산구, 전주시, 전북특별자치도, 55085, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북특별자치도 전주시 완산구 황강서원로 11 CU효자빌리지점": {
+    "lat": 35.828714,
+    "lon": 127.0995939,
+    "displayName": "황강서원로, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 54961, 대한민국",
+    "precision": "address",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 완산구 효자동2가 1235-10": {
+    "lat": 35.8068278,
+    "lon": 127.0993165,
+    "displayName": "효자동2가, 효자4동, 완산구, 전주시, 전북특별자치도, 55065, 대한민국",
+    "precision": "neighbourhood",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전북특별자치도 전주시 완산구 효자로 266 (중화산동2가 에스티엘빌딩 4층,5층)": {
+    "lat": 35.819435,
+    "lon": 127.090468,
+    "displayName": "효자로, 효자동3가, 효자5동, 완산구, 전주시, 전북특별자치도, 55069, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T03:02:00.171Z"
+  },
+  "전주시 완산구 기린대로 213, 대우빌딩": {
+    "lat": 35.8252782,
+    "lon": 127.1473112,
+    "displayName": "기린대로, 서노송동, 완산구, 전주시, 전북특별자치도, 54994, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전주시 완산구 온고을로 29 , KT빌딩 10층": {
+    "lat": 35.8346358,
+    "lon": 127.1080699,
+    "displayName": "온고을로, 서신동, 완산구, 전주시, 전북특별자치도, 54943, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전주시 완산구 온고을로2 롯데백화점 전주점": {
+    "failed": true,
+    "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전주시 완산구 홍산로 238": {
+    "lat": 35.7987554,
+    "lon": 127.1060341,
+    "displayName": "홍산로, 효자동2가, 효자4동, 완산구, 전주시, 전북특별자치도, 55085, 대한민국",
+    "precision": "road",
+    "source": "OpenStreetMap Nominatim address search",
+    "checkedAt": "2026-11-10T02:51:40.980Z"
+  }
+}

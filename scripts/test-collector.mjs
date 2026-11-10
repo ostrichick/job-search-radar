@@ -451,6 +451,15 @@ assert.match(work24Office.url, /wantedAuthNo=K161132610050001/);
 assert.equal(work24Office.deadlineType, 'fixed');
 assert.equal(work24Office.deadlineDate, '2099-12-31');
 
+const cachedAddressRegion = domesticRegionFor({
+  location: '전북 전주시 완산구 홍산남로 59-19,202호',
+  workAddress: '전북 전주시 완산구 홍산남로 59-19,202호',
+  countryCode: 'KR', workplaceMode: 'onsite', locationEvidenceLevel: 'source_structured'
+});
+assert.equal(cachedAddressRegion.coordinatePrecision, 'address');
+assert.match(cachedAddressRegion.coordinateSource, /Nominatim/);
+assert.notEqual(cachedAddressRegion.lat, 35.8122, 'cached address coordinates must replace the Wansan-gu centroid');
+
 const work24Experienced = work24Candidate(work24Rows[1]);
 assert.equal(work24Experienced.domesticRegion.city, '완주군');
 assert.equal(work24Experienced.domesticRegion.district, '');

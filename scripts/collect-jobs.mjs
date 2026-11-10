@@ -14,6 +14,7 @@ import { isDefaultRecommendation as recommendationRule } from '../public/munseon
 import { incruitJeonbukRssUrl, parseIncruitJeonbukRss } from './incruit-rss.mjs';
 import { collectCuratedLeads } from './curated-research.mjs';
 import { isFutureOnlyProductivePlayhouse } from './expanded-remote-sources.mjs';
+import { ADDRESS_CACHE_FILE, addressCacheKey, loadAddressCache } from './address-geocoder.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -22,6 +23,7 @@ const profile = JSON.parse(await fs.readFile(path.join(root, 'config/search-prof
 const sourceQuality = JSON.parse(await fs.readFile(path.join(root, 'config/source-quality.json'), 'utf8'));
 const paymentEvidencePolicy = JSON.parse(await fs.readFile(path.join(root, 'config/payment-evidence-policy.json'), 'utf8'));
 const koreaAdmin = JSON.parse(await fs.readFile(path.join(root, 'config/korea-admin-regions.json'), 'utf8'));
+const addressCoordinates = await loadAddressCache(path.join(root, ADDRESS_CACHE_FILE));
 
 function repairMojibake(value) {
   const raw = String(value ?? '');
@@ -211,6 +213,24 @@ function domesticRegionFor(job) {
       : job.countryCode === 'KR'
         ? 'country_code'
         : 'source_text';
+  const cachedAddress = job.workAddress ? addressCoordinates[addressCacheKey(job.workAddress)] : null;
+  const cachedCoordinate = cachedAddress && !cachedAddress.failed &&
+    Number.isFinite(cachedAddress.lat) && Number.isFinite(cachedAddress.lon) ? cachedAddress : null;
+  const coordinates = cachedCoordinate ? {
+    lat: cachedCoordinate.lat,
+    lon: cachedCoordinate.lon,
+    coordinatePrecision: cachedCoordinate.precision || 'address',
+    coordinateLabel: text(job.workAddress),
+    coordinateSource: cachedCoordinate.source || 'OpenStreetMap Nominatim address search',
+    coordinateCheckedAt: cachedCoordinate.checkedAt
+  } : centroid ? {
+    lat: centroid.lat,
+    lon: centroid.lon,
+    coordinatePrecision: centroid.precision,
+    coordinateLabel: centroid.label || [province, city, district, neighborhood].filter(Boolean).join(' '),
+    coordinateSource: centroid.coordinateSource,
+    coordinateCheckedAt: centroid.coordinateCheckedAt
+  } : null;
   return {
     country: '대한민국',
     province,
@@ -222,14 +242,7 @@ function domesticRegionFor(job) {
     precision,
     evidenceLevel,
     ...(job.workAddress ? { sourceAddress: text(job.workAddress) } : {}),
-    ...(centroid ? {
-      lat: centroid.lat,
-      lon: centroid.lon,
-      coordinatePrecision: centroid.precision,
-      coordinateLabel: centroid.label || [province, city, district, neighborhood].filter(Boolean).join(' '),
-      coordinateSource: centroid.coordinateSource,
-      coordinateCheckedAt: centroid.coordinateCheckedAt
-    } : {})
+    ...(coordinates || {})
   };
 }
 

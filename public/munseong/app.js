@@ -479,16 +479,20 @@ function calculateDistanceSummary(job) {
     return { value: '주소 부족으로 거리 계산 불가', note: '공고에 거리 계산에 충분한 주소·좌표가 없습니다.', km: null, kind: 'unknown' };
   }
   const rounded = km < 10 ? Math.round(km * 10) / 10 : Math.round(km);
-  const regionBased = !['exact', 'address', 'coordinates'].includes(region.coordinatePrecision);
-  const targetEvidence = regionBased
-    ? `${region.coordinateLabel || region.label || region.province || '공고 지역'} 기준`
-    : '공고 위치 좌표 기준';
+  const precision = region.coordinatePrecision || '';
+  const addressBased = ['address', 'road'].includes(precision);
+  const regionBased = !['exact', 'address', 'coordinates'].includes(precision);
+  const targetEvidence = addressBased
+    ? `${precision === 'road' ? '공고 도로 중심 좌표' : '공고 주소 좌표'} 기준`
+    : regionBased
+      ? `${region.coordinateLabel || region.label || region.province || '공고 지역'} 기준`
+      : '공고 위치 좌표 기준';
   return {
-    value: regionBased ? `지역 기준 직선거리 약 ${rounded}km` : `직선거리 약 ${rounded}km`,
-    note: `${targetEvidence} · ${reference.label}에서의 직선거리 · 실제 도로 이동거리 아님${regionBased ? ' · 지역 중심점은 거리 구간을 보수적으로 판정' : ''}${region.coordinateSource ? ` · 좌표 ${region.coordinateSource}` : ''}`,
+    value: addressBased ? `주소 기준 직선거리 약 ${rounded}km` : regionBased ? `지역 기준 직선거리 약 ${rounded}km` : `직선거리 약 ${rounded}km`,
+    note: `${targetEvidence} · ${reference.label}에서의 직선거리 · 실제 도로 이동거리 아님${precision === 'road' ? ' · 도로 중심 좌표라 실제 건물 위치와 다를 수 있음' : ''}${regionBased ? ' · 지역 중심점은 거리 구간을 보수적으로 판정' : ''}${region.coordinateSource ? ` · 좌표 ${region.coordinateSource}` : ''}`,
     km,
-    kind: regionBased ? 'region' : 'exact',
-    coordinatePrecision: region.coordinatePrecision || ''
+    kind: addressBased || !regionBased ? 'exact' : 'region',
+    coordinatePrecision: precision
   };
 }
 
