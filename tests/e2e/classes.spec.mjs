@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('한국어 강의 탭은 온라인·전주 오프라인 강의와 공식 링크를 보여준다', async ({ page }) => {
   await page.goto('/classes/');
-  await expect(page.getByRole('heading', { name: /한국어, 어디서/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /한국어·스페인어/ })).toBeVisible();
   await expect(page.locator('#sourceDate')).toHaveText('2026-11-16');
   await expect(page.locator('#totalCount')).toHaveText('19');
   await expect(page.locator('.class-card')).toHaveCount(19);
@@ -16,6 +16,20 @@ test('한국어 강의 탭은 390px에서 가로로 넘치지 않는다', async 
   await page.goto('/classes/');
   await expect(page.locator('.class-card')).toHaveCount(19);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+});
+
+test('스페인어 탭은 무료 온라인 강의를 우선 보여준다', async ({ page }) => {
+  await page.goto('/classes/');
+  await page.getByRole('tab', { name: '스페인어' }).click();
+  await expect(page.locator('#totalCount')).toHaveText('9');
+  await expect(page.locator('#onlineCount')).toHaveText('8');
+  await expect(page.locator('#offlineCount')).toHaveText('1');
+  await expect(page.locator('#freeCount')).toHaveText('8');
+  await expect(page.locator('.class-card')).toHaveCount(9);
+  await expect(page.locator('#courses')).toContainText('Basic Spanish 1');
+  await expect(page.locator('#courses')).toContainText('Language Transfer');
+  await page.locator('#cost').selectOption('free');
+  await expect(page.locator('.class-card')).toHaveCount(8);
 });
 
 test('한국어 강의 탭은 무료·온라인·전주 오프라인 필터를 적용한다', async ({ page }) => {
