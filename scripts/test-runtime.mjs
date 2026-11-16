@@ -10,6 +10,7 @@ import { atomicWriteJson, withFileLock, singleFlight } from './file-storage.mjs'
 import { collectJobs, normalizeJob } from './collect-jobs.mjs';
 import { validateBackup, mergeStorageChanges } from '../public/munseong/backup-rules.js';
 import { isTrustedLocalRequest } from './local-origin.mjs';
+import { createFeedClient } from '../public/munseong/feed-client.js';
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'job-radar-runtime-'));
@@ -46,6 +47,32 @@ try {
   await first; assert.equal(calls, 1);
   await assert.rejects(singleFlight('test-flight', () => Promise.reject(new Error('failure'))));
   assert.equal(await singleFlight('test-flight', () => 2), 2);
+
+  const requests = [];
+  const nicoleFeed = { updatedAt: '2026-10-29T00:00:00Z', jobs: [{ id: 'new' }] };
+  const client = createFeedClient({ profile: { id: 'nicole', feedUrl: '../feeds/dubu.json' },
+    hostname: '127.0.0.1', normalizeFeed: (x) => x, fetchImpl: async (target, options) => {
+      requests.push([target, options.method || 'GET']);
+      return { ok: true, json: async () => nicoleFeed };
+    } });
+  assert.deepEqual((await client.refreshFeed()).data, nicoleFeed);
+  assert.deepEqual(requests, [['/api/refresh?profile=nicole', 'POST']]);
+  const offlineClient = createFeedClient({ profile: { id: 'nicole', feedUrl: '../feeds/dubu.json' },
+    hostname: '127.0.0.1', normalizeFeed: (x) => x, fetchImpl: async (_target, options) =>
+      options.method === 'POST' ? { ok: false, status: 503 } : { ok: true, json: async () => nicoleFeed } });
+  const offlineResult = await offlineClient.refreshFeed();
+  assert.equal(offlineResult.collectionError?.message, '503');
+  assert.deepEqual(offlineResult.data, nicoleFeed);
+  const pagesRequests = [];
+  const pagesClient = createFeedClient({ profile: { id: 'nicole', feedUrl: '../feeds/dubu.json' },
+    hostname: 'example.github.io', normalizeFeed: (x) => x, fetchImpl: async (target, options) => {
+      pagesRequests.push([target, options.method || 'GET']);
+      return { ok: true, json: async () => nicoleFeed };
+    } });
+  assert.deepEqual((await pagesClient.refreshFeed()).data, nicoleFeed);
+  assert.equal(pagesRequests.length, 1);
+  assert.match(pagesRequests[0][0], /feeds\/dubu\.json\?ts=/);
+  assert.equal(pagesRequests[0][1], 'GET');
 
   await atomicWriteJson(target, { old: true });
   await assert.rejects(atomicWriteJson(target, { new: true }, { beforeRename: () => { throw new Error('disk failure'); } }));

@@ -1,5 +1,7 @@
 # Digital Nomad Job Dashboard
 
+> 피드 파일별 용도, 로컬 새로고침과 정적 배포의 차이, 사용자별 저장소 경계는 [데이터 흐름 문서](docs/FEED_DATA_FLOW.md)를 참고하세요.
+
 여러 공개 구인 피드와 직접 추가한 공고를 한 화면에서 검색·필터·정렬하는 개인용 대시보드입니다.
 
 웹 서비스: https://ostrichick.github.io/job-search-radar/

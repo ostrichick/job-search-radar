@@ -3,11 +3,37 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { collectJobs } from './scripts/collect-jobs.mjs';
+import { run as collectNicole } from './profiles/dubu/scripts/collect.mjs';
 import { isTrustedLocalRequest } from './scripts/local-origin.mjs';
+import { singleFlight, withFileLock } from './scripts/file-storage.mjs';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(root, 'public');
 const port = Number(process.env.PORT || 4317);
+const nicoleBaseline = path.join(root, 'profiles/dubu/public/jobs.json');
+// Keep locally refreshed Nicole leads out of the CI-maintained tracked baseline.
+const nicoleLocalFeed = path.join(root, 'data/nicole-jobs.json');
+
+async function readNicoleFeed() {
+  try {
+    const contents = await fs.readFile(nicoleLocalFeed, 'utf8');
+    const feed = JSON.parse(contents);
+    if (!feed || typeof feed !== 'object' || !Array.isArray(feed.jobs) || !Array.isArray(feed.sourceStatus)) {
+      throw new SyntaxError('Invalid local Nicole feed');
+    }
+    return contents;
+  }
+  catch (error) {
+    if (error.code !== 'ENOENT' && !(error instanceof SyntaxError)) throw error;
+    return fs.readFile(nicoleBaseline, 'utf8');
+  }
+}
+
+function refreshNicole() {
+  return singleFlight('local-nicole-refresh', () => withFileLock(nicoleLocalFeed, () =>
+    collectNicole({ root: path.join(root, 'profiles/dubu'), outputPath: nicoleLocalFeed,
+      fallbackPath: nicoleBaseline })));
+}
 
 const mime = {
   '.html': 'text/html; charset=utf-8',
@@ -33,13 +59,21 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === 'POST' && url.pathname === '/api/refresh') {
       if (!isTrustedLocalRequest(req.headers, port)) return send(res, 403, JSON.stringify({ error: 'Forbidden origin' }));
+      if (url.searchParams.get('profile') === 'nicole') {
+        const result = await refreshNicole();
+        if (!result.written) return send(res, 503, JSON.stringify({ error: result.message }));
+        return send(res, 200, JSON.stringify(result.feed));
+      }
+      if (url.searchParams.has('profile') && url.searchParams.get('profile') !== 'munseong') {
+        return send(res, 400, JSON.stringify({ error: 'Unknown profile' }));
+      }
       const result = await collectJobs();
       return send(res, 200, JSON.stringify(result));
     }
 
-    // CI publishes the Dubu feed at /feeds/dubu.json; locally serve the tracked baseline.
+    // CI publishes this path; local refreshes use a separate ignored file.
     if (req.method === 'GET' && url.pathname === '/feeds/dubu.json') {
-      return send(res, 200, await fs.readFile(path.join(root, 'profiles/dubu/public/jobs.json'), 'utf8'));
+      return send(res, 200, await readNicoleFeed());
     }
     if (['/nicole', '/munseong', '/dubu'].includes(url.pathname)) { res.writeHead(301, { Location: `${url.pathname}/` }); return res.end(); }
     const requested = url.pathname.endsWith('/') ? `${url.pathname}index.html` : url.pathname;
@@ -67,5 +101,21 @@ async function refreshIfStale() {
   if (stale) await collectJobs();
 }
 
+async function refreshNicoleIfStale() {
+  let stale = true;
+  try {
+    const current = JSON.parse(await readNicoleFeed());
+    stale = !current.updatedAt || Date.now() - (Date.parse(current.updatedAt) || 0) > 6 * 60 * 60 * 1000;
+  } catch { /* Missing or invalid Nicole feed requires a refresh. */ }
+  if (stale) {
+    const result = await refreshNicole();
+    if (!result.written) console.warn('Nicole refresh kept the last good feed:', result.message);
+  }
+}
+
 refreshIfStale().catch((error) => console.error('Initial refresh failed:', error.message));
-setInterval(() => collectJobs().catch((error) => console.error('Scheduled refresh failed:', error.message)), 6 * 60 * 60 * 1000).unref();
+refreshNicoleIfStale().catch((error) => console.error('Initial Nicole refresh failed:', error.message));
+setInterval(() => {
+  collectJobs().catch((error) => console.error('Scheduled refresh failed:', error.message));
+  refreshNicole().catch((error) => console.error('Scheduled Nicole refresh failed:', error.message));
+}, 6 * 60 * 60 * 1000).unref();

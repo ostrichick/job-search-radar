@@ -1,6 +1,7 @@
 node_modules/
 .vercel/
 /data/jobs.json
+/data/nicole-jobs.json
 /data/manual-jobs.json
 /public/jobs.json
 /public/feeds/
