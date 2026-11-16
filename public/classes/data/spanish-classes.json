@@ -2,6 +2,26 @@
   "researchedAt": "2026-11-16",
   "courses": [
     {
+      "id": "gseek-spanish-basics",
+      "title": "말문이 트이는 블라블라 스페인어",
+      "provider": "경기도평생학습포털 GSEEK",
+      "mode": "online",
+      "costType": "free",
+      "costLabel": "무료 · 수료증은 회원가입",
+      "level": "초급",
+      "audience": "온라인 기초 회화 과정을 찾는 성인",
+      "schedule": "17차시 · 신청일로부터 60일",
+      "location": "온라인",
+      "summary": "여행·일상 상황별 회화와 기초 문법을 17차시로 구성한 온라인 스페인어 강좌입니다.",
+      "url": "https://www.gseek.kr/course/online/foreign-languages/other-languages/spanish-speaking-basics",
+      "applyUrl": "https://www.gseek.kr/course/online/foreign-languages/other-languages/spanish-speaking-basics",
+      "verifiedAt": "2026-11-16",
+      "sourceNote": "경기도평생학습포털 GSEEK 강좌 및 서비스 소개 확인(2026-11-16). 17차시(4시간 20분), 초급, 신청일로부터 60일, 수료 기준 60% 이상. GSEEK 온라인 학습은 회원가입·로그인 없이 무료로 수강할 수 있고, 수료증 발급에는 회원가입이 필요하다.",
+      "enrollment": "open"
+    }
+  ],
+  "selfStudy": [
+    {
       "id": "edx-basic-spanish-1",
       "title": "Basic Spanish 1: Getting Started",
       "provider": "Universitat Politècnica de València · edX",
@@ -119,23 +139,6 @@
       "applyUrl": "https://www.bbc.co.uk/languages/spanish/",
       "verifiedAt": "2026-11-16",
       "sourceNote": "BBC Languages 스페인어 페이지 확인(2026-11-16). BBC가 공개한 무료 학습 아카이브 자료다."
-    },
-    {
-      "id": "gseek-spanish-basics",
-      "title": "말문이 트이는 블라블라 스페인어",
-      "provider": "경기도평생학습포털 GSEEK",
-      "mode": "online",
-      "costType": "free",
-      "costLabel": "무료 · 수료증은 회원가입",
-      "level": "초급",
-      "audience": "온라인 기초 회화 과정을 찾는 성인",
-      "schedule": "17차시 · 신청일로부터 60일",
-      "location": "온라인",
-      "summary": "여행·일상 상황별 회화와 기초 문법을 17차시로 구성한 온라인 스페인어 강좌입니다.",
-      "url": "https://www.gseek.kr/course/online/foreign-languages/other-languages/spanish-speaking-basics",
-      "applyUrl": "https://www.gseek.kr/course/online/foreign-languages/other-languages/spanish-speaking-basics",
-      "verifiedAt": "2026-11-16",
-      "sourceNote": "경기도평생학습포털 GSEEK 강좌 및 서비스 소개 확인(2026-11-16). 17차시(4시간 20분), 초급, 신청일로부터 60일, 수료 기준 60% 이상. GSEEK 온라인 학습은 회원가입·로그인 없이 무료로 수강할 수 있고, 수료증 발급에는 회원가입이 필요하다."
     }
   ]
 }

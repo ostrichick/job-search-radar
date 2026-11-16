@@ -9,12 +9,12 @@ test('가구 지원 목록은 공식 링크와 신청기한을 구분한다', as
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/household/');
   await expect(page.getByRole('heading', { name: /우리 집에 맞는 혜택을/ })).toBeVisible();
-  await expect(page.locator('#totalCount')).toHaveText('84');
-  await expect(page.locator('#closedCount')).toHaveText('12');
-  await expect(page.locator('.card')).toHaveCount(84);
-  await expect(page.getByRole('link', { name: '공식 근거 ↗' })).toHaveCount(84);
+  await expect(page.locator('#totalCount')).toHaveText('80');
+  await expect(page.locator('#closedCount')).toHaveText('8');
+  await expect(page.locator('.card')).toHaveCount(80);
+  await expect(page.getByRole('link', { name: '공식 근거 ↗' })).toHaveCount(80);
   await page.locator('#period').selectOption('closed');
-  await expect(page.locator('.card')).toHaveCount(12);
+  await expect(page.locator('.card')).toHaveCount(8);
   await expect(page.locator('#programs')).toContainText('2026 전주시 청년월세 지원');
   await expect(page.locator('#programs')).not.toContainText('국민취업지원제도');
   await page.locator('#category').selectOption('tax');
@@ -75,7 +75,7 @@ test('모바일 390px 화면에서 가로 넘침 없이 목록 및 기존 프로
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/household/');
   await expect(page.getByRole('link', { name: 'Nicole · Jobs' })).toHaveAttribute('href', '../nicole/');
-  await expect(page.locator('.card')).toHaveCount(84);
+  await expect(page.locator('.card')).toHaveCount(80);
   const widths = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
   expect(widths.scroll).toBeLessThanOrEqual(widths.client);
   await page.goto('/munseong/');

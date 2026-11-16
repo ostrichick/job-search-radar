@@ -1,7 +1,9 @@
 const $ = (id) => document.getElementById(id);
 const MODE_LABELS = { online: '온라인', offline: '오프라인', hybrid: '온·오프라인' };
 const COST_LABELS = { free: '무료', low: '저가', paid: '유료', varies: '가격 변동' };
+const ENROLLMENT_LABELS = { open: '접수 중', upcoming: '접수 예정', closed: '모집 마감', past: '지난 과정' };
 let courses = [];
+let selfStudy = [];
 let language = 'ko';
 const DATA_URLS = { ko: './data/classes.json', es: './data/spanish-classes.json' };
 
@@ -46,6 +48,12 @@ function render() {
     const card = node.querySelector('.class-card');
     card.dataset.courseId = course.id;
     const chips = node.querySelector('.class-chips');
+    const enrollmentChip = document.createElement('span');
+    enrollmentChip.className = `chip enrollment ${course.enrollment || ''}`;
+    enrollmentChip.textContent = ENROLLMENT_LABELS[course.enrollment] || '';
+    enrollmentChip.hidden = !course.enrollment;
+    chips.prepend(enrollmentChip);
+    if (course.enrollment === 'closed' || course.enrollment === 'past') card.classList.add('is-muted');
     const modeChip = chips.querySelector('.mode');
     modeChip.textContent = MODE_LABELS[course.mode] || course.mode;
     const costChip = chips.querySelector('.cost');
@@ -79,6 +87,38 @@ function renderStats() {
   $('freeCount').textContent = String(courses.filter((course) => course.costType === 'free').length);
 }
 
+function selfStudySection() {
+  let section = $('selfStudy');
+  if (section) return section;
+  section = document.createElement('section');
+  section.id = 'selfStudy';
+  section.className = 'panel self-study';
+  section.innerHTML = '<div class="section-head"><div><p class="kicker">SELF-STUDY</p>'
+    + '<h2>상시 자습 자료</h2>'
+    + '<p>모집 기간 없이 언제든 이용하는 자습용 사이트입니다. 정규 강좌와 분리해 표시합니다.</p>'
+    + '</div></div><ul class="self-study-list"></ul>';
+  document.querySelector('main').append(section);
+  return section;
+}
+
+function renderSelfStudy() {
+  const list = selfStudySection().querySelector('.self-study-list');
+  list.replaceChildren();
+  for (const item of selfStudy) {
+    const li = document.createElement('li');
+    const link = document.createElement('a');
+    link.href = item.applyUrl || item.url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = item.title;
+    const meta = document.createElement('span');
+    meta.textContent = [item.provider, item.costLabel || COST_LABELS[item.costType], item.level].filter(Boolean).join(' · ');
+    li.append(link, meta);
+    list.append(li);
+  }
+  selfStudySection().hidden = selfStudy.length === 0;
+}
+
 async function loadLanguage(nextLanguage) {
   language = nextLanguage;
   for (const button of document.querySelectorAll('[data-language]')) {
@@ -92,12 +132,16 @@ async function loadLanguage(nextLanguage) {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
     courses = Array.isArray(data.courses) ? data.courses : [];
+    selfStudy = Array.isArray(data.selfStudy) ? data.selfStudy : [];
     $('sourceDate').textContent = data.researchedAt || '확인일 미상';
     renderStats();
     render();
+    renderSelfStudy();
   } catch (error) {
     courses = [];
+    selfStudy = [];
     renderStats();
+    renderSelfStudy();
     $('resultCount').textContent = '강의 목록을 불러오지 못했습니다';
     $('empty').hidden = false;
     $('empty').querySelector('p').textContent = `공식 자료를 불러오지 못했습니다. (${error.message})`;
