@@ -1,52 +1,5 @@
-/* Household theme: token overrides only. Component rules live below. */
-:root {
-  --surface-canvas: #f4f5f0;
-  --surface-subtle: #fcfdf9;
-  --surface-muted: #f0f6f1;
-  --chrome-bg: #102723;
-  --chrome-text: #f1f3e9;
-  --chrome-text-muted: #c5d4cb;
-  --chrome-border: #597169;
-  --chrome-border-subtle: #597169;
-  --chrome-border-strong: #c6dfba;
-  --chrome-glow: #436b4b;
-  --surface-inverse: #184738;
-  --surface-toast: #184738;
-  --text-on-inverse: #fff;
-  --text-strong: #18302c;
-  --text-body: #234b3d;
-  --text-muted: #486452;
-  --text-subtle: #597066;
-  --text-faint: #7c877e;
-  --text-accent: #266243;
-  --text-accent-strong: #153329;
-  --text-accent-muted: #446148;
-  --border-subtle: #e1e8e1;
-  --border-base: #dce4db;
-  --border-strong: #cddbcf;
-  --border-accent: #c6dfba;
-  --border-accent-strong: #afccad;
-  --accent: #d8f09c;
-  --accent-hover: #d8f09c;
-  --accent-soft: #eef4ed;
-  --accent-soft-strong: #e8f0d9;
-  --accent-ink: #153329;
-  --accent-marker: #52806a;
-  --focus-ring: #83ad43;
-  --status-ok-soft: #daf0df;
-  --status-ok-border: #c6dfba;
-  --status-ok-text: #245b3d;
-  --status-warn-soft: #fff1d6;
-  --status-warn-border: #f1dbad;
-  --status-warn-strong: #b3883c;
-  --status-warn-text: #79571f;
-  --status-danger-soft: #f4e6e2;
-  --status-danger-border: #f4e6e2;
-  --status-danger-text: #8d4234;
-  --state-muted-bg: #e7e9e7;
-  --state-muted-border: #c9cdc8;
-  --state-muted-text: #6b726c;
-}
+/* Household / classes page rules. The dashboard uses one shared palette
+   (public/shared/tokens.css); shared components live in public/shared/app-shell.css. */
 
 :root { font-family: Pretendard,"Noto Sans KR","Malgun Gothic",system-ui,sans-serif; color: var(--text-strong); background: var(--surface-canvas); font-synthesis: none}
 * { box-sizing: border-box}

@@ -1,46 +1,5 @@
-/* Nicole's theme; layout and component structure come from Munseong's stylesheet.
-   Only token overrides and rules that genuinely differ belong here. */
-:root {
-  --surface-canvas: #f5f9f4;
-  --surface-subtle: #f7fbf6;
-  --surface-muted: #e8f0e6;
-  --chrome-bg: #edf5ec;
-  --chrome-text: #234533;
-  --chrome-text-muted: #617767;
-  --chrome-border: #c4d8c5;
-  --chrome-border-subtle: #c4d8c5;
-  --chrome-border-strong: #649a70;
-  --chrome-button-bg: #f9fcf8;
-  --chrome-button-hover-bg: #e1f0df;
-  --surface-inverse: #215e3e;
-  --surface-toast: #1a4d32;
-  --text-on-inverse: #fff;
-  --text-strong: #21392b;
-  --text-body: #355f41;
-  --text-muted: #457253;
-  --text-subtle: #536b58;
-  --text-faint: #617767;
-  --text-accent: #245f3b;
-  --text-accent-strong: #164b30;
-  --text-accent-muted: #567262;
-  --border-subtle: #e2ece1;
-  --border-base: #dce8db;
-  --border-strong: #cddfcd;
-  --border-accent: #c9e0c6;
-  --border-accent-strong: #b5cfba;
-  --accent: #215e3e;
-  --accent-hover: #164b30;
-  --accent-soft: #eaf5e8;
-  --accent-soft-strong: #e1f3dc;
-  --accent-ink: #fff;
-  --accent-marker: #2d7b4b;
-  --focus-ring: #4a9360;
-  --status-ok-soft: #e0f4df;
-  --status-ok-border: #c9e0c6;
-  --status-ok-text: #245d35;
-  --toast-action-bg: #d5edcc;
-  --toast-action-ink: #19462f;
-}
+/* Nicole's page rules. Layout and components come from Munseong + the shared
+   app shell; the dashboard uses one shared palette across all tabs. */
 
 .saved-only-field .check { display: flex; align-items: center; gap: 8px; min-height: 44px; margin: 0; }
 .saved-only-field .check input { width: 18px; height: 18px; min-height: 18px; accent-color: var(--accent-marker); }

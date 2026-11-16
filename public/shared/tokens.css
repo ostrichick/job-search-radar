@@ -100,6 +100,36 @@
   --toast-action-bg: #d8ff65;
   --toast-action-ink: #18200b;
 
+  /* typography */
+  --font-sans: Pretendard, Inter, "Noto Sans KR", system-ui, sans-serif;
+  --text-display: clamp(32px, 4.5vw, 56px);
+  --text-title: 22px;
+  --text-heading: 19px;
+  --text-body-size: 14px;
+  --text-caption: 12px;
+  --leading-tight: 1.15;
+  --leading-body: 1.6;
+
+  /* spacing (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* layout */
+  --page-pad-x: clamp(20px, 5vw, 76px);
+  --content-width: 1500px;
+  --control-height: 44px;
+
+  /* chrome panels (status cards inside the dark header) */
+  --chrome-panel-bg: rgb(255 255 255 / 6%);
+  --chrome-panel-border: rgb(248 245 234 / 16%);
+
   /* motion */
   --transition-fast: .15s ease;
 }

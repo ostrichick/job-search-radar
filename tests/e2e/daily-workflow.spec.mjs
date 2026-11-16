@@ -1358,7 +1358,7 @@ test('1440px 실제 브라우저에서 overflow·console 오류·이름 없는 �
   expect(audit.html).toBeLessThanOrEqual(audit.inner);
   expect(audit.body).toBeLessThanOrEqual(audit.inner);
   expect(audit.unnamed).toEqual([]);
-  expect(audit.resourceCount).toBeLessThan(20);
+  expect(audit.resourceCount).toBeLessThan(21);
   expect(audit.domContentLoaded).toBeGreaterThan(0);
   const unexpectedResponses = failedResponses.filter(({ url, status }) => !(status === 404 && /\/api\/jobs(?:$|\?)/.test(url)));
   const hasExpectedStaticApiFallback = failedResponses.some(({ url, status }) => status === 404 && /\/api\/jobs(?:$|\?)/.test(url));

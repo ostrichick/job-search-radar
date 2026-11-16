@@ -74,16 +74,16 @@ test('별도 IndexedDB로 가구 정보와 신청 메모를 저장하고 새로�
 test('모바일 390px 화면에서 가로 넘침 없이 목록 및 기존 프로필 이동', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/household/');
-  await expect(page.getByRole('link', { name: 'Nicole · Jobs' })).toHaveAttribute('href', '../nicole/');
+  await expect(page.getByRole('link', { name: 'Nicole' })).toHaveAttribute('href', '../nicole/');
   await expect(page.locator('.card')).toHaveCount(80);
   const widths = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
   expect(widths.scroll).toBeLessThanOrEqual(widths.client);
   await page.goto('/munseong/');
-  await expect(page.getByRole('link', { name: '우리 집 지원' })).toHaveAttribute('href', '../household/');
+  await expect(page.getByRole('link', { name: '우리 집 복지' })).toHaveAttribute('href', '../household/');
   const munseongWidth = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(munseongWidth).toBeLessThanOrEqual(0);
   await page.goto('/nicole/');
-  await expect(page.getByRole('link', { name: 'Household benefits' })).toHaveAttribute('href', '../household/');
+  await expect(page.getByRole('link', { name: 'Benefits' })).toHaveAttribute('href', '../household/');
   const nicoleWidth = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(nicoleWidth).toBeLessThanOrEqual(0);
 });
