@@ -59,7 +59,7 @@ function render() {
     node.querySelector('.location').textContent = course.location || '온라인';
     node.querySelector('.audience').textContent = course.audience || '공식 안내 확인';
     node.querySelector('.source-note').textContent = course.sourceNote || '';
-    node.querySelector('.verify-note').textContent = `확인일 ${course.verifiedAt} · 모집 기간·수강료·대상은 원문에서 다시 확인`;
+    node.querySelector('.verify-note').textContent = `공식 원문 확인일 ${course.verifiedAt}`;
     const official = node.querySelector('.official');
     official.href = course.url;
     const apply = node.querySelector('.apply');
