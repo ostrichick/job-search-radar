@@ -2015,6 +2015,140 @@ assert.notEqual(priorUnknown.id, freshKorea.id, 'eligibility changes can legitim
 const carried = carryForwardLegacyIds([freshKorea], [priorUnknown])[0];
 assert.ok(carried.legacyIds.includes(priorUnknown.id), 'previous stable id must remain an alias for client state migration');
 
+const coupangJeonju = normalizeJob({
+  ...base,
+  id: 'coupang-jeonju',
+  source: '잡코리아',
+  company: '쿠팡로지스틱스서비스(유)',
+  title: '쿠팡CLS 현장사무직(인사/행정/급여 담당자)채용',
+  location: '전북 전주시',
+  workAddress: '전북 전주시',
+  remote: false,
+  workplaceMode: 'onsite',
+  countryCode: 'KR',
+  salary: '연봉 35,400,000원',
+  postedAt: '2026-11-13T00:00:00.000Z',
+  url: 'https://www.jobkorea.co.kr/Recruit/GI_Read/50357470'
+});
+const coupangWanju = normalizeJob({
+  ...coupangJeonju,
+  id: 'coupang-wanju',
+  company: '쿠팡로지스틱스서비스 유한회사',
+  location: '전북 완주군',
+  workAddress: '전북 완주군',
+  salary: '연봉 35,400,000원',
+  url: 'https://www.jobkorea.co.kr/Recruit/GI_Read/50357481'
+});
+const mergedCoupangCities = dedupe([coupangJeonju, coupangWanju]);
+assert.equal(mergedCoupangCities.length, 1,
+  'the same local role with equal pay and company aliases must merge across adjacent city-level postings');
+assert.equal(mergedCoupangCities[0].duplicateCount, 2);
+
+const coupangAlbaExact = normalizeJob({
+  ...coupangWanju,
+  id: 'coupang-alba-exact',
+  source: '알바천국',
+  location: '전북특별자치도 완주군 봉동읍 완주산단2로 282-22 쿠팡',
+  workAddress: '전북특별자치도 완주군 봉동읍 완주산단2로 282-22 쿠팡',
+  salary: '연봉 35,400,000원',
+  locationEvidenceLevel: 'source_structured',
+  postedAt: '2026-10-27T00:00:00.000Z',
+  url: 'https://www.alba.co.kr/job/Detail?adid=147789915'
+});
+const coupangAlbaVariant = normalizeJob({
+  ...coupangAlbaExact,
+  id: 'coupang-alba-variant',
+  title: '쿠팡CLS/현장사무직/인사/행정/급여담당자/초보/주말/평일/야간/완주군/전주',
+  salary: '연봉 35,400,000원',
+  url: 'https://www.alba.co.kr/job/Detail?adid=147790066'
+});
+const mergedCoupangSameSource = dedupe([coupangAlbaExact, coupangAlbaVariant]);
+assert.equal(mergedCoupangSameSource.length, 1,
+  'same-source local variants at the same address and pay must merge');
+assert.equal(mergedCoupangSameSource[0].duplicateCount, 2);
+
+const seoyoungOffice = normalizeJob({
+  ...base,
+  id: 'seoyoung-office',
+  source: '잡코리아',
+  company: '㈜서영엔지니어링',
+  title: '감리단 사무실 현장 사무보조 계약직 모집(전라북도 전주시)',
+  location: '전북 전주시 덕진구 기린대로 910',
+  workAddress: '전북 전주시 덕진구 기린대로 910',
+  remote: false,
+  workplaceMode: 'onsite',
+  countryCode: 'KR',
+  postedAt: '2026-11-12T00:00:00.000Z',
+  deadlineType: 'fixed',
+  deadlineDate: '2026-11-22',
+  url: 'https://www.jobkorea.co.kr/Recruit/GI_Read/50351474'
+});
+const seoyoungIncruit = normalizeJob({
+  ...seoyoungOffice,
+  id: 'seoyoung-incruit',
+  source: '인크루트',
+  company: '(주)서영엔지니어링',
+  location: '전북특별자치도 전주시 덕진구',
+  workAddress: '',
+  postedAt: '2026-11-12T00:11:44.000Z',
+  deadlineType: 'rolling',
+  deadlineDate: '',
+  url: 'https://job.incruit.com/jobdb_info/jobpost.asp?job=2611120000209'
+});
+const mergedSeoyoung = dedupe([seoyoungOffice, seoyoungIncruit]);
+assert.equal(mergedSeoyoung.length, 1,
+  'same company/title reposted at city and district level on the same day must merge');
+assert.equal(mergedSeoyoung[0].duplicateCount, 2);
+
+const arbeitnowMirrorA = normalizeJob({
+  ...base,
+  id: 'arbeitnow-mirror-a',
+  source: 'Arbeitnow',
+  company: 'Pavago',
+  title: 'SEO & Digital Marketing Specialist',
+  location: 'Netherlands',
+  remote: true,
+  workplaceMode: 'remote',
+  countryCode: 'NL',
+  url: 'https://www.arbeitnow.nl/jobs/companies/pavago/remote-seo-digital-marketing-specialist-netherlands-5151'
+});
+const arbeitnowMirrorB = normalizeJob({
+  ...arbeitnowMirrorA,
+  id: 'arbeitnow-mirror-b',
+  location: 'France',
+  countryCode: 'FR',
+  url: 'https://www.arbeitnow.fr/jobs/companies/pavago/remote-seo-digital-marketing-specialist-france-101137'
+});
+const mergedArbeitnowMirrors = dedupe([arbeitnowMirrorA, arbeitnowMirrorB]);
+assert.equal(mergedArbeitnowMirrors.length, 1,
+  'remote Arbeitnow country mirrors must collapse to one posting');
+assert.equal(mergedArbeitnowMirrors[0].duplicateCount, 2);
+
+const officialWorldwideRemote = normalizeJob({
+  ...base,
+  id: 'official-worldwide',
+  source: 'Meridial',
+  sourceKind: 'official_ats',
+  company: 'Meridial',
+  title: 'Korean Language Specialist - Freelance AI Trainer Project',
+  location: 'World Wide - Remote',
+  remote: true,
+  workplaceMode: 'remote',
+  countryCode: '',
+  url: 'https://job-boards.eu.greenhouse.io/agency/jobs/4629001101'
+});
+const officialKoreaRemote = normalizeJob({
+  ...officialWorldwideRemote,
+  id: 'official-korea',
+  location: 'South Korea',
+  countryCode: 'KR',
+  url: 'https://job-boards.eu.greenhouse.io/agency/jobs/4603948101'
+});
+const mergedOfficialScopes = dedupe([officialWorldwideRemote, officialKoreaRemote]);
+assert.equal(mergedOfficialScopes.length, 1,
+  'same official remote role duplicated for worldwide and Korea eligibility must merge');
+assert.equal(mergedOfficialScopes[0].duplicateCount, 2);
+
 const now = Date.parse('2026-10-04T00:00:00Z');
 const disappeared = { ...priorUnknown, id: 'job:old-missing', missingSince: '2026-10-03T00:00:00Z' };
 assert.equal(carryRecentlyMissing([], [{ ...disappeared, listingStatus: 'expired' }], now).length, 0,

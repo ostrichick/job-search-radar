@@ -346,7 +346,12 @@ export function dedupeJobs(jobs) {
   return jobs.filter((job) => {
     const cleanUrl = safePublicUrl(job.url);
     if (!cleanUrl || !job.title || !job.company || !job.id || byId.has(job.id) || byUrl.has(cleanUrl)) return false;
-    const roleKey = `${safeText(job.company, 200).toLowerCase()}|${safeText(job.title, 200).toLowerCase()}|${safeText(job.location, 100).toLowerCase()}`;
+    const company = safeText(job.company, 200).toLowerCase();
+    const title = safeText(job.title, 200).toLowerCase();
+    const remote = job.workplaceMode === 'remote' || job.market === 'online';
+    const roleKey = remote
+      ? `${company}|${title}|remote`
+      : `${company}|${title}|${safeText(job.location, 100).toLowerCase()}`;
     if (byRole.has(roleKey)) return false;
     byId.add(job.id); byUrl.add(cleanUrl); byRole.add(roleKey);
     return true;

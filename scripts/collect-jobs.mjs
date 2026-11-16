@@ -1150,6 +1150,10 @@ function canonicalLocalCompany(value) {
   return normalized;
 }
 
+function canonicalDedupeCompany(value) {
+  return canonicalCompany(canonicalLocalCompany(value));
+}
+
 function canonicalDedupeTitle(job) {
   let title = canonicalTitle(job?.title);
   if (!localDomesticBoardSources.has(job?.source) || !domesticLocationKey(job)) return title;
@@ -1265,6 +1269,70 @@ function localCrossPlatformDuplicateCompatible(a, b) {
     if (bKeywords.has(keyword)) overlap += 1;
   }
   return overlap >= 2;
+}
+
+function isArbeitnowCountryMirror(job) {
+  if (job?.source !== 'Arbeitnow' || job?.workplaceMode !== 'remote') return false;
+  try {
+    return /(^|\.)arbeitnow\.[a-z.]+$/.test(new URL(job.url).hostname.toLowerCase());
+  } catch {
+    return false;
+  }
+}
+
+function isWorldwideKoreaRemoteDuplicate(a, b) {
+  if (!a?.remote || !b?.remote) return false;
+  if (a.source !== b.source || a.sourceKind !== 'official_ats' || b.sourceKind !== 'official_ats') return false;
+  const eligibility = new Set([a.eligibilityCode, b.eligibilityCode]);
+  return eligibility.has('worldwide') && eligibility.has('korea');
+}
+
+function localSalaryKey(job) {
+  const salary = job?.salaryInfo || {};
+  return salary.currency && Number.isFinite(Number(salary.min)) && salary.period
+    ? [salary.currency, Number(salary.min), Number(salary.max ?? salary.min), salary.period].join(':')
+    : '';
+}
+
+function localPostedDay(job) {
+  const postedAt = Date.parse(job?.postedAt || '');
+  return Number.isFinite(postedAt) ? new Date(postedAt).toISOString().slice(0, 10) : '';
+}
+
+function sameDomesticPosting(a, b) {
+  if (!localDomesticBoardSources.has(a?.source) || !localDomesticBoardSources.has(b?.source)) return false;
+  const regionA = a.domesticRegion || domesticRegionFor(a);
+  const regionB = b.domesticRegion || domesticRegionFor(b);
+  if (!regionA?.province || regionA.province !== regionB?.province) return false;
+  const companyA = canonicalDedupeCompany(a.company);
+  const companyB = canonicalDedupeCompany(b.company);
+  if (!companyA || companyA !== companyB) return false;
+  const titleA = canonicalDedupeTitle(a);
+  const titleB = canonicalDedupeTitle(b);
+  if (!titleA || titleA !== titleB) return false;
+  const categoryA = text(a.category);
+  const categoryB = text(b.category);
+  if (!categoryA || categoryA === '기타' || categoryA !== categoryB) return false;
+
+  const addressA = regionA.precision === 'address' ? canonicalDomesticAddress(a.workAddress || a.location) : '';
+  const addressB = regionB.precision === 'address' ? canonicalDomesticAddress(b.workAddress || b.location) : '';
+  if (addressA && addressB && addressA !== addressB) return false;
+
+  const salaryA = localSalaryKey(a);
+  const salaryB = localSalaryKey(b);
+  const oneAddress = regionA.precision === 'address' || regionB.precision === 'address';
+  if (salaryA && salaryB && salaryA !== salaryB && !oneAddress) return false;
+
+  const deadlineA = a.deadlineType === 'fixed' ? a.deadlineDate : '';
+  const deadlineB = b.deadlineType === 'fixed' ? b.deadlineDate : '';
+  const sameSalary = Boolean(salaryA && salaryA === salaryB);
+  const sameAddress = Boolean(addressA && addressA === addressB);
+  const sameDeadline = Boolean(deadlineA && deadlineA === deadlineB);
+  const samePostedDay = Boolean(localPostedDay(a) && localPostedDay(a) === localPostedDay(b));
+
+  if (sameSalary || sameAddress) return true;
+  if (oneAddress) return true;
+  return Boolean(sameDeadline && samePostedDay);
 }
 
 function domesticLocationKey(job) {
@@ -2664,16 +2732,20 @@ async function collectChatGptResearch() {
 function dedupe(jobs) {
   const groups = new Map();
   for (const job of jobs) {
-    const company = canonicalCompany(job.company);
+    const company = canonicalDedupeCompany(job.company);
     const title = canonicalDedupeTitle(job);
     const fallback = normalizedUrl(job.url);
     const baseKey = company && company !== '회사 미상' && title ? `${company}::${title}` : fallback;
     const clusters = groups.get(baseKey) ?? [];
     const compatible = clusters.find((cluster) => {
       const current = cluster[0];
+      if (isArbeitnowCountryMirror(current) && isArbeitnowCountryMirror(job)) return true;
+      if (isWorldwideKoreaRemoteDuplicate(current, job)) return true;
       const currentDomesticKey = domesticLocationKey(current);
       const jobDomesticKey = domesticLocationKey(job);
-      if (currentDomesticKey && jobDomesticKey && currentDomesticKey !== jobDomesticKey) return false;
+      if (currentDomesticKey && jobDomesticKey && currentDomesticKey !== jobDomesticKey) {
+        return sameDomesticPosting(current, job);
+      }
       if (current.url === job.url) return true;
       if (currentDomesticKey || jobDomesticKey) {
         return Boolean(currentDomesticKey) === Boolean(jobDomesticKey)
@@ -2718,11 +2790,13 @@ function dedupe(jobs) {
         return (Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0);
       });
       const primary = { ...cluster[0] };
-      primary.legacyIds = [...new Set(cluster.map((job) => job.id))];
+      const aliases = new Set(cluster.flatMap((job) => [job.id, ...(job.legacyIds || [])]).filter(Boolean));
       primary.sources = [...new Set(cluster.map((job) => job.source))];
       primary.alternateUrls = [...new Set(cluster.map((job) => job.url).filter((url) => url && url !== primary.url))];
       primary.duplicateCount = cluster.length;
       primary.id = stableJobId(primary);
+      aliases.delete(primary.id);
+      primary.legacyIds = [...aliases];
       if (cluster.some((job) => job.listingStatus === 'verified_open')) {
         primary.listingStatus = 'verified_open';
         primary.listingLabel = '모집 확인됨';
@@ -2751,8 +2825,7 @@ function dedupe(jobs) {
       else compatibleClusters.push([job]);
     }
     for (const cluster of compatibleClusters) {
-      const representedSources = new Set(cluster.flatMap((job) => job.sources?.length ? job.sources : [job.source]));
-      if (cluster.length < 2 || representedSources.size < 2) {
+      if (cluster.length < 2) {
         passthrough.push(...cluster);
         continue;
       }
@@ -2775,6 +2848,15 @@ function dedupe(jobs) {
     }
   }
   return passthrough;
+}
+
+function dedupeUntilStable(jobs) {
+  let current = jobs;
+  for (;;) {
+    const next = dedupe(current);
+    if (next.length === current.length) return next;
+    current = next;
+  }
 }
 
 function keepInFeed(job) {
@@ -3130,8 +3212,9 @@ async function collectJobsOnce({ includeManual = true, persist = true, previousJ
       (job.source === source || (job.sources || []).includes(source))
       && isDefaultRecommendation(job)).length;
   }
+  const carriedJobs = dedupeUntilStable(carryRecentlyMissing(currentJobs, carryFallbackJobs, now));
   const uniqueJobs = mergeSameIdJobs(refreshTimeBasedEvidence(
-    applySourceMetricsToJobs(carryRecentlyMissing(currentJobs, carryFallbackJobs, now), sourceMetrics),
+    applySourceMetricsToJobs(carriedJobs, sourceMetrics),
     now
   )
     .filter((job) => !isShortTermHourlyJob(job))

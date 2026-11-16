@@ -242,6 +242,16 @@ test('dedupe normalizes tracking URLs and duplicate company-role-location', () =
   assert.deepEqual(dedupeJobs(rows).map((r) => r.id), ['1', '4']);
 });
 
+test('dedupe collapses remote country mirrors but keeps onsite branches distinct', () => {
+  const rows = [
+    { id: 'remote-ch', url: 'https://www.arbeitnow.ch/jobs/1', title: 'SEO Specialist', company: 'Pavago', location: 'Switzerland', workplaceMode: 'remote' },
+    { id: 'remote-fr', url: 'https://www.arbeitnow.fr/jobs/2', title: 'SEO Specialist', company: 'Pavago', location: 'France', workplaceMode: 'remote' },
+    { id: 'onsite-seoul', url: 'https://example.com/seoul', title: 'Marketing Manager', company: 'Acme', location: 'Seoul', workplaceMode: 'onsite' },
+    { id: 'onsite-busan', url: 'https://example.com/busan', title: 'Marketing Manager', company: 'Acme', location: 'Busan', workplaceMode: 'onsite' },
+  ];
+  assert.deepEqual(dedupeJobs(rows).map((r) => r.id), ['remote-ch', 'onsite-seoul', 'onsite-busan']);
+});
+
 test('historical jobs remain visible when an upstream feed no longer returns them', () => {
   const earlier = '2026-10-01T00:00:00.000Z';
   const next = '2026-10-19T00:00:00.000Z';
