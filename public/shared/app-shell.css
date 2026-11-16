@@ -404,15 +404,19 @@ footer { margin-top: var(--space-8); color: var(--text-faint); font-size: var(--
 }
 
 @media (max-width: 760px) {
-  .topbar, .hero { padding: 20px var(--page-pad-x) 28px; }
+  .topbar, .hero { padding: 18px var(--page-pad-x) 22px; }
   .topbar { flex-direction: column; align-items: stretch; gap: var(--space-4); }
   .hero-content { flex-direction: column; align-items: stretch; gap: var(--space-5); margin-top: var(--space-6); }
   .hero-aside { flex: 1 1 auto; }
   .profile-switch, .sites { margin-bottom: var(--space-5); }
   .profile-switch a, .sites a { min-height: 34px; padding: 0 13px; font-size: 12px; }
+  .eyebrow { margin-bottom: var(--space-2); }
+  .lede, .subtitle { margin-top: var(--space-3); }
   .topbar .eyebrow { display: block; }
+  .actions { gap: 6px; }
+  .market-tabs, .language-switch { margin-bottom: var(--space-3); }
   h1 { letter-spacing: -.035em; }
-  main { padding-top: var(--space-5); }
+  main { padding-top: var(--space-4); }
   .filters, .class-filters, .profile-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .search-field { grid-column: 1 / -1; }
   .job-grid, .class-grid, .cards { grid-template-columns: 1fr; }
