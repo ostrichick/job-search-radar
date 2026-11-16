@@ -1,0 +1,34 @@
+import { test, expect } from '@playwright/test';
+
+test('한국어 강의 탭은 온라인·전주 오프라인 강의와 공식 링크를 보여준다', async ({ page }) => {
+  await page.goto('/classes/');
+  await expect(page.getByRole('heading', { name: /한국어, 어디서/ })).toBeVisible();
+  await expect(page.locator('#sourceDate')).toHaveText('2026-11-16');
+  await expect(page.locator('#totalCount')).toHaveText('19');
+  await expect(page.locator('.class-card')).toHaveCount(19);
+  await expect(page.locator('#courses')).toContainText('온라인 세종학당');
+  await expect(page.locator('#courses')).toContainText('전주시가족센터 한국어 교육');
+  await expect(page.locator('.class-card .official').first()).toHaveAttribute('href', /^https:\/\//);
+});
+
+test('한국어 강의 탭은 390px에서 가로로 넘치지 않는다', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/classes/');
+  await expect(page.locator('.class-card')).toHaveCount(19);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+});
+
+test('한국어 강의 탭은 무료·온라인·전주 오프라인 필터를 적용한다', async ({ page }) => {
+  await page.goto('/classes/');
+  await page.locator('#cost').selectOption('free');
+  await expect(page.locator('.class-card')).toHaveCount(12);
+  await expect(page.locator('#resultCount')).toHaveText('12개 강의');
+  await page.locator('#cost').selectOption('');
+  await page.locator('#mode').selectOption('offline');
+  await expect(page.locator('.class-card')).toHaveCount(10);
+  await expect(page.locator('#courses')).toContainText('전북대학교 한국어학당 정규과정');
+  await page.locator('#mode').selectOption('');
+  await page.locator('#query').fill('세종');
+  await expect(page.locator('.class-card')).toHaveCount(6);
+  await expect(page.locator('#courses')).toContainText('세종학당');
+});

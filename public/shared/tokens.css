@@ -1,0 +1,105 @@
+/*
+ * Design tokens (single semantic layer).
+ * Source of truth for colour, radius and elevation. A page keeps its identity by
+ * overriding these variables in its own stylesheet :root block; component rules
+ * must not hard-code colours. See docs/DESIGN.md.
+ * Default values = Munseong profile (warm neutral + lime accent).
+ */
+:root {
+  color-scheme: light;
+
+  /* surfaces */
+  --surface-canvas: #f4f3ef;
+  --surface-card: #fff;
+  --surface-subtle: #fafbf7;
+  --surface-muted: #f2f3ed;
+  --surface-floating: rgb(255 255 255 / 97%);
+  --overlay: rgb(12 16 14 / 64%);
+
+  /* top chrome (page header) */
+  --chrome-bg: #161c1a;
+  --chrome-text: #f8f5ea;
+  --chrome-text-muted: #bfc9c4;
+  --chrome-border: #6c7670;
+  --chrome-border-subtle: rgb(248 245 234 / 28%);
+  --chrome-border-strong: rgb(248 245 234 / 60%);
+  --chrome-glow: transparent;
+  --chrome-button-bg: transparent;
+  --chrome-button-hover-bg: transparent;
+
+  /* inverse (dark pills, toast) */
+  --surface-inverse: #161c1a;
+  --surface-toast: #161c1a;
+  --text-on-inverse: #f8f5ea;
+
+  /* text */
+  --text-strong: #171717;
+  --text-body: #424740;
+  --text-muted: #555a54;
+  --text-subtle: #676a65;
+  --text-faint: #747974;
+  --text-accent: #365117;
+  --text-accent-strong: #253309;
+  --text-accent-muted: #5c674e;
+
+  /* borders */
+  --border-subtle: #ecece6;
+  --border-base: #deddd7;
+  --border-strong: #d2d1ca;
+  --border-accent: #cfe0b5;
+  --border-accent-strong: #b9d18a;
+
+  /* accent */
+  --accent: #d8ff65;
+  --accent-hover: #d8ff65;
+  --accent-soft: #f3f9e8;
+  --accent-soft-strong: #e9f7dd;
+  --accent-ink: #18200b;
+  --accent-marker: #718b18;
+  --focus-ring: #9dbd31;
+
+  /* status: ok / warn / danger / info */
+  --status-ok-soft: #e9f7dd;
+  --status-ok-border: #cbd9a6;
+  --status-ok-text: #36591d;
+  --status-warn-soft: #fff8df;
+  --status-warn-border: #e3cf91;
+  --status-warn-strong: #b3883c;
+  --status-warn-text: #735513;
+  --status-danger-soft: #f7e4df;
+  --status-danger-border: #dfb6ad;
+  --status-danger-text: #7a3528;
+  --status-info-soft: #eef4f8;
+  --status-info-border: #bccfd8;
+  --status-info-text: #274d70;
+
+  /* muted states (reviewed / closed) */
+  --state-muted-bg: #f6f7f3;
+  --state-muted-border: #d8ddd3;
+  --state-muted-text: #6b726c;
+  --state-muted-bar: #aab1aa;
+
+  /* radii */
+  --radius-xs: 8px;
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-pill: 999px;
+
+  /* elevation */
+  --shadow-sm: 0 2px 8px rgb(22 28 26 / 12%);
+  --shadow-md: 0 10px 26px rgb(22 28 26 / 8%);
+  --shadow-lg: 0 8px 28px rgb(20 25 22 / 9%);
+  --shadow-toast: 0 12px 40px rgb(0 0 0 / 24%);
+  --shadow-dialog: 0 28px 80px rgb(0 0 0 / 30%);
+  --shadow-accent-ring: 0 0 0 5px rgb(216 240 156 / 15%);
+  --shadow-state-bar: inset 4px 0 0 #aab1aa;
+
+  /* toast action */
+  --toast-action-bg: #d8ff65;
+  --toast-action-ink: #18200b;
+
+  /* motion */
+  --transition-fast: .15s ease;
+}

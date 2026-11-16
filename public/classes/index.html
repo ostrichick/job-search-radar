@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102723">
+  <title>한국어 강의 레이더 | 전주</title>
+  <link rel="stylesheet" href="../shared/tokens.css">
+  <link rel="stylesheet" href="../household/household.css">
+  <link rel="stylesheet" href="./classes.css">
+  <script type="module" src="./classes.js"></script>
+</head>
+<body>
+  <header class="hero">
+    <nav class="sites" aria-label="사이트 이동">
+      <a href="../nicole/">Nicole · Jobs</a>
+      <a href="../munseong/">Munseong · Jobs</a>
+      <a href="../household/">우리 집 지원</a>
+      <a href="./" aria-current="page">한국어 강의</a>
+    </nav>
+    <div class="hero-content">
+      <div>
+        <p class="eyebrow">JEONJU · KOREAN LANGUAGE CLASSES</p>
+        <h1>한국어, 어디서<br><em>배울 수 있을까.</em></h1>
+        <p class="subtitle">온라인 세종학당·한국문화원부터 전주시가족센터와 전북대·전주대 한국어학당까지, 무료·저가 강의를 한곳에 모았습니다.</p>
+      </div>
+      <div class="hero-aside"><span class="pulse"></span><span>자료 확인일</span><strong id="sourceDate">-</strong><small>모집 기간·수강료는 원문에서 다시 확인</small></div>
+    </div>
+  </header>
+
+  <main>
+    <p class="notice">이 페이지는 공개된 공식 자료를 정리한 안내입니다. 학기·모집 기간·수강료·대상은 바뀔 수 있으므로 신청 전에 기관 원문을 확인하세요. 무료 과정도 교재비가 별도일 수 있습니다.</p>
+
+    <section class="overview" aria-label="강의 현황">
+      <div class="metric"><small>전체</small><strong id="totalCount">-</strong><span>정리한 강의</span></div>
+      <div class="metric"><small>온라인</small><strong id="onlineCount">-</strong><span>전 세계·원격</span></div>
+      <div class="metric"><small>전주 오프라인</small><strong id="offlineCount">-</strong><span>전주·전북 대면</span></div>
+      <div class="metric"><small>무료</small><strong id="freeCount">-</strong><span>무료로 시작</span></div>
+    </section>
+
+    <section class="panel tools">
+      <div class="section-head">
+        <div>
+          <p class="kicker">FILTER</p>
+          <h2>조건으로 찾기</h2>
+          <p>온라인/오프라인, 비용, 수준을 골라 보세요.</p>
+        </div>
+        <button id="reset" class="outline" type="button">조건 초기화</button>
+      </div>
+      <div class="class-filters">
+        <label>검색<input id="query" type="search" placeholder="세종학당, TOPIK, 전주대..." autocomplete="off"></label>
+        <label>수강 방식<select id="mode"><option value="">전체</option><option value="online">온라인</option><option value="offline">오프라인</option><option value="hybrid">온·오프라인</option></select></label>
+        <label>비용<select id="cost"><option value="">전체</option><option value="free">무료</option><option value="low">저가·무료 포함</option><option value="paid">유료</option><option value="varies">가격 변동</option></select></label>
+        <label>수준<select id="level"><option value="">전체</option><option value="입문">입문</option><option value="초급">초급</option><option value="중급">중급</option><option value="고급">고급</option><option value="교원">교원</option></select></label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <p class="kicker">COURSES</p>
+          <h2 id="resultCount">강의 목록</h2>
+          <p>카드를 열면 대상·일정·원문 근거를 볼 수 있습니다.</p>
+        </div>
+      </div>
+      <div id="courses" class="class-grid"></div>
+      <div id="empty" class="empty" hidden><p>조건에 맞는 강의가 없습니다. 필터를 넓혀보세요.</p></div>
+    </section>
+  </main>
+
+  <template id="courseTemplate">
+    <article class="class-card">
+      <div class="class-chips"><span class="chip mode"></span><span class="chip cost"></span><span class="chip level"></span></div>
+      <h3 class="class-title"></h3>
+      <p class="class-provider"></p>
+      <p class="class-summary"></p>
+      <dl class="class-meta">
+        <div><dt>일정</dt><dd class="schedule"></dd></div>
+        <div><dt>장소</dt><dd class="location"></dd></div>
+        <div><dt>대상</dt><dd class="audience"></dd></div>
+      </dl>
+      <details class="class-details">
+        <summary>원문 근거·확인 사항</summary>
+        <p class="source-note"></p>
+        <p class="verify-note"></p>
+      </details>
+      <div class="class-links">
+        <a class="solid official" target="_blank" rel="noopener noreferrer">공식 안내 ↗</a>
+        <a class="outline apply" target="_blank" rel="noopener noreferrer">신청·수강 페이지 ↗</a>
+      </div>
+    </article>
+  </template>
+</body>
+</html>

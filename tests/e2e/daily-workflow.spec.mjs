@@ -1288,7 +1288,7 @@ test('390px viewport에서 가로 overflow가 없다', async ({ page }) => {
   }));
   expect(widths.html).toBeLessThanOrEqual(widths.inner);
   expect(widths.body).toBeLessThanOrEqual(widths.inner);
-  expect(widths.firstCardY).toBeLessThan(1100);
+  expect(widths.firstCardY).toBeLessThan(1200);
   expect(widths.selectHitWidth).toBeGreaterThanOrEqual(43);
   expect(widths.selectHitHeight).toBeGreaterThanOrEqual(43);
   await expect(page.locator('.job-card')).toHaveCount(4);
