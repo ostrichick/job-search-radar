@@ -7,7 +7,6 @@ import { createSortRules } from './sort-rules.js';
 import { createManualJobRules } from './manual-job.js';
 import { createStateStorage } from './state-storage.js';
 import { createFeedClient } from './feed-client.js';
-import { createToursView } from './tours-ui.js';
 import { validateBackup, validatePublicFeed, httpUrl } from './backup-rules.js';
 import { getProfile } from './profiles.js';
 import { classifyWorkplace, evaluateProfileFit } from './profile-fit.js';
@@ -61,12 +60,10 @@ const state = {
   detailReturnFocus: null,
   loadError: null,
   dynamicFiltersInitialized: false,
-  marketTab: storage.getItem('jobMarketTab') === 'domestic' ? 'domestic' : 'overseas_remote',
-  view: storage.getItem('dashboardView') === 'tours' ? 'tours' : 'jobs'
+  marketTab: storage.getItem('jobMarketTab') === 'domestic' ? 'domestic' : 'overseas_remote'
 };
 
 const $ = (id) => document.getElementById(id);
-const toursView = createToursView({ $ });
 function syncStoredState() {
   state.favorites = new Set(JSON.parse(storage.getItem('jobFavorites') || '[]'));
   state.jobStates = JSON.parse(storage.getItem('jobStates') || '{}');
@@ -245,7 +242,6 @@ for (const id of controls) {
 }
 $('marketOverseas').addEventListener('click', () => setMarketTab('overseas_remote'));
 $('marketDomestic').addEventListener('click', () => setMarketTab('domestic'));
-$('marketTours')?.addEventListener('click', () => setMarketTab('tours'));
 const advancedFilters = $('advancedFilters');
 if (advancedFilters) {
   const storedOpen = storage.getItem('jobAdvancedFiltersOpen');
@@ -255,7 +251,6 @@ if (advancedFilters) {
 }
 updateAdvancedFilterSummary();
 updateMarketUI();
-if (state.view === 'tours') toursView.setActive(true);
 
 function formatDate(value) {
   if (!value) return '게시일 미상';
@@ -423,21 +418,7 @@ function jobMarketScopes(job) {
 }
 
 function setMarketTab(market) {
-  if (market === 'tours') {
-    state.view = 'tours';
-    storage.setItem('dashboardView', 'tours');
-    commitState();
-    updateMarketUI();
-    toursView.setActive(true);
-    return;
-  }
-  if (!['overseas_remote', 'domestic'].includes(market)) return;
-  const sameMarket = market === state.marketTab && state.view === 'jobs';
-  state.view = 'jobs';
-  storage.setItem('dashboardView', 'jobs');
-  commitState();
-  updateMarketUI();
-  if (sameMarket) return;
+  if (!['overseas_remote', 'domestic'].includes(market) || market === state.marketTab) return;
   persistFilters();
   state.marketTab = market;
   state.visibleLimit = 60;
@@ -451,10 +432,8 @@ function setMarketTab(market) {
 }
 
 function updateMarketUI() {
-  const toursActive = state.view === 'tours';
-  document.body.classList.toggle('tours-active', toursActive);
   for (const button of document.querySelectorAll('.market-tab')) {
-    const selected = toursActive ? button.dataset.market === 'tours' : button.dataset.market === state.marketTab;
+    const selected = button.dataset.market === state.marketTab;
     button.setAttribute('aria-pressed', String(selected));
     button.classList.toggle('active', selected);
   }

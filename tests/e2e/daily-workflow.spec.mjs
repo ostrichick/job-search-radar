@@ -2789,7 +2789,7 @@ test('모바일 경고 상태에서 배너와 보존 CTA가 동작하고 첫 카
   await expect(page.locator('.job-card .title')).toHaveText('Mobile Preserved Reviewer');
 });
 
-test('투어·체험 탭은 무료·성인 참가 가능한 항목을 지역과 대상으로 걸러 보여준다', async ({ page }) => {
+test('상단 투어·체험 메뉴는 무료·성인 참가 가능한 항목을 지역과 대상으로 걸러 보여준다', async ({ page }) => {
   const tourItem = (overrides) => ({
     id: 'tour-test', title: '테스트 투어', host: '테스트 기관', category: '체험', region: '전주',
     venue: '테스트 장소', address: '전북특별자치도 전주시', startDate: '2020-01-01', endDate: '2099-12-31',
@@ -2815,10 +2815,14 @@ test('투어·체험 탭은 무료·성인 참가 가능한 항목을 지역과 
   }));
 
   await page.goto('/munseong/');
-  await page.locator('#marketTours').click();
+  const toursLink = page.getByRole('link', { name: '투어·체험' });
+  await expect(toursLink).toBeVisible();
+  await toursLink.click();
+  await expect(page).toHaveURL(/\/tours\/$/);
+  await expect(page.locator('h1')).toContainText('무료 투어·체험');
+  await expect(page.locator('.sites')).toContainText('언어 강의');
+  await expect(page.locator('.sites')).toContainText('투어·체험');
 
-  await expect(page.locator('#toursView')).toBeVisible();
-  await expect(page.locator('#jobsView')).toBeHidden();
   await expect(page.locator('.tour-card')).toHaveCount(2);
   await expect(page.locator('.tour-card .tour-title')).toHaveText(['전주 무료 체험', '완주 무료 투어']);
   await expect(page.locator('.tour-card').first()).toContainText('무료');
@@ -2835,8 +2839,4 @@ test('투어·체험 탭은 무료·성인 참가 가능한 항목을 지역과 
   await page.locator('#tourQuery').fill('군산');
   await expect(page.locator('.tour-card')).toHaveCount(1);
   await expect(page.locator('.tour-card .tour-title')).toHaveText(['군산 성인 프로그램']);
-
-  await page.locator('#marketDomestic').click();
-  await expect(page.locator('#toursView')).toBeHidden();
-  await expect(page.locator('#jobsView')).toBeVisible();
 });
