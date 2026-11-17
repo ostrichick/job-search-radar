@@ -12,11 +12,12 @@
 <body>
   <header class="topbar">
     <div>
-      <nav class="profile-switch" aria-label="누구의 공고를 볼지 선택">
+      <nav class="profile-switch" aria-label="프로필·화면 이동">
         <a href="../nicole/" lang="en">Nicole</a>
         <a href="./" aria-current="page" lang="en">Munseong</a>
         <a href="../household/">우리 집 복지</a>
         <a href="../classes/">언어 강의</a>
+        <button id="marketTours" class="market-tab profile-tour-tab" type="button" aria-pressed="false" data-market="tours">투어·체험</button>
       </nav>
       <p class="eyebrow">DIGITAL NOMAD JOB RADAR</p>
       <h1>내가 지원할 만한 공고만 한곳에서</h1>
@@ -34,9 +35,6 @@
   <main>
     <section id="storageStatus" role="alert" class="panel" hidden><p id="storageStatusText"></p><button id="retryStorage" class="button secondary">저장소 다시 시도</button></section>
     <section id="recoveryNotice" role="status" class="panel" hidden><p id="recoveryNoticeText"></p><button id="downloadRecovery" class="button secondary">손상 원본 다운로드</button></section>
-    <nav class="market-tabs tours-tab-row" aria-label="무료 투어·체험">
-      <button id="marketTours" class="market-tab" type="button" aria-pressed="false" data-market="tours">투어·체험</button>
-    </nav>
     <nav class="market-tabs" aria-label="공고 탐색 범위">
       <button id="marketOverseas" class="market-tab" type="button" aria-pressed="true" data-market="overseas_remote">해외 / 원격근무</button>
       <button id="marketDomestic" class="market-tab" type="button" aria-pressed="false" data-market="domestic">국내</button>
