@@ -73,6 +73,7 @@ function render() {
     const apply = node.querySelector('.apply');
     if (course.applyUrl && course.applyUrl !== course.url) {
       apply.href = course.applyUrl;
+      apply.textContent = course.applyLabel || '신청·조회 페이지 ↗';
     } else {
       apply.hidden = true;
     }

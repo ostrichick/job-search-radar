@@ -39,6 +39,8 @@ const MARKETING = /marketing|marketer|growth|seo|sem|crm|social media|sns|commun
 const CONTENT = /content|copywrit|video|youtube|tiktok|reels|ugc|editor|creator|콘텐츠|영상|쇼츠/i;
 const INTERPRET = /interpret|interpreting|interpreter|통역/i;
 const SPANISH = /spanish|español|castilian|latam|latin america|스페인어/i;
+const AGE_UNDER_35 = /(?:18|19)\s*[-~]\s*(?:34|35)|(?:34|35)\s*세\s*(?:이하|미만)|under\s+(?:35|36)\b/i;
+const SPECIALIST_DOMAIN = /\b(?:surgery|surgical|medical|clinical|patient|hospital|pharma(?:ceutical)?|patent|legal|oncology|cardiology|biosciences?|botany|earth science|environmental|agricultur(?:e|al)|geolog(?:y|ical)|zoolog(?:y|ical)|ecolog(?:y|ical)|nutrition|nursing|pharmacolog(?:y|ical)|chemistry|physics)\b/i;
 
 function text(value) {
   return String(value || '').normalize('NFKC').replace(/\s+/g, ' ').trim().toLowerCase();
@@ -111,7 +113,7 @@ function sourceConfidence(job) {
   return 'medium';
 }
 
-export function evaluateProfileFit(job, { isNicole = false, now = Date.now() } = {}) {
+export function evaluateProfileFit(job, { isNicole = false, age = null, now = Date.now() } = {}) {
   const title = text(job.title);
   const body = text([job.description, job.languageRequirements, job.eligibility, job.sourceSummary, job.tags?.join(' ')].filter(Boolean).join(' '));
   const combined = `${title} ${body}`;
@@ -148,7 +150,12 @@ export function evaluateProfileFit(job, { isNicole = false, now = Date.now() } =
     if (/korean|한국어/i.test(combined)) pass('한국어 원어민');
   }
 
-  if (REMOTE_RESTRICTION.test(combined) && workplace.group === 'remote') check('원격 지원 국가 제한 확인');
+  if (!isNicole && Number.isFinite(age) && age >= 35 && AGE_UNDER_35.test(combined)) fail('연령 제한(35세 미만)');
+  const specialistTitle = SPECIALIST_DOMAIN.test(title);
+  if (specialistTitle && !/\b(?:ai|evaluat|annotat|quality|data|linguist|language)\b/i.test(title)) {
+    fail('전문 분야 경험 필요');
+  }
+  if (REMOTE_RESTRICTION.test(combined) && workplace.group === 'remote') fail('원격 지원 국가 제한');
 
   if (workplace.group === 'remote') {
     pass('원격 근무');
@@ -172,7 +179,7 @@ export function evaluateProfileFit(job, { isNicole = false, now = Date.now() } =
         [TEACHING, '한국어 교육'], [EDTECH, '에듀테크·교육과정'], [AI_LANGUAGE, 'AI·언어평가'],
         [LOCALIZATION, '번역·QA'], [SUPPORT, '고객지원']
       ];
-  const categoryMatches = categories.filter(([pattern]) => pattern.test(combined)).map(([, label]) => label);
+  const categoryMatches = categories.filter(([pattern]) => pattern.test(title)).map(([, label]) => label);
   if (categoryMatches.length) {
     pass(categoryMatches[0]);
   } else {

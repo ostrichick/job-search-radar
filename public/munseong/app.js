@@ -543,7 +543,7 @@ function workplaceDisplay(job) {
 }
 
 function profileFit(job) {
-  return evaluateProfileFit(job, { isNicole });
+  return evaluateProfileFit(job, { isNicole, age: profile.age });
 }
 
 function mergeJobs() {

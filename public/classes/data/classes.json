@@ -102,23 +102,6 @@
       "verifiedAt": "2026-11-16",
       "sourceNote": "사회통합정보망 공식 안내 확인(2026-11-16). 0~5단계 한국어·한국문화·한국사회이해 교육을 온라인 신청하며 체류지 관할 운영기관에서 수강. 2025년부터 교육비 일부 유료화되어 단계·감면 대상별 비용 확인 필요.",
       "enrollment": "open"
-    },
-    {
-      "id": "jbnu-teacher-training",
-      "title": "전북대학교 한국어교원 양성과정",
-      "provider": "전북대학교 언어교육부",
-      "mode": "offline",
-      "costType": "free",
-      "costLabel": "2026년 과정 무료",
-      "level": "교원",
-      "audience": "한국어 교원 준비생",
-      "schedule": "2026-04-06~07-14 · 135시간",
-      "location": "전북대학교 인터내셔널센터",
-      "url": "https://top.jbnu.ac.kr/lec_korean/10881/subview.do",
-      "applyUrl": "https://top.jbnu.ac.kr/lec_korean/10881/subview.do",
-      "verifiedAt": "2026-11-16",
-      "sourceNote": "전북대학교 언어교육부 한국어교원 양성과정 공식 페이지 확인(2026-11-16). 2026년 과정은 글로컬대학30 지원으로 수강료 전액 무료, 135시간, 25명. 수료만으로 3급 자격이 부여되는 것은 아니며 한국어교육능력검정시험 합격 필요.",
-      "enrollment": "past"
     }
   ],
   "selfStudy": [
@@ -153,22 +136,6 @@
       "applyUrl": "https://app.ksif.or.kr/",
       "verifiedAt": "2026-11-16",
       "sourceNote": "세종학당재단 공식 학습 앱 소개 페이지 확인(2026-11-16). 앱 설치 후 자가학습 형태로 이용하며, 과정별 콘텐츠와 이용 조건은 앱 안내 확인 필요."
-    },
-    {
-      "id": "sejong-teacher-training",
-      "title": "세종학당 교원 온라인 연수과정",
-      "provider": "세종학당재단",
-      "mode": "online",
-      "costType": "free",
-      "costLabel": "무료",
-      "level": "교원",
-      "audience": "한국어 교원·예비 교원",
-      "schedule": "상시 · 자율 연수",
-      "location": "온라인",
-      "url": "https://nuri.iksi.or.kr/front/teaching/onlineIntro.do?language=ko",
-      "applyUrl": "https://nuri.iksi.or.kr/front/teaching/onlineIntro.do?language=ko",
-      "verifiedAt": "2026-11-16",
-      "sourceNote": "누리 세종학당 교원 온라인 연수과정 안내 확인(2026-11-16). 교육비 무료, 누리 세종학당 교원 회원 가입 필요, 자율 과정으로 수료증은 발급되지 않음. 세종한국어·세종한국문화·비즈니스 한국어 교재 활용 등 9개 과목 안내."
     },
     {
       "id": "coursera-first-step-korean",
@@ -248,7 +215,8 @@
       "url": "https://future.cuk.edu/cms/FrCon/index.do?MENU_ID=560",
       "applyUrl": "https://www.youtube.com/@QuickKorean",
       "verifiedAt": "2026-11-17",
-      "sourceNote": "고려사이버대학교 공식 안내와 Quick Korean 공식 채널 확인(2026-11-17). 무료 온라인 한국어 교육 프로그램으로 1급은 한국어·영어·중국어·일본어·스페인어 강의언어를 제공. 상시 자가학습."
+      "sourceNote": "고려사이버대학교 공식 안내와 Quick Korean 공식 채널 확인(2026-11-17). 무료 온라인 한국어 교육 프로그램으로 1급은 한국어·영어·중국어·일본어·스페인어 강의언어를 제공. 상시 자가학습.",
+      "applyLabel": "공식 학습 영상 ↗"
     },
     {
       "id": "ebs-durian-korean",
