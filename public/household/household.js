@@ -152,6 +152,24 @@ function addLink(parent, text, url) {
   } catch { /* Invalid URL is never rendered as a link. */ }
 }
 
+function applyLinkLabel(url) {
+  if (!url) return '';
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:') return '';
+    const path = parsed.pathname.replace(/\/+$/, '');
+    if (/\/recruitReceipt\/view\.do$/.test(path) && parsed.searchParams.has('seq')) return '신청 페이지 ↗';
+    if (/\/receipt\/view\.do$/.test(path) && parsed.searchParams.has('seq')) return '신청 페이지 ↗';
+    if (/\/recruitReceipt\/list\.do$/.test(path)) return '프로그램 목록 ↗';
+    if (parsed.hostname === 'fill4young.kinfa.or.kr' && path === '/yfs/main') return '가입·계좌개설 ↗';
+    if (parsed.hostname === 'apply.lh.or.kr' && path === '') return 'LH 청약플러스 ↗';
+    if (parsed.hostname === 'www.jeonju.go.kr' && path === '/together/card/form1') return '온라인 신청 ↗';
+    return '';
+  } catch {
+    return '';
+  }
+}
+
 function renderCard(program) {
   const period = periodInfo(program);
   const record = state.tracking[program.id] || { status: 'none', note: '' };
@@ -183,7 +201,8 @@ function renderCard(program) {
   card.append(details);
   const links = element('div', 'links');
   addLink(links, '공식 근거 ↗', program.officialUrl);
-  if (program.applyUrl && period.type !== 'closed') addLink(links, '신청·조회 페이지 ↗', program.applyUrl);
+  const applyLabel = period.type !== 'closed' ? applyLinkLabel(program.applyUrl) : '';
+  if (applyLabel) addLink(links, applyLabel, program.applyUrl);
   card.append(links);
   const tracking = element('div', 'tracking');
   const statusLabel = element('label', '', '내 신청 상태');
