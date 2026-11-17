@@ -80,12 +80,16 @@ body .button.compact { min-height: 44px; }
 /* Keep the first job card inside the phone viewport: reduce chrome spacing without
    hiding the search/market/region/status filters or the result list. */
 @media (max-width: 720px) {
-  .topbar { padding-top: 12px; padding-bottom: 14px; }
+  .topbar { padding-top: 10px; padding-bottom: 10px; }
   .topbar .lede { display: none; }
-  .topbar h1 { font-size: 26px; }
+  .topbar h1 { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .actions .button { white-space: nowrap; font-size: 11px; padding: 6px 8px; }
   .market-tabs { margin-bottom: 8px; }
-  .panel.filters { margin-top: 12px; padding: 10px; gap: 6px; }
-  .result-head { gap: 10px; padding-top: 8px; padding-bottom: 6px; }
+  .market-tab { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; padding-left: 6px; padding-right: 6px; }
+  .panel.filters { margin-top: 10px; padding: 8px; gap: 4px; }
+  #updatedAt { display: none; }
+  .result-head > div:first-child { min-width: 0; max-width: 100%; }
+  .result-head { gap: 6px; padding-top: 6px; padding-bottom: 4px; }
   .result-head .source-note { display: none; }
   .batch-bar:not(.has-selection) { margin-top: 6px; }
 }
