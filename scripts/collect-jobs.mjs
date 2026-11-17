@@ -15,7 +15,7 @@ import { incruitJeonbukRssUrl, parseIncruitJeonbukRss } from './incruit-rss.mjs'
 import { collectCuratedLeads } from './curated-research.mjs';
 import { isFutureOnlyProductivePlayhouse } from './expanded-remote-sources.mjs';
 import { ADDRESS_CACHE_FILE, addressCacheKey, loadAddressCache } from './address-geocoder.mjs';
-import { isShortTermHourlyJob } from './job-exclusions.mjs';
+import { isGenderRestrictedJob, isShortTermHourlyJob } from './job-exclusions.mjs';
 import { collectJeonjuPublic } from './jeonju-public.mjs';
 import { collectJeonbukPublic } from './jeonbuk-public.mjs';
 import { collectJbnuPublic } from './jbnu-public.mjs';
@@ -3204,7 +3204,7 @@ async function collectJobsOnce({ includeManual = true, persist = true, previousJ
   const now = Date.now();
   const deduped = carryForwardLegacyIds(dedupe(jobs), carryFallbackJobs);
   const reconciled = reconcileVerificationHistory(deduped, carryFallbackJobs, now)
-    .filter((job) => !isShortTermHourlyJob(job));
+    .filter((job) => !isShortTermHourlyJob(job) && !isGenderRestrictedJob(job, 'male'));
   const keptCurrent = reconciled.filter(keepInFeed);
   const sourceNames = sources.map(([name]) => name);
   const sourceMetrics = buildSourceMetrics(
@@ -3229,7 +3229,7 @@ async function collectJobsOnce({ includeManual = true, persist = true, previousJ
     applySourceMetricsToJobs(carriedJobs, sourceMetrics),
     now
   )
-    .filter((job) => !isShortTermHourlyJob(job))
+    .filter((job) => !isShortTermHourlyJob(job) && !isGenderRestrictedJob(job, 'male'))
     .sort((a, b) => (b.score - a.score) || ((Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0))));
   const enrichedSourceStatus = sourceStatus.map((status) => ({
     ...status,

@@ -480,26 +480,38 @@ function calculateDistanceSummary(job) {
   if (!Number.isFinite(km)) {
     return { value: '주소 부족으로 거리 계산 불가', note: '공고에 거리 계산에 충분한 주소·좌표가 없습니다.', cardNote: '주소·좌표 부족', km: null, kind: 'unknown' };
   }
-  const rounded = km < 10 ? Math.round(km * 10) / 10 : Math.round(km);
   const precision = region.coordinatePrecision || '';
-  const addressBased = ['address', 'road'].includes(precision);
-  const regionBased = !['exact', 'address', 'coordinates'].includes(precision);
-  const targetEvidence = addressBased
-    ? `${precision === 'road' ? '공고 도로 중심 좌표' : '공고 주소 좌표'} 기준`
-    : regionBased
-      ? `${region.coordinateLabel || region.label || region.province || '공고 지역'} 기준`
-      : '공고 위치 좌표 기준';
+  const addressBased = ['exact', 'building', 'address', 'road', 'coordinates'].includes(precision);
+  if (region.precision === 'address' && !addressBased) {
+    return {
+      value: '주소 정밀도 부족으로 거리 계산 보류',
+      note: `공고 주소의 좌표가 ${region.coordinateLabel || region.label || '지역 중심'} 수준으로만 확인되어 실제 거리와 크게 다를 수 있습니다. 정확한 주소 좌표를 확인한 뒤 표시합니다.`,
+      cardNote: '주소 좌표 확인 전 거리 표시 보류',
+      km: null,
+      kind: 'unknown',
+      coordinatePrecision: precision
+    };
+  }
+  const rounded = km < 10 ? Math.round(km * 10) / 10 : Math.round(km);
+  if (!addressBased) {
+    return {
+      value: `지역 기준 직선거리 약 ${rounded}km`,
+      note: `${region.coordinateLabel || region.label || region.province || '공고 지역'} 기준 · 지역 중심점은 거리 구간을 보수적으로 판정${region.coordinateSource ? ` · 좌표 ${region.coordinateSource}` : ''}`,
+      cardNote: '지역 중심점 기준 · 거리 구간 보수적 판정',
+      km,
+      kind: 'region',
+      coordinatePrecision: precision
+    };
+  }
   const precisionNote = precision === 'road'
     ? ' · 도로 중심 좌표라 실제 건물 위치와 다를 수 있음'
-    : regionBased && !addressBased
-      ? ' · 지역 중심점은 거리 구간을 보수적으로 판정'
-      : '';
+    : '';
   return {
-    value: addressBased ? `주소 기준 직선거리 약 ${rounded}km` : regionBased ? `지역 기준 직선거리 약 ${rounded}km` : `직선거리 약 ${rounded}km`,
-    note: `${targetEvidence} · ${reference.label} 기준${precisionNote}${region.coordinateSource ? ` · 좌표 ${region.coordinateSource}` : ''}`,
-    cardNote: regionBased && !addressBased ? '지역 중심점 기준 · 거리 구간 보수적 판정' : '',
+    value: `주소 기준 직선거리 약 ${rounded}km`,
+    note: `공고 ${precision === 'road' ? '도로' : '주소'} 좌표 · ${reference.label} 기준${precisionNote}${region.coordinateSource ? ` · 좌표 ${region.coordinateSource}` : ''}`,
+    cardNote: precision === 'road' ? '도로 중심 좌표 기준' : '',
     km,
-    kind: addressBased || !regionBased ? 'exact' : 'region',
+    kind: 'exact',
     coordinatePrecision: precision
   };
 }

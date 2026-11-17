@@ -718,7 +718,7 @@ test('전주·완주 로컬 기본 탐색은 출근형을 거리순으로 보고
   await expect(page.locator('#sort')).toHaveValue('distance');
   await expect(page.locator('.job-card').filter({ hasText: 'AI Creative QC Reviewer' })).toHaveCount(0);
 
-  await expect.poll(async () => (await page.locator('.job-card .title').allTextContents()).slice(0, 3)).toEqual(['일반 사무원', '운영지원 사무원', '자료입력 보조']);
+  await expect.poll(async () => (await page.locator('.job-card .title').allTextContents()).slice(0, 3)).toEqual(['일반 사무원', '자료입력 보조', '운영지원 사무원']);
   await expect(page.locator('.job-card').filter({ hasText: '자료입력 보조' }).locator('.distance-value')).toHaveText('주소 부족으로 거리 계산 불가');
 
   await page.locator('#domesticLocality').selectOption('완주군');
@@ -726,7 +726,7 @@ test('전주·완주 로컬 기본 탐색은 출근형을 거리순으로 보고
   await page.locator('#domesticNeighborhood').selectOption('봉동읍');
   await expect(page.locator('.job-card')).toHaveCount(1);
   const wanju = page.locator('.job-card').filter({ hasText: '운영지원 사무원' });
-  await expect(wanju.locator('.distance-note')).toContainText('지역 중심점 기준');
+  await expect(wanju.locator('.distance-note')).toContainText('주소 좌표 확인 전 거리 표시 보류');
   await expect(wanju.locator('.posted')).toContainText('채용시까지');
 
   await wanju.locator('.details').click();
@@ -760,7 +760,7 @@ test('주소·도로 좌표가 있으면 구 중심 대신 주소 기준 거리�
   await expect(addressCard.locator('.distance-value')).toContainText('주소 기준 직선거리 약');
   await expect(addressCard.locator('.distance-note')).toHaveText('');
   await expect(roadCard.locator('.distance-value')).toContainText('주소 기준 직선거리 약');
-  await expect(roadCard.locator('.distance-note')).toHaveText('');
+  await expect(roadCard.locator('.distance-note')).toHaveText('도로 중심 좌표 기준');
 });
 
 test('국내 거리 전체 보기에서는 글로벌 원격을 제외하고 국내 근무지만 거리순으로 정렬한다', async ({ page }) => {
@@ -791,8 +791,8 @@ test('국내 거리 전체 보기에서는 글로벌 원격을 제외하고 국�
   await page.locator('#domesticProvince').selectOption('');
   await page.locator('#domesticLocality').selectOption('');
 
-  await expect(page.locator('.job-card .title')).toHaveText(['조금 더 먼 마감임박 사무 지원', '가까운 상시 매장 지원', '자료입력 보조']);
-  await expect(page.locator('.job-card').first().locator('.posted')).toContainText('마감 임박');
+  await expect(page.locator('.job-card .title')).toHaveText(['자료입력 보조', '조금 더 먼 마감임박 사무 지원', '가까운 상시 매장 지원']);
+  await expect(page.locator('.job-card').filter({ hasText: '조금 더 먼 마감임박 사무 지원' }).locator('.posted')).toContainText('마감 임박');
   await expect(page.locator('.job-card').filter({ hasText: 'AI Creative QC Reviewer' })).toHaveCount(0);
 });
 
@@ -839,7 +839,7 @@ test('지역 중심점 거리는 보수적 밴드로 정렬하고 지원 판단 
   await expect(page.locator('.job-card .title')).toHaveText(['정확 좌표 기반 사무 지원', '지역 중심점 기반 사무 지원']);
 
   const coarseCard = page.locator('.job-card', { hasText: '지역 중심점 기반 사무 지원' });
-  await expect(coarseCard.locator('.distance-note')).toContainText('지역 중심점 기준');
+  await expect(coarseCard.locator('.distance-note')).toContainText('주소 좌표 확인 전 거리 표시 보류');
   await expect(coarseCard.locator('.meta')).toContainText('근무 주5일 · 08:30~17:30');
   await expect(coarseCard.locator('.meta')).toContainText('기간 24개월');
   await expect(coarseCard.locator('.meta')).toContainText('우대 유사업무 경험 우대');

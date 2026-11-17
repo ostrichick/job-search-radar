@@ -427,6 +427,22 @@
     "source": "OpenStreetMap Nominatim address search",
     "checkedAt": "2026-11-10T03:02:00.171Z"
   },
+  "전북 전주시 덕진구 기린대로 910": {
+    "lat": 35.867938,
+    "lon": 127.085087,
+    "displayName": "조촌119안전센터, 기린대로 910, 여의동2가, 덕진구, 전주시, 전북특별자치도, 대한민국",
+    "precision": "address",
+    "source": "Naver Map place search",
+    "checkedAt": "2026-11-17T13:20:00.000Z"
+  },
+  "전북 전주시 덕진구 기린대로 910 (여의동2가, 조촌119안전센터)": {
+    "lat": 35.867938,
+    "lon": 127.085087,
+    "displayName": "조촌119안전센터, 기린대로 910, 여의동2가, 덕진구, 전주시, 전북특별자치도, 대한민국",
+    "precision": "address",
+    "source": "Naver Map place search",
+    "checkedAt": "2026-11-17T13:20:00.000Z"
+  },
   "전북 전주시 덕진구 기지로 66": {
     "lat": 35.8380915,
     "lon": 127.0723716,
@@ -754,6 +770,22 @@
     "precision": "road",
     "source": "OpenStreetMap Nominatim address search",
     "checkedAt": "2026-11-10T02:51:40.980Z"
+  },
+  "전북 전주시 덕진구 여의동2가 476-14": {
+    "lat": 35.867938,
+    "lon": 127.085087,
+    "displayName": "조촌119안전센터, 기린대로 910, 여의동2가, 덕진구, 전주시, 전북특별자치도, 대한민국",
+    "precision": "address",
+    "source": "Naver Map place search",
+    "checkedAt": "2026-11-17T13:20:00.000Z"
+  },
+  "전북 전주시 덕진구 여의동2가 476-14 조촌119안전센터": {
+    "lat": 35.867938,
+    "lon": 127.085087,
+    "displayName": "조촌119안전센터, 기린대로 910, 여의동2가, 덕진구, 전주시, 전북특별자치도, 대한민국",
+    "precision": "address",
+    "source": "Naver Map place search",
+    "checkedAt": "2026-11-17T13:20:00.000Z"
   },
   "전북 전주시 덕진구 오공로 33-14 (중동) 2층 고기녹소": {
     "lat": 35.8356946,
@@ -1563,6 +1595,14 @@
     "source": "OpenStreetMap Nominatim address search",
     "checkedAt": "2026-11-10T02:56:18.558Z"
   },
+  "전북특별자치도 전주시 덕진구 기린대로 910 (여의동2가, 조촌119안전센터)": {
+    "lat": 35.867938,
+    "lon": 127.085087,
+    "displayName": "조촌119안전센터, 기린대로 910, 여의동2가, 덕진구, 전주시, 전북특별자치도, 대한민국",
+    "precision": "address",
+    "source": "Naver Map place search",
+    "checkedAt": "2026-11-17T13:20:00.000Z"
+  },
   "전북특별자치도 전주시 덕진구 동부대로 1187 농수산시장내 (송천동2가)": {
     "lat": 35.8698533,
     "lon": 127.1158741,
@@ -1602,6 +1642,14 @@
     "precision": "road",
     "source": "OpenStreetMap Nominatim address search",
     "checkedAt": "2026-11-10T02:56:18.558Z"
+  },
+  "전북특별자치도 전주시 덕진구 여의동2가 476-14 조촌119안전센터": {
+    "lat": 35.867938,
+    "lon": 127.085087,
+    "displayName": "조촌119안전센터, 기린대로 910, 여의동2가, 덕진구, 전주시, 전북특별자치도, 대한민국",
+    "precision": "address",
+    "source": "Naver Map place search",
+    "checkedAt": "2026-11-17T13:20:00.000Z"
   },
   "전북특별자치도 전주시 덕진구 원동로 16": {
     "lat": 35.8689043,

@@ -189,14 +189,18 @@ export function evaluateProfileFit(job, { isNicole = false, now = Date.now() } =
   if (status === 'fail') {
     return { status, score: 0, reasons, gaps, confidence, workplace };
   }
-  let score = 45;
-  if (categoryMatches.length) score += 25;
-  if (workplace.group === 'remote' || workplace.group === 'jeonbuk') score += 20;
+  let score = 20;
+  if (categoryMatches.length) score += 20;
+  if (job.roleFitBasis === 'title_keyword_match') score += 20;
+  else if (job.roleFitBasis === 'keyword_match') score += 12;
+  if (workplace.group === 'remote' || workplace.group === 'jeonbuk') score += 10;
   else if (workplace.group === 'seoul' || workplace.group === 'metro') score += 5;
   if (reasons.includes('한국어 원어민') || reasons.includes('스페인어 원어민') || reasons.includes('F-6 거주 자격')) score += 10;
-  if (job.requirementsStatus !== 'hard_check') score += 5;
+  if (job.requirementsStatus === 'clear') score += 10;
+  else if (job.requirementsStatus === 'routine_check') score += 4;
   if (confidence === 'high') score += 5;
-  score -= gaps.length * 4;
+  if (job.listingStatus === 'verified_open') score += 5;
+  score -= gaps.length * 8;
   score = Math.max(0, Math.min(100, score));
   return { status, score, reasons, gaps: [...new Set(gaps)].slice(0, 4), confidence, workplace };
 }
