@@ -3232,6 +3232,8 @@ for (const title of ['조리실무사', '관리의사', '약학대학 연구원'
   const job = normalizeJob({ title, company: '공공기관', source: '전북 공공기관',
     location: '전주시', countryCode: 'KR', description: '직원 채용', deadlineType: 'fixed', deadlineDate: '2099-11-20' });
   assert.equal(job.roleFitEvidence, false, title);
+  assert.equal(job.roleFitBasis, 'none', title);
+  assert.ok(job.score <= 5, `${title} unanchored score must not look relevant`);
   assert.equal(isDefaultRecommendation(job), false, title);
 }
 const koreanPublic = normalizeJob({ title: '한국어 교육 행정 담당자', source: '전북 공공기관',

@@ -1693,7 +1693,7 @@ function scoreJob(job) {
     else if (ageDays !== null && ageDays > 14) score -= 3;
   }
   if (excluded) score -= 40;
-  if (!publicInstitution && !roleMatched.length && job.category === '기타') score = Math.min(score, 5);
+  if (!roleMatched.length && job.category === '기타') score = Math.min(score, 5);
   if (!roleFitEvidence) score = Math.min(score, 15);
   return {
     score: Math.max(0, Math.min(100, score)),
