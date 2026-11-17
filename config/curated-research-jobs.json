@@ -116,11 +116,25 @@
       "requirements": "Fluent English is mandatory. Prior experience in QA, data annotation, testing or content evaluation is required, with chatbot and LLM evaluation as helpful. Pay is not stated. US-only eligibility as currently listed.",
       "eligibilityNote": "Employer page re-checked 2026-10-31 now lists United States only; Korea/Worldwide eligibility no longer shown. Out of scope for Korea-based application unless listing changes.",
       "researchNote": "Page inspected 2026-10-22 (posted Oct 20, worldwide remote). Re-checked 2026-10-31: location changed to United States only. reviewedAt kept per policy.",
-      "tags": ["AI response evaluation", "Quality review", "English", "Remote"],
+      "tags": [
+        "AI response evaluation",
+        "Quality review",
+        "English",
+        "Remote"
+      ],
       "requirementChecks": [
-        {"kind":"hard","label":"필수 유창한 영어 소통·문서 피드백 수준 확인"},
-        {"kind":"routine","label":"주 20시간 이상·주말 포함 근무 가능 여부 확인"},
-        {"kind":"routine","label":"고용주 실체·급여·프로젝트 배정 확인"}
+        {
+          "kind": "hard",
+          "label": "필수 유창한 영어 소통·문서 피드백 수준 확인"
+        },
+        {
+          "kind": "routine",
+          "label": "주 20시간 이상·주말 포함 근무 가능 여부 확인"
+        },
+        {
+          "kind": "routine",
+          "label": "고용주 실체·급여·프로젝트 배정 확인"
+        }
       ]
     },
     {
@@ -140,10 +154,21 @@
       "requirements": "Fluent English reading and writing mandatory, independent research and quantitative/basic data analysis capabilities needed. Bachelor's degree, prior quality review/data annotation and Google Workspace/Excel are helpful rather than clearly required. Pay is not stated.",
       "eligibilityNote": "The listing does not specifically use Korean, and the advanced English requirement may exceed the candidate's verified proficiency. OpenTrain is an intermediary and project allocation/client identity and payment are unconfirmed.",
       "researchNote": "Original OpenTrain page inspected October 22, 2026. Posted date October 20 is explicitly displayed. Apply is available through platform login, not a guaranteed contract.",
-      "tags": ["LLM reasoning", "Fact-check", "Data evaluation", "Remote"],
+      "tags": [
+        "LLM reasoning",
+        "Fact-check",
+        "Data evaluation",
+        "Remote"
+      ],
       "requirementChecks": [
-        {"kind":"hard","label":"필수 유창한 영어 읽기·쓰기 실무 능력 확인"},
-        {"kind":"routine","label":"원문 회사·급여·배정 및 주 20시간 조건 확인"}
+        {
+          "kind": "hard",
+          "label": "필수 유창한 영어 읽기·쓰기 실무 능력 확인"
+        },
+        {
+          "kind": "routine",
+          "label": "원문 회사·급여·배정 및 주 20시간 조건 확인"
+        }
       ]
     },
     {
@@ -163,10 +188,21 @@
       "requirements": "Native expert Korean, strong English communication, experience with AI models, own smartphone and computer, willingness to record voice/video, training assessments and ability to start quickly if selected. Future project work arrives in batches and may pause.",
       "eligibilityNote": "The employer explicitly permits applicants living outside the US but does not guarantee allocation or work authorization for each location. Do not count this as immediate available paid work; advertised $20/hour applies only if assigned work.",
       "researchNote": "Employer's JazzHR application page personally inspected October 22; explicitly states project not yet launched and candidates are reviewed for a future pool, despite accepting applications.",
-      "tags": ["AI evaluation", "Korean", "Talent pool", "Future opportunity"],
+      "tags": [
+        "AI evaluation",
+        "Korean",
+        "Talent pool",
+        "Future opportunity"
+      ],
       "requirementChecks": [
-        {"kind":"hard","label":"즉시 유급 업무 아님: 아직 출시되지 않은 프로젝트 인재풀"},
-        {"kind":"routine","label":"영어·영상/음성 녹화 동의·프로젝트 배정 요건 확인"}
+        {
+          "kind": "hard",
+          "label": "즉시 유급 업무 아님: 아직 출시되지 않은 프로젝트 인재풀"
+        },
+        {
+          "kind": "routine",
+          "label": "영어·영상/음성 녹화 동의·프로젝트 배정 요건 확인"
+        }
       ]
     },
     {
@@ -187,10 +223,22 @@
       "requirements": "원문에 '여성 사무직' 구인이라고 명시되어 지원 대상·실제 채용 기준 확인 필요. 사무·회계업무 범위 및 방문 지원 방식도 확인해야 함.",
       "eligibilityNote": "성별 지원 조건 확인 전에는 사용자에게 적합한 공고로 판단할 수 없음. 급여 및 구체 근무시간 미확인.",
       "researchNote": "2026-10-22 전주교차로 개별 원문 확인. reviewedAt은 날짜 표기용. 상시채용 표기는 있으나 실제 게시일·마감일을 확인하지 못함.",
-      "tags": ["전주", "오프라인", "사무행정", "파트타임 가능", "지원조건 확인"],
+      "tags": [
+        "전주",
+        "오프라인",
+        "사무행정",
+        "파트타임 가능",
+        "지원조건 확인"
+      ],
       "requirementChecks": [
-        {"kind":"hard","label":"공고에 적힌 여성 사무직 구인 조건과 실제 지원 가능 여부"},
-        {"kind":"routine","label":"급여·근무시간·회계업무 및 방문접수 조건 확인"}
+        {
+          "kind": "hard",
+          "label": "공고에 적힌 여성 사무직 구인 조건과 실제 지원 가능 여부"
+        },
+        {
+          "kind": "routine",
+          "label": "급여·근무시간·회계업무 및 방문접수 조건 확인"
+        }
       ]
     },
     {
@@ -211,10 +259,22 @@
       "requirements": "사무직과 기술직의 구분, 고객 전화·민원 처리 비중, 실제 고용형태·근무지·급여 및 주 4일 적용 여부 확인 필요.",
       "eligibilityNote": "사무행정은 검토 가능하나 잦은 전화·고객 응대가 포함된다면 사용자의 반복 동시 소통 회피 선호와 맞지 않을 가능성이 있음.",
       "researchNote": "2026-10-22 전주교차로 개별 원문 확인. reviewedAt은 날짜 표기용. 상시채용 표기만으로 실제 채용 상태를 보증하지 않으며 모집일·마감일 미확인.",
-      "tags": ["전주", "오프라인", "사무행정", "주 4일 표기", "고객 응대 확인"],
+      "tags": [
+        "전주",
+        "오프라인",
+        "사무행정",
+        "주 4일 표기",
+        "고객 응대 확인"
+      ],
       "requirementChecks": [
-        {"kind":"routine","label":"고객 전화·민원 응대와 반복적 대면소통 업무량"},
-        {"kind":"routine","label":"사무직 별도 지원 가능 여부·근무지·주 4일·급여 확인"}
+        {
+          "kind": "routine",
+          "label": "고객 전화·민원 응대와 반복적 대면소통 업무량"
+        },
+        {
+          "kind": "routine",
+          "label": "사무직 별도 지원 가능 여부·근무지·주 4일·급여 확인"
+        }
       ]
     },
     {
@@ -235,10 +295,20 @@
       "requirements": "Native Korean and advanced English speaking, listening and proofreading required. Reliable internet and quiet workplace. Language instruction, editing or QA backgrounds encouraged.",
       "eligibilityNote": "Employer page identifies Incheon and remote working; any narrower residence restrictions, screening and task allocation must be confirmed. Advanced English is a mandatory requirement.",
       "researchNote": "Employer's original careers-page.com vacancy read 2026-10-28. No salary, publication date or closing deadline displayed; open application does not guarantee work.",
-      "tags": ["Korean", "English transcription", "AI quality review"],
+      "tags": [
+        "Korean",
+        "English transcription",
+        "AI quality review"
+      ],
       "requirementChecks": [
-        {"kind": "hard", "label": "고급 영어 듣기·문법·교정 능력 필수"},
-        {"kind": "routine", "label": "한국 내 원격 지원 범위·실제 배정 업무량·보수 확인"}
+        {
+          "kind": "hard",
+          "label": "고급 영어 듣기·문법·교정 능력 필수"
+        },
+        {
+          "kind": "routine",
+          "label": "한국 내 원격 지원 범위·실제 배정 업무량·보수 확인"
+        }
       ]
     },
     {
@@ -259,11 +329,25 @@
       "requirements": "Fluent Korean with clear spoken delivery; reliable attendance at scheduled group sessions; quiet recording space; external microphone with wired headphones or high-quality wired headset. Pay is NOT stated.",
       "eligibilityNote": "Listing is worldwide remote and the structured data includes South Korea, but Korea-resident contracting, actual session hours and pay require direct confirmation. Entry-level Korean-voice role with no degree requirement stated.",
       "researchNote": "Individual OpenTrain page inspected 2026-10-31; posted Oct 28, Apply available, validThrough Nov 29 per structured data. Pay not stated; do not assume a rate.",
-      "tags": ["Korean", "voice recording", "audio annotation", "Remote"],
+      "tags": [
+        "Korean",
+        "voice recording",
+        "audio annotation",
+        "Remote"
+      ],
       "requirementChecks": [
-        {"kind": "routine", "label": "주 20시간 이상·정해진 그룹 세션 시간 참여 가능 여부 확인"},
-        {"kind": "routine", "label": "유선 마이크/헤드셋·조용한 녹음 환경 구비 여부 확인"},
-        {"kind": "routine", "label": "급여·실제 배정 업무량·한국 거주 계약 가능 여부 확인"}
+        {
+          "kind": "routine",
+          "label": "주 20시간 이상·정해진 그룹 세션 시간 참여 가능 여부 확인"
+        },
+        {
+          "kind": "routine",
+          "label": "유선 마이크/헤드셋·조용한 녹음 환경 구비 여부 확인"
+        },
+        {
+          "kind": "routine",
+          "label": "급여·실제 배정 업무량·한국 거주 계약 가능 여부 확인"
+        }
       ]
     },
     {
@@ -284,11 +368,25 @@
       "requirements": "국립국어원 공인 한국어교원 자격증 1~3급 필수. 한국어교원 2급 소지자는 공식 요건을 충족한다. 프로필·경력 심사 및 화상 수업 환경 필요.",
       "eligibilityNote": "전면 원격 프리랜서로 전주 거주에 적합하다. 공식 구인공고상 자격증이 필수이므로 2급 자격증 사본과 경력증명서를 준비해야 한다. 주 20시간 이상은 보장된 조건이 아니며 실제 수업 배정·수입은 플랫폼 심사와 수요에 따라 달라진다.",
       "researchNote": "국립국어원 한국어교원 구인정보 상세(2026-09-29 게시, 접수 2026-10-01~11-15)와 한국어브릿지 공식 사이트를 2026-11-06 확인. 공고상 자격증 필수.",
-      "tags": ["Korean language teaching", "Korean tutor", "Remote", "Certificate 2급"],
+      "tags": [
+        "Korean language teaching",
+        "Korean tutor",
+        "Remote",
+        "Certificate 2급"
+      ],
       "requirementChecks": [
-        {"kind": "hard", "label": "한국어교원 1~3급 자격증(2급 보유) 사본 제출"},
-        {"kind": "routine", "label": "화상 수업 환경과 실제 가능한 수업 시간 확인"},
-        {"kind": "routine", "label": "플랫폼 심사·수업 배정·정산률 확인"}
+        {
+          "kind": "hard",
+          "label": "한국어교원 1~3급 자격증(2급 보유) 사본 제출"
+        },
+        {
+          "kind": "routine",
+          "label": "화상 수업 환경과 실제 가능한 수업 시간 확인"
+        },
+        {
+          "kind": "routine",
+          "label": "플랫폼 심사·수업 배정·정산률 확인"
+        }
       ]
     },
     {
@@ -309,12 +407,29 @@
       "requirements": "한국어교원 자격증, 양성과정 이수, 학사+한국어교육 1년 이상 경력, K-티처 이수 중 하나. 영어 또는 인도네시아어 의사소통 가능. 현지 비자 발급을 위해 5년 이상 근무 경력(한국어교육 2년 이상), 석사 학위 이상, 만 65세 이하 요건이 추가로 명시됨. 한국어교원 2급과 세종학당 리마 경력은 기본 자격의 강점이다.",
       "eligibilityNote": "기본 자격(2급 또는 학사+1년 경력)은 충족하지만, 공고에 현지 비자 발급 요건으로 5년 이상 근무 경력(한국어교육 2년 이상)·석사 학위 이상·만 65세 이하가 별도 명시되어 있다. 이 요건 충족이 확인되기 전에는 지원 적합성을 확정할 수 없다. 전주 거주자는 해외 파견 전임 근무를 전제로 검토해야 한다.",
       "researchNote": "진학프로 동서대학교 공고(2026-10-29 게시, 접수 2026-10-29~11-10 16:00)를 2026-11-06 확인. 공고의 현지 비자 요건은 필수 확인 사항. 문의 parkjj@gdsu.dongseo.ac.kr / 051-320-4296.",
-      "tags": ["Korean language teaching", "Sejong Institute", "Overseas", "Certificate 2급"],
+      "tags": [
+        "Korean language teaching",
+        "Sejong Institute",
+        "Overseas",
+        "Certificate 2급"
+      ],
       "requirementChecks": [
-        {"kind": "hard", "label": "한국어교원 2급 또는 학사+한국어교육 1년 이상 경력 충족"},
-        {"kind": "hard", "label": "현지 비자 요건: 5년 이상 근무 경력(한국어교육 2년 이상)"},
-        {"kind": "hard", "label": "현지 비자 요건: 석사 학위 이상·만 65세 이하"},
-        {"kind": "routine", "label": "해외 전임 파견·계약 조건·비자 발급 가능 여부 확인"}
+        {
+          "kind": "hard",
+          "label": "한국어교원 2급 또는 학사+한국어교육 1년 이상 경력 충족"
+        },
+        {
+          "kind": "hard",
+          "label": "현지 비자 요건: 5년 이상 근무 경력(한국어교육 2년 이상)"
+        },
+        {
+          "kind": "hard",
+          "label": "현지 비자 요건: 석사 학위 이상·만 65세 이하"
+        },
+        {
+          "kind": "routine",
+          "label": "해외 전임 파견·계약 조건·비자 발급 가능 여부 확인"
+        }
       ]
     },
     {
@@ -335,11 +450,25 @@
       "requirements": "유창한 한국어와 한국어 강의·개인교습·학원 경력 우대. 한국어교원 자격증은 필수로 표기되지 않았으며, 2급 소지자는 차별화 요소다.",
       "eligibilityNote": "자격증 없이도 지원 가능한 상시 모집이지만, 수강생 매칭 전까지 수입이 보장되지 않는다. 원격 근무로 시간 활용이 가능하나 실제 배정·수입은 보장되지 않으며, 자체 교재 준비가 필요하다.",
       "researchNote": "AmazingTalker 한국어 강사 모집 페이지를 2026-11-06 확인. 2026-11-04 신규 공고 다수 게시, 마감일 없는 상시 모집.",
-      "tags": ["Korean language teaching", "Korean tutor", "Remote", "Freelance"],
+      "tags": [
+        "Korean language teaching",
+        "Korean tutor",
+        "Remote",
+        "Freelance"
+      ],
       "requirementChecks": [
-        {"kind": "hard", "label": "유창한 한국어와 실제 한국어 강의 경험"},
-        {"kind": "routine", "label": "자체 교재·화상 수업 환경·수업료 책정 준비"},
-        {"kind": "routine", "label": "플랫폼 심사·학생 매칭·수수료 조건 확인"}
+        {
+          "kind": "hard",
+          "label": "유창한 한국어와 실제 한국어 강의 경험"
+        },
+        {
+          "kind": "routine",
+          "label": "자체 교재·화상 수업 환경·수업료 책정 준비"
+        },
+        {
+          "kind": "routine",
+          "label": "플랫폼 심사·학생 매칭·수수료 조건 확인"
+        }
       ]
     },
     {
@@ -360,11 +489,26 @@
       "requirements": "한국어교원 자격증 보유자 필수. 국내 외국인 유학생 대상 한국어 강의 경력자 우대. 한국어교원 2급 보유자는 자격 요건을 충족한다.",
       "eligibilityNote": "전북 군산 대면 시간강사로 전주에서 통근 가능하다. 주당 1일 수업이라 다른 원격 업무와 병행할 수 있다. 학기 단위 계약이며 2026-12-03 오리엔테이션 참석이 필요하다.",
       "researchNote": "군장대학교 원문 공고(2026-11-03)와 첨부 HWP 공고문을 2026-11-06 확인. 접수 2026-11-05~11-16 18:00, 이메일 jh1@kunjang.ac.kr 또는 방문 접수. 문의 063-450-8470, 8224.",
-      "tags": ["Korean language teaching", "Korean instructor", "Jeonbuk", "Gunsan", "Certificate 2급"],
+      "tags": [
+        "Korean language teaching",
+        "Korean instructor",
+        "Jeonbuk",
+        "Gunsan",
+        "Certificate 2급"
+      ],
       "requirementChecks": [
-        {"kind": "hard", "label": "한국어교원 자격증 보유(2급 보유로 충족)"},
-        {"kind": "routine", "label": "주 1일 대면 수업을 위한 전주~군산 통근 가능 여부"},
-        {"kind": "routine", "label": "학기 단위 계약·2026-12-03 오리엔테이션 참석 확인"}
+        {
+          "kind": "hard",
+          "label": "한국어교원 자격증 보유(2급 보유로 충족)"
+        },
+        {
+          "kind": "routine",
+          "label": "주 1일 대면 수업을 위한 전주~군산 통근 가능 여부"
+        },
+        {
+          "kind": "routine",
+          "label": "학기 단위 계약·2026-12-03 오리엔테이션 참석 확인"
+        }
       ]
     },
     {
@@ -385,11 +529,24 @@
       "requirements": "경력 무관. 영어 능숙, AI 기반 서비스 관심. 어학 강의 또는 콘텐츠 제작 경험, 생성형 AI 활용, 일본어·중국어·스페인어 등 회화 가능자 우대.",
       "eligibilityNote": "한국어 교원 경력과 AI 평가 경험을 에듀테크 기획·검수로 연결할 수 있는 입문 역할. 서울 출근형이며 공고상 고용형태가 인턴/정규직으로 혼재되어 확인이 필요하다.",
       "researchNote": "위버스마인드 공식 채용 페이지(2026-11-06 확인). 경력 무관 인턴, 마감일 미표기.",
-      "tags": ["Korean edtech", "AI language education", "Curriculum"],
+      "tags": [
+        "Korean edtech",
+        "AI language education",
+        "Curriculum"
+      ],
       "requirementChecks": [
-        {"kind": "hard", "label": "영어 능숙 및 AI 기반 서비스 관심"},
-        {"kind": "routine", "label": "서울 구로구 출근 가능 여부"},
-        {"kind": "routine", "label": "어학 강의·콘텐츠 제작·생성형 AI 활용 경험 확인"}
+        {
+          "kind": "hard",
+          "label": "영어 능숙 및 AI 기반 서비스 관심"
+        },
+        {
+          "kind": "routine",
+          "label": "서울 구로구 출근 가능 여부"
+        },
+        {
+          "kind": "routine",
+          "label": "어학 강의·콘텐츠 제작·생성형 AI 활용 경험 확인"
+        }
       ]
     },
     {
@@ -410,11 +567,24 @@
       "requirements": "어학 교육 콘텐츠 기획·제작 경험 2년 이상, 학습 목표·유형·난이도 단위로 구조화한 경험, 영어 활용 능력, 포트폴리오 필수.",
       "eligibilityNote": "한국어 교원·교육 콘텐츠 경력과 AI 평가 경험이 어학 콘텐츠 기획에 연결된다. 서울 출근형 정규직이며 포트폴리오가 필수다.",
       "researchNote": "위버스마인드 공식 채용 페이지(2026-11-06 확인). 접수 2026-10-27~11-25 23:59.",
-      "tags": ["Korean edtech", "English education", "Curriculum"],
+      "tags": [
+        "Korean edtech",
+        "English education",
+        "Curriculum"
+      ],
       "requirementChecks": [
-        {"kind": "hard", "label": "어학 교육 콘텐츠 기획·제작 경력 2년 이상"},
-        {"kind": "hard", "label": "포트폴리오 제출"},
-        {"kind": "routine", "label": "영어 활용 능력 및 서울 출근 가능 여부"}
+        {
+          "kind": "hard",
+          "label": "어학 교육 콘텐츠 기획·제작 경력 2년 이상"
+        },
+        {
+          "kind": "hard",
+          "label": "포트폴리오 제출"
+        },
+        {
+          "kind": "routine",
+          "label": "영어 활용 능력 및 서울 출근 가능 여부"
+        }
       ]
     },
     {
@@ -435,11 +605,24 @@
       "requirements": "디지털 교육 콘텐츠 기획·제작 경력 2~4년, 정보·AI·SW 교육 콘텐츠 기획·제작 경험, 시장 분석부터 상용화까지의 경험, 포트폴리오 필수. AI 툴 활용 우대.",
       "eligibilityNote": "한국어 교육·커리큘럼·디지털 콘텐츠 경험을 살릴 수 있으나 정보/AI/SW 교육 콘텐츠 기획 경력 2~4년과 포트폴리오가 요구되어 부분 적합이다. 서울 용산 근무이나 유연한 재택·원격을 운영한다.",
       "researchNote": "팀모노리스 공식 채용 페이지(2026-11-06 확인). 마감일 미표기.",
-      "tags": ["Korean edtech", "Curriculum", "LXD"],
+      "tags": [
+        "Korean edtech",
+        "Curriculum",
+        "LXD"
+      ],
       "requirementChecks": [
-        {"kind": "hard", "label": "디지털 교육 콘텐츠 기획·제작 경력 2~4년"},
-        {"kind": "hard", "label": "학습 목표-활동-평가 포트폴리오 제출"},
-        {"kind": "routine", "label": "정보·AI·SW 교육 콘텐츠 경험 및 서울 근무 가능 여부"}
+        {
+          "kind": "hard",
+          "label": "디지털 교육 콘텐츠 기획·제작 경력 2~4년"
+        },
+        {
+          "kind": "hard",
+          "label": "학습 목표-활동-평가 포트폴리오 제출"
+        },
+        {
+          "kind": "routine",
+          "label": "정보·AI·SW 교육 콘텐츠 경험 및 서울 근무 가능 여부"
+        }
       ]
     },
     {
@@ -460,11 +643,94 @@
       "requirements": "한국어 C1-C2(특히 작문), 영어 일상 소통, MS Office/Google Suite, 풀타임 주 5일(주말·교대 가능). 고객지원 경력은 필수 아님(교육 제공), 게임 관심 우대.",
       "eligibilityNote": "고객지원 경력이 없어도 지원 가능한 원격 계약직. 한국어 원어민과 영어 중상급, 교육·고객응대 경험이 강점이다. 6개월 계약과 주말·교대 근무를 확인해야 한다.",
       "researchNote": "Keywords Studios 공식 채용 페이지(2026-11-06 확인). 게시 2026-10-30, 6개월 계약, 원격.",
-      "tags": ["Korean customer support", "Gaming", "Remote"],
+      "tags": [
+        "Korean customer support",
+        "Gaming",
+        "Remote"
+      ],
       "requirementChecks": [
-        {"kind": "hard", "label": "한국어 C1-C2 작문 능력"},
-        {"kind": "hard", "label": "영어 일상 소통 능력"},
-        {"kind": "routine", "label": "주말·교대 근무 및 6개월 계약 조건 확인"}
+        {
+          "kind": "hard",
+          "label": "한국어 C1-C2 작문 능력"
+        },
+        {
+          "kind": "hard",
+          "label": "영어 일상 소통 능력"
+        },
+        {
+          "kind": "routine",
+          "label": "주말·교대 근무 및 6개월 계약 조건 확인"
+        }
+      ]
+    },
+    {
+      "originalSource": "Company Careers",
+      "url": "https://preply.com/en/online/korean-tutoring-jobs",
+      "title": "Online Korean Tutor (Freelance)",
+      "company": "Preply",
+      "location": "Remote (worldwide)",
+      "workplaceMode": "remote",
+      "type": "Freelance",
+      "salary": "Tutor-set hourly rate; platform commission applies",
+      "postedAt": "2026-11-11",
+      "deadlineDate": null,
+      "openingStatus": "listed",
+      "reviewedAt": "2026-11-17T00:45:00.000Z",
+      "researchSummary": "Preply recruits Korean tutors for one-to-one online lessons. Tutors set their own hourly rate and can teach conversation, TOPIK or beginner Korean; no formal teaching degree or language certificate is required by the platform. The official page describes an ongoing tutor application flow rather than a fixed vacancy deadline.",
+      "requirements": "Native or near-native Korean; comfortable with one-to-one video lessons; profile and short introduction video; teaching experience is helpful but not a platform requirement. Confirm current onboarding terms and commission in the official tutor application.",
+      "eligibilityNote": "Public official page checked 2026-11-17. The page does not state a fixed application deadline. Tutor payout, commission and country-specific onboarding terms must be confirmed during application.",
+      "researchNote": "New public path: Preply tutor recruitment page. The page is an ongoing platform application, not a single employer vacancy; no fixed deadline was shown.",
+      "tags": [
+        "Korean",
+        "online teaching",
+        "freelance"
+      ]
+    },
+    {
+      "originalSource": "Company Careers",
+      "url": "https://teach.italki.com/en/application",
+      "title": "Online Korean Teacher (Freelance)",
+      "company": "italki",
+      "location": "Remote (worldwide)",
+      "workplaceMode": "remote",
+      "type": "Freelance",
+      "salary": "Tutor-set hourly rate",
+      "postedAt": "2026-11-11",
+      "deadlineDate": null,
+      "openingStatus": "listed",
+      "reviewedAt": "2026-11-17T00:45:00.000Z",
+      "researchSummary": "italki accepts Korean teacher applications on an ongoing basis. Applicants can choose a Professional Teacher or Community Tutor path; the platform requires an introduction video and identity/language verification. The official page states that applications can be submitted at any time.",
+      "requirements": "Age 18+; native or C2-level Korean; 1–3 minute introduction video; Professional Teacher path requires evidence of teaching qualification or relevant degree. Community Tutor path is also available. Confirm current onboarding requirements on the official application.",
+      "eligibilityNote": "Public official italki application page checked 2026-11-17. No fixed deadline. Payout, commission and country-specific onboarding rules require confirmation during application.",
+      "researchNote": "New public path: italki teacher application. The platform explicitly allows applications at any time; this is not a single employer vacancy.",
+      "tags": [
+        "Korean",
+        "online teaching",
+        "freelance"
+      ]
+    },
+    {
+      "originalSource": "Outlier",
+      "url": "https://app.outlier.ai/en/expert/opportunities/4505557005",
+      "title": "Native Korean Freelance Writer",
+      "company": "Outlier",
+      "location": "Remote in South Korea",
+      "workplaceMode": "remote",
+      "countryCode": "KR",
+      "type": "Independent contractor",
+      "salary": "Up to $31/hour for core project work",
+      "postedAt": "2026-11-07",
+      "deadlineDate": null,
+      "openingStatus": "listed",
+      "reviewedAt": "2026-11-17T00:45:00.000Z",
+      "researchSummary": "Outlier seeks native Korean writers for remote freelance AI training work. The role involves reviewing and writing Korean text, judging naturalness, catching translationese and applying detailed writing guidelines. Work is project-based with flexible hours and weekly pay; project availability varies.",
+      "requirements": "Bachelor’s degree or higher; native-level Korean; strong writing and fact-checking ability; ability to read and apply English guidelines. Prior AI evaluation or language-quality experience is helpful. Confirm active project availability after onboarding.",
+      "eligibilityNote": "Official Outlier opportunity page checked 2026-11-17. The listing states South Korea remote work and a project-based contractor arrangement. Actual project allocation and hourly earnings depend on available tasks.",
+      "researchNote": "New public path: Outlier official expert opportunity page. Distinct from the existing site entry; no fixed deadline, project availability is variable.",
+      "tags": [
+        "Korean",
+        "AI data",
+        "writing"
       ]
     }
   ]

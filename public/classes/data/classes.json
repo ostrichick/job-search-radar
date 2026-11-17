@@ -1,5 +1,5 @@
 {
-  "researchedAt": "2026-11-16",
+  "researchedAt": "2026-11-17",
   "courses": [
     {
       "id": "online-sejong",
@@ -267,6 +267,54 @@
       "applyUrl": "https://www.italki.com/",
       "verifiedAt": "2026-11-16",
       "sourceNote": "italki 공식 사이트 확인(2026-11-16). 민간 1:1 튜터 마켓플레이스로 튜터별 가격·시간·커리큘럼이 다름. 공식 기관 과정이 아니므로 튜터 자격·환불 정책을 직접 확인."
+    },
+    {
+      "id": "quick-korean-cuk",
+      "title": "바른 한국어 (Quick Korean) 1~4급",
+      "provider": "고려사이버대학교",
+      "mode": "online",
+      "costType": "free",
+      "costLabel": "무료",
+      "level": "입문~중급",
+      "audience": "한국어를 처음 배우는 성인",
+      "schedule": "상시 자가학습 · 급별 15~20강",
+      "location": "온라인",
+      "url": "https://future.cuk.edu/cms/FrCon/index.do?MENU_ID=560",
+      "applyUrl": "https://www.youtube.com/@QuickKorean",
+      "verifiedAt": "2026-11-17",
+      "sourceNote": "고려사이버대학교 공식 안내와 Quick Korean 공식 채널 확인(2026-11-17). 무료 온라인 한국어 교육 프로그램으로 1급은 한국어·영어·중국어·일본어·스페인어 강의언어를 제공. 상시 자가학습."
+    },
+    {
+      "id": "ebs-durian-korean",
+      "title": "한국어 배움터 · 두리안과 함께하는 TOPIK",
+      "provider": "EBS 두리안",
+      "mode": "online",
+      "costType": "free",
+      "costLabel": "무료",
+      "level": "초급~중급",
+      "audience": "다문화가정·결혼이민자·자녀 및 일반 학습자",
+      "schedule": "상시 VOD · 회원가입 후 학습",
+      "location": "온라인",
+      "url": "https://www.ebs.co.kr/durian/kr/course",
+      "applyUrl": "https://www.ebs.co.kr/durian/kr/course",
+      "verifiedAt": "2026-11-17",
+      "sourceNote": "EBS 두리안 공식 강좌 페이지 확인(2026-11-17). 한국어 교육 프로그램과 TOPIK 대비 강의를 무료로 제공하며 회원가입 후 학습이력 관리 가능. 세부 강좌 개설 상태는 페이지에서 확인."
+    },
+    {
+      "id": "topik-official-study",
+      "title": "TOPIK 공식 무료 학습자료",
+      "provider": "국립국제교육원 · Study in Korea",
+      "mode": "online",
+      "costType": "free",
+      "costLabel": "무료",
+      "level": "입문~전 급수",
+      "audience": "TOPIK 준비자",
+      "schedule": "상시 · 기출·동영상·IBT 체험",
+      "location": "온라인",
+      "url": "https://www.studyinkorea.go.kr/ko/plan/examAndKoreanStudy.do",
+      "applyUrl": "https://www.topik.go.kr",
+      "verifiedAt": "2026-11-17",
+      "sourceNote": "Study in Korea 공식 TOPIK 안내 확인(2026-11-17). 초급 동영상 강의, 기출문제, IBT 체험, 오늘의 TOPIK 등 무료 학습자료를 제공. 시험 응시 신청은 topik.go.kr에서 별도."
     }
   ]
 }

@@ -3,12 +3,12 @@ import { test, expect } from '@playwright/test';
 test('한국어 강의 탭은 온라인·전주 오프라인 강의와 공식 링크를 보여준다', async ({ page }) => {
   await page.goto('/classes/');
   await expect(page.getByRole('heading', { name: /한국어·스페인어/ })).toBeVisible();
-  await expect(page.locator('#sourceDate')).toHaveText('2026-11-16');
+  await expect(page.locator('#sourceDate')).toHaveText('2026-11-17');
   await expect(page.locator('#totalCount')).toHaveText('9');
   await expect(page.locator('.class-card')).toHaveCount(9);
   await expect(page.locator('#courses')).toContainText('온라인 세종학당');
   await expect(page.locator('#courses')).toContainText('주시드니한국문화원');
-  await expect(page.locator('#selfStudy .self-study-list li')).toHaveCount(7);
+  await expect(page.locator('#selfStudy .self-study-list li')).toHaveCount(10);
 });
 
 test('한국어 강의 탭은 390px에서 가로로 넘치지 않는다', async ({ page }) => {
