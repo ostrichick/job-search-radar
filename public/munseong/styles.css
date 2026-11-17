@@ -136,6 +136,6 @@ body.tours-active #toursView { display: block; }
 .tour-checked { margin-left: auto; color: var(--text-faint); font-size: 11px; }
 .tour-attribution { margin: 18px 2px 0; color: var(--text-faint); font-size: 12px; line-height: 1.5; }
 @media (max-width: 1100px) { .tours-filters { grid-template-columns: repeat(3, 1fr); } .tour-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 720px) { .tours-filters { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .tours-filters .search-field { grid-column: 1/-1; } .tour-grid { grid-template-columns: 1fr; } .market-tabs { display: flex; width: 100%; } .market-tab { flex: 1 1 50%; min-width: 0; padding-left: 8px; padding-right: 8px; } .tours-tab-row { display: flex; width: 100%; } .tours-tab-row .market-tab { flex: 1 1 100%; } }
+@media (max-width: 720px) { main { padding-top: 16px; } .topbar .lede { display: none; } .profile-switch { flex-wrap: nowrap; overflow-x: auto; gap: 4px; } .profile-switch a { flex: 0 0 auto; padding: 0 10px; font-size: 12px; } .tours-filters { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .tours-filters .search-field { grid-column: 1/-1; } .tour-grid { grid-template-columns: 1fr; } .market-tabs { display: flex; width: 100%; } .market-tab { flex: 1 1 50%; min-width: 0; padding-left: 8px; padding-right: 8px; } .tours-tab-row { display: flex; width: 100%; margin-bottom: 4px; padding: 2px; } .tours-tab-row .market-tab { flex: 1 1 100%; min-height: 36px; } }
 
 
