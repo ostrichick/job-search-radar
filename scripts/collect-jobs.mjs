@@ -1314,20 +1314,25 @@ function sameDomesticPosting(a, b) {
   const categoryB = text(b.category);
   if (!categoryA || categoryA === '기타' || categoryA !== categoryB) return false;
 
-  const addressA = regionA.precision === 'address' ? canonicalDomesticAddress(a.workAddress || a.location) : '';
-  const addressB = regionB.precision === 'address' ? canonicalDomesticAddress(b.workAddress || b.location) : '';
-  if (addressA && addressB && addressA !== addressB) return false;
-
   const salaryA = localSalaryKey(a);
   const salaryB = localSalaryKey(b);
-  const oneAddress = regionA.precision === 'address' || regionB.precision === 'address';
-  if (salaryA && salaryB && salaryA !== salaryB && !oneAddress) return false;
-
   const deadlineA = a.deadlineType === 'fixed' ? a.deadlineDate : '';
   const deadlineB = b.deadlineType === 'fixed' ? b.deadlineDate : '';
   const sameSalary = Boolean(salaryA && salaryA === salaryB);
-  const sameAddress = Boolean(addressA && addressA === addressB);
   const sameDeadline = Boolean(deadlineA && deadlineA === deadlineB);
+  const sameDistrict = Boolean(regionA.district && regionA.district === regionB.district);
+  const sameNeighborhood = Boolean(regionA.neighborhood && regionA.neighborhood === regionB.neighborhood);
+
+  const addressA = regionA.precision === 'address' ? canonicalDomesticAddress(a.workAddress || a.location) : '';
+  const addressB = regionB.precision === 'address' ? canonicalDomesticAddress(b.workAddress || b.location) : '';
+  const sameAddress = Boolean(addressA && addressA === addressB);
+  if (addressA && addressB && addressA !== addressB) {
+    return Boolean(sameSalary && sameDeadline && (sameDistrict || sameNeighborhood));
+  }
+
+  const oneAddress = regionA.precision === 'address' || regionB.precision === 'address';
+  if (salaryA && salaryB && salaryA !== salaryB && !oneAddress) return false;
+
   const samePostedDay = Boolean(localPostedDay(a) && localPostedDay(a) === localPostedDay(b));
 
   if (sameSalary || sameAddress) return true;

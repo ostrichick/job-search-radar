@@ -2067,6 +2067,38 @@ assert.equal(mergedCoupangSameSource.length, 1,
   'same-source local variants at the same address and pay must merge');
 assert.equal(mergedCoupangSameSource[0].duplicateCount, 2);
 
+const koreaPartnersOld = normalizeJob({
+  ...base,
+  id: 'korea-partners-old',
+  source: '알바몬',
+  company: '주식회사코리아파트너즈',
+  title: '[면접비 2만] 고객관리 서류검토, 사무보조모집 (주 5일)',
+  location: '전북 전주시 완산구 서신동 766',
+  workAddress: '전북 전주시 완산구 서신동 766',
+  locationEvidenceLevel: 'source_structured',
+  remote: false,
+  workplaceMode: 'onsite',
+  countryCode: 'KR',
+  salary: '월급 4,000,000원',
+  postedAt: '2026-11-02T00:00:00.000Z',
+  deadlineType: 'fixed',
+  deadlineDate: '2026-11-20',
+  url: 'https://www.albamon.com/jobs/detail/120033604'
+});
+const koreaPartnersNew = normalizeJob({
+  ...koreaPartnersOld,
+  id: 'korea-partners-new',
+  location: '전북특별자치도 전주시 완산구 온고을로 29',
+  workAddress: '전북특별자치도 전주시 완산구 온고을로 29',
+  salary: '월급 4,000,000원',
+  postedAt: '2026-11-17T00:00:00.000Z',
+  url: 'https://www.albamon.com/jobs/detail/120325362'
+});
+const mergedKoreaPartners = dedupe([koreaPartnersOld, koreaPartnersNew]);
+assert.equal(mergedKoreaPartners.length, 1,
+  'same role with equal pay and deadline reposted at a new address in the same district must merge');
+assert.equal(mergedKoreaPartners[0].duplicateCount, 2);
+
 const seoyoungOffice = normalizeJob({
   ...base,
   id: 'seoyoung-office',
