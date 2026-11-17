@@ -57,6 +57,8 @@ assert.equal(duplicateIds.length, 0, `stable job ids must be unique: ${duplicate
 const localBoardSources = new Set(['알바몬', '알바천국', '잡코리아', '사람인', '인크루트']);
 
 for (const job of feed.jobs) {
+  assert.ok(job.sourceEvidenceRefreshability !== 'public_html_structured_data' || !/API/i.test(job.listingReason || ''),
+    `${job.id} HTML listing evidence must not claim API`);
   assert.ok(['remote', 'hybrid', 'onsite', 'unknown'].includes(job.workplaceMode), `${job.id} workplaceMode must use the canonical enum`);
   assert.equal(Boolean(job.remote), job.workplaceMode === 'remote', `${job.id} remote boolean must agree with canonical workplaceMode`);
   assert.ok(Array.isArray(job.marketScopes) && job.marketScopes.length > 0, `${job.id} must declare at least one market scope`);
@@ -142,7 +144,12 @@ for (const job of feed.jobs) {
   if (job.sourceKind === 'official_ats' && !['talent_pool', 'expired', 'archived_missing', 'source_error'].includes(job.listingStatus)) {
     assert.equal(job.listingStatus, 'verified_open', `${job.id} official ATS current listing must use verified_open`);
   }
-  if (job.sourceKind === 'official_government' && !['talent_pool', 'expired', 'archived_missing', 'source_error'].includes(job.listingStatus)) {
+  const governmentDeadlineRecheck = job.source === '전북 공공기관'
+    && job.sourceListingState === 'deadline_recheck'
+    && job.listingStatus === 'stale' && job.stale === true
+    && job.listingBasis === 'deadline_unknown' && job.listingVerification === 'recheck';
+  if (job.sourceKind === 'official_government' && !governmentDeadlineRecheck
+    && !['talent_pool', 'expired', 'archived_missing', 'source_error'].includes(job.listingStatus)) {
     assert.equal(job.listingStatus, 'official_listed', `${job.id} official government current listing must use official_listed`);
   }
   if (job.sourceKind === 'official_platform' && !['talent_pool', 'expired', 'archived_missing', 'source_error'].includes(job.listingStatus)) {

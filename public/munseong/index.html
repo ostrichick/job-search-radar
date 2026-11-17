@@ -34,32 +34,16 @@
   <main>
     <section id="storageStatus" role="alert" class="panel" hidden><p id="storageStatusText"></p><button id="retryStorage" class="button secondary">저장소 다시 시도</button></section>
     <section id="recoveryNotice" role="status" class="panel" hidden><p id="recoveryNoticeText"></p><button id="downloadRecovery" class="button secondary">손상 원본 다운로드</button></section>
-    <nav class="market-tabs" aria-label="공고 탐색 범위">
+    <nav class="market-tabs" aria-label="공고·투어 탐색 범위">
       <button id="marketOverseas" class="market-tab" type="button" aria-pressed="true" data-market="overseas_remote">해외 / 원격근무</button>
       <button id="marketDomestic" class="market-tab" type="button" aria-pressed="false" data-market="domestic">국내</button>
+      <button id="marketTours" class="market-tab" type="button" aria-pressed="false" data-market="tours">투어·체험</button>
     </nav>
-    <section class="summary-block" aria-labelledby="workflowSummaryTitle">
-      <div class="section-heading"><h2 id="workflowSummaryTitle">내 지원 현황</h2><span>현재 필터 기준</span></div>
-      <section class="stats" id="stats"></section>
-    </section>
-
-    <section id="marketPulse" class="panel market-pulse" aria-labelledby="marketPulseTitle">
-      <div class="market-pulse-head">
-        <div><p class="section-kicker">MARKET SNAPSHOT</p><h2 id="marketPulseTitle">시장 한눈에 보기</h2></div>
-        <div class="market-pulse-head-actions"><span>수집된 공고 기준</span><button id="marketPulseToggle" type="button" class="button compact secondary-light" aria-expanded="false">요약 보기</button></div>
-      </div>
-      <div id="marketPulseCards" class="market-pulse-grid"></div>
-      <p id="marketPulseNote" class="market-pulse-note"></p>
-    </section>
-
+    <div id="jobsView">
     <section class="panel filters">
       <div class="field search-field">
         <label for="query">검색</label>
         <input id="query" type="search" placeholder="직무, 회사, 키워드 검색">
-      </div>
-      <div class="field">
-        <label for="source">출처</label>
-        <select id="source"><option value="">전체</option></select>
       </div>
       <div class="field market-overseas-only">
         <label for="eligibility">지원 범위</label>
@@ -85,18 +69,6 @@
         <select id="domesticNeighborhood"><option value="">전체 읍·면·동</option></select>
       </div>
       <div class="field">
-        <label for="compensationFilter">보수 정보</label>
-        <select id="compensationFilter">
-          <option value="">전체</option>
-          <option value="amount">금액 공개</option>
-          <option value="hour">시급 공개</option>
-          <option value="salary">일·주·월·연봉 공개</option>
-          <option value="piece">건당·세트당</option>
-          <option value="basis_only">지급 방식만 공개</option>
-          <option value="undisclosed">금액 미공개</option>
-        </select>
-      </div>
-      <div class="field">
         <label for="statusFilter">내 상태</label>
         <select id="statusFilter">
           <option value="active">숨김 제외</option>
@@ -110,9 +82,25 @@
           <option value="hidden">숨긴 공고</option>
         </select>
       </div>
-      <details id="advancedFilters" class="advanced-filters" open>
+      <details id="advancedFilters" class="advanced-filters">
         <summary id="advancedFiltersSummary">추가 필터</summary>
         <div class="advanced-filter-grid">
+          <div class="field">
+            <label for="source">출처</label>
+            <select id="source"><option value="">전체</option></select>
+          </div>
+          <div class="field">
+            <label for="compensationFilter">보수 정보</label>
+            <select id="compensationFilter">
+              <option value="">전체</option>
+              <option value="amount">금액 공개</option>
+              <option value="hour">시급 공개</option>
+              <option value="salary">일·주·월·연봉 공개</option>
+              <option value="piece">건당·세트당</option>
+              <option value="basis_only">지급 방식만 공개</option>
+              <option value="undisclosed">금액 미공개</option>
+            </select>
+          </div>
           <label class="field teaching-filter">
             <span>한국어 관련</span>
             <span class="check"><input id="teachingOnly" type="checkbox"> 공고만 보기</span>
@@ -249,6 +237,7 @@
     <section class="result-head">
       <div>
         <strong id="resultCount" tabindex="-1">0개</strong>
+        <span id="resultStatus" class="visually-hidden" role="status" aria-live="polite"></span>
         <span id="scopeCount" class="scope-count"></span>
         <span id="updatedAt"></span>
       </div>
@@ -267,15 +256,101 @@
       <span id="loadErrorText"></span>
     </section>
 
-    <section id="jobs" class="job-grid" aria-live="polite"></section>
+    <section id="jobs" class="job-grid"></section>
     <section id="empty" class="empty" hidden>
       <p id="emptyMessage">조건에 맞는 공고가 없습니다.</p>
       <div class="empty-actions"><button id="resetFilters" class="button secondary-light">필터 초기화</button><button id="retryLoad" class="button primary">다시 불러오기</button></div>
     </section>
     <div class="load-more-wrap"><button id="loadMore" class="button secondary load-more" hidden>더 보기</button></div>
+
+    <section class="summary-block" aria-labelledby="workflowSummaryTitle">
+      <div class="section-heading"><h2 id="workflowSummaryTitle">내 지원 현황</h2><span>현재 필터 기준</span></div>
+      <section class="stats" id="stats"></section>
+    </section>
+
+    <section id="marketPulse" class="panel market-pulse" aria-labelledby="marketPulseTitle">
+      <div class="market-pulse-head">
+        <div><p class="section-kicker">MARKET SNAPSHOT</p><h2 id="marketPulseTitle">시장 한눈에 보기</h2></div>
+        <div class="market-pulse-head-actions"><span>수집된 공고 기준</span><button id="marketPulseToggle" type="button" class="button compact secondary-light" aria-expanded="false">요약 보기</button></div>
+      </div>
+      <div id="marketPulseCards" class="market-pulse-grid"></div>
+      <p id="marketPulseNote" class="market-pulse-note"></p>
+    </section>
+    </div>
+
+    <section id="toursView" class="tours-view" aria-labelledby="toursTitle">
+      <div class="tours-hero">
+        <p class="section-kicker">FREE TOURS &amp; EXPERIENCES</p>
+        <h2 id="toursTitle">무료 투어·체험</h2>
+        <p>전주·전북 지자체와 공공기관이 여는 무료 프로그램 중, 한국인과 외국인이 함께 신청할 수 있는 항목을 모읍니다. 국적 제한이 확인된 항목은 제외하며, 최종 참가 가능 여부는 신청처에 확인하세요.</p>
+      </div>
+      <section class="panel tours-filters">
+        <div class="field search-field">
+          <label for="tourQuery">검색</label>
+          <input id="tourQuery" type="search" placeholder="프로그램, 기관, 장소 검색">
+        </div>
+        <div class="field">
+          <label for="tourCategory">분류</label>
+          <select id="tourCategory">
+            <option value="">전체</option>
+            <option value="투어">투어</option>
+            <option value="체험">체험</option>
+            <option value="축제·행사">축제·행사</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="tourRegion">지역</label>
+          <select id="tourRegion">
+            <option value="전주·완주" selected>전주·완주</option>
+            <option value="">전북 전체</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="tourAudience">참가 대상</label>
+          <select id="tourAudience">
+            <option value="adults" selected>성인 참가 가능</option>
+            <option value="all">대상 전체</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="tourPeriod">기간</label>
+          <select id="tourPeriod">
+            <option value="current" selected>진행·예정</option>
+            <option value="all">종료 포함</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="tourSort">정렬</label>
+          <select id="tourSort">
+            <option value="soon" selected>마감 임박</option>
+            <option value="newest">최신 시작</option>
+            <option value="title">이름순</option>
+          </select>
+        </div>
+      </section>
+      <section class="result-head">
+        <div>
+          <strong id="tourCount" tabindex="-1">0개</strong>
+          <span id="tourUpdatedAt"></span>
+        </div>
+        <div class="result-actions">
+          <button id="tourReset" class="button compact secondary-light" type="button">필터 초기화</button>
+          <button id="tourRefresh" class="button compact secondary-light" type="button">투어 새로고침</button>
+        </div>
+      </section>
+      <section id="tourSourceStatus" class="source-health" hidden aria-live="polite"></section>
+      <div id="toursList" class="tour-grid"></div>
+      <section id="toursEmpty" class="empty" hidden>
+        <p id="toursEmptyMessage">조건에 맞는 무료 투어·체험이 없습니다.</p>
+      </section>
+      <p class="tour-attribution">출처: 전북문화포털과 각 기관 공고. 무료 여부·대상·일정은 변경될 수 있으니 신청 전 원문을 확인하세요.</p>
+    </section>
   </main>
 
-  <div id="toast" class="toast" role="status" aria-live="polite" hidden><span id="toastText"></span><button id="undoHide">되돌리기</button></div>
+  <div class="toast-layer">
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden><span id="toastText"></span><button id="closeInfoToast" type="button" aria-label="알림 닫기">닫기</button></div>
+    <div id="undoToast" class="toast undo-toast" role="status" aria-live="polite" hidden><span id="undoToastText"></span><button id="undoHide">되돌리기</button><button id="closeToast" type="button" aria-label="숨김 되돌리기 알림 닫기">닫기</button></div>
+  </div>
 
   <dialog id="addDialog" aria-labelledby="addDialogTitle">
     <form id="addForm" method="dialog">

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node local-server.mjs",
-    "refresh": "node scripts/collect-jobs.mjs",
+    "refresh": "node scripts/collect-jobs.mjs && node scripts/collect-tours.mjs",
     "refresh:dubu": "node profiles/dubu/scripts/collect.mjs",
     "test:dubu": "node --test \"profiles/dubu/tests/*.test.mjs\"",
     "parse:linkedin-alert": "node scripts/linkedin-alert-parser.mjs",
@@ -15,7 +15,8 @@
     "validate:feed": "node scripts/validate-feed.mjs",
     "check": "node scripts/check-syntax.mjs && npm test",
     "test:static": "node scripts/test-static.mjs",
-    "geocode:addresses": "node scripts/geocode-addresses.mjs"
+    "geocode:addresses": "node scripts/geocode-addresses.mjs",
+    "tours:refresh": "node scripts/collect-tours.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0"

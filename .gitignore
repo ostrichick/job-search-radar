@@ -4,6 +4,7 @@ node_modules/
 /data/nicole-jobs.json
 /data/manual-jobs.json
 /public/jobs.json
+/public/tours.json
 /public/feeds/
 # Dubu profile: public/jobs.json is the tracked history baseline (CI-updated).
 profiles/dubu/config/manual-jobs.json

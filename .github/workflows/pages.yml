@@ -46,6 +46,15 @@ jobs:
         env:
           SHARED_RESPONSE_DIR: ${{ runner.temp }}/shared-responses
       - run: node scripts/validate-feed.mjs public/jobs.json docs/jobs.json
+      - name: Refresh tour feed
+        run: node scripts/collect-tours.mjs || echo "::warning::Tour collection failed; publishing the last good tour feed"
+      - name: Validate tour feed
+        run: |
+          if [ ! -f public/tours.json ]; then
+            echo "::warning::Tour feed missing; deploying without the tours tab data"
+            exit 0
+          fi
+          node --input-type=module -e "import {readFileSync} from 'node:fs';const f=JSON.parse(readFileSync('public/tours.json','utf8'));if(!f.updatedAt||!Array.isArray(f.items)||!Array.isArray(f.sourceStatus))process.exit(1)"
       # Dubu profile. Its collector keeps the last good feed and exits non-zero
       # when every source failed; that must not block the main deployment.
       - name: Refresh Dubu feed

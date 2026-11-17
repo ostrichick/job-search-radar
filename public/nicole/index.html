@@ -307,7 +307,10 @@
     <section id="nicoleManualEntries" class="panel nicole-extra-panel" aria-label="Manually added jobs" hidden></section>
   </main>
 
-  <div id="toast" class="toast" role="status" aria-live="polite" hidden><span id="toastText"></span><button id="undoHide">Undo</button></div>
+  <div class="toast-layer">
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden><span id="toastText"></span><button id="closeInfoToast" type="button" aria-label="Dismiss notification">Dismiss</button></div>
+    <div id="undoToast" class="toast undo-toast" role="status" aria-live="polite" hidden><span id="undoToastText"></span><button id="undoHide">Undo</button><button id="closeToast" type="button" aria-label="Dismiss undo notification">Dismiss</button></div>
+  </div>
 
   <dialog id="addDialog" aria-labelledby="addDialogTitle">
     <form id="addForm" method="dialog">

@@ -11,6 +11,12 @@ import { collectJobs, normalizeJob } from './collect-jobs.mjs';
 import { validateBackup, mergeStorageChanges } from '../public/munseong/backup-rules.js';
 import { isTrustedLocalRequest } from './local-origin.mjs';
 import { createFeedClient } from '../public/munseong/feed-client.js';
+import { isDefaultRecommendation } from '../public/munseong/recommendation-rules.js';
+
+const legacyPublic = { roleFitEvidence: true, roleFitBasis: 'public_institution',
+  category: '기타', matchedKeywords: [], score: 46, eligibilityCode: 'korea', listingStatus: 'official_listed' };
+assert.equal(isDefaultRecommendation(legacyPublic), false);
+assert.equal(isDefaultRecommendation({ ...legacyPublic, matchedKeywords: ['한국어'] }), true);
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'job-radar-runtime-'));

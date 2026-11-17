@@ -1,6 +1,10 @@
 const blockedListingStatuses = new Set(['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired']);
 
 export function hasRoleFitEvidence(job, policyVersion = 3) {
+  if (job?.roleFitBasis === 'public_institution') {
+    return job.roleFitEvidence !== false && ((job.matchedKeywords || []).length > 0
+      || Boolean(job.category && job.category !== '기타'));
+  }
   if (job?.roleFitEvidence === true) return true;
   if (job?.roleFitEvidence === false) return false;
   return Number(policyVersion || 0) < 3;

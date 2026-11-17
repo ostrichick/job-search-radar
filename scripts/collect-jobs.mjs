@@ -52,7 +52,7 @@ const verificationHistoryLimit = 24;
 const sourceMetricHistoryLimit = 24;
 const verificationCheckpointMs = 7 * dayMs;
 const contentFingerprintVersion = 3;
-const recommendationPolicyVersion = 3;
+const recommendationPolicyVersion = 4;
 const defaultLocationReference = Object.freeze({
   id: 'kr-jeonbuk-jeonju-deokjin-sanjeong',
   label: '전북특별자치도 전주시 덕진구 산정동',
@@ -1388,6 +1388,13 @@ function currentListingState(job) {
   const combined = lower(`${job.title} ${job._fullDescription || job.description}`);
   const title = lower(job.title);
   const lead = lower(job._fullDescription || job.description).slice(0, 700);
+  if (job.source === '전북 공공기관' && (!job.deadlineDate
+    || (job.sourceListingState === 'deadline_recheck' && !hasPassedFixedDeadline(job)))) {
+    return { code: 'stale', label: '마감/재확인', stale: true,
+      reason: job.deadlineLabel === '목록·상세 마감일 충돌로 재확인 필요'
+        ? job.deadlineLabel : '접수 마감일을 확인하지 못해 모집 여부 재확인 필요',
+      basis: 'deadline_unknown', verification: 'recheck' };
+  }
   if (job.deadlineType === 'fixed' && job.deadlineDate) {
     const closeAt = Date.parse(`${job.deadlineDate}T23:59:59+09:00`);
     if (Number.isFinite(closeAt) && closeAt < Date.now()) {
@@ -1446,7 +1453,9 @@ function currentListingState(job) {
       code: 'official_listed',
       label: job.source === '고용24' ? '고용24 모집 확인' : '공식 채용정보 게시 확인',
       stale: false,
-      reason: '정부 공식 채용정보 API의 현재 목록에서 해당 공고를 확인함',
+      reason: meta.evidenceRefreshability === 'direct_api'
+        ? '정부 공식 채용정보 API의 현재 목록에서 해당 공고를 확인함'
+        : '공식 출처 공개 목록에서 해당 공고의 게시를 확인함',
       basis: 'official_government_feed',
       verification: 'official_listed'
     };
@@ -1645,11 +1654,9 @@ function scoreJob(job) {
   const localBoard = localDomesticBoardSources.has(job.source);
   const publicInstitution = ['전주시 공공기관', '전북 공공기관', '전북대학교', '전주대학교'].includes(job.source);
   const roleMatched = localBoard ? titleMatched : matched;
-  const roleFitEvidence = publicInstitution || roleMatched.length > 0
+  const roleFitEvidence = roleMatched.length > 0
     || (!localBoard && job.category !== '기타');
-  const roleFitBasis = publicInstitution
-    ? 'public_institution'
-    : roleMatched.length > 0
+  const roleFitBasis = roleMatched.length > 0
       ? localBoard ? 'title_keyword_match' : 'keyword_match'
       : roleFitEvidence
         ? 'target_category'
@@ -2983,7 +2990,7 @@ async function collectJobsOnce({ includeManual = true, persist = true, previousJ
     ['Meridial', collectMeridial],
     ['OneForma', collectOneForma],
     ['전주시 공공기관', () => collectJeonjuPublic({ fetchText, normalizeJob, sourceCollection })],
-    ['전북 공공기관', () => collectJeonbukPublic({ fetchText, normalizeJob, sourceCollection })],
+    ['전북 공공기관', () => collectJeonbukPublic({ fetchText, normalizeJob, sourceCollection, previousJobs: fallbackJobs })],
     ['전북대학교', () => collectJbnuPublic({ fetchText, normalizeJob, sourceCollection })],
     ['전주대학교', () => collectJjuPublic({ fetchText, normalizeJob, sourceCollection })],
     ['알바몬', () => collectAlbamon(fallbackJobs)],

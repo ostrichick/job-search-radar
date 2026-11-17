@@ -23,6 +23,8 @@ function render() {
   const visibleJobs = jobs.slice(0, state.visibleLimit);
   const activeTotal = activeMarketJobs().length;
   $('resultCount').textContent = jobs.length > visibleJobs.length ? `${jobs.length}개 중 ${visibleJobs.length}개 표시` : `${jobs.length}개 공고`;
+  const resultStatus = $('resultStatus');
+  if (resultStatus) resultStatus.textContent = `${jobs.length}개 공고`;
   $('scopeCount').textContent = `· 숨김 제외 활성 전체 ${activeTotal}개`;
   $('showAllActive').hidden = isBroadActiveView();
   $('empty').hidden = jobs.length > 0;
@@ -133,7 +135,9 @@ function render() {
       distanceNode.classList.toggle('unknown', distance.kind === 'unknown');
       distanceNode.classList.toggle('remote', distance.kind === 'remote');
       node.querySelector('.distance-value').textContent = distance.value;
-      node.querySelector('.distance-note').textContent = distance.note;
+      const noteNode = node.querySelector('.distance-note');
+      noteNode.textContent = distance.cardNote || '';
+      noteNode.hidden = !distance.cardNote;
     }
     const meta = [
       state.marketTab === 'domestic' ? workplaceModeLabel(job) : '',

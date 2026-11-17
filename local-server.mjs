@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { collectJobs } from './scripts/collect-jobs.mjs';
+import { collectTours } from './scripts/collect-tours.mjs';
 import { run as collectNicole } from './profiles/dubu/scripts/collect.mjs';
 import { isTrustedLocalRequest } from './scripts/local-origin.mjs';
 import { singleFlight, withFileLock } from './scripts/file-storage.mjs';
@@ -13,6 +14,15 @@ const port = Number(process.env.PORT || 4317);
 const nicoleBaseline = path.join(root, 'profiles/dubu/public/jobs.json');
 // Keep locally refreshed Nicole leads out of the CI-maintained tracked baseline.
 const nicoleLocalFeed = path.join(root, 'data/nicole-jobs.json');
+const toursFeed = path.join(root, 'public/tours.json');
+
+async function readJsonFile(file) {
+  try { return JSON.parse(await fs.readFile(file, 'utf8')); } catch { return null; }
+}
+
+function refreshTours() {
+  return singleFlight('local-tours-refresh', async () => collectTours({ previousFeed: await readJsonFile(toursFeed) }));
+}
 
 async function readNicoleFeed() {
   try {
@@ -59,6 +69,10 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === 'POST' && url.pathname === '/api/refresh') {
       if (!isTrustedLocalRequest(req.headers, port)) return send(res, 403, JSON.stringify({ error: 'Forbidden origin' }));
+      if (url.searchParams.get('profile') === 'tours') {
+        const feed = await refreshTours();
+        return send(res, 200, JSON.stringify(feed));
+      }
       if (url.searchParams.get('profile') === 'nicole') {
         const result = await refreshNicole();
         if (!result.written) return send(res, 503, JSON.stringify({ error: result.message }));
@@ -113,9 +127,20 @@ async function refreshNicoleIfStale() {
   }
 }
 
+async function refreshToursIfStale() {
+  let stale = true;
+  try {
+    const current = JSON.parse(await fs.readFile(toursFeed, 'utf8'));
+    stale = !current.updatedAt || Date.now() - (Date.parse(current.updatedAt) || 0) > 6 * 60 * 60 * 1000;
+  } catch { /* Missing or unreadable tour feed requires one refresh. */ }
+  if (stale) await refreshTours();
+}
+
 refreshIfStale().catch((error) => console.error('Initial refresh failed:', error.message));
 refreshNicoleIfStale().catch((error) => console.error('Initial Nicole refresh failed:', error.message));
+refreshToursIfStale().catch((error) => console.error('Initial tour refresh failed:', error.message));
 setInterval(() => {
   collectJobs().catch((error) => console.error('Scheduled refresh failed:', error.message));
   refreshNicole().catch((error) => console.error('Scheduled Nicole refresh failed:', error.message));
+  refreshTours().catch((error) => console.error('Scheduled tour refresh failed:', error.message));
 }, 6 * 60 * 60 * 1000).unref();

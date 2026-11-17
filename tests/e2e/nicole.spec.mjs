@@ -265,3 +265,28 @@ test('first shared screen visit migrates original state once without modifying s
     };
   }))).toContain('online');
 });
+
+test('Nicole hide undo survives a general success toast and runs from the keyboard', async ({ page }) => {
+  await page.goto('/nicole/');
+  const card = page.locator('#jobs .job-card').filter({ hasText: 'Nicole test online' });
+  await expect(card).toHaveCount(1);
+
+  await card.locator('.dismiss').focus();
+  await page.keyboard.press('Enter');
+  await expect(card).toHaveCount(0);
+  await expect(page.locator('#undoToast')).toBeVisible();
+  await expect(page.locator('#undoHide')).toBeFocused();
+
+  await page.locator('#importStateFile').setInputFiles({
+    name: 'ok.json', mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify({ schema: 'job-search-radar-state', version: 1, favorites: [] }))
+  });
+  await expect(page.locator('#toast')).toBeVisible();
+  await expect(page.locator('#undoToast')).toBeVisible();
+  await expect(page.locator('#undoHide')).toBeVisible();
+  await expect(page.locator('#undoHide')).toBeFocused();
+
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#jobs .job-card').filter({ hasText: 'Nicole test online' })).toHaveCount(1);
+  await expect(page.locator('#undoToast')).toBeHidden();
+});

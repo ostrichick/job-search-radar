@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { collectJeonbukPublic } from './jeonbuk-public.mjs';
 import { incruitJeonbukRssUrl, parseIncruitJeonbukRss } from './incruit-rss.mjs';
 import {
   defaultLocationReference,
@@ -3114,6 +3115,11 @@ const collapseRisk = recommendationCollapseRisk(collapsedRecommendations, baseli
 assert.equal(collapseRisk.collapse, true, 'same-policy unexplained recommendation collapse must be detected');
 assert.equal(collapseRisk.baselineCount, 8);
 assert.equal(collapseRisk.currentCount, 2);
+const version4Collapse = recommendationCollapseRisk(
+  { ...collapsedRecommendations, recommendationPolicyVersion: 4 },
+  { ...baselineRecommendations, recommendationPolicyVersion: 4 });
+assert.equal(version4Collapse.collapse, true, 'same-version 4 baseline must reactivate collapse protection');
+assert.equal(version4Collapse.guarded, true);
 assert.equal(recommendationCollapseRisk({ ...collapsedRecommendations, recommendationPolicyVersion: 4 }, baselineRecommendations).collapse, false,
   'policy version bump must explicitly rebaseline intentional recommendation policy changes');
 const explainedRecommendations = {
@@ -3222,4 +3228,70 @@ assert.deepEqual(sameIdRows[0].alternateUrls, ['https://www.saramin.co.kr/b']);
 assert.deepEqual(sameIdRows[0].legacyIds, ['saramin:1', 'saramin:2']);
 assert.equal(sameIdRows[0].duplicateCount, 2);
 
+for (const title of ['조리실무사', '관리의사', '약학대학 연구원', 'SW 엔지니어']) {
+  const job = normalizeJob({ title, company: '공공기관', source: '전북 공공기관',
+    location: '전주시', countryCode: 'KR', description: '직원 채용', deadlineType: 'fixed', deadlineDate: '2099-11-20' });
+  assert.equal(job.roleFitEvidence, false, title);
+  assert.equal(isDefaultRecommendation(job), false, title);
+}
+const koreanPublic = normalizeJob({ title: '한국어 교육 행정 담당자', source: '전북 공공기관',
+  location: '전주시', countryCode: 'KR', deadlineType: 'fixed', deadlineDate: '2099-11-20' });
+assert.equal(koreanPublic.roleFitEvidence, true);
+assert.equal(isDefaultRecommendation(koreanPublic), true);
+assert.equal(currentListingState({ source: '전북 공공기관' }).code, 'stale');
+assert.equal(currentListingState({ source: '전북 공공기관', sourceListingState: 'deadline_recheck', deadlineType: 'fixed', deadlineDate: '2099-11-20' }).code, 'stale');
+assert.doesNotMatch(currentListingState({ source: '전북대학교', deadlineDate: '2099-11-20' }).reason, /API/);
+const realNow = Date.now;
+try {
+  Date.now = () => Date.parse('2026-11-12T14:59:58Z');
+  assert.equal(currentListingState({ source: '전북 공공기관', deadlineType: 'fixed', deadlineDate: '2026-11-12' }).code, 'official_listed');
+  Date.now = () => Date.parse('2026-11-12T15:00:00Z');
+  assert.equal(currentListingState({ source: '전북 공공기관', deadlineType: 'fixed', deadlineDate: '2026-11-12' }).code, 'expired');
+} finally { Date.now = realNow; }
+for (const [listDate, detailHtml, expected, deadline] of [
+  ['2099-11-20', '근무지역 전주시', 'stale', '2099-11-20'],
+  ['2099-11-20', '접수기간 ~ 2020-11-12', 'stale', ''],
+  ['2020-11-20', '접수기간 ~ 2099-11-12', 'stale', ''],
+  ['2020-11-20', '접수기간 ~ 2099-11-25 (연장)', 'official_listed', '2099-11-25'],
+  ['2020-11-20', '접수기간 ~ 2099-11-25 (변경 취소)', 'stale', ''],
+  ['2020-11-20', '접수기간 ~ 2099-11-25 (추가 없음)', 'stale', ''],
+  ['2020-11-20', '접수기간 ~ 2099-11-25 (변경 철회)', 'stale', ''],
+  ['2020-11-20', '접수기간 ~ 2099-11-25 (연장 중단)', 'stale', ''],
+  ['2020-11-20', '접수기간 ~ 2099-11-25 (중단)', 'stale', ''],
+  ['2020-11-20', '접수기간 ~ 2099-11-25 (추가모집)', 'official_listed', '2099-11-25'],
+  ['2020-11-20', '접수기간 변경 ~ 2099-11-25', 'official_listed', '2099-11-25'],
+  ['2020-11-20', '접수기간 2099-11-01 ~ 2099-11-30 (제출서류 변경)', 'stale', ''],
+  ['2020-11-20', '접수기간 2099-11-01 ~ 2099-11-30 (급여 변경)', 'stale', ''],
+  ['2020-11-20', '접수기간 2099-11-01 ~ 2099-11-30 (자격요건 변경)', 'stale', ''],
+  ['2020-11-20', '접수기간 2099-11-01 ~ 2099-11-30 (연장)', 'official_listed', '2099-11-30'],
+  ['2020-11-20', '접수기간 변경 2099-11-30', 'official_listed', '2099-11-30'],
+  ['2020-11-20', '접수기간 2099-11-01 ~ 2099-11-30 (면접 일정 변경)', 'stale', ''],
+  ['2020-11-20', '접수기간 2099-11-01 ~ 2099-11-30 (공고 내용 변경)', 'stale', ''],
+  ['2020-11-20', '모집 마감 연장 2099-11-30', 'official_listed', '2099-11-30'],
+  ['2099-11-20', '근무기간 연장', 'stale', '2099-11-20'],
+  ['2020-11-20', '접수기간 2099-11-01 ~ 2099-11-30 (면접 일정 연장)', 'stale', ''],
+  ['2020-11-20', '접수기간 2099-11-01 ~ 2099-11-30 (인터뷰 연장)', 'stale', ''],
+  ['2020-11-20', '접수기간 2099-11-01 ~ 2099-11-30 (근무기간 연장)', 'stale', ''],
+  ['2020-11-20', '접수기간 연장 2099-11-30', 'official_listed', '2099-11-30'],
+  ['2020-11-20', '추가모집 2099-11-30', 'official_listed', '2099-11-30'],
+  ['2020-11-20', '모집 마감 변경 2099-11-30', 'official_listed', '2099-11-30'],
+  ['2020-11-20', '지원 일정 변경 2099-11-30', 'official_listed', '2099-11-30'],
+  ['2020-11-20', '채용 기한 변경 2099-11-30', 'official_listed', '2099-11-30'],
+  ['2020-11-20', '접수기간 2099-11-01 ~ 2099-11-30 (연장, 변경 취소)', 'stale', ''],
+  ['2020-11-20', `접수기간 2099-11-01 ~ 2099-11-30 ${'안내 '.repeat(12)}변경`, 'stale', ''],
+  ['2099-11-20', null, 'stale', '2099-11-20'],
+  ['2020-11-20', null, 'expired', '2020-11-20']
+]) {
+  const jobs = await collectJeonbukPublic({ offsets: [0], normalizeJob, sourceCollection: (jobs) => jobs,
+    fetchText: async (url) => {
+      if (!url.includes('view_orginfo')) return `<tr><td>공공기관</td><td>전주학교</td><td><a href='/pro/view_orginfo/3966'>한국어 강사</a></td><td></td><td>${listDate}</td></tr>`;
+      if (detailHtml === null) throw new Error('detail unavailable');
+      return detailHtml;
+    } });
+  assert.equal(jobs[0].listingStatus, expected);
+  assert.equal(jobs[0].deadlineDate, deadline);
+  assert.equal(jobs[0].deadlineType, deadline ? 'fixed' : '');
+  assert.equal(jobs[0].sourceListingState, expected === 'official_listed' ? 'public_detail' : 'deadline_recheck');
+  if (!deadline) assert.match(jobs[0].listingReason, /목록·상세 마감일 충돌로 재확인 필요/);
+}
 console.log('collector tests passed');

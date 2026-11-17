@@ -89,6 +89,23 @@ function expectRejected(name, mutate, message, makeFeed = saraminFeed) {
 }
 
 try {
+  const htmlFeed = structuredClone(baseline);
+  const htmlJob = htmlFeed.jobs.find((job) => job.sourceEvidenceRefreshability === 'public_html_structured_data');
+  assert.ok(htmlJob);
+  htmlJob.listingReason = '정부 공식 채용정보 API의 현재 목록에서 해당 공고를 확인함';
+  const apiMislabel = runValidator(htmlFeed, 'html-api-mislabel');
+  assert.notEqual(apiMislabel.status, 0);
+  assert.match(apiMislabel.stderr, /HTML listing evidence must not claim API/);
+  htmlJob.listingReason = '공식 출처 공개 목록에서 해당 공고의 게시를 확인함';
+  assert.equal(runValidator(htmlFeed, 'html-public-list').status, 0);
+  const recheckFeed = structuredClone(baseline);
+  const recheck = recheckFeed.jobs.find((job) => job.id === 'job:af580e25247149d9');
+  assert.equal(recheck.listingStatus, 'stale');
+  assert.equal(runValidator(recheckFeed, 'government-deadline-recheck').status, 0);
+  recheck.listingVerification = 'official_listed';
+  const invalidRecheck = runValidator(recheckFeed, 'government-unjustified-stale');
+  assert.notEqual(invalidRecheck.status, 0);
+  assert.match(invalidRecheck.stderr, /official government current listing must use official_listed/);
   const valid = runValidator(saraminFeed(), 'valid-saramin');
   assert.equal(valid.status, 0, `valid Saramin final-feed row must pass: ${valid.stderr || valid.stdout}`);
 

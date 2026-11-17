@@ -7,6 +7,7 @@ import { createSortRules } from './sort-rules.js';
 import { createManualJobRules } from './manual-job.js';
 import { createStateStorage } from './state-storage.js';
 import { createFeedClient } from './feed-client.js';
+import { createToursView } from './tours-ui.js';
 import { validateBackup, validatePublicFeed, httpUrl } from './backup-rules.js';
 import { getProfile } from './profiles.js';
 import { classifyWorkplace, evaluateProfileFit } from './profile-fit.js';
@@ -60,10 +61,12 @@ const state = {
   detailReturnFocus: null,
   loadError: null,
   dynamicFiltersInitialized: false,
-  marketTab: storage.getItem('jobMarketTab') === 'domestic' ? 'domestic' : 'overseas_remote'
+  marketTab: storage.getItem('jobMarketTab') === 'domestic' ? 'domestic' : 'overseas_remote',
+  view: storage.getItem('dashboardView') === 'tours' ? 'tours' : 'jobs'
 };
 
 const $ = (id) => document.getElementById(id);
+const toursView = createToursView({ $ });
 function syncStoredState() {
   state.favorites = new Set(JSON.parse(storage.getItem('jobFavorites') || '[]'));
   state.jobStates = JSON.parse(storage.getItem('jobStates') || '{}');
@@ -242,14 +245,17 @@ for (const id of controls) {
 }
 $('marketOverseas').addEventListener('click', () => setMarketTab('overseas_remote'));
 $('marketDomestic').addEventListener('click', () => setMarketTab('domestic'));
+$('marketTours')?.addEventListener('click', () => setMarketTab('tours'));
 const advancedFilters = $('advancedFilters');
 if (advancedFilters) {
   const storedOpen = storage.getItem('jobAdvancedFiltersOpen');
-  advancedFilters.open = storedOpen === null ? !matchMedia('(max-width: 720px)').matches : storedOpen === 'true';
+  const compactViewport = matchMedia('(max-width: 720px)').matches;
+  advancedFilters.open = storedOpen === null ? (isNicole && !compactViewport) : storedOpen === 'true';
   advancedFilters.addEventListener('toggle', () => { storage.setItem('jobAdvancedFiltersOpen', String(advancedFilters.open)); commitState(); });
 }
 updateAdvancedFilterSummary();
 updateMarketUI();
+if (state.view === 'tours') toursView.setActive(true);
 
 function formatDate(value) {
   if (!value) return '게시일 미상';
@@ -417,7 +423,21 @@ function jobMarketScopes(job) {
 }
 
 function setMarketTab(market) {
-  if (!['overseas_remote', 'domestic'].includes(market) || market === state.marketTab) return;
+  if (market === 'tours') {
+    state.view = 'tours';
+    storage.setItem('dashboardView', 'tours');
+    commitState();
+    updateMarketUI();
+    toursView.setActive(true);
+    return;
+  }
+  if (!['overseas_remote', 'domestic'].includes(market)) return;
+  const sameMarket = market === state.marketTab && state.view === 'jobs';
+  state.view = 'jobs';
+  storage.setItem('dashboardView', 'jobs');
+  commitState();
+  updateMarketUI();
+  if (sameMarket) return;
   persistFilters();
   state.marketTab = market;
   state.visibleLimit = 60;
@@ -427,11 +447,14 @@ function setMarketTab(market) {
   updateDynamicFilters(true);
   persistFilters();
   render();
+  renderSourceHealth(state.meta?.sourceStatus || []);
 }
 
 function updateMarketUI() {
+  const toursActive = state.view === 'tours';
+  document.body.classList.toggle('tours-active', toursActive);
   for (const button of document.querySelectorAll('.market-tab')) {
-    const selected = button.dataset.market === state.marketTab;
+    const selected = toursActive ? button.dataset.market === 'tours' : button.dataset.market === state.marketTab;
     button.setAttribute('aria-pressed', String(selected));
     button.classList.toggle('active', selected);
   }
@@ -450,8 +473,8 @@ function updateMarketUI() {
   if ($('distanceReference')) {
     $('distanceReference').hidden = isNicole || state.marketTab !== 'domestic';
     $('distanceReference').textContent = isNicole ? '' : reference
-      ? `거리 기준 · ${reference.label} · 직선거리 기준(실제 이동거리 아님)`
-      : '거리 기준 · 전북특별자치도 전주시 덕진구 산정동 · 직선거리 기준';
+      ? `거리 기준 · ${reference.label} · 직선거리 기준(실제 이동거리 아님) · 좌표 정밀도에 따라 실제 위치와 차이 있을 수 있음`
+      : '거리 기준 · 전북특별자치도 전주시 덕진구 산정동 · 직선거리 기준 · 좌표 정밀도에 따라 실제 위치와 차이 있을 수 있음';
   }
 }
 
@@ -470,13 +493,13 @@ function calculateDistanceSummary(job) {
   if (isNicole) return null; // Nicole's source has no measured route or reference coordinates.
   if (!jobMarketScopes(job).includes('domestic')) return null;
   if (job.remote && !/hybrid/i.test(job.workplaceMode || '')) {
-    return { value: '원격 · 출근 거리 비해당', note: '한국 내 지원 지역은 확인되지만 출근 위치 비교 대상이 아닙니다.', km: null, kind: 'remote' };
+    return { value: '원격 · 출근 거리 비해당', note: '한국 내 지원 지역은 확인되지만 출근 위치 비교 대상이 아닙니다.', cardNote: '출근 위치 비교 대상 아님', km: null, kind: 'remote' };
   }
   const region = job.domesticRegion || {};
   const reference = state.meta?.locationReference || { lat: 35.84434, lon: 127.1736277, label: '전북특별자치도 전주시 덕진구 산정동' };
   const km = haversineKm(reference, { lat: region.lat, lon: region.lon });
   if (!Number.isFinite(km)) {
-    return { value: '주소 부족으로 거리 계산 불가', note: '공고에 거리 계산에 충분한 주소·좌표가 없습니다.', km: null, kind: 'unknown' };
+    return { value: '주소 부족으로 거리 계산 불가', note: '공고에 거리 계산에 충분한 주소·좌표가 없습니다.', cardNote: '주소·좌표 부족', km: null, kind: 'unknown' };
   }
   const rounded = km < 10 ? Math.round(km * 10) / 10 : Math.round(km);
   const precision = region.coordinatePrecision || '';
@@ -487,9 +510,15 @@ function calculateDistanceSummary(job) {
     : regionBased
       ? `${region.coordinateLabel || region.label || region.province || '공고 지역'} 기준`
       : '공고 위치 좌표 기준';
+  const precisionNote = precision === 'road'
+    ? ' · 도로 중심 좌표라 실제 건물 위치와 다를 수 있음'
+    : regionBased && !addressBased
+      ? ' · 지역 중심점은 거리 구간을 보수적으로 판정'
+      : '';
   return {
     value: addressBased ? `주소 기준 직선거리 약 ${rounded}km` : regionBased ? `지역 기준 직선거리 약 ${rounded}km` : `직선거리 약 ${rounded}km`,
-    note: `${targetEvidence} · ${reference.label}에서의 직선거리 · 실제 도로 이동거리 아님${precision === 'road' ? ' · 도로 중심 좌표라 실제 건물 위치와 다를 수 있음' : ''}${regionBased && !addressBased ? ' · 지역 중심점은 거리 구간을 보수적으로 판정' : ''}${region.coordinateSource ? ` · 좌표 ${region.coordinateSource}` : ''}`,
+    note: `${targetEvidence} · ${reference.label} 기준${precisionNote}${region.coordinateSource ? ` · 좌표 ${region.coordinateSource}` : ''}`,
+    cardNote: regionBased && !addressBased ? '지역 중심점 기준 · 거리 구간 보수적 판정' : '',
     km,
     kind: addressBased || !regionBased ? 'exact' : 'region',
     coordinatePrecision: precision
@@ -694,8 +723,7 @@ function isBroadActiveView() {
   return Object.entries(broad).every(([key, value]) => key === 'sort' || String(current[key] ?? '') === String(value));
 }
 
-function showAllActiveJobs() {
-  const values = broadActiveFilterValues();
+function applyBroadFilterValues(values) {
   for (const [id, value] of Object.entries(values)) {
     const element = $(id);
     if (!element) continue;
@@ -709,6 +737,22 @@ function showAllActiveJobs() {
   updateAdvancedFilterSummary();
   persistFilters();
   render();
+}
+
+function showAllActiveJobs() {
+  applyBroadFilterValues(broadActiveFilterValues());
+}
+
+function preservedSourceErrorFilterValues() {
+  return { ...broadActiveFilterValues({ includeHidden: true }), listingFilter: 'source_error' };
+}
+
+function preservedSourceErrorJobs() {
+  return matchingJobs({ values: preservedSourceErrorFilterValues() });
+}
+
+function showPreservedSourceErrorJobs() {
+  applyBroadFilterValues(preservedSourceErrorFilterValues());
 }
 
 function activeFilterValueLabel(id, value) {
@@ -804,15 +848,32 @@ function restoreHideState(items = []) {
   }
 }
 
+function showToast(message, { timeout = 0 } = {}) {
+  clearTimeout(state.toastTimer);
+  $('toastText').textContent = message;
+  $('toast').hidden = false;
+  if (timeout) state.toastTimer = setTimeout(() => { $('toast').hidden = true; }, timeout);
+}
+
+function showUndoToast(message) {
+  clearTimeout(state.toastTimer);
+  $('toast').hidden = true;
+  $('undoToastText').textContent = message;
+  $('undoHide').hidden = false;
+  $('undoToast').hidden = false;
+}
+
+function hideUndoToast() {
+  $('undoToast').hidden = true;
+}
+
 async function hideWithUndo(job) {
-  state.lastHidden = { items: captureHideState([job.id]) };
+  const focus = captureJobCardFocus();
+  state.lastHidden = { items: captureHideState([job.id]), focus };
   await setHidden(job.id, true);
   if (storage.readOnly) return;
-  $('toastText').textContent = `${job.title} 공고를 숨겼습니다.`;
-  $('undoHide').hidden = false;
-  $('toast').hidden = false;
-  clearTimeout(state.toastTimer);
-  state.toastTimer = setTimeout(() => { $('toast').hidden = true; state.lastHidden = null; }, 5000);
+  showUndoToast(`${job.title} 공고를 숨겼습니다.`);
+  $('undoHide').focus();
 }
 
 function qualityClass(type, value) {
@@ -1011,7 +1072,7 @@ function recentVerificationBadges(job, now = Date.now()) {
   if (payment.freshness === 'aging') badges.push({ state: 'aging', label: '근거 만료 임박' });
   if (payment.freshness === 'expired') badges.push({ state: 'expired', label: '지급 근거 만료' });
   if ((job.requirementsStatus || 'clear') === 'hard_check') badges.push({ state: 'hard', label: '미확인 핵심요건' });
-  if (!badges.length && job.sourceListingState !== 'manual_original_review'
+  if (!badges.length && !['manual_original_review', 'public_list', 'public_list_cached_detail'].includes(job.sourceListingState)
       && recent(job.lastVerifiedAt || job.listingCheckedAt || job.verifiedAt, 1)) {
     badges.push({ state: 'recent',
       label: ['public_rss', 'public_rss_cached_detail'].includes(job.sourceListingState)
@@ -1333,6 +1394,12 @@ function restoreJobCardFocus(snapshot) {
   target?.focus?.({ preventScroll: true });
 }
 
+function focusSnapshotForJob(id) {
+  const cards = [...document.querySelectorAll('.job-card')];
+  const index = cards.findIndex((card) => card.dataset.jobId === id);
+  return index >= 0 ? { jobId: id, selector: '.details', index } : null;
+}
+
 function updateBatchUI(visibleJobs = filteredJobs().slice(0, state.visibleLimit)) {
   const selected = [...state.selectedIds].filter((id) => state.jobs.some((job) => job.id === id));
   state.selectedIds = new Set(selected);
@@ -1353,6 +1420,7 @@ async function applyBatch(action) {
   if (!state.selectedIds.size) { render(); return; }
   const affectedIds = [...state.selectedIds];
   const hideSnapshot = action === 'hide' ? captureHideState(affectedIds) : [];
+  const hideFocus = action === 'hide' ? focusSnapshotForJob(affectedIds[0]) : null;
   for (const id of affectedIds) {
     state.newIds.delete(id);
     if (action === 'favorite') state.favorites.add(id);
@@ -1367,16 +1435,13 @@ async function applyBatch(action) {
   await persist();
   if (storage.readOnly) { render(); return; }
   if (action === 'hide') {
-    state.lastHidden = { items: hideSnapshot };
-    $('toastText').textContent = `${affectedIds.length}개 공고를 숨겼습니다.`;
-    $('undoHide').hidden = false;
-    $('toast').hidden = false;
-    clearTimeout(state.toastTimer);
-    state.toastTimer = setTimeout(() => { $('toast').hidden = true; state.lastHidden = null; }, 5000);
+    state.lastHidden = { items: hideSnapshot, focus: hideFocus };
+    showUndoToast(`${affectedIds.length}개 공고를 숨겼습니다.`);
     state.selectedIds.clear();
   }
   persist();
   render();
+  if (action === 'hide') $('undoHide').focus();
 }
 
 function resetFilters() {
@@ -1739,25 +1804,14 @@ function renderSourceHealth(sourceStatus = []) {
   text.textContent = [...failureText, ...partialText, ...recoveryText, ...qualityText].join(' / ');
   summary.append(title, text);
   panel.replaceChildren(summary);
-  if (preserved > 0) {
+  const preservedJobs = preservedSourceErrorJobs();
+  if (preservedJobs.length) {
     const button = document.createElement('button');
     button.id = 'showSourceErrors';
     button.className = 'button compact secondary-light';
     button.type = 'button';
-    button.textContent = `보존 공고 ${preserved}개 보기`;
-    button.addEventListener('click', () => {
-      $('listingFilter').value = 'source_error';
-      $('eligibility').value = '';
-      $('minScore').value = '0';
-      $('sourceKindFilter').value = '';
-      $('paymentFilter').value = '';
-      $('requirementsFilter').value = '';
-      $('statusFilter').value = 'all';
-      persistFilters();
-      updateDynamicFilters();
-      updateAdvancedFilterSummary();
-      render();
-    });
+    button.textContent = `보존 공고 ${preservedJobs.length}개 보기`;
+    button.addEventListener('click', showPreservedSourceErrorJobs);
     panel.append(button);
   }
   panel.hidden = false;
@@ -1872,16 +1926,16 @@ $('importStateFile').addEventListener('change', async (event) => {
   if (!file) return;
   try {
     const imported = await importState(file);
-    $('toastText').textContent = imported?.kind === 'linkedin-alert'
+    if ($('loadErrorText').textContent.startsWith('상태 가져오기 실패')) {
+      $('loadErrorText').textContent = '';
+      $('loadErrorBanner').hidden = true;
+    }
+    showToast(imported?.kind === 'linkedin-alert'
       ? `LinkedIn 알림 공고 ${imported.count}개를 현재 목록에 병합했습니다.`
-      : '백업 상태를 현재 데이터에 병합했습니다.';
-    $('undoHide').hidden = true;
-    $('toast').hidden = false;
-    clearTimeout(state.toastTimer);
-    state.toastTimer = setTimeout(() => { $('toast').hidden = true; $('undoHide').hidden = false; }, 3500);
+      : '백업 상태를 현재 데이터에 병합했습니다.', { timeout: 3500 });
   } catch (error) {
-    $('emptyMessage').textContent = `상태 가져오기 실패: ${error.message}`;
-    $('empty').hidden = false;
+    $('loadErrorText').textContent = `상태 가져오기 실패: ${error.message}`;
+    $('loadErrorBanner').hidden = false;
   } finally {
     event.target.value = '';
   }
@@ -1934,14 +1988,32 @@ $('batchApplied').addEventListener('click', () => applyBatch('applied'));
 $('batchReviewed').addEventListener('click', () => applyBatch('reviewed'));
 $('batchHide').addEventListener('click', () => applyBatch('hide'));
 $('clearSelection').addEventListener('click', () => { state.selectedIds.clear(); render(); });
-$('undoHide').addEventListener('click', () => {
+$('undoHide').addEventListener('click', async () => {
   if (!state.lastHidden) return;
+  const focus = state.lastHidden.focus;
   restoreHideState(state.lastHidden.items || []);
   state.lastHidden = null;
+  hideUndoToast();
+  persist();
+  if (storage.pending) await storage.flush().catch(() => {});
+  syncStoredState();
+  render();
+  restoreJobCardFocus(focus);
+});
+$('closeToast')?.addEventListener('click', async () => {
+  const focus = state.lastHidden?.focus;
+  state.lastHidden = null;
+  hideUndoToast();
+  if (focus) {
+    if (storage.pending) await storage.flush().catch(() => {});
+    syncStoredState();
+    render();
+    restoreJobCardFocus(focus);
+  }
+});
+$('closeInfoToast')?.addEventListener('click', () => {
   clearTimeout(state.toastTimer);
   $('toast').hidden = true;
-  persist();
-  render();
 });
 
 $('addForm').addEventListener('submit', async (event) => {
@@ -1979,11 +2051,7 @@ $('addForm').addEventListener('submit', async (event) => {
   dialog.close();
   if (manualMarket !== state.marketTab) setMarketTab(manualMarket);
   showAllActiveJobs();
-  $('toastText').textContent = '공고를 추가했습니다. 방금 추가한 공고가 보이도록 현재 조건을 넓혔습니다.';
-  $('undoHide').hidden = true;
-  $('toast').hidden = false;
-  clearTimeout(state.toastTimer);
-  state.toastTimer = setTimeout(() => { $('toast').hidden = true; $('undoHide').hidden = false; }, 3500);
+  showToast('공고를 추가했습니다. 방금 추가한 공고가 보이도록 현재 조건을 넓혔습니다.', { timeout: 3500 });
 });
 
 storage.subscribe(() => { syncStoredState(); showStorageStatus(); render(); });
