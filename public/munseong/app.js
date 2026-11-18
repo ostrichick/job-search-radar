@@ -85,7 +85,7 @@ function showStorageStatus() {
   panel.hidden = !storage.readOnly;
   if (storage.readOnly) {
     $('storageStatusText').textContent = `상태를 저장할 수 없어 읽기 전용으로 표시합니다. (${storage.error?.message || '저장소 오류'})`;
-    for (const el of document.querySelectorAll('#addJobBtn,#importStateBtn,#addForm button[type=submit],.favorite,.job-state,.review-toggle,.dismiss,#addForm button[value=default],#batchFavorite,#batchPlanned,#batchApplied,#batchReviewed,#batchHide,#undoHide')) el.disabled = true;
+    for (const el of document.querySelectorAll('#addJobBtn,#importStateBtn,#addForm button[type=submit],.favorite,.job-state,.dismiss,#addForm button[value=default],#batchFavorite,#batchPlanned,#batchApplied,#batchHide,#undoHide')) el.disabled = true;
   }
 }
 function commitState(mode = 'edit') {
@@ -1370,7 +1370,7 @@ function captureJobCardFocus() {
   const active = document.activeElement;
   const card = active?.closest?.('.job-card');
   if (!card?.dataset?.jobId) return null;
-  const selectors = ['.favorite', '.dismiss', '.job-state', '.review-toggle', '.job-select', '.details', '.apply'];
+  const selectors = ['.favorite', '.dismiss', '.job-state', '.job-select', '.details', '.apply'];
   const selector = selectors.find((candidate) => active.matches?.(candidate)) || '.details';
   const cards = [...document.querySelectorAll('.job-card')];
   return { jobId: card.dataset.jobId, selector, index: Math.max(0, cards.indexOf(card)) };
@@ -1398,7 +1398,7 @@ function updateBatchUI(visibleJobs = filteredJobs().slice(0, state.visibleLimit)
   $('batchBar').classList.toggle('collapse-hidden', visibleJobs.length === 0 && Boolean(state.meta));
   $('batchBar').classList.toggle('has-selection', selected.length > 0);
   $('selectedCount').textContent = `${selected.length}개 선택`;
-  for (const id of ['batchFavorite', 'batchPlanned', 'batchApplied', 'batchReviewed', 'batchHide', 'clearSelection']) $(id).disabled = selected.length === 0;
+  for (const id of ['batchFavorite', 'batchPlanned', 'batchApplied', 'batchHide', 'clearSelection']) $(id).disabled = selected.length === 0;
   const visibleIds = visibleJobs.map((job) => job.id);
   const selectedVisible = visibleIds.filter((id) => state.selectedIds.has(id)).length;
   $('selectVisible').checked = visibleIds.length > 0 && selectedVisible === visibleIds.length;
@@ -1419,9 +1419,6 @@ async function applyBatch(action) {
     if (action === 'applied') state.jobStates[id] = 'applied';
     if (action === 'hide') state.hiddenIds.add(id);
     if (['favorite', 'planned', 'applied'].includes(action)) snapshotJob(id);
-  }
-  if (action === 'reviewed') {
-    for (const id of state.selectedIds) markJobReviewed(id);
   }
   await persist();
   if (storage.readOnly) { render(); return; }
@@ -1976,7 +1973,6 @@ $('selectVisible').addEventListener('change', () => {
 $('batchFavorite').addEventListener('click', () => applyBatch('favorite'));
 $('batchPlanned').addEventListener('click', () => applyBatch('planned'));
 $('batchApplied').addEventListener('click', () => applyBatch('applied'));
-$('batchReviewed').addEventListener('click', () => applyBatch('reviewed'));
 $('batchHide').addEventListener('click', () => applyBatch('hide'));
 $('clearSelection').addEventListener('click', () => { state.selectedIds.clear(); render(); });
 $('undoHide').addEventListener('click', async () => {

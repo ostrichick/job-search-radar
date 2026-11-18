@@ -49,7 +49,52 @@ function render() {
   const template = $('jobTemplate');
   for (const job of visibleJobs) {
     const node = template.content.cloneNode(true);
-    node.querySelector('.job-card').dataset.jobId = job.id;
+    const card = node.querySelector('.job-card');
+    card.dataset.jobId = job.id;
+    const reviewed = state.reviewedIds.has(job.id);
+    card.classList.toggle('is-unreviewed', !reviewed);
+    card.classList.toggle('is-seen', reviewed);
+    const seenStatus = node.querySelector('.seen-status');
+    if (seenStatus) seenStatus.hidden = !reviewed;
+    let pendingReviewRender = false;
+    const markSeen = async () => {
+      if (storage.readOnly || state.reviewedIds.has(job.id)) return;
+      state.reviewedIds.add(job.id);
+      state.reviewedFingerprints[job.id] = jobFingerprint(job);
+      state.newIds.delete(job.id);
+      card.classList.remove('is-unreviewed');
+      card.classList.add('is-seen');
+      if (seenStatus) seenStatus.hidden = false;
+      renderStats();
+      const immediateReviewFilter = ['unreviewed', 'new'].includes($('statusFilter')?.value);
+      pendingReviewRender = true;
+      await persist();
+      if (immediateReviewFilter && pendingReviewRender) {
+        pendingReviewRender = false;
+        render();
+      }
+    };
+    let seenDwellTimer = null;
+    const armSeen = () => {
+      if (storage.readOnly || state.reviewedIds.has(job.id)) return;
+      clearTimeout(seenDwellTimer);
+      seenDwellTimer = setTimeout(markSeen, 450);
+    };
+    const disarmSeen = () => { clearTimeout(seenDwellTimer); seenDwellTimer = null; };
+    const flushPendingReviewRender = () => {
+      if (!pendingReviewRender) return;
+      pendingReviewRender = false;
+      render();
+    };
+    card.addEventListener('pointerenter', (event) => {
+      if (event.pointerType !== 'touch') armSeen();
+    });
+    card.addEventListener('pointermove', (event) => {
+      if (event.pointerType !== 'touch' && !seenDwellTimer) armSeen();
+    }, { passive: true });
+    card.addEventListener('pointerleave', () => { disarmSeen(); flushPendingReviewRender(); });
+    card.addEventListener('focusin', armSeen);
+    card.addEventListener('focusout', () => { disarmSeen(); flushPendingReviewRender(); });
     node.querySelector('.source').textContent = job.source;
     if ((job.sources || []).length > 1) node.querySelector('.source').textContent = `${job.source} +${job.sources.length - 1}`;
     node.querySelector('.score').textContent = job.manual
@@ -156,9 +201,7 @@ function render() {
     apply.href = job.url;
     apply.addEventListener('click', () => {
       if (storage.readOnly) return;
-      state.reviewedIds.add(job.id);
-      state.reviewedFingerprints[job.id] = jobFingerprint(job);
-      state.newIds.delete(job.id);
+      markSeen();
       persist();
       renderStats();
       if ($('statusFilter').value === 'unreviewed' || $('statusFilter').value === 'new') render();
@@ -169,6 +212,7 @@ function render() {
     favorite.setAttribute('aria-label', state.favorites.has(job.id) ? `${job.title} 관심 해제` : `${job.title} 관심 등록`);
     favorite.classList.toggle('active', state.favorites.has(job.id));
     favorite.addEventListener('click', () => {
+      disarmSeen();
       state.newIds.delete(job.id);
       state.favorites.has(job.id) ? state.favorites.delete(job.id) : state.favorites.add(job.id);
       if (state.favorites.has(job.id)) snapshotJob(job.id);
@@ -178,43 +222,32 @@ function render() {
     const jobState = node.querySelector('.job-state');
     jobState.value = state.jobStates[job.id] || '';
     jobState.setAttribute('aria-label', `${job.title} 지원 상태`);
-    jobState.addEventListener('change', () => setJobState(job.id, jobState.value));
+    jobState.addEventListener('change', () => {
+      disarmSeen();
+      setJobState(job.id, jobState.value);
+    });
 
-    const reviewToggle = node.querySelector('.review-toggle');
-    if (reviewToggle) {
-      const reviewed = state.reviewedIds.has(job.id);
-      node.querySelector('.job-card').classList.toggle('is-reviewed', reviewed);
-      reviewToggle.textContent = reviewed ? '확인 취소' : '확인함';
-      reviewToggle.classList.toggle('active', reviewed);
-      reviewToggle.setAttribute('aria-pressed', String(reviewed));
-      reviewToggle.setAttribute('aria-label', `${job.title} ${reviewed ? '확인 취소' : '확인함'}`);
-      reviewToggle.addEventListener('click', () => {
-        if (storage.readOnly) return;
-        state.newIds.delete(job.id);
-        if (state.reviewedIds.has(job.id)) {
-          state.reviewedIds.delete(job.id);
-          delete state.reviewedFingerprints[job.id];
-        } else {
-          state.reviewedIds.add(job.id);
-          state.reviewedFingerprints[job.id] = jobFingerprint(job);
-        }
-        persist();
-        render();
-      });
-    }
     const dismiss = node.querySelector('.dismiss');
     if (state.hiddenIds.has(job.id)) {
       dismiss.textContent = '↶';
       dismiss.title = '숨김 해제';
       dismiss.setAttribute('aria-label', `${job.title} 숨김 해제`);
-      dismiss.addEventListener('click', () => setHidden(job.id, false));
+      dismiss.addEventListener('click', () => { disarmSeen(); setHidden(job.id, false); });
     } else {
       dismiss.textContent = '×';
       dismiss.title = '숨기기';
       dismiss.setAttribute('aria-label', `${job.title} 숨기기`);
-      dismiss.addEventListener('click', () => hideWithUndo(job));
+      dismiss.addEventListener('click', () => { disarmSeen(); hideWithUndo(job); });
     }
-    node.querySelector('.details').addEventListener('click', () => openDetails(job));
+    node.querySelector('.details').addEventListener('click', () => {
+      disarmSeen();
+      openDetails(job);
+      if (!storage.readOnly) {
+        card.classList.remove('is-unreviewed');
+        card.classList.add('is-seen');
+        if (seenStatus) seenStatus.hidden = false;
+      }
+    });
     decorateCard?.(node, job);
     container.appendChild(node);
   }

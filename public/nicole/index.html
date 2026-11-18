@@ -104,7 +104,7 @@
           <option value="active">Exclude hidden</option>
           <option value="all">All statuses</option>
           <option value="new">New jobs</option>
-          <option value="unreviewed">Not reviewed</option>
+          <option value="unreviewed">Unseen</option>
           <option value="saved">Saved jobs</option>
           <option value="planned">Planning to apply</option>
           <option value="applied">Applied</option>
@@ -269,7 +269,6 @@
         <button id="batchFavorite" class="button compact">Save</button>
         <button id="batchPlanned" class="button compact">Plan to apply</button>
         <button id="batchApplied" class="button compact">Applied</button>
-        <button id="batchReviewed" class="button compact">Mark reviewed</button>
         <button id="batchHide" class="button compact">Hide</button>
         <button id="clearSelection" class="button compact secondary-light">Clear selection</button>
       </div>
@@ -283,7 +282,7 @@
       </div>
       <div class="result-actions">
         <button id="showAllActive" class="button compact secondary-light" type="button" hidden>Show active jobs excluding hidden</button>
-        <p class="source-note">Opening details, visiting the source, or marking reviewed records a review.</p>
+        <p class="source-note">Hovering a card briefly, opening details, or visiting the source marks it seen.</p>
       </div>
     </section>
     <section id="sourceHealth" class="source-health" hidden aria-live="polite"></section>
@@ -334,7 +333,7 @@
   <template id="jobTemplate">
     <article class="job-card">
       <div class="job-top">
-        <div class="job-select-group"><label class="job-select-hit"><input class="job-select" type="checkbox"></label><div><span class="source"></span><span class="score"></span></div></div>
+        <div class="job-select-group"><label class="job-select-hit"><input class="job-select" type="checkbox"></label><div><span class="source"></span><span class="score"></span><span class="seen-status" hidden>Reviewed</span></div></div>
         <div class="mini-actions"><button class="favorite" type="button" aria-label="Save job">☆</button><button class="dismiss" type="button" aria-label="Hide job">×</button></div>
       </div>
       <h2 class="title"></h2>

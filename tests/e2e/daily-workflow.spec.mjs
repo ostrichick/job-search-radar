@@ -376,7 +376,7 @@ test('IndexedDB 열기 실패는 정상 피드를 읽기 전용으로 표시하�
   await useFeed(page); await page.goto('/munseong/'); await expect(page.locator('.job-card')).toHaveCount(3);
   await expect(page.locator('#storageStatus')).toBeVisible();
   await expect(page.locator('#importStateBtn')).toBeDisabled(); await expect(page.locator('.favorite').first()).toBeDisabled();
-  await expect(page.locator('.review-toggle').first()).toBeDisabled();
+  await expect(page.locator('.job-card.is-unreviewed')).toHaveCount(3);
   await expect(page.locator('#exportStateBtn')).toBeEnabled();
   const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#exportStateBtn').click()]);
   expect(await download.path()).toBeTruthy();
@@ -1144,7 +1144,7 @@ test('상태와 동적 소스 필터가 reload 후 유지된다', async ({ page 
   await expect(page.locator('.job-card')).toHaveCount(1);
 });
 
-test('관심·지원 상태·숨김은 내용 확인으로 간주하지 않고 상세 확인만 미확인에서 제외한다', async ({ page }) => {
+test('관심·지원 상태·숨김은 확인 상태로 간주하지 않고 상세 확인만 미확인에서 제외한다', async ({ page }) => {
   await useFeed(page);
   await page.goto('/munseong/');
   const targetTitle = 'AI Data Specialist - Korean';
@@ -1194,7 +1194,7 @@ test('카드 상태 변경과 상세 닫기 뒤에도 키보드 포커스가 작
   await expect(targetCard().locator('.details')).toBeFocused();
 });
 
-test('일괄 관심은 미확인 상태를 유지하고 내용 확인함만 확인 상태를 바꾼다', async ({ page }) => {
+test('일괄 관심은 확인 상태를 바꾸지 않고 카드에 머문 항목만 확인으로 기록한다', async ({ page }) => {
   await useFeed(page);
   await page.goto('/munseong/');
   await page.locator('#selectVisible').check();
@@ -1202,9 +1202,15 @@ test('일괄 관심은 미확인 상태를 유지하고 내용 확인함만 확�
   await page.selectOption('#statusFilter', 'unreviewed');
   await expect(page.locator('.job-card')).toHaveCount(3);
 
-  await page.locator('#selectVisible').check();
-  await page.locator('#batchReviewed').click();
-  await expect(page.locator('.job-card')).toHaveCount(0);
+  await page.locator('#statusFilter').selectOption('all');
+  await expect(page.locator('.job-card').first()).toHaveClass(/is-unreviewed/);
+  await page.locator('.job-card').first().hover();
+  await expect(page.locator('.job-card').first()).not.toHaveClass(/is-unreviewed/);
+  await expect(page.locator('.job-card').first().locator('.seen-status')).toBeVisible();
+  await page.selectOption('#statusFilter', 'reviewed');
+  await expect(page.locator('.job-card')).toHaveCount(1);
+  await page.selectOption('#statusFilter', 'unreviewed');
+  await expect(page.locator('.job-card')).toHaveCount(2);
 });
 
 test('batch hide를 한 번에 되돌릴 수 있다', async ({ page }) => {
@@ -2306,7 +2312,9 @@ test('한국어 관련 필터는 점수·지역 기본 필터와 무관하게 �
   await expect(page.locator('#jobs')).toContainText('Korean Learning Content Designer');
   await expect(page.locator('#jobs')).toContainText('Korean Customer Support Specialist');
   await expect(page.locator('#jobs')).toContainText('Keywords Studios');
-  await page.locator('.job-card').first().locator('.review-toggle').click();
+  await page.locator('.job-card').first().hover();
+  await expect(page.locator('.job-card').first()).not.toHaveClass(/is-unreviewed/);
+  await expect(page.locator('.job-card').first().locator('.seen-status')).toBeVisible();
   await page.locator('#statusFilter').selectOption('reviewed');
   await expect(page.locator('.job-card')).toHaveCount(1);
   await page.locator('#statusFilter').selectOption('all');
@@ -2315,20 +2323,28 @@ test('한국어 관련 필터는 점수·지역 기본 필터와 무관하게 �
   await expect(page.locator('#jobs')).toContainText('Keywords Studios');
 });
 
-test('공고 카드에서 확인함을 누르고 확인 여부로 필터링한다', async ({ page }) => {
+test('공고 카드에 머물면 확인 안 함 표시가 사라지고 확인 여부로 필터링한다', async ({ page }) => {
   await useFeed(page);
   await page.goto('/munseong/');
   await expect(page.locator('.job-card')).toHaveCount(3);
-  await page.locator('.job-card').first().locator('.review-toggle').click();
-  await expect(page.locator('.job-card.is-reviewed')).toHaveCount(1);
-  await expect(page.locator('.job-card.is-reviewed .review-toggle')).toHaveText('확인 취소');
+  await expect(page.locator('.job-card.is-unreviewed')).toHaveCount(3);
+  await page.locator('.job-card').first().hover();
+  await expect(page.locator('.job-card').first()).not.toHaveClass(/is-unreviewed/);
   await page.locator('#statusFilter').selectOption('reviewed');
   await expect(page.locator('.job-card')).toHaveCount(1);
   await page.locator('#statusFilter').selectOption('unreviewed');
   await expect(page.locator('.job-card')).toHaveCount(2);
-  await page.locator('#statusFilter').selectOption('all');
-  await page.locator('.job-card.is-reviewed .review-toggle').click();
-  await expect(page.locator('.job-card.is-reviewed')).toHaveCount(0);
+  await expect(page.locator('.job-card.is-unreviewed')).toHaveCount(2);
+});
+
+test('미확인 필터에서 카드에 머물면 확인 처리와 함께 목록이 즉시 갱신된다', async ({ page }) => {
+  await useFeed(page);
+  await page.goto('/munseong/');
+  await page.locator('#statusFilter').selectOption('unreviewed');
+  await expect(page.locator('.job-card')).toHaveCount(3);
+  await page.locator('.job-card').first().hover();
+  await expect(page.locator('.job-card')).toHaveCount(2);
+  await expect(page.locator('.job-card.is-unreviewed')).toHaveCount(2);
 });
 
 test('원문 내용이 바뀐 공고는 확인함 상태를 자동으로 해제한다', async ({ page }) => {
@@ -2336,12 +2352,11 @@ test('원문 내용이 바뀐 공고는 확인함 상태를 자동으로 해제�
   await useFeed(page, () => current);
   await page.goto('/munseong/');
   const card = page.locator('.job-card[data-job-id="changed"]');
-  await card.locator('.review-toggle').click();
-  await expect(card).toHaveClass(/is-reviewed/);
+  await card.hover();
+  await expect(card).not.toHaveClass(/is-unreviewed/);
   current = feed([job({ id: 'changed', contentFingerprint: 'fingerprint-v2', title: 'Updated Korean AI Data Specialist' })]);
   await page.reload();
-  await expect(page.locator('.job-card[data-job-id="changed"]')).not.toHaveClass(/is-reviewed/);
-  await expect(page.locator('.job-card[data-job-id="changed"] .review-toggle')).toHaveText('확인함');
+  await expect(page.locator('.job-card[data-job-id="changed"]')).toHaveClass(/is-unreviewed/);
 });
 
 test('맞춤 적합도는 확인된 부적격 공고를 기본 추천에서 숨기고 사유를 보여준다', async ({ page }) => {

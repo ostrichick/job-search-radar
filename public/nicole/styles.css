@@ -6,7 +6,7 @@
 .nicole-extra-panel { padding: 16px; margin-top: 16px; }
 .nicole-extra-panel a { display: inline-block; margin: 8px 14px 8px 0; color: var(--text-accent); }
 .nicole-extra-panel .hidden-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-base); }
-.mini-actions { flex-wrap: wrap; }
-.mini-actions .button { padding: 4px 8px; font-size: 12px; }
+.hide-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.hide-actions .button { min-height: 36px; padding: 6px 10px; font-size: 12px; white-space: nowrap; }
 .distance-summary[hidden], #detailsDistance[hidden] { display: none !important; }
 .language-fit-badge, .region-nearby, .region-expanded, .region-relocation, .region-unknown { padding: 3px 8px; border-radius: 6px; background: var(--accent-soft); color: var(--text-accent); }

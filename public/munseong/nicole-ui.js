@@ -26,10 +26,12 @@ export function createNicoleUI({ state, storage, persist, mergeJobs, rerender })
     return button;
   };
   function decorateCard(node, job) {
-    const toolbar = node.querySelector('.mini-actions');
-    if (!toolbar) return;
-    if (job.company && !['Company not specified', '회사 미상'].includes(job.company)) toolbar.append(editor('companies', job.company, 'Hide company'));
-    toolbar.append(editor('sources', job.source, 'Hide source'));
+    const hideActions = document.createElement('div');
+    hideActions.className = 'hide-actions';
+    if (job.company && !['Company not specified', '회사 미상'].includes(job.company)) hideActions.append(editor('companies', job.company, 'Hide company'));
+    hideActions.append(editor('sources', job.source, 'Hide source'));
+    const footer = node.querySelector('.card-footer');
+    if (footer) footer.before(hideActions); else node.append(hideActions);
     const score = node.querySelector('.score');
     if (score && !Number(job.score)) {
       score.textContent = 'Not ranked';

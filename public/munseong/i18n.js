@@ -44,6 +44,7 @@ const UI = new Map(Object.entries({
   '관심 공고': 'Saved jobs',
   '지원 예정': 'Planning to apply',
   '지원함': 'Applied',
+  '확인됨': 'Reviewed',
   '아직 안 본 공고': 'Unreviewed jobs',
   '시장 요약': 'Market summary',
   '표시할 공고 없음': 'No jobs to display',

@@ -225,6 +225,28 @@ main {
 .button.compact { min-height: 36px; padding: 7px 12px; font-size: 12px; }
 .secondary-light { background: var(--surface-card); border-color: var(--border-base); color: var(--text-strong); }
 .secondary-light:hover { background: var(--surface-muted); }
+/* Unreviewed job cards get a light red edge so new items stand out without a dot. */
+.job-card.is-unreviewed {
+  border-color: var(--status-danger-border);
+  box-shadow: inset 0 0 0 2px var(--status-danger-soft);
+}
+.job-card.is-unreviewed:hover {
+  border-color: var(--status-danger-border);
+  box-shadow: var(--shadow-md), inset 0 0 0 2px var(--status-danger-border);
+}
+.seen-status {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 3px 7px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft-strong);
+  color: var(--status-ok-text);
+  font-size: 11px;
+  font-weight: 800;
+  vertical-align: middle;
+}
+.seen-status[hidden] { display: none; }
 .check-button, .review-toggle { background: var(--surface-subtle); border-color: var(--border-strong); color: var(--text-muted); }
 .check-button.active, .review-toggle.active { background: var(--accent-soft-strong); border-color: var(--border-accent-strong); color: var(--text-accent); }
 

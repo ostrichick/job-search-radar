@@ -119,7 +119,7 @@ test('Nicole can save, hide company or source, restore and keep states after rel
   await page.locator('#jobs .favorite').first().click();
   await page.locator('#savedOnly').check();
   await expect(page.locator('#jobs .job-card')).toHaveCount(1);
-  await page.locator('#jobs .mini-actions').getByRole('button', { name: 'Hide company' }).click();
+  await page.locator('#jobs .hide-actions').getByRole('button', { name: 'Hide company' }).click();
   await expect(page.locator('#jobs .job-card')).toHaveCount(0);
   await expect(page.locator('#nicoleHiddenCount')).toHaveText('1 hidden');
   await page.locator('#nicoleHiddenList').getByRole('button', { name: /Restore hidden company/ }).click();
@@ -168,7 +168,7 @@ test('Two Nicole shared screen tabs share saved and hidden state without touchin
   await Promise.all([page.goto('/nicole/'), other.goto('/nicole/')]);
   await page.locator('#jobs .favorite').click();
   await expect(other.locator('#jobs .favorite.active')).toHaveCount(1);
-  await other.locator('#jobs .mini-actions').getByRole('button', { name: 'Hide source' }).click();
+  await other.locator('#jobs .hide-actions').getByRole('button', { name: 'Hide source' }).click();
   await expect(page.locator('#nicoleHiddenCount')).toContainText('1 hidden');
   const dbNames = await page.evaluate(async () => (await indexedDB.databases()).map((item) => item.name));
   expect(dbNames).toContain('job-search-radar-nicole');
