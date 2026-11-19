@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#161c1a">
+  <title>실행 대시보드 | Digital Nomad</title>
+  <link rel="stylesheet" href="../shared/tokens.css">
+  <link rel="stylesheet" href="../shared/app-shell.css">
+  <link rel="stylesheet" href="./action.css">
+  <script type="module" src="./action.js"></script>
+</head>
+<body>
+  <header class="hero">
+    <nav class="sites" aria-label="사이트 이동">
+      <a href="../nicole/">Nicole</a>
+      <a href="../munseong/">Munseong</a>
+      <a href="../household/">우리 집 복지</a>
+      <a href="../classes/">언어 강의</a>
+      <a href="../tours/">투어·체험</a>
+      <a href="./" aria-current="page">실행</a>
+    </nav>
+    <div class="hero-content">
+      <div>
+        <p class="eyebrow">ACTION BOARD · MUNSEONG &amp; NICOLE</p>
+        <h1>오늘 할 일만<br><em>한 화면에.</em></h1>
+        <p class="subtitle">마감, 지원 링크, 첫 수입 시점, 확인할 조건을 한곳에 모았습니다. 공고가 아니라 실행 항목이므로 채용 피드와 분리합니다.</p>
+      </div>
+      <div class="hero-aside">
+        <span class="pulse"></span>
+        <span>자료 확인일</span>
+        <strong id="actionUpdatedAt">-</strong>
+        <small>지원 전 원문에서 모집·마감·자격을 다시 확인</small>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <p id="actionNotice" class="notice" role="status"></p>
+
+    <section class="overview action-overview" aria-label="실행 현황">
+      <div class="metric"><small>긴급</small><strong id="urgentCount">-</strong><span>마감 임박</span></div>
+      <div class="metric"><small>진행</small><strong id="activeCount">-</strong><span>지원·확인 항목</span></div>
+      <div class="metric"><small>Munseong</small><strong id="munseongCount">-</strong><span>내 실행 항목</span></div>
+      <div class="metric"><small>Nicole</small><strong id="nicoleCount">-</strong><span>함께 볼 항목</span></div>
+    </section>
+
+    <section class="panel action-panel">
+      <div class="section-head">
+        <div>
+          <p class="kicker">DO NEXT</p>
+          <h2 id="actionResultCount">실행 목록</h2>
+          <p>긴급 → 마감 임박 → 나머지 순으로 보여줍니다. 카드에 잠시 머물면 확인 표시가 사라집니다.</p>
+        </div>
+      </div>
+      <div class="action-toolbar">
+        <div id="actionFilters" class="action-filters" role="group" aria-label="실행 항목 필터">
+          <button type="button" class="active" data-filter="all" aria-pressed="true">전체</button>
+          <button type="button" data-filter="urgent" aria-pressed="false">긴급</button>
+          <button type="button" data-filter="munseong" aria-pressed="false">Munseong</button>
+          <button type="button" data-filter="nicole" aria-pressed="false">Nicole</button>
+          <button type="button" data-filter="platform" aria-pressed="false">플랫폼</button>
+          <button type="button" data-filter="search" aria-pressed="false">검색</button>
+        </div>
+        <label class="action-search">검색<input id="actionQuery" type="search" placeholder="CS, AI, 강의, 니콜..." autocomplete="off"></label>
+      </div>
+      <div id="actionCards" class="action-grid" aria-live="polite"></div>
+      <p id="actionEmpty" class="empty" hidden>조건에 맞는 실행 항목이 없습니다.</p>
+    </section>
+
+    <section class="panel checklist-panel">
+      <div class="section-head">
+        <div>
+          <p class="kicker">CHECKLIST</p>
+          <h2>이번 주 체크리스트</h2>
+          <p>체크 상태는 이 브라우저에만 저장됩니다. 끝난 항목은 다음 주에 정리하세요.</p>
+        </div>
+      </div>
+      <div id="actionChecklist" class="action-checklist"></div>
+    </section>
+
+    <section class="panel action-guide">
+      <div class="section-head">
+        <div>
+          <p class="kicker">UPDATE RULE</p>
+          <h2>업데이트 기준</h2>
+        </div>
+      </div>
+      <ul>
+        <li><strong>채용 피드와 분리:</strong> 실제 공고만 채용 피드에 넣고, 플랫폼·검색 링크는 이 화면에 둡니다.</li>
+        <li><strong>마감은 절대 시각:</strong> D-1 대신 실제 마감 시각으로 계산하고, 지나면 자동으로 마감 처리합니다.</li>
+        <li><strong>링크 상태 표시:</strong> 원문 확인일과 404·미확인 상태를 함께 표시합니다.</li>
+        <li><strong>개인정보 제외:</strong> 현금·월 수입·가족 정보는 공개 대시보드에 저장하지 않습니다.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
