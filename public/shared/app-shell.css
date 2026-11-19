@@ -225,24 +225,18 @@ main {
 .button.compact { min-height: 36px; padding: 7px 12px; font-size: 12px; }
 .secondary-light { background: var(--surface-card); border-color: var(--border-base); color: var(--text-strong); }
 .secondary-light:hover { background: var(--surface-muted); }
-.unseen-dot {
-  display: inline-block;
-  flex: 0 0 auto;
-  width: 9px;
-  height: 9px;
-  margin-right: 6px;
-  vertical-align: middle;
-  border-radius: 50%;
-  background: var(--status-danger-text);
-  box-shadow: 0 0 0 3px var(--status-danger-soft);
-}
-.unseen-dot[hidden] { display: none; }
-/* Unreviewed job cards get a light red edge so new items stand out without a dot. */
-.job-card.is-unreviewed {
+/* Unreviewed cards get a light red edge so new items stand out without a dot. */
+.job-card.is-unreviewed,
+.class-card.is-unreviewed,
+.card.is-unreviewed,
+.tour-card.is-unreviewed {
   border-color: var(--status-danger-border);
   box-shadow: inset 0 0 0 2px var(--status-danger-soft);
 }
-.job-card.is-unreviewed:hover {
+.job-card.is-unreviewed:hover,
+.class-card.is-unreviewed:hover,
+.card.is-unreviewed:hover,
+.tour-card.is-unreviewed:hover {
   border-color: var(--status-danger-border);
   box-shadow: var(--shadow-md), inset 0 0 0 2px var(--status-danger-border);
 }

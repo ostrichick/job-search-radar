@@ -177,14 +177,13 @@ function renderCard(program) {
   const card = element('article', 'card');
   card.dataset.programId = program.id;
   if (period.type === 'closed') card.classList.add('is-closed');
+  card.classList.toggle('is-unreviewed', !checked);
+  card.classList.toggle('is-seen', checked);
   card.setAttribute('aria-label', `${program.title} · ${period.title}`);
   const top = element('div', 'card-top');
-  const seenDot = element('span', 'unseen-dot');
-  seenDot.setAttribute('role', 'img');
-  seenDot.setAttribute('aria-label', '확인 안 함');
-  seenDot.title = '확인 안 함';
-  seenDot.hidden = checked;
-  top.append(seenDot, element('span', 'chip', CATEGORY_LABELS[program.category] || program.category));
+  const seenStatus = element('span', 'seen-status', '확인됨');
+  seenStatus.hidden = !checked;
+  top.append(seenStatus, element('span', 'chip', CATEGORY_LABELS[program.category] || program.category));
   top.append(element('span', 'chip', program.jurisdiction));
   top.append(element('span', `chip ${period.type}`, period.title));
   card.append(top, element('h3', '', program.title), element('div', 'benefit', program.value), element('p', 'summary', program.summary));
@@ -226,7 +225,9 @@ function renderCard(program) {
       checked: true,
       updatedAt: new Date().toISOString()
     };
-    seenDot.hidden = true;
+    seenStatus.hidden = false;
+    card.classList.remove('is-unreviewed');
+    card.classList.add('is-seen');
     void saveState();
     renderStats();
   };

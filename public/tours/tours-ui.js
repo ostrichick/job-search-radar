@@ -47,20 +47,21 @@ try {
   if (Array.isArray(stored)) tourSeenIds = new Set(stored);
 } catch { /* Start with an empty seen set when storage is unavailable. */ }
 
-function markTourSeen(id, card, dot) {
+function markTourSeen(id, card, badge) {
   if (tourSeenIds.has(id)) return;
   tourSeenIds.add(id);
-  dot.hidden = true;
+  if (badge) badge.hidden = false;
+  card.classList.remove('is-unreviewed');
   card.classList.add('is-seen');
   try { localStorage.setItem(TOUR_SEEN_KEY, JSON.stringify([...tourSeenIds])); } catch { /* Keep the in-memory state. */ }
 }
 
-function attachTourSeen(card, item, dot) {
+function attachTourSeen(card, item, badge) {
   let dwellTimer = null;
   const armSeen = () => {
     if (tourSeenIds.has(item.id)) return;
     clearTimeout(dwellTimer);
-    dwellTimer = setTimeout(() => markTourSeen(item.id, card, dot), 450);
+    dwellTimer = setTimeout(() => markTourSeen(item.id, card, badge), 450);
   };
   const disarmSeen = () => { clearTimeout(dwellTimer); dwellTimer = null; };
   card.addEventListener('pointerenter', (event) => {
@@ -135,18 +136,18 @@ export function createToursView({ $ }) {
     const status = statusOf(item);
     const card = el('article', 'tour-card');
     const badges = el('div', 'tour-badges');
-    const seenDot = el('span', 'unseen-dot');
-    seenDot.setAttribute('role', 'img');
-    seenDot.setAttribute('aria-label', '확인 안 함');
-    seenDot.title = '확인 안 함';
-    seenDot.hidden = tourSeenIds.has(item.id);
+    const seen = tourSeenIds.has(item.id);
+    const seenStatus = el('span', 'seen-status', '확인됨');
+    seenStatus.hidden = !seen;
+    card.classList.toggle('is-unreviewed', !seen);
+    card.classList.toggle('is-seen', seen);
     badges.append(
-      seenDot,
+      seenStatus,
       el('span', 'tour-badge free', '무료'),
       el('span', 'tour-badge category', item.category || '프로그램'),
       el('span', `tour-badge status ${status.key}`, status.label)
     );
-    attachTourSeen(card, item, seenDot);
+    attachTourSeen(card, item, seenStatus);
     if (item.region) badges.append(el('span', 'tour-badge region', item.region));
     card.append(badges);
 
@@ -155,7 +156,7 @@ export function createToursView({ $ }) {
     link.href = item.applyUrl || item.sourceUrl || '#';
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
-    link.addEventListener('click', () => markTourSeen(item.id, card, seenDot));
+    link.addEventListener('click', () => markTourSeen(item.id, card, seenStatus));
     title.append(link);
     card.append(title);
 
@@ -187,14 +188,14 @@ export function createToursView({ $ }) {
     apply.href = item.applyUrl || item.sourceUrl || '#';
     apply.target = '_blank';
     apply.rel = 'noopener noreferrer';
-    apply.addEventListener('click', () => markTourSeen(item.id, card, seenDot));
+    apply.addEventListener('click', () => markTourSeen(item.id, card, seenStatus));
     actions.append(apply);
     if (item.sourceUrl && item.sourceUrl !== item.applyUrl) {
       const source = el('a', 'tour-source', '출처 원문');
       source.href = item.sourceUrl;
       source.target = '_blank';
       source.rel = 'noopener noreferrer';
-      source.addEventListener('click', () => markTourSeen(item.id, card, seenDot));
+      source.addEventListener('click', () => markTourSeen(item.id, card, seenStatus));
       actions.append(source);
     }
     if (item.checkedAt) actions.append(el('span', 'tour-checked', `확인 ${formatDay(item.checkedAt)}`));

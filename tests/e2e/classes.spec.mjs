@@ -37,11 +37,12 @@ test('강의 카드에 머물면 확인 안 함 표시가 사라지고 새로고
   await page.goto('/classes/');
   const card = page.locator('.class-card').first();
   const courseId = await card.getAttribute('data-course-id');
-  await expect(card.locator('.unseen-dot')).toBeVisible();
+  await expect(card).toHaveClass(/is-unreviewed/);
   await card.hover();
-  await expect(card.locator('.unseen-dot')).toBeHidden();
+  await expect(card).not.toHaveClass(/is-unreviewed/);
+  await expect(card.locator('.seen-status')).toBeVisible();
   await page.reload();
-  await expect(page.locator(`.class-card[data-course-id="${courseId}"] .unseen-dot`)).toBeHidden();
+  await expect(page.locator(`.class-card[data-course-id="${courseId}"]`)).not.toHaveClass(/is-unreviewed/);
 });
 
 test('한국어 강의 탭은 무료·온라인·전주 오프라인 필터를 적용한다', async ({ page }) => {

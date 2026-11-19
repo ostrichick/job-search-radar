@@ -2854,7 +2854,8 @@ test('상단 투어·체험 메뉴는 무료·성인 참가 가능한 항목을 
   await page.locator('#tourQuery').fill('군산');
   await expect(page.locator('.tour-card')).toHaveCount(1);
   await expect(page.locator('.tour-card .tour-title')).toHaveText(['군산 성인 프로그램']);
-  await expect(page.locator('.tour-card .unseen-dot')).toBeVisible();
+  await expect(page.locator('.tour-card')).toHaveClass(/is-unreviewed/);
   await page.locator('.tour-card').hover();
-  await expect(page.locator('.tour-card .unseen-dot')).toBeHidden();
+  await expect(page.locator('.tour-card')).not.toHaveClass(/is-unreviewed/);
+  await expect(page.locator('.tour-card .seen-status')).toBeVisible();
 });
