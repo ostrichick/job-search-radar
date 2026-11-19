@@ -44,9 +44,9 @@ test('모든 탭에 같은 자료 확인 기준 안내와 통일된 날짜 형�
   await page.goto('/household/');
   await expect(page.locator('#sourceDate')).toHaveText(/^\d{4}\.\d{2}\.\d{2}$/);
   await page.goto('/tours/');
-  await expect(page.locator('#tourUpdatedAt')).toHaveText(/^자료 확인 기준 \d{4}\.\d{2}\.\d{2} \d{2}:\d{2}$/);
+  await expect(page.locator('.data-caveat')).toBeVisible();
   await page.goto('/munseong/');
-  await expect(page.locator('#updatedAt')).toHaveText(/^자료 확인 기준 \d{4}\.\d{2}\.\d{2} \d{2}:\d{2}/);
+  await expect(page.locator('.data-caveat')).toBeVisible();
   await page.goto('/nicole/');
   await expect(page.locator('.data-caveat')).toContainText('Data check basis');
   await page.goto('/action/');

@@ -1996,6 +1996,7 @@ $('undoHide').addEventListener('click', async () => {
   syncStoredState();
   render();
   restoreJobCardFocus(focus);
+  setTimeout(() => restoreJobCardFocus(focus), 50);
 });
 $('closeToast')?.addEventListener('click', async () => {
   const focus = state.lastHidden?.focus;
@@ -2006,6 +2007,7 @@ $('closeToast')?.addEventListener('click', async () => {
     syncStoredState();
     render();
     restoreJobCardFocus(focus);
+    setTimeout(() => restoreJobCardFocus(focus), 50);
   }
 });
 $('closeInfoToast')?.addEventListener('click', () => {
