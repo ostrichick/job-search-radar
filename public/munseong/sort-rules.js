@@ -7,6 +7,11 @@ function filteredJobs() {
   const sort = values.sort;
   jobs.sort((a, b) => {
     let exactDistanceDiff = 0;
+    if (sort !== 'distance') {
+      const aSeen = state.reviewedIds.has(a.id) ? 1 : 0;
+      const bSeen = state.reviewedIds.has(b.id) ? 1 : 0;
+      if (aSeen !== bSeen) return aSeen - bSeen;
+    }
     if (sort === 'newest') return (Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0);
     if (sort === 'oldest') return (Date.parse(a.postedAt) || 0) - (Date.parse(b.postedAt) || 0);
     if (sort === 'company') return a.company.localeCompare(b.company, 'ko');
