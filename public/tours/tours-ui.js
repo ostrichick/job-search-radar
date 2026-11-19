@@ -40,6 +40,40 @@ const periodText = (item) => {
   return item.schedule ? `${range} · ${item.schedule}` : range;
 };
 
+const TOUR_SEEN_KEY = 'tourSeenIds';
+let tourSeenIds = new Set();
+try {
+  const stored = JSON.parse(localStorage.getItem(TOUR_SEEN_KEY) || '[]');
+  if (Array.isArray(stored)) tourSeenIds = new Set(stored);
+} catch { /* Start with an empty seen set when storage is unavailable. */ }
+
+function markTourSeen(id, card, dot) {
+  if (tourSeenIds.has(id)) return;
+  tourSeenIds.add(id);
+  dot.hidden = true;
+  card.classList.add('is-seen');
+  try { localStorage.setItem(TOUR_SEEN_KEY, JSON.stringify([...tourSeenIds])); } catch { /* Keep the in-memory state. */ }
+}
+
+function attachTourSeen(card, item, dot) {
+  let dwellTimer = null;
+  const armSeen = () => {
+    if (tourSeenIds.has(item.id)) return;
+    clearTimeout(dwellTimer);
+    dwellTimer = setTimeout(() => markTourSeen(item.id, card, dot), 450);
+  };
+  const disarmSeen = () => { clearTimeout(dwellTimer); dwellTimer = null; };
+  card.addEventListener('pointerenter', (event) => {
+    if (event.pointerType !== 'touch') armSeen();
+  });
+  card.addEventListener('pointermove', (event) => {
+    if (event.pointerType !== 'touch' && !dwellTimer) armSeen();
+  }, { passive: true });
+  card.addEventListener('pointerleave', disarmSeen);
+  card.addEventListener('focusin', armSeen);
+  card.addEventListener('focusout', disarmSeen);
+}
+
 export function createToursView({ $ }) {
   const state = { feed: null, loading: false, error: null, filters: { query: '', category: '', region: '전주·완주', audience: 'adults', period: 'current', sort: 'soon' } };
 
@@ -88,6 +122,8 @@ export function createToursView({ $ }) {
       return true;
     });
     return items.sort((a, b) => {
+      const seenDiff = Number(tourSeenIds.has(a.id)) - Number(tourSeenIds.has(b.id));
+      if (seenDiff) return seenDiff;
       if (filters.sort === 'title') return String(a.title).localeCompare(String(b.title), 'ko');
       if (filters.sort === 'newest') return String(b.startDate || '').localeCompare(String(a.startDate || ''));
       return (a.endDate || '9999-12-31').localeCompare(b.endDate || '9999-12-31')
@@ -99,11 +135,18 @@ export function createToursView({ $ }) {
     const status = statusOf(item);
     const card = el('article', 'tour-card');
     const badges = el('div', 'tour-badges');
+    const seenDot = el('span', 'unseen-dot');
+    seenDot.setAttribute('role', 'img');
+    seenDot.setAttribute('aria-label', '확인 안 함');
+    seenDot.title = '확인 안 함';
+    seenDot.hidden = tourSeenIds.has(item.id);
     badges.append(
+      seenDot,
       el('span', 'tour-badge free', '무료'),
       el('span', 'tour-badge category', item.category || '프로그램'),
       el('span', `tour-badge status ${status.key}`, status.label)
     );
+    attachTourSeen(card, item, seenDot);
     if (item.region) badges.append(el('span', 'tour-badge region', item.region));
     card.append(badges);
 
@@ -112,6 +155,7 @@ export function createToursView({ $ }) {
     link.href = item.applyUrl || item.sourceUrl || '#';
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
+    link.addEventListener('click', () => markTourSeen(item.id, card, seenDot));
     title.append(link);
     card.append(title);
 
@@ -143,12 +187,14 @@ export function createToursView({ $ }) {
     apply.href = item.applyUrl || item.sourceUrl || '#';
     apply.target = '_blank';
     apply.rel = 'noopener noreferrer';
+    apply.addEventListener('click', () => markTourSeen(item.id, card, seenDot));
     actions.append(apply);
     if (item.sourceUrl && item.sourceUrl !== item.applyUrl) {
       const source = el('a', 'tour-source', '출처 원문');
       source.href = item.sourceUrl;
       source.target = '_blank';
       source.rel = 'noopener noreferrer';
+      source.addEventListener('click', () => markTourSeen(item.id, card, seenDot));
       actions.append(source);
     }
     if (item.checkedAt) actions.append(el('span', 'tour-checked', `확인 ${formatDay(item.checkedAt)}`));
