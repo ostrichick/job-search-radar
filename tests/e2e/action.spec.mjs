@@ -53,9 +53,9 @@ test('모든 탭의 최종 확인일 안내와 날짜 형식이 일치한다', a
   await expect(page.locator('.hero-aside')).toContainText('최종 확인일');
   await expect(page.locator('#sourceDate')).toHaveText(/^\d{4}\.\d{2}\.\d{2}$/);
   await page.goto('/tours/');
-  await expect(page.locator('.hero-aside')).toContainText('최종 수집 시각');
+  await expect(page.locator('.hero-aside')).toContainText('최종 확인일');
   await page.goto('/action/');
-  await expect(page.locator('.hero-aside')).toContainText('최종 갱신');
+  await expect(page.locator('.hero-aside')).toContainText('최종 확인일');
   await expect(page.locator('#actionUpdatedAt')).toHaveText(/^\d{4}\.\d{2}\.\d{2} \d{2}:\d{2}$/);
 });
 
@@ -76,4 +76,44 @@ test('실행 카드의 확인 표시와 체크리스트는 브라우저에 저�
   await expect(page.locator('[data-action-id="outlier-korean-2026-11"] .seen-status')).toBeVisible();
   await expect(page.locator('[data-action-id="outlier-korean-2026-11"]')).not.toHaveClass(/is-unreviewed/);
   await expect(page.locator('#actionChecklist input').first()).toBeChecked();
+});
+
+test('실행 카드를 숨기고 숨김 필터에서 복원한다', async ({ page }) => {
+  await page.goto('/action/');
+  const total = await page.locator('.action-card').count();
+  await expect(page.locator('.action-card .card-hide')).toHaveCount(total);
+  await page.locator('.action-card .card-hide').first().click();
+  await expect(page.locator('.action-card')).toHaveCount(total - 1);
+  await page.reload();
+  await expect(page.locator('.action-card')).toHaveCount(total - 1);
+  await page.locator('#actionFilters [data-filter="hidden"]').click();
+  await expect(page.locator('.action-card')).toHaveCount(1);
+  await page.locator('.action-card .card-hide').click();
+  await expect(page.locator('.action-card')).toHaveCount(0);
+  await page.locator('#actionFilters [data-filter="all"]').click();
+  await expect(page.locator('.action-card')).toHaveCount(total);
+});
+test('상단 nav와 eyebrow 간격이 데스크톱과 모바일에서 같다', async ({ page }) => {
+  const gap = async (path) => {
+    await page.goto(path);
+    return page.evaluate(() => {
+      const nav = document.querySelector('.profile-switch, .sites').getBoundingClientRect();
+      const eyebrow = document.querySelector('.eyebrow').getBoundingClientRect();
+      const h1 = document.querySelector('h1').getBoundingClientRect();
+      return { gap: Math.round(eyebrow.top - nav.bottom), h1Width: h1.width, h1Height: h1.height };
+    });
+  };
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const desktopTopbar = await gap('/munseong/');
+  const desktopHero = await gap('/classes/');
+  expect(Math.abs(desktopTopbar.gap - desktopHero.gap)).toBeLessThanOrEqual(1);
+  expect(desktopTopbar.gap).toBeGreaterThanOrEqual(23);
+  expect(desktopTopbar.gap).toBeLessThanOrEqual(25);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobileTopbar = await gap('/munseong/');
+  const mobileHero = await gap('/classes/');
+  expect(Math.abs(mobileTopbar.gap - mobileHero.gap)).toBeLessThanOrEqual(1);
+  expect(mobileTopbar.h1Width).toBeGreaterThan(1);
+  expect(mobileHero.h1Width).toBeGreaterThan(1);
 });

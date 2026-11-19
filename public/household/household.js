@@ -10,7 +10,7 @@ const STATUS_LABELS = { none: '아직 기록 없음', interested: '관심', prep
 const CATEGORY_LABELS = { work: '취업·훈련', housing: '주거', tax: '세금·환급', welfare: '복지', savings: '생활비 절약' };
 const $ = (id) => document.getElementById(id);
 
-const blankState = () => ({ version: BACKUP_VERSION, profile: {}, tracking: {} });
+const blankState = () => ({ version: BACKUP_VERSION, profile: {}, tracking: {}, hiddenIds: [] });
 let state = blankState();
 let programs = [];
 let storage = null;
@@ -73,6 +73,9 @@ function cleanState(input) {
     if (typeof value === 'string' && value.length <= 80) result.profile[key] = value;
   }
   const known = new Set(programs.map(({ id }) => id));
+  result.hiddenIds = Array.isArray(input.hiddenIds)
+    ? [...new Set(input.hiddenIds.filter((id) => typeof id === 'string' && known.has(id)))].slice(0, 500)
+    : [];
   for (const [id, value] of Object.entries(input.tracking)) {
     if (!known.has(id) || !value || typeof value !== 'object') continue;
     result.tracking[id] = {
@@ -185,11 +188,26 @@ function renderCard(program) {
   const checked = Boolean(record.checked);
   const card = element('article', 'card');
   card.dataset.programId = program.id;
+  const hidden = state.hiddenIds.includes(program.id);
   if (period.type === 'closed') card.classList.add('is-closed');
   card.classList.toggle('is-unreviewed', !checked);
   card.classList.toggle('is-seen', checked);
   card.setAttribute('aria-label', `${program.title} · ${period.title}`);
   const top = element('div', 'card-top');
+  const hideButton = element('button', 'card-hide', hidden ? '↶' : '×');
+  hideButton.type = 'button';
+  hideButton.title = hidden ? '숨김 해제' : '숨기기';
+  hideButton.setAttribute('aria-label', `${program.title} ${hidden ? '숨김 해제' : '숨기기'}`);
+  hideButton.addEventListener('click', () => {
+    const next = new Set(state.hiddenIds);
+    hidden ? next.delete(program.id) : next.add(program.id);
+    state.hiddenIds = [...next];
+    void saveState();
+    renderStats();
+    renderPrograms();
+    tracking.focus({ preventScroll: true });
+  });
+  top.append(hideButton);
   const seenStatus = element('span', 'seen-status', '확인됨');
   seenStatus.hidden = !checked;
   top.append(seenStatus, element('span', 'chip', CATEGORY_LABELS[program.category] || program.category));
@@ -303,6 +321,9 @@ function renderPrograms() {
   const period = $('period').value;
   const tracking = $('tracking').value;
   const matches = programs.filter((p) => {
+    const hidden = state.hiddenIds.includes(p.id);
+    if (tracking === 'hidden') return hidden;
+    if (hidden) return false;
     if (category && p.category !== category) return false;
     if (period === 'closed' && periodInfo(p).type !== 'closed') return false;
     if (period === 'active' && periodInfo(p).type !== 'open') return false;

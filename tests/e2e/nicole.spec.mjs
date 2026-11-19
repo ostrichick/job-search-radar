@@ -78,7 +78,7 @@ test('Nicole shared screen renders the shared app with her own feed and branding
   await expect(page.locator('#jobs .eligibility-badge').first()).toHaveText('Work eligibility unverified');
   await expect(page.locator('#nicolePlatformLinks')).toContainText('KOWORK');
   await expect(page.locator('#nicoleHiddenManager')).toBeVisible();
-  await expect(page.locator('#updatedAt')).toHaveText(/^Last collected \d{4}\.\d{2}\.\d{2} \d{2}:\d{2}/);
+  await expect(page.locator('#updatedAt')).toHaveText(/^Last checked \d{4}\.\d{2}\.\d{2} \d{2}:\d{2}/);
 });
 
 test('Nicole fit filter hides confirmed disqualifiers and exposes the reason', async ({ page }) => {

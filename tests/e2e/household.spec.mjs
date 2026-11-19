@@ -115,3 +115,19 @@ test('복지카드에 머물면 확인 안 함 표시가 사라지고 확인 여
   await page.locator('#tracking').selectOption('unchecked');
   await expect(page.locator('#programs')).not.toContainText('2025년 귀속 근로장려금');
 });
+
+test('복지 카드를 숨기고 숨김 필터에서 복원한다', async ({ page }) => {
+  await page.goto('/household/');
+  const total = await page.locator('.card').count();
+  await expect(page.locator('.card .card-hide')).toHaveCount(total);
+  await page.locator('.card .card-hide').first().click();
+  await expect(page.locator('.card')).toHaveCount(total - 1);
+  await page.reload();
+  await expect(page.locator('.card')).toHaveCount(total - 1);
+  await page.locator('#tracking').selectOption('hidden');
+  await expect(page.locator('.card')).toHaveCount(1);
+  await page.locator('.card .card-hide').click();
+  await expect(page.locator('.card')).toHaveCount(0);
+  await page.locator('#tracking').selectOption('');
+  await expect(page.locator('.card')).toHaveCount(total);
+});

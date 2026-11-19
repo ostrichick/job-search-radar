@@ -38,11 +38,17 @@ const periodText = (item) => {
 };
 
 const TOUR_SEEN_KEY = 'tourSeenIds';
+const TOUR_HIDDEN_KEY = 'tourHiddenIds';
 let tourSeenIds = new Set();
+let tourHiddenIds = new Set();
 try {
   const stored = JSON.parse(localStorage.getItem(TOUR_SEEN_KEY) || '[]');
   if (Array.isArray(stored)) tourSeenIds = new Set(stored);
 } catch { /* Start with an empty seen set when storage is unavailable. */ }
+try {
+  const stored = JSON.parse(localStorage.getItem(TOUR_HIDDEN_KEY) || '[]');
+  if (Array.isArray(stored)) tourHiddenIds = new Set(stored);
+} catch { /* Start with an empty hidden set when storage is unavailable. */ }
 const displayedSeenIds = new Set(tourSeenIds);
 
 function markTourSeen(id, card, badge) {
@@ -74,7 +80,7 @@ function attachTourSeen(card, item, badge) {
 }
 
 export function createToursView({ $ }) {
-  const state = { feed: null, loading: false, error: null, filters: { query: '', category: '', region: '전주·완주', audience: 'adults', period: 'current', sort: 'soon' } };
+  const state = { feed: null, loading: false, error: null, filters: { query: '', category: '', region: '전주·완주', audience: 'adults', period: 'current', sort: 'soon', visibility: 'active' } };
 
   const query = $('tourQuery');
   const category = $('tourCategory');
@@ -82,6 +88,7 @@ export function createToursView({ $ }) {
   const audience = $('tourAudience');
   const period = $('tourPeriod');
   const sort = $('tourSort');
+  const visibility = $('tourVisibility');
   const list = $('toursList');
   const empty = $('toursEmpty');
   const emptyMessage = $('toursEmptyMessage');
@@ -103,10 +110,19 @@ export function createToursView({ $ }) {
     region.value = [...region.options].some((option) => option.value === previous) ? previous : '전주·완주';
   }
 
+  function toggleHidden(item) {
+    tourHiddenIds.has(item.id) ? tourHiddenIds.delete(item.id) : tourHiddenIds.add(item.id);
+    try { localStorage.setItem(TOUR_HIDDEN_KEY, JSON.stringify([...tourHiddenIds])); } catch { /* Keep the in-memory state. */ }
+    render();
+    visibility?.focus({ preventScroll: true });
+  }
+
   function filteredItems() {
     const filters = state.filters;
     const queryText = filters.query.trim().toLowerCase();
     const items = currentItems().filter((item) => {
+      if (filters.visibility === 'hidden') return tourHiddenIds.has(item.id);
+      if (tourHiddenIds.has(item.id)) return false;
       const status = statusOf(item);
       if (filters.period === 'current' && status.key === 'ended') return false;
       if (filters.audience === 'adults' && !canAdultsJoin(item.audience)) return false;
@@ -147,7 +163,13 @@ export function createToursView({ $ }) {
     );
     attachTourSeen(card, item, seenStatus);
     if (item.region) badges.append(el('span', 'tour-badge region', item.region));
-    card.append(badges);
+    const hidden = tourHiddenIds.has(item.id);
+    const hide = el('button', 'card-hide', hidden ? '↶' : '×');
+    hide.type = 'button';
+    hide.title = hidden ? '숨김 해제' : '숨기기';
+    hide.setAttribute('aria-label', `${item.title} ${hidden ? '숨김 해제' : '숨기기'}`);
+    hide.addEventListener('click', () => toggleHidden(item));
+    card.append(badges, hide);
 
     const title = el('h3', 'tour-title');
     const link = el('a', '', item.title || '제목 없음');
@@ -285,14 +307,16 @@ export function createToursView({ $ }) {
   bindFilter(audience, 'audience');
   bindFilter(period, 'period');
   bindFilter(sort, 'sort');
+  bindFilter(visibility, 'visibility');
   $('tourReset')?.addEventListener('click', () => {
-    Object.assign(state.filters, { query: '', category: '', region: '전주·완주', audience: 'adults', period: 'current', sort: 'soon' });
+    Object.assign(state.filters, { query: '', category: '', region: '전주·완주', audience: 'adults', period: 'current', sort: 'soon', visibility: 'active' });
     if (query) query.value = '';
     if (category) category.value = '';
     if (region) region.value = '전주·완주';
     if (audience) audience.value = 'adults';
     if (period) period.value = 'current';
     if (sort) sort.value = 'soon';
+    if (visibility) visibility.value = 'active';
     render();
   });
   refreshButton?.addEventListener('click', refresh);

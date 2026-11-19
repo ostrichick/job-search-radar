@@ -61,3 +61,19 @@ test('한국어 강의 탭은 무료·온라인·전주 오프라인 필터를 �
   await expect(page.locator('.class-card')).toHaveCount(1);
   await expect(page.locator('#courses')).toContainText('세종학당');
 });
+
+test('강의 카드를 숨기고 숨김 필터에서 복원한다', async ({ page }) => {
+  await page.goto('/classes/');
+  const total = await page.locator('.class-card').count();
+  await expect(page.locator('.class-card .card-hide')).toHaveCount(total);
+  await page.locator('.class-card .card-hide').first().click();
+  await expect(page.locator('.class-card')).toHaveCount(total - 1);
+  await page.reload();
+  await expect(page.locator('.class-card')).toHaveCount(total - 1);
+  await page.locator('#visibility').selectOption('hidden');
+  await expect(page.locator('.class-card')).toHaveCount(1);
+  await page.locator('.class-card .card-hide').click();
+  await expect(page.locator('.class-card')).toHaveCount(0);
+  await page.locator('#visibility').selectOption('active');
+  await expect(page.locator('.class-card')).toHaveCount(total);
+});

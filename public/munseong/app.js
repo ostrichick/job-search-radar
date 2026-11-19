@@ -1855,7 +1855,7 @@ function applyFeedData(data, detectNew = true) {
   persist();
   storage.setItem('knownJobIds', JSON.stringify(state.jobs.map((job) => job.id)));
   updateDynamicFilters();
-  const updatedLabel = isNicole ? 'Last collected' : '최종 수집 시각';
+  const updatedLabel = isNicole ? 'Last checked' : '최종 확인일';
   $('updatedAt').textContent = data.updatedAt
     ? `${updatedLabel} ${formatDisplayDateTime(data.updatedAt)}`
     : (isNicole ? 'Collection time unavailable' : '수집 시각 미상');

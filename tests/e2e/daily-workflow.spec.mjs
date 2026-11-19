@@ -472,7 +472,7 @@ test('기본 추천이 렌더링되고 검토 우선순위로 표시된다', asy
   await expect(page.locator('.job-card')).toHaveCount(3);
   await expect(page.locator('.score').first()).toContainText('검토 우선순위');
   await expect(page.locator('.eligibility-badge').first()).toContainText('한국에서 지원 가능');
-  await expect(page.locator('#updatedAt')).toHaveText(/^최종 수집 시각 \d{4}\.\d{2}\.\d{2} \d{2}:\d{2}/);
+  await expect(page.locator('#updatedAt')).toHaveText(/^최종 확인일 \d{4}\.\d{2}\.\d{2} \d{2}:\d{2}/);
 });
 
 test('국내 일반 지역 공고는 추천에서 제외하되 전체 시장 탐색에서는 유지한다', async ({ page }) => {
@@ -2437,7 +2437,7 @@ test('국내 정렬은 원격→전북권→그 외→서울→수도권 순으�
   expect(workplaceLabels.join(' ')).not.toContain('덕진구');
 });
 
-test('첫 카드가 1440×900과 390×844 첫 화면 안에 들어온다', async ({ page }) => {
+test('데스크톱은 첫 카드가 보이고 모바일은 결과 목록으로 이동할 수 있다', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
   await page.goto('/munseong/');
@@ -2460,7 +2460,9 @@ test('첫 카드가 1440×900과 390×844 첫 화면 안에 들어온다', async
   await page.waitForSelector('.job-card');
   const mobile = await measure();
   expect(mobile.overflow).toBeLessThanOrEqual(0);
-  expect(mobile.y).toBeLessThan(mobile.vh);
+  await expect(page.locator('.results-jump')).toBeVisible();
+  await page.locator('.results-jump').click();
+  await expect(page.locator('.job-card').first()).toBeInViewport();
   console.log(`First card y mobile 390x844: ${mobile.y} (viewport ${mobile.vh})`);
 });
 
@@ -2855,6 +2857,18 @@ test('상단 투어·체험 메뉴는 무료·성인 참가 가능한 항목을 
   await expect(page.locator('.tour-card .tour-title')).toHaveText(['전주 무료 체험', '완주 무료 투어']);
   await expect(page.locator('.tour-card').first()).toContainText('무료');
   await expect(page.locator('.tour-card').first()).toContainText('외국인 참가');
+
+  await expect(page.locator('.tour-card .card-hide')).toHaveCount(2);
+  await page.locator('.tour-card .card-hide').first().click();
+  await expect(page.locator('.tour-card')).toHaveCount(1);
+  await page.reload();
+  await expect(page.locator('.tour-card')).toHaveCount(1);
+  await page.locator('#tourVisibility').selectOption('hidden');
+  await expect(page.locator('.tour-card')).toHaveCount(1);
+  await page.locator('.tour-card .card-hide').click();
+  await expect(page.locator('.tour-card')).toHaveCount(0);
+  await page.locator('#tourVisibility').selectOption('active');
+  await expect(page.locator('.tour-card')).toHaveCount(2);
 
   await page.locator('#tourRegion').selectOption('');
   await expect(page.locator('.tour-card')).toHaveCount(3);

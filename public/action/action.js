@@ -6,6 +6,7 @@ const OWNER_SEARCH = { munseong: 'Munseong 문성', nicole: 'Nicole 니콜', sha
 const KIND_LABELS = { job: '공고', platform: '플랫폼', search: '검색', program: '제도' };
 const SEEN_KEY = 'actionSeenIds';
 const CHECK_KEY = 'actionCheckedIds';
+const HIDDEN_KEY = 'actionHiddenIds';
 
 let actions = [];
 let checklist = [];
@@ -14,6 +15,7 @@ let query = '';
 let notice = '';
 let seenIds = new Set();
 let checkedIds = new Set();
+let hiddenIds = new Set();
 
 try {
   const storedSeen = JSON.parse(localStorage.getItem(SEEN_KEY) || '[]');
@@ -23,6 +25,11 @@ try {
   const storedChecked = JSON.parse(localStorage.getItem(CHECK_KEY) || '[]');
   if (Array.isArray(storedChecked)) checkedIds = new Set(storedChecked);
 } catch { /* Keep the checklist state empty when this key is corrupt. */ }
+try {
+  const storedHidden = JSON.parse(localStorage.getItem(HIDDEN_KEY) || '[]');
+  if (Array.isArray(storedHidden)) hiddenIds = new Set(storedHidden);
+} catch { /* Keep the hidden state empty when this key is corrupt. */ }
+const displayedSeenIds = new Set(seenIds);
 
 function saveSeen() {
   try { localStorage.setItem(SEEN_KEY, JSON.stringify([...seenIds])); } catch { /* Keep in-memory state. */ }
@@ -30,6 +37,17 @@ function saveSeen() {
 
 function saveChecked() {
   try { localStorage.setItem(CHECK_KEY, JSON.stringify([...checkedIds])); } catch { /* Keep in-memory state. */ }
+}
+
+function saveHidden() {
+  try { localStorage.setItem(HIDDEN_KEY, JSON.stringify([...hiddenIds])); } catch { /* Keep in-memory state. */ }
+}
+
+function toggleHidden(item) {
+  hiddenIds.has(item.id) ? hiddenIds.delete(item.id) : hiddenIds.add(item.id);
+  saveHidden();
+  render();
+  document.querySelector('#actionFilters [data-filter="hidden"]')?.focus({ preventScroll: true });
 }
 
 function deadlineInfo(item) {
@@ -48,6 +66,8 @@ function deadlineInfo(item) {
 
 function matches(item) {
   const info = deadlineInfo(item);
+  if (filter === 'hidden') return hiddenIds.has(item.id);
+  if (hiddenIds.has(item.id)) return false;
   if (filter === 'urgent' && !((item.priority === 'urgent' && info.state !== 'closed') || info.state === 'soon')) return false;
   if (filter === 'munseong' && item.owner !== 'munseong') return false;
   if (filter === 'nicole' && item.owner !== 'nicole') return false;
@@ -77,6 +97,8 @@ function visibleActions() {
       const aDeadline = a.item.deadlineAt ? Date.parse(a.item.deadlineAt) : Number.POSITIVE_INFINITY;
       const bDeadline = b.item.deadlineAt ? Date.parse(b.item.deadlineAt) : Number.POSITIVE_INFINITY;
       if (aDeadline !== bDeadline) return aDeadline - bDeadline;
+      const seenDiff = Number(displayedSeenIds.has(a.item.id)) - Number(displayedSeenIds.has(b.item.id));
+      if (seenDiff) return seenDiff;
       return a.index - b.index;
     })
     .map(({ item }) => item);
@@ -139,7 +161,13 @@ function renderCard(item) {
   seenStatus.hidden = !seenIds.has(item.id);
   badges.append(seenStatus);
   head.append(badges);
-  card.append(head);
+  const hidden = hiddenIds.has(item.id);
+  const hide = make('button', 'card-hide', hidden ? '↶' : '×');
+  hide.type = 'button';
+  hide.title = hidden ? '숨김 해제' : '숨기기';
+  hide.setAttribute('aria-label', `${item.title} ${hidden ? '숨김 해제' : '숨기기'}`);
+  hide.addEventListener('click', () => toggleHidden(item));
+  card.append(head, hide);
   card.append(make('h2', '', item.title));
   if (item.org) card.append(make('p', 'action-org', item.org));
   if (item.payNote) card.append(make('p', 'action-pay', item.payNote));
@@ -186,12 +214,12 @@ function renderCard(item) {
 function renderStats() {
   const openUrgent = actions.filter((item) => {
     const info = deadlineInfo(item);
-    return info.state !== 'closed' && (item.priority === 'urgent' || info.state === 'soon');
+    return !hiddenIds.has(item.id) && info.state !== 'closed' && (item.priority === 'urgent' || info.state === 'soon');
   }).length;
   $('urgentCount').textContent = String(openUrgent);
-  $('activeCount').textContent = String(actions.filter((item) => item.priority === 'active' && deadlineInfo(item).state !== 'closed').length);
-  $('munseongCount').textContent = String(actions.filter((item) => item.owner === 'munseong').length);
-  $('nicoleCount').textContent = String(actions.filter((item) => item.owner === 'nicole').length);
+  $('activeCount').textContent = String(actions.filter((item) => !hiddenIds.has(item.id) && item.priority === 'active' && deadlineInfo(item).state !== 'closed').length);
+  $('munseongCount').textContent = String(actions.filter((item) => !hiddenIds.has(item.id) && item.owner === 'munseong').length);
+  $('nicoleCount').textContent = String(actions.filter((item) => !hiddenIds.has(item.id) && item.owner === 'nicole').length);
 }
 
 function renderNotice() {
