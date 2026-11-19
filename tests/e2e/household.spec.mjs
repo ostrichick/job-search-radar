@@ -9,10 +9,10 @@ test('가구 지원 목록은 공식 링크와 신청기한을 구분한다', as
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/household/');
   await expect(page.getByRole('heading', { name: /우리 집에 맞는 혜택을/ })).toBeVisible();
-  await expect(page.locator('#totalCount')).toHaveText('37');
+  await expect(page.locator('#totalCount')).toHaveText('42');
   await expect(page.locator('#closedCount')).toHaveText('8');
-  await expect(page.locator('.card')).toHaveCount(37);
-  await expect(page.getByRole('link', { name: '공식 근거 ↗' })).toHaveCount(37);
+  await expect(page.locator('.card')).toHaveCount(42);
+  await expect(page.getByRole('link', { name: '공식 근거 ↗' })).toHaveCount(42);
   await expect(page.getByRole('link', { name: '신청·조회 페이지 ↗' })).toHaveCount(0);
   await expect(page.locator('#programs')).not.toContainText('스포츠강좌이용권');
   await expect(page.locator('#programs')).not.toContainText('문화누리카드');
@@ -83,7 +83,7 @@ test('모바일 390px 화면에서 가로 넘침 없이 목록 및 기존 프로
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/household/');
   await expect(page.getByRole('link', { name: 'Nicole' })).toHaveAttribute('href', '../nicole/');
-  await expect(page.locator('.card')).toHaveCount(37);
+  await expect(page.locator('.card')).toHaveCount(42);
   const widths = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
   expect(widths.scroll).toBeLessThanOrEqual(widths.client);
   await page.goto('/munseong/');
