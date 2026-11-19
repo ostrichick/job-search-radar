@@ -1204,11 +1204,15 @@ test('일괄 관심은 확인 상태를 바꾸지 않고 카드에 머문 항목
 
   await page.locator('#statusFilter').selectOption('all');
   await expect(page.locator('.job-card').first()).toHaveClass(/is-unreviewed/);
+  const firstTitle = await page.locator('.job-card').first().locator('.title').textContent();
   await page.locator('.job-card').first().hover();
-  await expect(page.locator('.job-card').first()).not.toHaveClass(/is-unreviewed/);
-  await expect(page.locator('.job-card').first().locator('.seen-status')).toBeVisible();
+  await page.waitForTimeout(800);
+  await expect(page.locator('.job-card').first()).toHaveClass(/is-unreviewed/);
+  await expect(page.locator('.job-card').first().locator('.seen-status')).toBeHidden();
+  await expect(page.locator('.job-card').first().locator('.title')).toHaveText(firstTitle || '');
+  await page.reload();
   await page.selectOption('#statusFilter', 'reviewed');
-  await expect(page.locator('.job-card')).toHaveCount(1);
+  await expect(page.locator('.job-card').filter({ hasText: firstTitle || '' })).toHaveCount(1);
   await page.selectOption('#statusFilter', 'unreviewed');
   await expect(page.locator('.job-card')).toHaveCount(2);
 });
@@ -1908,9 +1912,9 @@ test('ChatGPT 수동 조사는 실제 원문 검토일과 피드의 최초·최�
   });
   await useFeed(page, () => feed([curated]));
   await page.goto('/munseong/');
-  await expect(page.locator('.job-card .collection-dates')).toContainText('최초 수집 2026-10-05');
-  await expect(page.locator('.job-card .collection-dates')).toContainText('마지막 수집 2026-10-19');
-  await expect(page.locator('.job-card .collection-dates')).toContainText('원문 수동 검토 2026-10-11 (정기 재검증 아님)');
+  await expect(page.locator('.job-card .collection-dates')).toContainText('최초 수집 2026.10.05');
+  await expect(page.locator('.job-card .collection-dates')).toContainText('마지막 수집 2026.10.19');
+  await expect(page.locator('.job-card .collection-dates')).toContainText('원문 수동 검토 2026.10.11 (정기 재검증 아님)');
   await expect(page.locator('.job-card .posted')).toContainText('게시일 미표시');
   await page.locator('.details').click();
   await expect(page.locator('#detailsVerifiedAt')).toContainText('원문 수동 검토:');
@@ -2312,39 +2316,44 @@ test('한국어 관련 필터는 점수·지역 기본 필터와 무관하게 �
   await expect(page.locator('#jobs')).toContainText('Korean Learning Content Designer');
   await expect(page.locator('#jobs')).toContainText('Korean Customer Support Specialist');
   await expect(page.locator('#jobs')).toContainText('Keywords Studios');
-  await page.locator('.job-card').first().hover();
-  await expect(page.locator('.job-card').first()).not.toHaveClass(/is-unreviewed/);
-  await expect(page.locator('.job-card').first().locator('.seen-status')).toBeVisible();
-  await page.locator('#statusFilter').selectOption('reviewed');
-  await expect(page.locator('.job-card')).toHaveCount(1);
-  await page.locator('#statusFilter').selectOption('all');
   await page.locator('#teachingOnly').uncheck();
   await expect(page.locator('.job-card')).toHaveCount(1);
   await expect(page.locator('#jobs')).toContainText('Keywords Studios');
 });
 
-test('공고 카드에 머물면 확인 안 함 표시가 사라지고 확인 여부로 필터링한다', async ({ page }) => {
+test('공고 카드에 머물러도 새로고침 전에는 표시와 위치가 유지된다', async ({ page }) => {
   await useFeed(page);
   await page.goto('/munseong/');
   await expect(page.locator('.job-card')).toHaveCount(3);
   await expect(page.locator('.job-card.is-unreviewed')).toHaveCount(3);
+  const firstTitle = await page.locator('.job-card').first().locator('.title').textContent();
   await page.locator('.job-card').first().hover();
-  await expect(page.locator('.job-card').first()).not.toHaveClass(/is-unreviewed/);
-  await page.locator('#statusFilter').selectOption('reviewed');
+  await page.waitForTimeout(800);
+  await expect(page.locator('.job-card').first()).toHaveClass(/is-unreviewed/);
+  await expect(page.locator('.job-card').first().locator('.seen-status')).toBeHidden();
+  await expect(page.locator('.job-card').first().locator('.title')).toHaveText(firstTitle || '');
+  await page.selectOption('#statusFilter', 'reviewed');
+  await expect(page.locator('.job-card')).toHaveCount(0);
+  await page.reload();
+  await page.selectOption('#statusFilter', 'reviewed');
   await expect(page.locator('.job-card')).toHaveCount(1);
-  await page.locator('#statusFilter').selectOption('unreviewed');
+  await page.selectOption('#statusFilter', 'unreviewed');
   await expect(page.locator('.job-card')).toHaveCount(2);
   await expect(page.locator('.job-card.is-unreviewed')).toHaveCount(2);
 });
 
-test('미확인 필터에서 카드에 머물면 확인 처리와 함께 목록이 즉시 갱신된다', async ({ page }) => {
+test('미확인 필터에서도 새로고침 전에는 카드가 사라지지 않는다', async ({ page }) => {
   await useFeed(page);
   await page.goto('/munseong/');
   await page.locator('#statusFilter').selectOption('unreviewed');
   await expect(page.locator('.job-card')).toHaveCount(3);
   await page.locator('.job-card').first().hover();
+  await page.waitForTimeout(800);
+  await expect(page.locator('.job-card')).toHaveCount(3);
+  await expect(page.locator('.job-card.is-unreviewed')).toHaveCount(3);
+  await page.reload();
+  await page.locator('#statusFilter').selectOption('unreviewed');
   await expect(page.locator('.job-card')).toHaveCount(2);
-  await expect(page.locator('.job-card.is-unreviewed')).toHaveCount(2);
 });
 
 test('원문 내용이 바뀐 공고는 확인함 상태를 자동으로 해제한다', async ({ page }) => {
@@ -2353,10 +2362,12 @@ test('원문 내용이 바뀐 공고는 확인함 상태를 자동으로 해제�
   await page.goto('/munseong/');
   const card = page.locator('.job-card[data-job-id="changed"]');
   await card.hover();
-  await expect(card).not.toHaveClass(/is-unreviewed/);
+  await page.waitForTimeout(800);
+  await expect(card).toHaveClass(/is-unreviewed/);
   current = feed([job({ id: 'changed', contentFingerprint: 'fingerprint-v2', title: 'Updated Korean AI Data Specialist' })]);
   await page.reload();
   await expect(page.locator('.job-card[data-job-id="changed"]')).toHaveClass(/is-unreviewed/);
+  await expect(page.locator('.job-card[data-job-id="changed"] .seen-status')).toBeHidden();
 });
 
 test('맞춤 적합도는 확인된 부적격 공고를 기본 추천에서 숨기고 사유를 보여준다', async ({ page }) => {
@@ -2856,6 +2867,14 @@ test('상단 투어·체험 메뉴는 무료·성인 참가 가능한 항목을 
   await expect(page.locator('.tour-card .tour-title')).toHaveText(['군산 성인 프로그램']);
   await expect(page.locator('.tour-card')).toHaveClass(/is-unreviewed/);
   await page.locator('.tour-card').hover();
+  await page.waitForTimeout(700);
+  await expect(page.locator('.tour-card')).toHaveClass(/is-unreviewed/);
+  await expect(page.locator('.tour-card .seen-status')).toBeHidden();
+  await page.reload();
+  await page.locator('#tourRegion').selectOption('');
+  await page.locator('#tourAudience').selectOption('all');
+  await page.locator('#tourQuery').fill('군산');
+  await expect(page.locator('.tour-card')).toHaveCount(1);
   await expect(page.locator('.tour-card')).not.toHaveClass(/is-unreviewed/);
   await expect(page.locator('.tour-card .seen-status')).toBeVisible();
 });

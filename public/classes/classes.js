@@ -1,3 +1,5 @@
+import { formatDate } from '../shared/date-format.js';
+
 const $ = (id) => document.getElementById(id);
 const MODE_LABELS = { online: '온라인', offline: '오프라인', hybrid: '온·오프라인' };
 const COST_LABELS = { free: '무료', low: '저가', paid: '유료', varies: '가격 변동' };
@@ -12,22 +14,20 @@ try {
   const stored = JSON.parse(localStorage.getItem(SEEN_KEY) || '[]');
   if (Array.isArray(stored)) seenIds = new Set(stored);
 } catch { /* Start with an empty seen set when storage is unavailable. */ }
+const displayedSeenIds = new Set(seenIds);
 
-function markSeen(course, card, badge) {
+function markSeen(course) {
   if (seenIds.has(course.id)) return;
   seenIds.add(course.id);
-  if (badge) badge.hidden = false;
-  card.classList.remove('is-unreviewed');
-  card.classList.add('is-seen');
   try { localStorage.setItem(SEEN_KEY, JSON.stringify([...seenIds])); } catch { /* Keep the in-memory state. */ }
 }
 
-function attachSeenTracking(card, course, badge) {
+function attachSeenTracking(card, course) {
   let dwellTimer = null;
   const armSeen = () => {
     if (seenIds.has(course.id)) return;
     clearTimeout(dwellTimer);
-    dwellTimer = setTimeout(() => markSeen(course, card, badge), 450);
+    dwellTimer = setTimeout(() => markSeen(course), 450);
   };
   const disarmSeen = () => { clearTimeout(dwellTimer); dwellTimer = null; };
   card.addEventListener('pointerenter', (event) => {
@@ -71,7 +71,7 @@ function render() {
     if (!levelMatches(course, level)) return false;
     if (!query) return true;
     return normalize([course.title, course.provider, course.level, course.audience, course.location, course.summary, course.schedule].join(' ')).includes(query);
-  }).sort((a, b) => Number(seenIds.has(a.id)) - Number(seenIds.has(b.id)));
+  }).sort((a, b) => Number(displayedSeenIds.has(a.id)) - Number(displayedSeenIds.has(b.id)));
   $('resultCount').textContent = `${filtered.length}개 강의`;
   $('empty').hidden = filtered.length > 0;
   const container = $('courses');
@@ -81,11 +81,11 @@ function render() {
     const node = template.content.cloneNode(true);
     const card = node.querySelector('.class-card');
     card.dataset.courseId = course.id;
-    const seen = seenIds.has(course.id);
+    const seen = displayedSeenIds.has(course.id);
     const seenStatus = node.querySelector('.seen-status');
     if (seenStatus) seenStatus.hidden = !seen;
     card.classList.toggle('is-unreviewed', !seen);
-    attachSeenTracking(card, course, seenStatus);
+    attachSeenTracking(card, course);
     const chips = node.querySelector('.class-chips');
     const enrollmentChip = document.createElement('span');
     enrollmentChip.className = `chip enrollment ${course.enrollment || ''}`;
@@ -106,7 +106,7 @@ function render() {
     node.querySelector('.location').textContent = course.location || '온라인';
     node.querySelector('.audience').textContent = course.audience || '공식 안내 확인';
     node.querySelector('.source-note').textContent = course.sourceNote || '';
-    node.querySelector('.verify-note').textContent = `공식 원문 확인일 ${course.verifiedAt}`;
+    node.querySelector('.verify-note').textContent = `공식 원문 확인일 ${formatDate(course.verifiedAt)}`;
     const official = node.querySelector('.official');
     official.href = course.url;
     const apply = node.querySelector('.apply');
@@ -116,8 +116,8 @@ function render() {
     } else {
       apply.hidden = true;
     }
-    official.addEventListener('click', () => markSeen(course, card, seenStatus));
-    apply.addEventListener('click', () => markSeen(course, card, seenStatus));
+    official.addEventListener('click', () => markSeen(course));
+    apply.addEventListener('click', () => markSeen(course));
     container.append(node);
   }
 }
@@ -175,7 +175,7 @@ async function loadLanguage(nextLanguage) {
     const data = await response.json();
     courses = Array.isArray(data.courses) ? data.courses : [];
     selfStudy = Array.isArray(data.selfStudy) ? data.selfStudy : [];
-    $('sourceDate').textContent = data.researchedAt || '확인일 미상';
+    $('sourceDate').textContent = formatDate(data.researchedAt) || '확인일 미상';
     renderStats();
     render();
     renderSelfStudy();

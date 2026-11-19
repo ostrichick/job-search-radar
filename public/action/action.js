@@ -1,3 +1,5 @@
+import { formatDate, formatDateTime } from '../shared/date-format.js';
+
 const $ = (id) => document.getElementById(id);
 const OWNER_LABELS = { munseong: 'Munseong', nicole: 'Nicole', shared: '공동' };
 const OWNER_SEARCH = { munseong: 'Munseong 문성', nicole: 'Nicole 니콜', shared: '공동' };
@@ -17,6 +19,7 @@ try {
   const storedSeen = JSON.parse(localStorage.getItem(SEEN_KEY) || '[]');
   if (Array.isArray(storedSeen)) seenIds = new Set(storedSeen);
 } catch { /* Keep the seen state empty when this key is corrupt. */ }
+const displayedSeenIds = new Set(seenIds);
 try {
   const storedChecked = JSON.parse(localStorage.getItem(CHECK_KEY) || '[]');
   if (Array.isArray(storedChecked)) checkedIds = new Set(storedChecked);
@@ -35,9 +38,7 @@ function deadlineInfo(item) {
   const end = Date.parse(item.deadlineAt);
   if (!Number.isFinite(end)) return { state: 'unknown', label: '', text: '마감 확인 필요' };
   const remaining = end - Date.now();
-  const when = new Intl.DateTimeFormat('ko-KR', {
-    timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
-  }).format(new Date(end));
+  const when = formatDateTime(end);
   if (remaining <= 0) return { state: 'closed', label: '마감', text: `마감 ${when}` };
   const hours = remaining / 3600000;
   const label = hours < 1 ? `${Math.max(1, Math.ceil(remaining / 60000))}분 남음`
@@ -98,21 +99,18 @@ function safeHref(value) {
   }
 }
 
-function markSeen(item, card, badge) {
+function markSeen(item) {
   if (seenIds.has(item.id)) return;
   seenIds.add(item.id);
-  card.classList.remove('is-unreviewed');
-  card.classList.add('is-seen');
-  badge.hidden = false;
   saveSeen();
 }
 
-function attachSeen(card, item, badge) {
+function attachSeen(card, item) {
   let timer = null;
   const arm = () => {
     if (seenIds.has(item.id)) return;
     clearTimeout(timer);
-    timer = setTimeout(() => markSeen(item, card, badge), 450);
+    timer = setTimeout(() => markSeen(item), 450);
   };
   const disarm = () => { clearTimeout(timer); timer = null; };
   card.addEventListener('pointerenter', (event) => { if (event.pointerType !== 'touch') arm(); });
@@ -127,8 +125,8 @@ function renderCard(item) {
   const closed = info.state === 'closed';
   const card = make('article', `action-card${closed ? ' is-closed' : ''}`);
   card.dataset.actionId = item.id;
-  card.classList.toggle('is-unreviewed', !seenIds.has(item.id));
-  card.classList.toggle('is-seen', seenIds.has(item.id));
+  card.classList.toggle('is-unreviewed', !displayedSeenIds.has(item.id));
+  card.classList.toggle('is-seen', displayedSeenIds.has(item.id));
   const head = make('div', 'action-card-head');
   const badges = make('div', 'action-badges');
   badges.append(make('span', `action-badge owner-${item.owner}`, OWNER_LABELS[item.owner] || item.owner));
@@ -136,7 +134,7 @@ function renderCard(item) {
   if (item.priority === 'urgent') badges.append(make('span', 'action-badge urgent', '긴급'));
   if (item.priority === 'watch') badges.append(make('span', 'action-badge watch', '대기'));
   const seenStatus = make('span', 'seen-status', '확인됨');
-  seenStatus.hidden = !seenIds.has(item.id);
+  seenStatus.hidden = !displayedSeenIds.has(item.id);
   badges.append(seenStatus);
   head.append(badges);
   card.append(head);
@@ -168,7 +166,7 @@ function renderCard(item) {
       anchor.href = href;
       anchor.target = '_blank';
       anchor.rel = 'noopener noreferrer';
-      anchor.addEventListener('click', () => markSeen(item, card, seenStatus));
+      anchor.addEventListener('click', () => markSeen(item));
       links.append(anchor);
     }
     card.append(links);
@@ -176,10 +174,10 @@ function renderCard(item) {
   const status = make('div', 'action-status');
   const linkStatus = item.linkStatus || 'unknown';
   status.append(make('span', `link-status ${linkStatus}`, linkStatus === 'ok' ? '링크 확인' : linkStatus === 'dead' ? '링크 만료' : '링크 미확인'));
-  if (item.verifiedAt) status.append(make('span', '', `확인일 ${item.verifiedAt}`));
+  if (item.verifiedAt) status.append(make('span', '', `확인일 ${formatDate(item.verifiedAt)}`));
   if (item.statusNote) status.append(make('span', '', item.statusNote));
   card.append(status);
-  attachSeen(card, item, seenStatus);
+  attachSeen(card, item);
   return card;
 }
 
@@ -290,7 +288,7 @@ async function load() {
     checklist = Array.isArray(data.checklist) ? data.checklist : [];
     notice = String(data.notice || '');
     $('actionUpdatedAt').textContent = data.updatedAt
-      ? new Date(data.updatedAt).toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul' })
+      ? (String(data.updatedAt).includes('T') ? formatDateTime(data.updatedAt) : formatDate(data.updatedAt))
       : '확인일 미상';
     renderChecklist();
     render();

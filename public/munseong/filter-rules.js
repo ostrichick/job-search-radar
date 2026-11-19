@@ -32,9 +32,10 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
     const titleMatch = /\bKorean\s+(Language\s+)?(Teacher|Instructor|Tutor|Teaching|EdTech|Customer\s+Support|Support|Localization|Content|Curriculum|Learning|Quality)\b/i.test(job.title || '');
     const koreanTitleMatch = /한국어교원|한국어\s*강사|한국어\s*선생님|한국어\s*튜터|세종학당|한국어\s*콘텐츠|한국어\s*고객|한국어\s*CS|에듀테크/i.test(job.title || '');
     if (!tagMatch && !titleMatch && !koreanTitleMatch) return false;
+    const reviewedIds = state.reviewedIdsAtLoad || state.reviewedIds;
     if (value('statusFilter') === 'active' && hidden) return false;
-    if (value('statusFilter') === 'reviewed' && !state.reviewedIds.has(job.id)) return false;
-    if (value('statusFilter') === 'unreviewed' && state.reviewedIds.has(job.id)) return false;
+    if (value('statusFilter') === 'reviewed' && !reviewedIds.has(job.id)) return false;
+    if (value('statusFilter') === 'unreviewed' && reviewedIds.has(job.id)) return false;
     if (value('listingFilter') === 'active' && ['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus)) return false;
     if (fitFilter) {
       const fitStatus = profileFit(job).status;
@@ -91,9 +92,10 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
   }
   if (!skipped.has('statusFilter')) {
     if (status === 'active' && hidden) return false;
+    const reviewedIds = state.reviewedIdsAtLoad || state.reviewedIds;
     if (status === 'new' && !state.newIds.has(job.id)) return false;
-    if (status === 'unreviewed' && state.reviewedIds.has(job.id)) return false;
-    if (status === 'reviewed' && !state.reviewedIds.has(job.id)) return false;
+    if (status === 'unreviewed' && reviewedIds.has(job.id)) return false;
+    if (status === 'reviewed' && !reviewedIds.has(job.id)) return false;
     if (status === 'saved' && !state.favorites.has(job.id)) return false;
     if (status === 'planned' && jobState !== 'planned') return false;
     if (status === 'applied' && jobState !== 'applied') return false;

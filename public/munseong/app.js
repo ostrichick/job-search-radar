@@ -1,4 +1,5 @@
 import { createCardRenderer } from './render-cards.js';
+import { formatDate as formatDisplayDate, formatDateTime as formatDisplayDateTime } from '../shared/date-format.js';
 import { feedHealth } from './feed-health.js';
 import { createRenderCache } from './render-cache.js';
 import { createCompensationUI } from './compensation-ui.js';
@@ -260,7 +261,7 @@ function formatDate(value) {
   if (days <= 0) return '오늘';
   if (days === 1) return '어제';
   if (days < 30) return `${days}일 전`;
-  return date.toLocaleDateString('ko-KR');
+  return formatDisplayDate(date);
 }
 
 function jobContentFingerprint(job) {
@@ -383,7 +384,7 @@ function formatDeadline(job) {
   if (job.deadlineDate) {
     const date = new Date(`${job.deadlineDate}T00:00:00+09:00`);
     if (!Number.isNaN(date.getTime())) {
-      const label = date.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' });
+      const label = formatDisplayDate(date).slice(5);
       const days = deadlineDaysRemaining(job);
       return `${Number.isFinite(days) && days >= 0 && days <= 3 ? `마감 임박 · ${label}` : `마감 ${label}`}${earlyClose}`;
     }
@@ -598,7 +599,8 @@ function renderStats(filtered = matchingJobs()) {
   const recommended = filtered.filter((job) => isRecommendedJob(job)).length;
   const saved = [...state.favorites].filter((id) => filteredIds.has(id)).length;
   const planned = Object.entries(state.jobStates).filter(([id, value]) => filteredIds.has(id) && value === 'planned').length;
-  const unreviewed = filtered.filter((job) => !state.reviewedIds.has(job.id) && isRecommendedJob(job)).length;
+  const reviewedIds = state.reviewedIdsAtLoad || state.reviewedIds;
+  const unreviewed = filtered.filter((job) => !reviewedIds.has(job.id) && isRecommendedJob(job)).length;
   $('stats').innerHTML = [
     ['추천 공고', `${recommended}개`],
     ['관심 공고', `${saved}개`],
@@ -1107,7 +1109,7 @@ function renderVerificationHistory(job) {
   };
   const history = Array.isArray(job.verificationHistory) ? job.verificationHistory.slice(-6).reverse() : [];
   summary.textContent = history.length
-    ? `최근 ${history.length}개 검증 사건 · 최초 발견 ${job.firstSeenAt ? new Date(job.firstSeenAt).toLocaleDateString('ko-KR') : '미상'}`
+    ? `최근 ${history.length}개 검증 사건 · 최초 발견 ${job.firstSeenAt ? formatDisplayDate(job.firstSeenAt) : '미상'}`
     : '아직 누적된 검증 이력이 없습니다.';
   for (const item of history) {
     const row = document.createElement('div');
@@ -1117,7 +1119,7 @@ function renderVerificationHistory(job) {
     heading.textContent = eventLabels[item.event] || item.event || '검증';
     const meta = document.createElement('span');
     const at = Date.parse(item.at || '');
-    meta.textContent = Number.isFinite(at) ? new Date(at).toLocaleString('ko-KR') : '시각 미상';
+    meta.textContent = Number.isFinite(at) ? formatDisplayDateTime(at) : '시각 미상';
     row.append(heading, meta);
     if (item.reason) {
       const reason = document.createElement('small');
@@ -1170,7 +1172,7 @@ function renderPaymentSignals(job) {
     const sourceDate = signal.latestSourceAt ? `최근 출처 ${signal.latestSourceAt}` : '';
     const observed = signal.checkedAt ? `확인 ${signal.checkedAt}` : '';
     const freshness = freshnessLabels[signal.freshness] || signal.freshness || '';
-    const expires = signal.expiresAt ? `재검토 기준 ${new Date(signal.expiresAt).toLocaleDateString('ko-KR')}` : '';
+    const expires = signal.expiresAt ? `재검토 기준 ${formatDisplayDate(signal.expiresAt)}` : '';
     meta.textContent = [
       labels[signal.type] || signal.type,
       recurrenceLabels[signal.recurrence] || signal.recurrence,
@@ -1223,7 +1225,10 @@ async function openDetails(job) {
   const openingFromList = !$('detailsDialog').open;
   if (openingFromList || !state.detailQueue.includes(job.id)) state.detailQueue = filteredJobs().map((item) => item.id);
   if (openingFromList) state.detailReturnFocus = captureJobCardFocus() || { jobId: job.id, selector: '.details', index: 0 };
-  if (!storage.readOnly) markJobReviewed(job.id);
+  if (!storage.readOnly) {
+    markJobReviewed(job.id);
+    state.reviewedIdsAtLoad?.add(job.id);
+  }
   state.currentDetailId = job.id;
   await persist();
   renderStats();
@@ -1296,7 +1301,7 @@ async function openDetails(job) {
   }
   const paymentFreshness = paymentFreshnessLabel(job);
   const nextPaymentReview = payment.nextReviewAt
-    ? ` · 다음 재검토 기준 ${new Date(payment.nextReviewAt).toLocaleDateString('ko-KR')}`
+    ? ` · 다음 재검토 기준 ${formatDisplayDate(payment.nextReviewAt)}`
     : '';
   const paymentSummary = payment.state === 'evidence_expired'
     ? '기존 지급 평판 근거의 유효기간이 지나 최신 근거 재검토가 필요합니다.'
@@ -1322,14 +1327,14 @@ async function openDetails(job) {
     : '';
   const rssScope = ['public_rss', 'public_rss_cached_detail'].includes(job.sourceListingState);
   const priorDetail = rssScope && job.lastDetailVerifiedAt
-    ? ` · 상세 마지막 교차 검증: ${new Date(job.lastDetailVerifiedAt).toLocaleString('ko-KR')} (이번 수집에서는 재검증 안 됨)`
+    ? ` · 상세 마지막 교차 검증: ${formatDisplayDateTime(job.lastDetailVerifiedAt)} (이번 수집에서는 재검증 안 됨)`
     : '';
-  const collectionDates = ` · 최초 수집: ${job.firstSeenAt ? new Date(job.firstSeenAt).toLocaleDateString('ko-KR') : '미상'}` +
-    ` · 마지막 수집: ${job.lastSeenAt ? new Date(job.lastSeenAt).toLocaleDateString('ko-KR') : '미상'}`;
+  const collectionDates = ` · 최초 수집: ${job.firstSeenAt ? formatDisplayDate(job.firstSeenAt) : '미상'}` +
+    ` · 마지막 수집: ${job.lastSeenAt ? formatDisplayDate(job.lastSeenAt) : '미상'}`;
   $('detailsVerifiedAt').textContent = job.sourceListingState === 'manual_original_review'
-    ? `원문 수동 검토: ${job.researchReviewedAt ? new Date(job.researchReviewedAt).toLocaleString('ko-KR') : '미상'} · 정기 수집으로 원문을 재확인하지 않음${collectionDates}`
+    ? `원문 수동 검토: ${job.researchReviewedAt ? formatDisplayDateTime(job.researchReviewedAt) : '미상'} · 정기 수집으로 원문을 재확인하지 않음${collectionDates}`
     : checkedAt
-      ? `${rssScope ? 'RSS 목록 마지막 확인' : '모집 출처 마지막 확인'}: ${new Date(checkedAt).toLocaleString('ko-KR')}${priorDetail}${reviewNote}${collectionDates}`
+      ? `${rssScope ? 'RSS 목록 마지막 확인' : '모집 출처 마지막 확인'}: ${formatDisplayDateTime(checkedAt)}${priorDetail}${reviewNote}${collectionDates}`
       : `모집 확인 시각 미상${priorDetail}${reviewNote}${collectionDates}`;
   renderVerificationHistory(job);
   $('detailsDescription').textContent = job.description || '상세 설명이 제공되지 않았습니다.';
@@ -1599,6 +1604,7 @@ async function importState(file) {
   importing = false;
   await storage.commit('import');
   syncStoredState();
+  state.reviewedIdsAtLoad = new Set(state.reviewedIds);
   render();
   return { kind: 'backup' };
   } catch (error) {
@@ -1845,10 +1851,14 @@ function applyFeedData(data, detectNew = true) {
   }
   const currentIds = new Set(state.jobs.map((job) => job.id));
   state.newIds = reconcileNewIds(state.newIds, state.reviewedIds, currentIds);
+  state.reviewedIdsAtLoad = new Set(state.reviewedIds);
   persist();
   storage.setItem('knownJobIds', JSON.stringify(state.jobs.map((job) => job.id)));
   updateDynamicFilters();
-  $('updatedAt').textContent = data.updatedAt ? `마지막 수집 ${new Date(data.updatedAt).toLocaleString('ko-KR')}` : '수집 시각 미상';
+  const updatedLabel = isNicole ? 'Data checked' : '자료 확인 기준';
+  $('updatedAt').textContent = data.updatedAt
+    ? `${updatedLabel} ${formatDisplayDateTime(data.updatedAt)}`
+    : (isNicole ? 'Check time unavailable' : '자료 확인 시각 미상');
   const failedSources = (data.sourceStatus || []).filter((source) => !source.ok);
   if (failedSources.length) {
     const labels = failedSources.map((source) => `${source.source}${source.preserved ? `(${source.preserved}개 유지)` : ''}`).join(', ');

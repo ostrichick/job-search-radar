@@ -1,3 +1,5 @@
+import { formatDate as formatDisplayDate } from '../shared/date-format.js';
+
 // Independent household state. Never import the person-specific job radar storage module.
 const DB_NAME = 'jeonju-household-support-v1';
 const DB_STORE = 'household';
@@ -13,6 +15,13 @@ let state = blankState();
 let programs = [];
 let storage = null;
 let saveSequence = Promise.resolve();
+let displayChecked = new Set();
+
+function syncDisplayChecked() {
+  displayChecked = new Set(Object.entries(state.tracking)
+    .filter(([, value]) => value?.checked)
+    .map(([id]) => id));
+}
 
 function kstDate() {
   const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
@@ -20,7 +29,7 @@ function kstDate() {
   return `${value('year')}-${value('month')}-${value('day')}`;
 }
 
-function formatDate(date) { return date ? date.replaceAll('-', '.') : '상시 안내'; }
+function formatDate(date) { return date ? formatDisplayDate(date) : '상시 안내'; }
 function notice(message) { $('notice').textContent = message; }
 
 function openDatabase() {
@@ -173,7 +182,7 @@ function applyLinkLabel(url) {
 function renderCard(program) {
   const period = periodInfo(program);
   const record = state.tracking[program.id] || { status: 'none', note: '' };
-  const checked = Boolean(record.checked);
+  const checked = displayChecked.has(program.id);
   const card = element('article', 'card');
   card.dataset.programId = program.id;
   if (period.type === 'closed') card.classList.add('is-closed');
@@ -225,11 +234,7 @@ function renderCard(program) {
       checked: true,
       updatedAt: new Date().toISOString()
     };
-    seenStatus.hidden = false;
-    card.classList.remove('is-unreviewed');
-    card.classList.add('is-seen');
     void saveState();
-    renderStats();
   };
   status.value = record.status || 'none';
   status.addEventListener('change', () => {
@@ -266,7 +271,7 @@ function renderCard(program) {
   card.addEventListener('pointerleave', disarmSeen);
   card.addEventListener('focusin', armSeen);
   card.addEventListener('focusout', disarmSeen);
-  card.append(tracking, element('div', 'bottom', `공식 출처 마지막 확인 ${program.verifiedAt} · 현시점 조건·모집 일정은 변경 가능`));
+  card.append(tracking, element('div', 'bottom', `공식 출처 마지막 확인 ${formatDate(program.verifiedAt)} · 현시점 조건·모집 일정은 변경 가능`));
   return card;
 }
 
@@ -301,11 +306,11 @@ function renderPrograms() {
     const status = state.tracking[p.id]?.status || 'none';
     if (tracking === 'saved' && status === 'none') return false;
     if (tracking === 'done' && !['applied', 'finished'].includes(status)) return false;
-    if (tracking === 'checked' && !state.tracking[p.id]?.checked) return false;
-    if (tracking === 'unchecked' && state.tracking[p.id]?.checked) return false;
+    if (tracking === 'checked' && !displayChecked.has(p.id)) return false;
+    if (tracking === 'unchecked' && displayChecked.has(p.id)) return false;
     return !query || [p.title, p.summary, p.audience, p.jurisdiction, ...p.conditions, ...p.questions].join(' ').toLowerCase().includes(query);
   }).sort((a, b) => periodInfo(a).sort - periodInfo(b).sort
-    || Number(Boolean(state.tracking[a.id]?.checked)) - Number(Boolean(state.tracking[b.id]?.checked))
+    || Number(displayChecked.has(a.id)) - Number(displayChecked.has(b.id))
     || ((a.end && b.end) ? a.end.localeCompare(b.end) : 0)
     || a.title.localeCompare(b.title, 'ko'));
   $('programs').replaceChildren(...matches.map(renderCard));
@@ -334,6 +339,7 @@ async function importBackup(event) {
     const incoming = cleanState(JSON.parse(await file.text()));
     if (!window.confirm('현재 가구 기록을 백업의 기록으로 교체합니다. 계속하시겠습니까?')) return;
     state = incoming;
+    syncDisplayChecked();
     fillForm();
     renderStats();
     renderPrograms();
@@ -349,13 +355,14 @@ async function init() {
     const data = await response.json();
     if (!Array.isArray(data.programs)) throw new Error('지원사업 목록 형식 오류');
     programs = data.programs;
-    $('sourceDate').textContent = data.researchedAt.replaceAll('-', '.');
+    $('sourceDate').textContent = formatDate(data.researchedAt);
   } catch (error) { notice(`공식 사업 목록을 읽을 수 없습니다: ${error.message}`); return; }
   try {
     storage = await openDatabase();
     const existing = await dbRead(storage);
     if (existing) state = cleanState(existing);
   } catch (error) { storage = null; notice(`로컬 저장소를 사용할 수 없습니다: ${error.message}. 기록은 JSON으로 따로 백업하세요.`); }
+  syncDisplayChecked();
   fillForm();
   renderStats();
   renderPrograms();

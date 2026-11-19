@@ -1,9 +1,9 @@
+import { formatDate as formatDisplayDate } from '../shared/date-format.js';
+
 export function createCardRenderer({ $, activeMarketJobs, captureJobCardFocus, distanceSummary, domesticLocalityMatches, effectivePaymentEvidence, eligibilityDisplayLabel, escapeHtml, filteredJobs, formatDate, formatDeadline, friendlyUiText, hideWithUndo, isBroadActiveView, jobFingerprint, jobMarketScopes, listingDisplayLabel, openDetails, paymentFreshnessLabel, persist, profileFit, qualityClass, renderActiveFilters, renderCollectionCoverage, renderStats, renderVerificationBadges, requirementsDisplayLabel, restoreJobCardFocus, roleFitEvidenceFor, salarySummary, setHidden, setJobState, showStorageStatus, snapshotJob, syncStoredState, updateBatchUI, workplaceDisplay, workplaceModeLabel, state, storage, renderCache, decorateCard, afterRender }) {
 let renderWaiting = false;
 const isoDay = (raw) => {
-  const value = raw ? new Date(raw) : null;
-  return value && Number.isFinite(value.getTime())
-    ? value.toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' }) : '미상';
+  return raw ? formatDisplayDate(raw) || '미상' : '미상';
 };
 function render() {
   if (storage.pending) {
@@ -51,28 +51,18 @@ function render() {
     const node = template.content.cloneNode(true);
     const card = node.querySelector('.job-card');
     card.dataset.jobId = job.id;
-    const reviewed = state.reviewedIds.has(job.id);
+    const reviewedIds = state.reviewedIdsAtLoad || state.reviewedIds;
+    const reviewed = reviewedIds.has(job.id);
     card.classList.toggle('is-unreviewed', !reviewed);
     card.classList.toggle('is-seen', reviewed);
     const seenStatus = node.querySelector('.seen-status');
     if (seenStatus) seenStatus.hidden = !reviewed;
-    let pendingReviewRender = false;
     const markSeen = async () => {
       if (storage.readOnly || state.reviewedIds.has(job.id)) return;
       state.reviewedIds.add(job.id);
       state.reviewedFingerprints[job.id] = jobFingerprint(job);
       state.newIds.delete(job.id);
-      card.classList.remove('is-unreviewed');
-      card.classList.add('is-seen');
-      if (seenStatus) seenStatus.hidden = false;
-      renderStats();
-      const immediateReviewFilter = ['unreviewed', 'new'].includes($('statusFilter')?.value);
-      pendingReviewRender = true;
       await persist();
-      if (immediateReviewFilter && pendingReviewRender) {
-        pendingReviewRender = false;
-        render();
-      }
     };
     let seenDwellTimer = null;
     const armSeen = () => {
@@ -81,20 +71,15 @@ function render() {
       seenDwellTimer = setTimeout(markSeen, 450);
     };
     const disarmSeen = () => { clearTimeout(seenDwellTimer); seenDwellTimer = null; };
-    const flushPendingReviewRender = () => {
-      if (!pendingReviewRender) return;
-      pendingReviewRender = false;
-      render();
-    };
     card.addEventListener('pointerenter', (event) => {
       if (event.pointerType !== 'touch') armSeen();
     });
     card.addEventListener('pointermove', (event) => {
       if (event.pointerType !== 'touch' && !seenDwellTimer) armSeen();
     }, { passive: true });
-    card.addEventListener('pointerleave', () => { disarmSeen(); flushPendingReviewRender(); });
+    card.addEventListener('pointerleave', disarmSeen);
     card.addEventListener('focusin', armSeen);
-    card.addEventListener('focusout', () => { disarmSeen(); flushPendingReviewRender(); });
+    card.addEventListener('focusout', disarmSeen);
     node.querySelector('.source').textContent = job.source;
     if ((job.sources || []).length > 1) node.querySelector('.source').textContent = `${job.source} +${job.sources.length - 1}`;
     node.querySelector('.score').textContent = job.manual
@@ -130,7 +115,7 @@ function render() {
     paymentBadge.className = `payment-badge ${qualityClass('payment', payment.state)}`;
     paymentBadge.dataset.state = payment.state;
     paymentBadge.dataset.freshness = payment.freshness || '';
-    paymentBadge.title = `${paymentFreshnessLabel(job)}${payment.nextReviewAt ? ` · 재검토 기준 ${new Date(payment.nextReviewAt).toLocaleDateString('ko-KR')}` : ''}`;
+    paymentBadge.title = `${paymentFreshnessLabel(job)}${payment.nextReviewAt ? ` · 재검토 기준 ${formatDisplayDate(payment.nextReviewAt)}` : ''}`;
     const requirementsBadge = node.querySelector('.requirements-badge');
     requirementsBadge.textContent = requirementsDisplayLabel(job);
     requirementsBadge.className = `requirements-badge ${qualityClass('requirements', job.requirementsStatus || 'clear')}`;
@@ -242,11 +227,6 @@ function render() {
     node.querySelector('.details').addEventListener('click', () => {
       disarmSeen();
       openDetails(job);
-      if (!storage.readOnly) {
-        card.classList.remove('is-unreviewed');
-        card.classList.add('is-seen');
-        if (seenStatus) seenStatus.hidden = false;
-      }
     });
     decorateCard?.(node, job);
     container.appendChild(node);

@@ -101,8 +101,14 @@ test('복지카드에 머물면 확인 안 함 표시가 사라지고 확인 여
   const card = page.locator('[data-program-id="earned-income-2025-late"]');
   await expect(card).toHaveClass(/is-unreviewed/);
   await card.hover();
-  await expect(card).not.toHaveClass(/is-unreviewed/);
-  await expect(card.locator('.seen-status')).toBeVisible();
+  await page.waitForTimeout(900);
+  await expect(card).toHaveClass(/is-unreviewed/);
+  await expect(card.locator('.seen-status')).toBeHidden();
+  await page.locator('#tracking').selectOption('checked');
+  await expect(page.locator('.card')).toHaveCount(0);
+  await page.locator('#tracking').selectOption('unchecked');
+  await expect(page.locator('#programs')).toContainText('2025년 귀속 근로장려금');
+  await page.reload();
   await page.locator('#tracking').selectOption('checked');
   await expect(page.locator('.card')).toHaveCount(1);
   await expect(page.locator('#programs')).toContainText('2025년 귀속 근로장려금');

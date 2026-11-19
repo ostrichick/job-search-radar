@@ -1,5 +1,7 @@
 const REGION_ORDER = ['전주', '완주', '군산', '익산', '정읍', '남원', '김제', '진안', '무주', '장수', '임실', '순창', '고창', '부안'];
 
+import { formatDate, formatDateTime } from '../shared/date-format.js';
+
 const todayIso = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' });
 
 const el = (tag, className, text) => {
@@ -9,12 +11,7 @@ const el = (tag, className, text) => {
   return node;
 };
 
-const formatDay = (value) => {
-  if (!value) return '';
-  const [year, month, day] = value.split('-');
-  if (!year || !month || !day) return value;
-  return `${year}.${month}.${day}`;
-};
+const formatDay = (value) => formatDate(value);
 
 const statusOf = (item, today = todayIso()) => {
   if (item.startDate && item.startDate > today) return { key: 'upcoming', label: '예정' };
@@ -46,22 +43,20 @@ try {
   const stored = JSON.parse(localStorage.getItem(TOUR_SEEN_KEY) || '[]');
   if (Array.isArray(stored)) tourSeenIds = new Set(stored);
 } catch { /* Start with an empty seen set when storage is unavailable. */ }
+const displayedSeenIds = new Set(tourSeenIds);
 
-function markTourSeen(id, card, badge) {
+function markTourSeen(id) {
   if (tourSeenIds.has(id)) return;
   tourSeenIds.add(id);
-  if (badge) badge.hidden = false;
-  card.classList.remove('is-unreviewed');
-  card.classList.add('is-seen');
   try { localStorage.setItem(TOUR_SEEN_KEY, JSON.stringify([...tourSeenIds])); } catch { /* Keep the in-memory state. */ }
 }
 
-function attachTourSeen(card, item, badge) {
+function attachTourSeen(card, item) {
   let dwellTimer = null;
   const armSeen = () => {
     if (tourSeenIds.has(item.id)) return;
     clearTimeout(dwellTimer);
-    dwellTimer = setTimeout(() => markTourSeen(item.id, card, badge), 450);
+    dwellTimer = setTimeout(() => markTourSeen(item.id), 450);
   };
   const disarmSeen = () => { clearTimeout(dwellTimer); dwellTimer = null; };
   card.addEventListener('pointerenter', (event) => {
@@ -123,7 +118,7 @@ export function createToursView({ $ }) {
       return true;
     });
     return items.sort((a, b) => {
-      const seenDiff = Number(tourSeenIds.has(a.id)) - Number(tourSeenIds.has(b.id));
+      const seenDiff = Number(displayedSeenIds.has(a.id)) - Number(displayedSeenIds.has(b.id));
       if (seenDiff) return seenDiff;
       if (filters.sort === 'title') return String(a.title).localeCompare(String(b.title), 'ko');
       if (filters.sort === 'newest') return String(b.startDate || '').localeCompare(String(a.startDate || ''));
@@ -136,7 +131,7 @@ export function createToursView({ $ }) {
     const status = statusOf(item);
     const card = el('article', 'tour-card');
     const badges = el('div', 'tour-badges');
-    const seen = tourSeenIds.has(item.id);
+    const seen = displayedSeenIds.has(item.id);
     const seenStatus = el('span', 'seen-status', '확인됨');
     seenStatus.hidden = !seen;
     card.classList.toggle('is-unreviewed', !seen);
@@ -147,7 +142,7 @@ export function createToursView({ $ }) {
       el('span', 'tour-badge category', item.category || '프로그램'),
       el('span', `tour-badge status ${status.key}`, status.label)
     );
-    attachTourSeen(card, item, seenStatus);
+    attachTourSeen(card, item);
     if (item.region) badges.append(el('span', 'tour-badge region', item.region));
     card.append(badges);
 
@@ -156,7 +151,7 @@ export function createToursView({ $ }) {
     link.href = item.applyUrl || item.sourceUrl || '#';
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
-    link.addEventListener('click', () => markTourSeen(item.id, card, seenStatus));
+    link.addEventListener('click', () => markTourSeen(item.id));
     title.append(link);
     card.append(title);
 
@@ -188,14 +183,14 @@ export function createToursView({ $ }) {
     apply.href = item.applyUrl || item.sourceUrl || '#';
     apply.target = '_blank';
     apply.rel = 'noopener noreferrer';
-    apply.addEventListener('click', () => markTourSeen(item.id, card, seenStatus));
+    apply.addEventListener('click', () => markTourSeen(item.id));
     actions.append(apply);
     if (item.sourceUrl && item.sourceUrl !== item.applyUrl) {
       const source = el('a', 'tour-source', '출처 원문');
       source.href = item.sourceUrl;
       source.target = '_blank';
       source.rel = 'noopener noreferrer';
-      source.addEventListener('click', () => markTourSeen(item.id, card, seenStatus));
+      source.addEventListener('click', () => markTourSeen(item.id));
       actions.append(source);
     }
     if (item.checkedAt) actions.append(el('span', 'tour-checked', `확인 ${formatDay(item.checkedAt)}`));
@@ -209,7 +204,7 @@ export function createToursView({ $ }) {
     if (count) count.textContent = `${items.length}개`;
     if (updatedAt) {
       updatedAt.textContent = state.feed?.updatedAt
-        ? `업데이트 ${new Date(state.feed.updatedAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', dateStyle: 'medium', timeStyle: 'short' })}`
+        ? `자료 확인 기준 ${formatDateTime(state.feed.updatedAt)}`
         : '';
     }
     if (sourceStatus) {

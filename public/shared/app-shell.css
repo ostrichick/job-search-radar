@@ -303,6 +303,15 @@ main {
   font-size: 13px;
   line-height: 1.7;
 }
+.data-caveat {
+  margin: 0 2px var(--space-4);
+  color: var(--text-subtle);
+  font-size: 12px;
+  line-height: 1.6;
+}
+@media (max-width: 720px) {
+  .data-caveat { margin-bottom: var(--space-2); font-size: 11px; line-height: 1.45; }
+}
 
 /* ---------- filters and form controls ---------- */
 .filters, .class-filters { display: grid; gap: var(--space-3); }

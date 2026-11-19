@@ -7,9 +7,10 @@ function filteredJobs() {
   const sort = values.sort;
   jobs.sort((a, b) => {
     let exactDistanceDiff = 0;
+    const reviewedIds = state.reviewedIdsAtLoad || state.reviewedIds;
     if (sort !== 'distance') {
-      const aSeen = state.reviewedIds.has(a.id) ? 1 : 0;
-      const bSeen = state.reviewedIds.has(b.id) ? 1 : 0;
+      const aSeen = reviewedIds.has(a.id) ? 1 : 0;
+      const bSeen = reviewedIds.has(b.id) ? 1 : 0;
       if (aSeen !== bSeen) return aSeen - bSeen;
     }
     if (sort === 'newest') return (Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0);
@@ -37,8 +38,8 @@ function filteredJobs() {
       exactDistanceDiff = (Number.isFinite(aDistance) ? aDistance : Number.POSITIVE_INFINITY)
         - (Number.isFinite(bDistance) ? bDistance : Number.POSITIVE_INFINITY);
     }
-    const aReviewed = state.reviewedIds.has(a.id) ? 1 : 0;
-    const bReviewed = state.reviewedIds.has(b.id) ? 1 : 0;
+    const aReviewed = reviewedIds.has(a.id) ? 1 : 0;
+    const bReviewed = reviewedIds.has(b.id) ? 1 : 0;
     if (aReviewed !== bReviewed) return aReviewed - bReviewed;
     const scoreDiff = b.score - a.score;
     if (scoreDiff) return scoreDiff;

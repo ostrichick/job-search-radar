@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('한국어 강의 탭은 온라인·전주 오프라인 강의와 공식 링크를 보여준다', async ({ page }) => {
   await page.goto('/classes/');
   await expect(page.getByRole('heading', { name: /한국어·스페인어/ })).toBeVisible();
-  await expect(page.locator('#sourceDate')).toHaveText('2026-11-17');
+  await expect(page.locator('#sourceDate')).toHaveText('2026.11.17');
   await expect(page.locator('#totalCount')).toHaveText('6');
   await expect(page.locator('.class-card')).toHaveCount(6);
   await expect(page.locator('#courses')).toContainText('온라인 세종학당');
@@ -39,10 +39,12 @@ test('강의 카드에 머물면 확인 안 함 표시가 사라지고 새로고
   const courseId = await card.getAttribute('data-course-id');
   await expect(card).toHaveClass(/is-unreviewed/);
   await card.hover();
-  await expect(card).not.toHaveClass(/is-unreviewed/);
-  await expect(card.locator('.seen-status')).toBeVisible();
+  await page.waitForTimeout(700);
+  await expect(card).toHaveClass(/is-unreviewed/);
+  await expect(card.locator('.seen-status')).toBeHidden();
   await page.reload();
   await expect(page.locator(`.class-card[data-course-id="${courseId}"]`)).not.toHaveClass(/is-unreviewed/);
+  await expect(page.locator(`.class-card[data-course-id="${courseId}"] .seen-status`)).toBeVisible();
 });
 
 test('한국어 강의 탭은 무료·온라인·전주 오프라인 필터를 적용한다', async ({ page }) => {
