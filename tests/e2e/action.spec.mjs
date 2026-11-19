@@ -35,10 +35,13 @@ test('마감 시각이 지나면 열린 화면에서도 자동으로 마감 처�
 });
 
 test('모든 탭에 같은 자료 확인 기준 안내와 통일된 날짜 형식이 표시된다', async ({ page }) => {
-  for (const path of ['/munseong/', '/nicole/', '/household/', '/classes/', '/tours/', '/action/']) {
+  const koreanCaveat = '자료 확인 기준 · 카드의 확인일 이후 모집·마감·자격이 바뀔 수 있으니 지원 전 공식 원문을 다시 확인하세요.';
+  for (const path of ['/munseong/', '/household/', '/classes/', '/tours/', '/action/']) {
     await page.goto(path);
-    await expect(page.locator('.data-caveat')).toBeVisible();
+    await expect(page.locator('.data-caveat')).toHaveText(koreanCaveat);
   }
+  await page.goto('/nicole/');
+  await expect(page.locator('.data-caveat')).toContainText('Data check basis');
   await page.goto('/classes/');
   await expect(page.locator('#sourceDate')).toHaveText(/^\d{4}\.\d{2}\.\d{2}$/);
   await page.goto('/household/');
@@ -60,8 +63,8 @@ test('실행 카드의 확인 표시와 체크리스트는 브라우저에 저�
   await expect(card.locator('.seen-status')).toBeHidden();
   await card.hover();
   await page.waitForTimeout(700);
-  await expect(card).toHaveClass(/is-unreviewed/);
-  await expect(card.locator('.seen-status')).toBeHidden();
+  await expect(card).not.toHaveClass(/is-unreviewed/);
+  await expect(card.locator('.seen-status')).toBeVisible();
 
   const firstCheck = page.locator('#actionChecklist input').first();
   await expect(firstCheck).not.toBeChecked();

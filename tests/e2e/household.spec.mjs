@@ -102,8 +102,8 @@ test('복지카드에 머물면 확인 안 함 표시가 사라지고 확인 여
   await expect(card).toHaveClass(/is-unreviewed/);
   await card.hover();
   await page.waitForTimeout(900);
-  await expect(card).toHaveClass(/is-unreviewed/);
-  await expect(card.locator('.seen-status')).toBeHidden();
+  await expect(card).not.toHaveClass(/is-unreviewed/);
+  await expect(card.locator('.seen-status')).toBeVisible();
   await page.locator('#tracking').selectOption('checked');
   await expect(page.locator('.card')).toHaveCount(0);
   await page.locator('#tracking').selectOption('unchecked');

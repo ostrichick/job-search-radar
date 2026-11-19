@@ -16,18 +16,21 @@ try {
 } catch { /* Start with an empty seen set when storage is unavailable. */ }
 const displayedSeenIds = new Set(seenIds);
 
-function markSeen(course) {
+function markSeen(course, card, badge) {
   if (seenIds.has(course.id)) return;
   seenIds.add(course.id);
+  card.classList.remove('is-unreviewed');
+  card.classList.add('is-seen');
+  if (badge) badge.hidden = false;
   try { localStorage.setItem(SEEN_KEY, JSON.stringify([...seenIds])); } catch { /* Keep the in-memory state. */ }
 }
 
-function attachSeenTracking(card, course) {
+function attachSeenTracking(card, course, badge) {
   let dwellTimer = null;
   const armSeen = () => {
     if (seenIds.has(course.id)) return;
     clearTimeout(dwellTimer);
-    dwellTimer = setTimeout(() => markSeen(course), 450);
+    dwellTimer = setTimeout(() => markSeen(course, card, badge), 450);
   };
   const disarmSeen = () => { clearTimeout(dwellTimer); dwellTimer = null; };
   card.addEventListener('pointerenter', (event) => {
@@ -81,11 +84,11 @@ function render() {
     const node = template.content.cloneNode(true);
     const card = node.querySelector('.class-card');
     card.dataset.courseId = course.id;
-    const seen = displayedSeenIds.has(course.id);
+    const seen = seenIds.has(course.id);
     const seenStatus = node.querySelector('.seen-status');
     if (seenStatus) seenStatus.hidden = !seen;
     card.classList.toggle('is-unreviewed', !seen);
-    attachSeenTracking(card, course);
+    attachSeenTracking(card, course, seenStatus);
     const chips = node.querySelector('.class-chips');
     const enrollmentChip = document.createElement('span');
     enrollmentChip.className = `chip enrollment ${course.enrollment || ''}`;
@@ -116,8 +119,8 @@ function render() {
     } else {
       apply.hidden = true;
     }
-    official.addEventListener('click', () => markSeen(course));
-    apply.addEventListener('click', () => markSeen(course));
+    official.addEventListener('click', () => markSeen(course, card, seenStatus));
+    apply.addEventListener('click', () => markSeen(course, card, seenStatus));
     container.append(node);
   }
 }

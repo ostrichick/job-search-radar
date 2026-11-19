@@ -51,8 +51,7 @@ function render() {
     const node = template.content.cloneNode(true);
     const card = node.querySelector('.job-card');
     card.dataset.jobId = job.id;
-    const reviewedIds = state.reviewedIdsAtLoad || state.reviewedIds;
-    const reviewed = reviewedIds.has(job.id);
+    const reviewed = state.reviewedIds.has(job.id);
     card.classList.toggle('is-unreviewed', !reviewed);
     card.classList.toggle('is-seen', reviewed);
     const seenStatus = node.querySelector('.seen-status');
@@ -62,6 +61,9 @@ function render() {
       state.reviewedIds.add(job.id);
       state.reviewedFingerprints[job.id] = jobFingerprint(job);
       state.newIds.delete(job.id);
+      card.classList.remove('is-unreviewed');
+      card.classList.add('is-seen');
+      if (seenStatus) seenStatus.hidden = false;
       await persist();
     };
     let seenDwellTimer = null;

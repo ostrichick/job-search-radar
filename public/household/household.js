@@ -182,7 +182,7 @@ function applyLinkLabel(url) {
 function renderCard(program) {
   const period = periodInfo(program);
   const record = state.tracking[program.id] || { status: 'none', note: '' };
-  const checked = displayChecked.has(program.id);
+  const checked = Boolean(record.checked);
   const card = element('article', 'card');
   card.dataset.programId = program.id;
   if (period.type === 'closed') card.classList.add('is-closed');
@@ -234,6 +234,9 @@ function renderCard(program) {
       checked: true,
       updatedAt: new Date().toISOString()
     };
+    seenStatus.hidden = false;
+    card.classList.remove('is-unreviewed');
+    card.classList.add('is-seen');
     void saveState();
   };
   status.value = record.status || 'none';

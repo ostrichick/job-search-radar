@@ -1207,8 +1207,8 @@ test('일괄 관심은 확인 상태를 바꾸지 않고 카드에 머문 항목
   const firstTitle = await page.locator('.job-card').first().locator('.title').textContent();
   await page.locator('.job-card').first().hover();
   await page.waitForTimeout(800);
-  await expect(page.locator('.job-card').first()).toHaveClass(/is-unreviewed/);
-  await expect(page.locator('.job-card').first().locator('.seen-status')).toBeHidden();
+  await expect(page.locator('.job-card').first()).not.toHaveClass(/is-unreviewed/);
+  await expect(page.locator('.job-card').first().locator('.seen-status')).toBeVisible();
   await expect(page.locator('.job-card').first().locator('.title')).toHaveText(firstTitle || '');
   await page.reload();
   await page.selectOption('#statusFilter', 'reviewed');
@@ -2329,8 +2329,8 @@ test('공고 카드에 머물러도 새로고침 전에는 표시와 위치가 �
   const firstTitle = await page.locator('.job-card').first().locator('.title').textContent();
   await page.locator('.job-card').first().hover();
   await page.waitForTimeout(800);
-  await expect(page.locator('.job-card').first()).toHaveClass(/is-unreviewed/);
-  await expect(page.locator('.job-card').first().locator('.seen-status')).toBeHidden();
+  await expect(page.locator('.job-card').first()).not.toHaveClass(/is-unreviewed/);
+  await expect(page.locator('.job-card').first().locator('.seen-status')).toBeVisible();
   await expect(page.locator('.job-card').first().locator('.title')).toHaveText(firstTitle || '');
   await page.selectOption('#statusFilter', 'reviewed');
   await expect(page.locator('.job-card')).toHaveCount(0);
@@ -2350,7 +2350,7 @@ test('미확인 필터에서도 새로고침 전에는 카드가 사라지지 �
   await page.locator('.job-card').first().hover();
   await page.waitForTimeout(800);
   await expect(page.locator('.job-card')).toHaveCount(3);
-  await expect(page.locator('.job-card.is-unreviewed')).toHaveCount(3);
+  await expect(page.locator('.job-card.is-unreviewed')).toHaveCount(2);
   await page.reload();
   await page.locator('#statusFilter').selectOption('unreviewed');
   await expect(page.locator('.job-card')).toHaveCount(2);
@@ -2363,7 +2363,7 @@ test('원문 내용이 바뀐 공고는 확인함 상태를 자동으로 해제�
   const card = page.locator('.job-card[data-job-id="changed"]');
   await card.hover();
   await page.waitForTimeout(800);
-  await expect(card).toHaveClass(/is-unreviewed/);
+  await expect(card).not.toHaveClass(/is-unreviewed/);
   current = feed([job({ id: 'changed', contentFingerprint: 'fingerprint-v2', title: 'Updated Korean AI Data Specialist' })]);
   await page.reload();
   await expect(page.locator('.job-card[data-job-id="changed"]')).toHaveClass(/is-unreviewed/);
@@ -2868,8 +2868,8 @@ test('상단 투어·체험 메뉴는 무료·성인 참가 가능한 항목을 
   await expect(page.locator('.tour-card')).toHaveClass(/is-unreviewed/);
   await page.locator('.tour-card').hover();
   await page.waitForTimeout(700);
-  await expect(page.locator('.tour-card')).toHaveClass(/is-unreviewed/);
-  await expect(page.locator('.tour-card .seen-status')).toBeHidden();
+  await expect(page.locator('.tour-card')).not.toHaveClass(/is-unreviewed/);
+  await expect(page.locator('.tour-card .seen-status')).toBeVisible();
   await page.reload();
   await page.locator('#tourRegion').selectOption('');
   await page.locator('#tourAudience').selectOption('all');

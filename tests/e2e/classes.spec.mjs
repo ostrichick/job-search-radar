@@ -40,8 +40,8 @@ test('강의 카드에 머물면 확인 안 함 표시가 사라지고 새로고
   await expect(card).toHaveClass(/is-unreviewed/);
   await card.hover();
   await page.waitForTimeout(700);
-  await expect(card).toHaveClass(/is-unreviewed/);
-  await expect(card.locator('.seen-status')).toBeHidden();
+  await expect(card).not.toHaveClass(/is-unreviewed/);
+  await expect(card.locator('.seen-status')).toBeVisible();
   await page.reload();
   await expect(page.locator(`.class-card[data-course-id="${courseId}"]`)).not.toHaveClass(/is-unreviewed/);
   await expect(page.locator(`.class-card[data-course-id="${courseId}"] .seen-status`)).toBeVisible();

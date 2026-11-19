@@ -19,7 +19,6 @@ try {
   const storedSeen = JSON.parse(localStorage.getItem(SEEN_KEY) || '[]');
   if (Array.isArray(storedSeen)) seenIds = new Set(storedSeen);
 } catch { /* Keep the seen state empty when this key is corrupt. */ }
-const displayedSeenIds = new Set(seenIds);
 try {
   const storedChecked = JSON.parse(localStorage.getItem(CHECK_KEY) || '[]');
   if (Array.isArray(storedChecked)) checkedIds = new Set(storedChecked);
@@ -99,18 +98,21 @@ function safeHref(value) {
   }
 }
 
-function markSeen(item) {
+function markSeen(item, card, badge) {
   if (seenIds.has(item.id)) return;
   seenIds.add(item.id);
+  card.classList.remove('is-unreviewed');
+  card.classList.add('is-seen');
+  if (badge) badge.hidden = false;
   saveSeen();
 }
 
-function attachSeen(card, item) {
+function attachSeen(card, item, badge) {
   let timer = null;
   const arm = () => {
     if (seenIds.has(item.id)) return;
     clearTimeout(timer);
-    timer = setTimeout(() => markSeen(item), 450);
+    timer = setTimeout(() => markSeen(item, card, badge), 450);
   };
   const disarm = () => { clearTimeout(timer); timer = null; };
   card.addEventListener('pointerenter', (event) => { if (event.pointerType !== 'touch') arm(); });
@@ -125,8 +127,8 @@ function renderCard(item) {
   const closed = info.state === 'closed';
   const card = make('article', `action-card${closed ? ' is-closed' : ''}`);
   card.dataset.actionId = item.id;
-  card.classList.toggle('is-unreviewed', !displayedSeenIds.has(item.id));
-  card.classList.toggle('is-seen', displayedSeenIds.has(item.id));
+  card.classList.toggle('is-unreviewed', !seenIds.has(item.id));
+  card.classList.toggle('is-seen', seenIds.has(item.id));
   const head = make('div', 'action-card-head');
   const badges = make('div', 'action-badges');
   badges.append(make('span', `action-badge owner-${item.owner}`, OWNER_LABELS[item.owner] || item.owner));
@@ -134,7 +136,7 @@ function renderCard(item) {
   if (item.priority === 'urgent') badges.append(make('span', 'action-badge urgent', '긴급'));
   if (item.priority === 'watch') badges.append(make('span', 'action-badge watch', '대기'));
   const seenStatus = make('span', 'seen-status', '확인됨');
-  seenStatus.hidden = !displayedSeenIds.has(item.id);
+  seenStatus.hidden = !seenIds.has(item.id);
   badges.append(seenStatus);
   head.append(badges);
   card.append(head);
@@ -166,7 +168,7 @@ function renderCard(item) {
       anchor.href = href;
       anchor.target = '_blank';
       anchor.rel = 'noopener noreferrer';
-      anchor.addEventListener('click', () => markSeen(item));
+      anchor.addEventListener('click', () => markSeen(item, card, seenStatus));
       links.append(anchor);
     }
     card.append(links);
@@ -177,7 +179,7 @@ function renderCard(item) {
   if (item.verifiedAt) status.append(make('span', '', `확인일 ${formatDate(item.verifiedAt)}`));
   if (item.statusNote) status.append(make('span', '', item.statusNote));
   card.append(status);
-  attachSeen(card, item);
+  attachSeen(card, item, seenStatus);
   return card;
 }
 
