@@ -80,10 +80,6 @@ main { max-width: 1500px; margin: 0 auto; padding: 24px clamp(18px,5vw,72px) 60p
 .card.is-closed .summary,.card.is-closed .meta,.card.is-closed .detail-body,.card.is-closed .bottom { color: var(--text-faint)}
 .card.is-closed .links a { color: var(--text-subtle)}
 .card.is-closed .assessment { background: var(--state-muted-bg); color: var(--text-subtle)}
-.card.is-checked { background: var(--state-muted-bg); border-color: var(--state-muted-border); opacity: .8}
-.card.is-checked h3 { color: var(--text-subtle)}
-.card.is-checked .check-button { background: var(--accent-soft-strong); border-color: var(--border-accent-strong); color: var(--text-accent)}
-.check-button { min-height: 40px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface-card); color: var(--text-muted); font-weight: 800; cursor: pointer; padding: 8px 10px}
 .assessment { border-radius: var(--radius-sm); background: var(--accent-soft); padding: 10px 12px; color: var(--text-accent-muted); font-size: 12px; line-height: 1.65}
 .assessment.mismatch { background: var(--surface-canvas); color: var(--status-warn-text)}
 .empty { margin-top: 20px; padding: 40px; text-align: center; color: var(--text-faint); background: var(--surface-canvas); border-radius: var(--radius-md)}

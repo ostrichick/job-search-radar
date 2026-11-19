@@ -177,10 +177,14 @@ function renderCard(program) {
   const card = element('article', 'card');
   card.dataset.programId = program.id;
   if (period.type === 'closed') card.classList.add('is-closed');
-  card.classList.toggle('is-checked', checked);
   card.setAttribute('aria-label', `${program.title} · ${period.title}`);
   const top = element('div', 'card-top');
-  top.append(element('span', 'chip', CATEGORY_LABELS[program.category] || program.category));
+  const seenDot = element('span', 'unseen-dot');
+  seenDot.setAttribute('role', 'img');
+  seenDot.setAttribute('aria-label', '확인 안 함');
+  seenDot.title = '확인 안 함';
+  seenDot.hidden = checked;
+  top.append(seenDot, element('span', 'chip', CATEGORY_LABELS[program.category] || program.category));
   top.append(element('span', 'chip', program.jurisdiction));
   top.append(element('span', `chip ${period.type}`, period.title));
   card.append(top, element('h3', '', program.title), element('div', 'benefit', program.value), element('p', 'summary', program.summary));
@@ -213,8 +217,22 @@ function renderCard(program) {
     option.value = value;
     status.append(option);
   }
+  const markSeen = () => {
+    if (state.tracking[program.id]?.checked) return;
+    const previous = state.tracking[program.id] || { status: 'none', note: '' };
+    state.tracking[program.id] = {
+      status: previous.status || 'none',
+      note: previous.note || '',
+      checked: true,
+      updatedAt: new Date().toISOString()
+    };
+    seenDot.hidden = true;
+    void saveState();
+    renderStats();
+  };
   status.value = record.status || 'none';
   status.addEventListener('change', () => {
+    markSeen();
     updateTracking(program.id, { status: status.value, note: state.tracking[program.id]?.note ?? '' });
   });
   statusLabel.append(status);
@@ -225,19 +243,28 @@ function renderCard(program) {
   note.placeholder = '문의 결과, 신청할 일, 제출 서류 등';
   note.value = record.note || '';
   note.setAttribute('aria-label', `${program.title} 개인 메모`);
-  note.addEventListener('change', () => updateTracking(program.id, { status: state.tracking[program.id]?.status ?? 'none', note: note.value }));
-  noteLabel.append(note);
-  const check = element('button', `check-button${checked ? ' active' : ''}`, checked ? '확인 취소' : '확인함');
-  check.type = 'button';
-  check.setAttribute('aria-label', `${program.title} ${checked ? '확인 취소' : '이미 확인함'}`);
-  check.setAttribute('aria-pressed', String(checked));
-  check.addEventListener('click', () => {
-    updateTracking(program.id, { status: state.tracking[program.id]?.status ?? 'none', checked: !checked, note: state.tracking[program.id]?.note ?? '' });
-    renderPrograms();
-    const next = document.querySelector(`[data-program-id="${program.id}"] .check-button`);
-    (next || $('tracking') || $('resultCount'))?.focus?.({ preventScroll: true });
+  note.addEventListener('change', () => {
+    markSeen();
+    updateTracking(program.id, { status: state.tracking[program.id]?.status ?? 'none', note: note.value });
   });
-  tracking.append(statusLabel, noteLabel, check);
+  noteLabel.append(note);
+  tracking.append(statusLabel, noteLabel);
+  let dwellTimer = null;
+  const armSeen = () => {
+    if (state.tracking[program.id]?.checked) return;
+    clearTimeout(dwellTimer);
+    dwellTimer = setTimeout(markSeen, 450);
+  };
+  const disarmSeen = () => { clearTimeout(dwellTimer); dwellTimer = null; };
+  card.addEventListener('pointerenter', (event) => {
+    if (event.pointerType !== 'touch') armSeen();
+  });
+  card.addEventListener('pointermove', (event) => {
+    if (event.pointerType !== 'touch' && !dwellTimer) armSeen();
+  }, { passive: true });
+  card.addEventListener('pointerleave', disarmSeen);
+  card.addEventListener('focusin', armSeen);
+  card.addEventListener('focusout', disarmSeen);
   card.append(tracking, element('div', 'bottom', `공식 출처 마지막 확인 ${program.verifiedAt} · 현시점 조건·모집 일정은 변경 가능`));
   return card;
 }
@@ -276,7 +303,10 @@ function renderPrograms() {
     if (tracking === 'checked' && !state.tracking[p.id]?.checked) return false;
     if (tracking === 'unchecked' && state.tracking[p.id]?.checked) return false;
     return !query || [p.title, p.summary, p.audience, p.jurisdiction, ...p.conditions, ...p.questions].join(' ').toLowerCase().includes(query);
-  }).sort((a, b) => periodInfo(a).sort - periodInfo(b).sort || ((a.end && b.end) ? a.end.localeCompare(b.end) : 0) || a.title.localeCompare(b.title, 'ko'));
+  }).sort((a, b) => periodInfo(a).sort - periodInfo(b).sort
+    || Number(Boolean(state.tracking[a.id]?.checked)) - Number(Boolean(state.tracking[b.id]?.checked))
+    || ((a.end && b.end) ? a.end.localeCompare(b.end) : 0)
+    || a.title.localeCompare(b.title, 'ko'));
   $('programs').replaceChildren(...matches.map(renderCard));
   $('empty').hidden = matches.length !== 0;
   $('resultCount').textContent = `${matches.length}건 표시`;

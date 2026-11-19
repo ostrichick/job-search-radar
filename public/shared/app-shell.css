@@ -23,7 +23,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
 }
-.button[hidden], .solid[hidden], .outline[hidden], .check-button[hidden], .review-toggle[hidden] { display: none; }
+.button[hidden], .solid[hidden], .outline[hidden] { display: none; }
 ::selection { background: var(--accent-soft-strong); color: var(--text-accent-strong); }
 
 @media (prefers-reduced-motion: reduce) {
@@ -192,7 +192,7 @@ main {
 .kicker, .section-kicker { color: var(--text-subtle); }
 
 /* ---------- buttons ---------- */
-.button, .solid, .outline, .check-button, .review-toggle {
+.button, .solid, .outline {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -259,8 +259,6 @@ main {
   vertical-align: middle;
 }
 .seen-status[hidden] { display: none; }
-.check-button, .review-toggle { background: var(--surface-subtle); border-color: var(--border-strong); color: var(--text-muted); }
-.check-button.active, .review-toggle.active { background: var(--accent-soft-strong); border-color: var(--border-accent-strong); color: var(--text-accent); }
 
 /* ---------- segmented controls ---------- */
 .market-tabs, .language-switch {
