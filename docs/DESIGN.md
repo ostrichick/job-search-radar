@@ -51,31 +51,43 @@
 
 ## 사이트 메타데이터·파비콘
 
-파비콘 원본은 `public/shared/icons/favicon.svg` 하나다. Apple Touch 아이콘은 원본에서 생성해 커밋한다.
+파비콘·PWA 아이콘·공유 이미지의 원본은 `public/shared/icons/favicon.svg`와 `scripts/build-icons.mjs`다. 산출물은 커밋한다.
 
 ```bash
 npm run build:icons
 ```
 
-이 명령은 로컬 Playwright Chromium으로 `apple-touch-icon.png`(180×180)를 만든다. 예약 CI에는 Chromium이 없으므로 `npm run check`에서 실행하지 않는다.
+이 명령은 로컬 Playwright Chromium으로 `apple-touch-icon.png`(180×180), `icon-192.png`, `icon-512.png`, `maskable-512.png`, `og-image.png`(1200×630)를 만든다. 예약 CI에는 Chromium이 없으므로 `npm run check`에서 실행하지 않는다.
 
-운영 탭 6개(`action`, `classes`, `household`, `munseong`, `nicole`, `tours`)의 head 블록:
+운영 탭 6개(`action`, `classes`, `household`, `munseong`, `nicole`, `tours`)의 head 블록 예시:
 
 ```html
 <link rel="icon" href="../shared/icons/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../shared/icons/apple-touch-icon.png">
+<link rel="manifest" href="../shared/site.webmanifest">
 <meta name="theme-color" content="#161c1a">
+<meta name="description" content="…">
+<meta property="og:type" content="website">
+<meta property="og:title" content="…">
+<meta property="og:description" content="…">
+<meta property="og:image" content="https://ostrichick.github.io/job-search-radar/shared/icons/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 ```
 
 루트(`public/index.html`)와 이동용 페이지(`dubu`, `nicole-classic`, `nicole-next`)는 `favicon.svg`와 `theme-color`만 둔다. 루트에서는 경로가 `./shared/icons/favicon.svg`다.
 
+`public/shared/site.webmanifest`는 `start_url: "../nicole/"`, `scope: "../"`를 쓰고 `purpose: any`와 `maskable` 아이콘을 포함한다.
+
 - `data:` 인라인 파비콘은 쓰지 않는다.
 - GitHub Pages가 `/job-search-radar/` 하위에 배포되므로 `/shared/...` 같은 도메인 루트 경로를 쓰지 않는다.
-- `theme-color`는 `tokens.css`의 `--chrome-bg`와 같은 값을 쓴다.
+- `theme-color`와 manifest의 `theme_color`는 `tokens.css`의 `--chrome-bg`와 같은 값을 쓴다.
+- `og:image`는 배포 도메인이 바뀌면 함께 갱신한다.
 - 운영 탭 6개는 서로를 모두 링크하고 현재 탭에만 `aria-current="page"`를 둔다.
-- `node scripts/check-site-metadata.mjs`가 위 규칙과 자산 존재를 HTML 10개 전수 검사하며, `npm run check`에 포함된다.
+- `node scripts/check-site-metadata.mjs`가 위 규칙, 자산 존재, PNG 크기, manifest 아이콘을 HTML 10개 전수 검사하며, `npm run check`에 포함된다.
 
-manifest(PWA 설치), `favicon.ico`, OG/Twitter 이미지는 이번 범위에 포함하지 않는다.
+`favicon.ico`는 이번 범위에 포함하지 않는다.
 
 ## 검증
 

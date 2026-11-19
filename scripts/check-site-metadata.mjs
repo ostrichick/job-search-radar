@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const publicDir = path.join(root, 'public');
+const siteBase = 'https://ostrichick.github.io/job-search-radar';
 const tabs = ['nicole', 'munseong', 'household', 'classes', 'tours', 'action'];
 
 async function walk(dir) {
@@ -29,6 +30,13 @@ async function assertAsset(htmlFile, href, label) {
   const clean = decodeURIComponent(href.split(/[?#]/)[0]);
   const asset = path.resolve(path.dirname(htmlFile), clean);
   await fs.access(asset).catch(() => assert.fail(`${label} asset is missing for ${htmlFile}: ${href}`));
+  return asset;
+}
+
+async function pngSize(file) {
+  const buffer = await fs.readFile(file);
+  assert.equal(buffer.subarray(0, 8).toString('hex'), '89504e470d0a1a0a', `${file} is not a PNG`);
+  return { width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20) };
 }
 
 const tokens = await fs.readFile(path.join(publicDir, 'shared/tokens.css'), 'utf8');
@@ -65,6 +73,36 @@ for (const file of htmlFiles) {
   const apple = links.find((tag) => /\brel\s*=\s*["']apple-touch-icon["']/i.test(tag));
   assert.ok(apple, `${relative} is missing apple-touch-icon`);
   await assertAsset(file, attribute(apple, 'href'), 'apple-touch-icon');
+
+  const manifestLink = links.find((tag) => /\brel\s*=\s*["']manifest["']/i.test(tag));
+  assert.ok(manifestLink, `${relative} is missing rel="manifest"`);
+  const manifestFile = await assertAsset(file, attribute(manifestLink, 'href'), 'manifest');
+  const manifest = JSON.parse(await fs.readFile(manifestFile, 'utf8'));
+  assert.equal(manifest.theme_color?.toLowerCase(), expectedTheme, `${relative} manifest theme_color does not match --chrome-bg`);
+  assert.equal(manifest.start_url, '../nicole/', `${relative} manifest start_url must target ../nicole/`);
+  assert.equal(manifest.scope, '../', `${relative} manifest scope must be ../`);
+  assert.ok(Array.isArray(manifest.icons), `${relative} manifest needs icons`);
+  assert.ok(manifest.icons.some((icon) => icon.purpose === 'any'), `${relative} manifest needs a purpose="any" icon`);
+  assert.ok(manifest.icons.some((icon) => icon.purpose === 'maskable'), `${relative} manifest needs a maskable icon`);
+  for (const icon of manifest.icons) {
+    const iconFile = path.resolve(path.dirname(manifestFile), icon.src);
+    await fs.access(iconFile).catch(() => assert.fail(`${relative} manifest icon is missing: ${icon.src}`));
+    const size = await pngSize(iconFile);
+    assert.equal(`${size.width}x${size.height}`, icon.sizes, `${relative} manifest icon size mismatch: ${icon.src}`);
+  }
+
+  const meta = (key, value) => metas.find((tag) => new RegExp(`\\b${key}\\s*=\\s*["']${value}["']`, 'i').test(tag));
+  const description = meta('name', 'description');
+  assert.ok(description && attribute(description, 'content').trim(), `${relative} needs a non-empty description`);
+  for (const property of ['og:type', 'og:title', 'og:description', 'og:image']) {
+    assert.ok(meta('property', property), `${relative} is missing ${property}`);
+  }
+  assert.equal(attribute(meta('property', 'og:image'), 'content'), `${siteBase}/shared/icons/og-image.png`, `${relative} og:image does not use the shared image`);
+  assert.equal(attribute(meta('property', 'og:image:width'), 'content'), '1200', `${relative} og:image width must be 1200`);
+  assert.equal(attribute(meta('property', 'og:image:height'), 'content'), '630', `${relative} og:image height must be 630`);
+  assert.equal(attribute(meta('name', 'twitter:card'), 'content'), 'summary_large_image', `${relative} needs twitter:card=summary_large_image`);
+  const ogSize = await pngSize(path.join(publicDir, 'shared/icons/og-image.png'));
+  assert.deepEqual(ogSize, { width: 1200, height: 630 }, 'og-image.png must be 1200x630');
 
   const nav = /<nav\b[^>]*\bclass\s*=\s*["'][^"']*\b(?:sites|profile-switch)\b[^"']*["'][^>]*>([\s\S]*?)<\/nav>/i.exec(html);
   assert.ok(nav, `${relative} is missing the shared tab navigation`);

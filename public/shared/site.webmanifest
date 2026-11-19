@@ -1,0 +1,16 @@
+{
+  "name": "Digital Nomad — 전주 생활 대시보드",
+  "short_name": "Digital Nomad",
+  "description": "전주·전북 구인, 복지, 강의, 체험, 실행 정보를 한곳에서.",
+  "lang": "ko",
+  "start_url": "../nicole/",
+  "scope": "../",
+  "display": "standalone",
+  "background_color": "#f4f3ef",
+  "theme_color": "#161c1a",
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
