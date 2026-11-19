@@ -207,7 +207,7 @@ export function createToursView({ $ }) {
     if (count) count.textContent = `${items.length}개`;
     if (updatedAt) {
       updatedAt.textContent = state.feed?.updatedAt
-        ? `자료 확인 기준 ${formatDateTime(state.feed.updatedAt)}`
+        ? formatDateTime(state.feed.updatedAt)
         : '';
     }
     if (sourceStatus) {

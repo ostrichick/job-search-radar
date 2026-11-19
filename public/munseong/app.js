@@ -1855,10 +1855,10 @@ function applyFeedData(data, detectNew = true) {
   persist();
   storage.setItem('knownJobIds', JSON.stringify(state.jobs.map((job) => job.id)));
   updateDynamicFilters();
-  const updatedLabel = isNicole ? 'Data checked' : '자료 확인 기준';
+  const updatedLabel = isNicole ? 'Last collected' : '최종 수집 시각';
   $('updatedAt').textContent = data.updatedAt
     ? `${updatedLabel} ${formatDisplayDateTime(data.updatedAt)}`
-    : (isNicole ? 'Check time unavailable' : '자료 확인 시각 미상');
+    : (isNicole ? 'Collection time unavailable' : '수집 시각 미상');
   const failedSources = (data.sourceStatus || []).filter((source) => !source.ok);
   if (failedSources.length) {
     const labels = failedSources.map((source) => `${source.source}${source.preserved ? `(${source.preserved}개 유지)` : ''}`).join(', ');

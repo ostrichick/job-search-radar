@@ -34,25 +34,28 @@ test('마감 시각이 지나면 열린 화면에서도 자동으로 마감 처�
   await expect(page.locator('.action-card').last()).toHaveAttribute('data-action-id', 'coupang-cs-2026-11');
 });
 
-test('모든 탭에 같은 자료 확인 기준 안내와 통일된 날짜 형식이 표시된다', async ({ page }) => {
-  const koreanCaveat = '자료 확인 기준 · 카드의 확인일 이후 모집·마감·자격이 바뀔 수 있으니 지원 전 공식 원문을 다시 확인하세요.';
+test('모든 탭의 최종 확인일 안내와 날짜 형식이 일치한다', async ({ page }) => {
+  const koreanCaveat = '최종 확인일 · 카드의 확인일 이후 모집·마감·자격이 바뀔 수 있으니 지원 전 공식 원문을 다시 확인하세요.';
+  const englishCaveat = 'Last checked · Deadlines, eligibility, and pay may change after the check date; confirm the official source before applying.';
   for (const path of ['/munseong/', '/household/', '/classes/', '/tours/', '/action/']) {
     await page.goto(path);
+    await expect(page.locator('.data-caveat')).toHaveCount(1);
+    await expect(page.locator('main > .data-caveat:first-child')).toHaveCount(1);
     await expect(page.locator('.data-caveat')).toHaveText(koreanCaveat);
   }
   await page.goto('/nicole/');
-  await expect(page.locator('.data-caveat')).toContainText('Data check basis');
-  await page.goto('/classes/');
-  await expect(page.locator('#sourceDate')).toHaveText(/^\d{4}\.\d{2}\.\d{2}$/);
+  await expect(page.locator('.data-caveat')).toHaveCount(1);
+  await expect(page.locator('main > .data-caveat:first-child')).toHaveCount(1);
+  await expect(page.locator('.data-caveat')).toHaveText(englishCaveat);
   await page.goto('/household/');
+  await expect(page.locator('.hero-aside')).toContainText('최종 확인일');
+  await page.goto('/classes/');
+  await expect(page.locator('.hero-aside')).toContainText('최종 확인일');
   await expect(page.locator('#sourceDate')).toHaveText(/^\d{4}\.\d{2}\.\d{2}$/);
   await page.goto('/tours/');
-  await expect(page.locator('.data-caveat')).toBeVisible();
-  await page.goto('/munseong/');
-  await expect(page.locator('.data-caveat')).toBeVisible();
-  await page.goto('/nicole/');
-  await expect(page.locator('.data-caveat')).toContainText('Data check basis');
+  await expect(page.locator('.hero-aside')).toContainText('최종 수집 시각');
   await page.goto('/action/');
+  await expect(page.locator('.hero-aside')).toContainText('최종 갱신');
   await expect(page.locator('#actionUpdatedAt')).toHaveText(/^\d{4}\.\d{2}\.\d{2} \d{2}:\d{2}$/);
 });
 

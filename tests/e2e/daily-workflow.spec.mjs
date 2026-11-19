@@ -472,6 +472,7 @@ test('기본 추천이 렌더링되고 검토 우선순위로 표시된다', asy
   await expect(page.locator('.job-card')).toHaveCount(3);
   await expect(page.locator('.score').first()).toContainText('검토 우선순위');
   await expect(page.locator('.eligibility-badge').first()).toContainText('한국에서 지원 가능');
+  await expect(page.locator('#updatedAt')).toHaveText(/^최종 수집 시각 \d{4}\.\d{2}\.\d{2} \d{2}:\d{2}/);
 });
 
 test('국내 일반 지역 공고는 추천에서 제외하되 전체 시장 탐색에서는 유지한다', async ({ page }) => {
@@ -2848,6 +2849,7 @@ test('상단 투어·체험 메뉴는 무료·성인 참가 가능한 항목을 
   await expect(page.locator('h1')).toContainText('무료 투어·체험');
   await expect(page.locator('.sites')).toContainText('언어 강의');
   await expect(page.locator('.sites')).toContainText('투어·체험');
+  await expect(page.locator('#tourUpdatedAt')).toHaveText(/^\d{4}\.\d{2}\.\d{2} \d{2}:\d{2}$/);
 
   await expect(page.locator('.tour-card')).toHaveCount(2);
   await expect(page.locator('.tour-card .tour-title')).toHaveText(['전주 무료 체험', '완주 무료 투어']);

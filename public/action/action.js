@@ -291,7 +291,7 @@ async function load() {
     notice = String(data.notice || '');
     $('actionUpdatedAt').textContent = data.updatedAt
       ? (String(data.updatedAt).includes('T') ? formatDateTime(data.updatedAt) : formatDate(data.updatedAt))
-      : '확인일 미상';
+      : '갱신일 미상';
     renderChecklist();
     render();
   } catch (error) {
