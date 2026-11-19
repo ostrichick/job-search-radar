@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Digital Nomad Radar">
+  <rect width="64" height="64" rx="14" fill="#161c1a"/>
+  <path d="M16 34h10l5-14 7 28 5-14h5" fill="none" stroke="#d8ff65" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

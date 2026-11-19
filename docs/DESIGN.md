@@ -8,6 +8,7 @@
 | --- | --- |
 | `public/shared/tokens.css` | 토큰 정의. 색·타입·간격·반경·그림자·모션의 단일 출처 |
 | `public/shared/app-shell.css` | 공통 셸: 다크 크롬, pill 탭, 지표 카드, 패널, 버튼, 필터, 카드 표면, 칩, 빈 상태 |
+| `public/shared/icons/` | 공통 파비콘 SVG와 Apple Touch 아이콘 PNG |
 | `public/munseong/styles.css` | 구인 목록 전용 규칙(보상·거리·워크플로 등). 토큰만 참조 |
 | `public/nicole/styles.css` | Nicole 전용 규칙만 |
 | `public/household/household.css` | 복지·강의 전용 규칙만 |
@@ -48,8 +49,37 @@
 
 셸 클래스를 재사용한다: 헤더(`topbar`/`hero`), 탭(`profile-switch`/`sites`), 지표(`stats`/`overview`), 패널(`panel`), 카드(`job-card`/`card`/`class-card`), 필터(`filters`/`class-filters`), 버튼(`button primary/secondary`, `solid`/`outline`), 칩(`tag`/`chip`).
 
+## 사이트 메타데이터·파비콘
+
+파비콘 원본은 `public/shared/icons/favicon.svg` 하나다. Apple Touch 아이콘은 원본에서 생성해 커밋한다.
+
+```bash
+npm run build:icons
+```
+
+이 명령은 로컬 Playwright Chromium으로 `apple-touch-icon.png`(180×180)를 만든다. 예약 CI에는 Chromium이 없으므로 `npm run check`에서 실행하지 않는다.
+
+운영 탭 6개(`action`, `classes`, `household`, `munseong`, `nicole`, `tours`)의 head 블록:
+
+```html
+<link rel="icon" href="../shared/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../shared/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#161c1a">
+```
+
+루트(`public/index.html`)와 이동용 페이지(`dubu`, `nicole-classic`, `nicole-next`)는 `favicon.svg`와 `theme-color`만 둔다. 루트에서는 경로가 `./shared/icons/favicon.svg`다.
+
+- `data:` 인라인 파비콘은 쓰지 않는다.
+- GitHub Pages가 `/job-search-radar/` 하위에 배포되므로 `/shared/...` 같은 도메인 루트 경로를 쓰지 않는다.
+- `theme-color`는 `tokens.css`의 `--chrome-bg`와 같은 값을 쓴다.
+- 운영 탭 6개는 서로를 모두 링크하고 현재 탭에만 `aria-current="page"`를 둔다.
+- `node scripts/check-site-metadata.mjs`가 위 규칙과 자산 존재를 HTML 10개 전수 검사하며, `npm run check`에 포함된다.
+
+manifest(PWA 설치), `favicon.ico`, OG/Twitter 이미지는 이번 범위에 포함하지 않는다.
+
 ## 검증
 
+- `npm run check` — 구문·사이트 메타데이터·정적 산출물 확인
 - `npm run test:static` — 정적 산출물/경로 확인
 - 화면 변경 시 `npx playwright` 또는 로컬 스크린샷으로 이전 이미지와 비교(최소 데스크톱 1440px, 모바일 390px)
 - 토큰 추가는 기존 화면의 렌더 결과가 바뀌지 않는지 확인한 뒤 커밋한다.
