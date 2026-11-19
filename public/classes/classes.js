@@ -6,6 +6,39 @@ let courses = [];
 let selfStudy = [];
 let language = 'ko';
 const DATA_URLS = { ko: './data/classes.json', es: './data/spanish-classes.json' };
+const SEEN_KEY = 'classSeenIds';
+let seenIds = new Set();
+try {
+  const stored = JSON.parse(localStorage.getItem(SEEN_KEY) || '[]');
+  if (Array.isArray(stored)) seenIds = new Set(stored);
+} catch { /* Start with an empty seen set when storage is unavailable. */ }
+
+function markSeen(course, card, dot) {
+  if (seenIds.has(course.id)) return;
+  seenIds.add(course.id);
+  dot.hidden = true;
+  card.classList.add('is-seen');
+  try { localStorage.setItem(SEEN_KEY, JSON.stringify([...seenIds])); } catch { /* Keep the in-memory state. */ }
+}
+
+function attachSeenTracking(card, course, dot) {
+  let dwellTimer = null;
+  const armSeen = () => {
+    if (seenIds.has(course.id)) return;
+    clearTimeout(dwellTimer);
+    dwellTimer = setTimeout(() => markSeen(course, card, dot), 450);
+  };
+  const disarmSeen = () => { clearTimeout(dwellTimer); dwellTimer = null; };
+  card.addEventListener('pointerenter', (event) => {
+    if (event.pointerType !== 'touch') armSeen();
+  });
+  card.addEventListener('pointermove', (event) => {
+    if (event.pointerType !== 'touch' && !dwellTimer) armSeen();
+  }, { passive: true });
+  card.addEventListener('pointerleave', disarmSeen);
+  card.addEventListener('focusin', armSeen);
+  card.addEventListener('focusout', disarmSeen);
+}
 
 const normalize = (value) => String(value || '').normalize('NFKC').toLowerCase();
 
@@ -37,7 +70,7 @@ function render() {
     if (!levelMatches(course, level)) return false;
     if (!query) return true;
     return normalize([course.title, course.provider, course.level, course.audience, course.location, course.summary, course.schedule].join(' ')).includes(query);
-  });
+  }).sort((a, b) => Number(seenIds.has(a.id)) - Number(seenIds.has(b.id)));
   $('resultCount').textContent = `${filtered.length}개 강의`;
   $('empty').hidden = filtered.length > 0;
   const container = $('courses');
@@ -47,6 +80,9 @@ function render() {
     const node = template.content.cloneNode(true);
     const card = node.querySelector('.class-card');
     card.dataset.courseId = course.id;
+    const seenDot = node.querySelector('.unseen-dot');
+    seenDot.hidden = seenIds.has(course.id);
+    attachSeenTracking(card, course, seenDot);
     const chips = node.querySelector('.class-chips');
     const enrollmentChip = document.createElement('span');
     enrollmentChip.className = `chip enrollment ${course.enrollment || ''}`;
@@ -77,6 +113,8 @@ function render() {
     } else {
       apply.hidden = true;
     }
+    official.addEventListener('click', () => markSeen(course, card, seenDot));
+    apply.addEventListener('click', () => markSeen(course, card, seenDot));
     container.append(node);
   }
 }
