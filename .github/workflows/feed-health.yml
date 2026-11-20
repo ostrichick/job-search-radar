@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Verify published feed age and format
+      - name: Verify published feed age, format, and source health
         run: node scripts/check-feed-health.mjs "https://ostrichick.github.io/job-search-radar/jobs.json"
       - name: Verify published Dubu feed age and format
         if: success() || failure()

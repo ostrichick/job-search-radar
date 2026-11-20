@@ -126,7 +126,7 @@ export function evaluateProfileFit(job, { isNicole = false, age = null, now = Da
   const pass = (reason) => { if (!reasons.includes(reason)) reasons.push(reason); };
 
   if (job.listingStatus === 'expired') fail('마감 경과');
-  if (hasFiveYearRequirement(combined) || SENIOR.test(title)) fail('5년 이상·시니어 요건');
+  if (hasFiveYearRequirement(combined) || SENIOR.test(title)) check('5년 이상·시니어 요건 확인');
   if (requiredIn(combined, MASTER) && !MASTER_ALTERNATIVE.test(combined)) fail('석사 학위 필수');
   if (requiredIn(combined, OTHER_LANGUAGE_REQUIRED)) fail('일본어·중국어 필수');
 

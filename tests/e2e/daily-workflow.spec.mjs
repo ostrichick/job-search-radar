@@ -2375,7 +2375,7 @@ test('맞춤 적합도는 확인된 부적격 공고를 기본 추천에서 숨�
   await useFeed(page, () => feed([
     job({ id: 'fit-ok', title: 'Korean AI Data Reviewer', score: 80, description: 'Evaluate Korean AI data.' }),
     job({ id: 'fit-check', title: 'Korean AI Data Reviewer', score: 60, requirementsStatus: 'hard_check' }),
-    job({ id: 'fit-fail', title: 'Senior Korean AI Data Lead', score: 70, description: '10+ years of experience required.' })
+    job({ id: 'fit-fail', title: 'Korean AI Data Lead', score: 70, description: "Master's degree required." })
   ]));
   await page.goto('/munseong/');
   await expect(page.locator('.job-card')).toHaveCount(2);
@@ -2386,9 +2386,30 @@ test('맞춤 적합도는 확인된 부적격 공고를 기본 추천에서 숨�
   await page.locator('#fitFilter').selectOption('fail');
   await expect(page.locator('.job-card')).toHaveCount(1);
   await expect(page.locator('.job-card .profile-fit')).toHaveAttribute('data-fit-status', 'fail');
-  await expect(page.locator('.job-card')).toContainText('Senior Korean AI Data Lead');
+  await expect(page.locator('.job-card')).toContainText('Korean AI Data Lead');
   await page.locator('#fitFilter').selectOption('');
   await expect(page.locator('.job-card')).toHaveCount(3);
+});
+
+test('추천 정책 v5는 v4의 추천 집계를 유지하면서 프로필 부적합 공고만 제외한다', async ({ page }) => {
+  let current = feed([
+    job({ id: 'fit-ok', title: 'Korean AI Data Reviewer', score: 80, description: 'Evaluate Korean AI data.' }),
+    job({ id: 'fit-check', title: 'Korean AI Data Reviewer', score: 60, requirementsStatus: 'hard_check' }),
+    job({ id: 'fit-fail', title: 'Korean AI Data Lead', score: 70, description: "Master's degree required." })
+  ]);
+  current.recommendationPolicyVersion = 4;
+  await useFeed(page, () => current);
+  await page.goto('/munseong/');
+  await openAdvancedFilters(page);
+  await page.locator('#fitFilter').selectOption('');
+  await expect(page.locator('.job-card')).toHaveCount(3);
+  await expect(page.locator('#stats .stat').first().locator('strong')).toHaveText('2개');
+  current = { ...current, recommendationPolicyVersion: 5 };
+  await page.reload();
+  await openAdvancedFilters(page);
+  await page.locator('#fitFilter').selectOption('');
+  await expect(page.locator('.job-card')).toHaveCount(3);
+  await expect(page.locator('#stats .stat').first().locator('strong')).toHaveText('1개');
 });
 
 test('전주시 공공기관 공고는 기본 국내 필터에서 보인다', async ({ page }) => {

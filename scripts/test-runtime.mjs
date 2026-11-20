@@ -12,11 +12,30 @@ import { validateBackup, mergeStorageChanges } from '../public/munseong/backup-r
 import { isTrustedLocalRequest } from './local-origin.mjs';
 import { createFeedClient } from '../public/munseong/feed-client.js';
 import { isDefaultRecommendation } from '../public/munseong/recommendation-rules.js';
+import { evaluateProfileFit } from '../public/munseong/profile-fit.js';
 
 const legacyPublic = { roleFitEvidence: true, roleFitBasis: 'public_institution',
   category: '기타', matchedKeywords: [], score: 46, eligibilityCode: 'korea', listingStatus: 'official_listed' };
 assert.equal(isDefaultRecommendation(legacyPublic), false);
 assert.equal(isDefaultRecommendation({ ...legacyPublic, matchedKeywords: ['한국어'] }), true);
+
+const fiveYearJob = {
+  ...legacyPublic, id: 'fit-five-year', title: 'Korean AI Data Trainer',
+  description: 'Requires 5+ years of experience in data annotation.',
+  roleFitBasis: 'keyword_match', matchedKeywords: ['korean'], score: 80,
+  eligibilityCode: 'korea', listingStatus: 'verified_open'
+};
+assert.notEqual(evaluateProfileFit(fiveYearJob, { age: 38 }).status, 'fail',
+  'five-year requirements must remain checkable instead of being an automatic fail');
+assert.equal(isDefaultRecommendation(fiveYearJob, 5, { age: 38 }), true);
+const specialistJob = {
+  ...fiveYearJob, id: 'fit-specialist',
+  title: 'Freelance Translators/Checkers - Korean to English - Surgery',
+  description: 'Surgery terminology translation.'
+};
+assert.equal(evaluateProfileFit(specialistJob, { age: 38 }).status, 'fail');
+assert.equal(isDefaultRecommendation(specialistJob, 5, { age: 38 }), false,
+  'policy 5 recommendations must not include profile-fit failures');
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'job-radar-runtime-'));

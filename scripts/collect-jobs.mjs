@@ -11,6 +11,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { isDefaultRecommendation as recommendationRule } from '../public/munseong/recommendation-rules.js';
+import { getProfile } from '../public/munseong/profiles.js';
 import { incruitJeonbukRssUrl, parseIncruitJeonbukRss } from './incruit-rss.mjs';
 import { collectCuratedLeads } from './curated-research.mjs';
 import { isFutureOnlyProductivePlayhouse } from './expanded-remote-sources.mjs';
@@ -52,7 +53,8 @@ const verificationHistoryLimit = 24;
 const sourceMetricHistoryLimit = 24;
 const verificationCheckpointMs = 7 * dayMs;
 const contentFingerprintVersion = 3;
-const recommendationPolicyVersion = 4;
+const recommendationPolicyVersion = 5;
+const recommendationProfile = getProfile('munseong');
 const defaultLocationReference = Object.freeze({
   id: 'kr-jeonbuk-jeonju-deokjin-sanjeong',
   label: '전북특별자치도 전주시 덕진구 산정동',
@@ -1613,28 +1615,63 @@ function eligibilityFor(job) {
   const location = lower(job.location);
   const locationRaw = evidenceSnippet(job.location || '위치 미상');
   const description = lower(job._fullDescription || job.description);
-  const explicitLocationRestriction = description.match(/(?:must|should|currently)\s+(?:reside|live|be based|be located)\s+(?:in|within)\s+([^.;\n]{2,80})|(?:candidates?|applicants?)\s+(?:must|should)\s+(?:be\s+)?(?:based|located|resident)\s+(?:in|within)\s+([^.;\n]{2,80})|\blocation\s*:\s*([^.;\n]{2,80})/i);
-  const rawRestrictionText = lower(explicitLocationRestriction?.slice(1).find(Boolean) || '');
-  const restrictionText = /^remote\b/.test(rawRestrictionText)
-    && /\b(?:engagement|employment|job type|schedule|hours|compensation|pay|salary|requirements?)\s*:/.test(rawRestrictionText)
+  const restrictionDescription = description.replace(/\bu\.s\.a?\.?/gi, 'us').replace(/\bu\.k\./gi, 'uk');
+  const restrictedRegion = /\b(?:usa|us|united states|us only|canada|uk|united kingdom|europe|eu|emea|apac|latam|mena|north america|south america|germany|france|australia|singapore|japan|india|philippines|mexico|brazil|spain|italy|netherlands|poland|romania)\b/;
+  const residencyPattern = /(?:must|should|currently)\s+(?:reside|live|be based|be located)\s+(?:in|within)\s+([^;\n]{2,80}?)(?=\.(?:\s|$)|;|\n|$)|(?:candidates?|applicants?)\s+(?:must|should)\s+(?:be\s+)?(?:based|located|resident)\s+(?:in|within)\s+([^;\n]{2,80}?)(?=\.(?:\s|$)|;|\n|$)/gi;
+  const residencyText = lower([...restrictionDescription.matchAll(residencyPattern)]
+    .map((match) => text(match.slice(1).find(Boolean) || ''))
+    .filter(Boolean)
+    .join(' | '));
+  const locationFields = [...restrictionDescription.matchAll(/\blocation\s*:\s*([^.;\n]{2,80})/gi)]
+    .map((match) => text(match[1]))
+    .filter(Boolean);
+  const locationRestrictionText = lower(locationFields.join(' | ') || location);
+  const locationLooksRestrictive = /\b(?:only|except(?:ing)?|worldwide|world\s+wide|globally|remote|south korea|republic of korea|korea|seoul|한국)\b/.test(locationRestrictionText)
+    || restrictedRegion.test(locationRestrictionText);
+  const rawRestrictionText = residencyText || (locationLooksRestrictive ? locationRestrictionText : '');
+  const genericRemoteRestriction = /^(?:remote(?:\s+job)?|home\s*office|homeoffice|remoto|anywhere|location independent|work from home|wfh|unknown|not specified|n\/?a|위치 미상)$/i.test(rawRestrictionText);
+  const restrictionText = genericRemoteRestriction || (/^remote\b/.test(rawRestrictionText)
+    && /\b(?:engagement|employment|job type|schedule|hours|compensation|pay|salary|requirements?)\s*:/.test(rawRestrictionText))
     ? ''
     : rawRestrictionText;
+  const koreaMentioned = /south korea|republic of korea|\bkorea\b|seoul|한국/.test(restrictionText);
+  const foreignMentioned = restrictedRegion.test(restrictionText);
+  const foreignOnly = /\b(?:usa|us|united states|canada|uk|united kingdom|europe|eu|emea|apac|latam|mena|north america|south america|germany|france|australia|singapore|japan|india|philippines|mexico|brazil|spain|italy|netherlands|poland|romania)\b[^.;\n]{0,24}\bonly\b|\bonly\b[^.;\n]{0,24}\b(?:usa|us|united states|canada|uk|united kingdom|europe|eu|emea|apac|latam|mena|north america|south america|germany|france|australia|singapore|japan|india|philippines|mexico|brazil|spain|italy|netherlands|poland|romania)\b/i.test(restrictionText);
+  const worldwideMentioned = /\b(worldwide|world\s+wide|anywhere in the world|work from anywhere|globally)\b/.test(restrictionText);
+  const koreaExcluded = /\b(?:not|excluding|except(?:ing)?(?:\s+for)?|outside|other than)\b[^.;\n]{0,60}\bkorea\b|\bkorea\b[^.;\n]{0,30}\b(?:not|excluded|except(?:ed)?)\b/i.test(restrictionText);
+  if (koreaExcluded) {
+    return { code: 'restricted', label: '특정 국가 제한', basis: 'restriction_text', reason: `거주·근무 제한 문구에서 한국이 제외됨: ${evidenceSnippet(restrictionText)}` };
+  }
+  if (foreignOnly && koreaMentioned) {
+    return { code: 'unknown', label: '확인 필요', basis: 'restriction_text', reason: `거주·근무 제한 문구가 특정 국가만 허용하면서 한국도 언급함: ${evidenceSnippet(restrictionText)}` };
+  }
+  if (foreignOnly) {
+    return { code: 'restricted', label: '특정 국가 제한', basis: 'restriction_text', reason: `거주·근무 제한 문구가 특정 국가만 허용함: ${evidenceSnippet(restrictionText)}` };
+  }
+  if (koreaMentioned && foreignMentioned && !/\bor\b/i.test(restrictionText)) {
+    return { code: 'unknown', label: '확인 필요', basis: 'restriction_text', reason: `거주·근무 제한 문구가 복수 지역을 함께 언급해 확인 필요: ${evidenceSnippet(restrictionText)}` };
+  }
+  if (worldwideMentioned) {
+    return { code: 'worldwide', label: 'Worldwide', basis: 'restriction_text', reason: `거주·근무 제한 문구가 전 세계를 허용함: ${evidenceSnippet(restrictionText)}` };
+  }
+  if (koreaMentioned) {
+    return { code: 'korea', label: '한국에서 지원 가능', basis: 'restriction_text', reason: `거주·근무 제한 문구에 한국이 명시됨: ${evidenceSnippet(restrictionText)}` };
+  }
+  if (foreignMentioned) {
+    return { code: 'restricted', label: '특정 국가 제한', basis: 'restriction_text', reason: `거주·근무 제한 문구에 다른 국가·지역이 명시됨: ${evidenceSnippet(restrictionText)}` };
+  }
+  if (restrictionText) return { code: 'restricted', label: '특정 국가 제한', basis: 'restriction_text', reason: `거주·근무 제한 문구가 있음: ${evidenceSnippet(restrictionText)}` };
   if (job.countryCode === 'KR') {
     return { code: 'korea', label: '한국에서 지원 가능', basis: 'country_code', reason: '원천 데이터의 국가 코드가 KR로 명시됨' };
   }
   if (/south korea|republic of korea|\bkorea\b|seoul|한국/.test(location)) {
     return { code: 'korea', label: '한국에서 지원 가능', basis: 'location', reason: `공고 위치에 한국이 명시됨: ${locationRaw}` };
   }
-  if (/south korea|republic of korea|\bkorea\b|seoul|한국/.test(restrictionText)) {
-    return { code: 'korea', label: '한국에서 지원 가능', basis: 'restriction_text', reason: `거주·근무 제한 문구에 한국이 명시됨: ${evidenceSnippet(restrictionText)}` };
-  }
-  if (restrictionText) return { code: 'restricted', label: '특정 국가 제한', basis: 'restriction_text', reason: `거주·근무 제한 문구가 있음: ${evidenceSnippet(restrictionText)}` };
   if (/\b(anywhere in|within)\s+[a-z]/.test(location)) return { code: 'restricted', label: '특정 국가 제한', basis: 'location', reason: `특정 지역 범위가 명시됨: ${locationRaw}` };
   if (/\b(worldwide|world\s+wide|remote, worldwide|anywhere in the world|work from anywhere|globally)\b/.test(location)) {
     return { code: 'worldwide', label: 'Worldwide', basis: 'location', reason: `Worldwide/전 세계 지원 범위가 명시됨: ${locationRaw}` };
   }
-  const restricted = /\b(usa|united states|us only|canada|uk|united kingdom|europe|eu|emea|apac|latam|mena|north america|south america|germany|france|australia|singapore|japan|india|philippines|mexico|brazil|spain|italy|netherlands|poland|romania)\b/;
-  if (restricted.test(location)) {
+  if (restrictedRegion.test(location)) {
     return { code: 'restricted', label: '특정 국가 제한', basis: 'location', reason: `특정 국가·지역 위치가 명시됨: ${locationRaw}` };
   }
   if (job.remote) {
@@ -2883,7 +2920,7 @@ function keepInFeed(job) {
 }
 
 function isDefaultRecommendation(job) {
-  return recommendationRule(job, recommendationPolicyVersion);
+  return recommendationRule(job, recommendationPolicyVersion, { age: recommendationProfile.age });
 }
 
 function refreshTimeBasedEvidence(jobs, now = Date.now()) {

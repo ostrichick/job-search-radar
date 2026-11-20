@@ -4,6 +4,9 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { isDefaultRecommendation as recommendationRule } from '../public/munseong/recommendation-rules.js';
+import { getProfile } from '../public/munseong/profiles.js';
+
+const recommendationProfile = getProfile('munseong');
 
 const root = process.cwd();
 const baseline = JSON.parse(fs.readFileSync(path.join(root, 'docs', 'jobs.json'), 'utf8'));
@@ -77,7 +80,8 @@ function runValidator(feed, name) {
 }
 
 function refreshRecommendationSummary(feed) {
-  feed.recommendationSummary.count = feed.jobs.filter((job) => recommendationRule(job, feed.recommendationPolicyVersion)).length;
+  feed.recommendationSummary.count = feed.jobs.filter((job) => recommendationRule(job, feed.recommendationPolicyVersion,
+    { age: recommendationProfile.age })).length;
 }
 
 function expectRejected(name, mutate, message, makeFeed = saraminFeed) {

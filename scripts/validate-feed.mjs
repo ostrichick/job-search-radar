@@ -2,8 +2,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { recommendationCollapseRisk } from './collect-jobs.mjs';
 import { isDefaultRecommendation as recommendationRule } from '../public/munseong/recommendation-rules.js';
+import { getProfile } from '../public/munseong/profiles.js';
 import { validatePublicFeed } from '../public/munseong/backup-rules.js';
 
+const recommendationProfile = getProfile('munseong');
 const target = process.argv[2] || './data/jobs.json';
 const feed = JSON.parse(fs.readFileSync(target, 'utf8'));
 const baselineTarget = process.argv[3] || '';
@@ -241,7 +243,8 @@ for (const job of feed.jobs) {
   }
 }
 
-const recommended = feed.jobs.filter((job) => recommendationRule(job, feed.recommendationPolicyVersion));
+const recommended = feed.jobs.filter((job) => recommendationRule(job, feed.recommendationPolicyVersion,
+  { age: recommendationProfile.age }));
 assert.ok(recommended.length > 0, 'default recommendation set must not be empty');
 assert.equal(recommended.filter((job) => job.fitWarning).length, 0, 'default recommendations must not require unverified specialist credentials');
 assert.equal(recommended.filter((job) => job.requirementsStatus === 'hard_check').length, 0, 'default recommendations must not contain unresolved hard requirements');

@@ -1024,7 +1024,9 @@ function paymentFreshnessLabel(job) {
 }
 
 function isRecommendedJob(job) {
-  return recommendationRule(job, state.meta?.recommendationPolicyVersion || 0);
+  return recommendationRule(job, state.meta?.recommendationPolicyVersion || 0, {
+    age: profile.age, isNicole
+  });
 }
 
 function roleFitEvidenceFor(job) {
