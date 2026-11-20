@@ -38,6 +38,9 @@ test('모든 탭의 최종 확인일 안내와 날짜 형식이 일치한다', a
   const feed = { updatedAt: new Date().toISOString(), jobs: [], sourceStatus: [] };
   await page.route('**/api/jobs', (route) => route.fulfill({ json: feed }));
   await page.route('**/jobs.json*', (route) => route.fulfill({ json: feed }));
+  await page.route('**/tours.json*', (route) => route.fulfill({
+    json: { updatedAt: new Date().toISOString(), items: [], sourceStatus: [] }
+  }));
   const koreanCaveat = '최종 확인일 · 카드의 확인일 이후 모집·마감·자격이 바뀔 수 있으니 지원 전 공식 원문을 다시 확인하세요.';
   const englishCaveat = 'Last checked · Deadlines, eligibility, and pay may change after the check date; confirm the official source before applying.';
   const datePattern = /^\d{4}\.\d{2}\.\d{2}( \d{2}:\d{2})?$/;
