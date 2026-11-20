@@ -4,6 +4,10 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
   const region = job.domesticRegion || {};
   const value = (id) => String(values[id] ?? filterDefaults[market]?.[id] ?? '');
   const teachingOnly = value('teachingOnly') === 'true';
+  const teachingMatch = (job.tags || []).some((tag) => /korean[- ](language[- ]teaching|edtech|customer[- ]support|localization|content|curriculum|learning)/i.test(String(tag)))
+    || /\bKorean\s+(Language\s+)?(Teacher|Instructor|Tutor|Teaching|EdTech|Customer\s+Support|Support|Localization|Content|Curriculum|Learning|Quality)\b/i.test(job.title || '')
+    || /한국어교원|한국어\s*강사|한국어\s*선생님|한국어\s*튜터|세종학당|한국어\s*콘텐츠|한국어\s*고객|한국어\s*CS|에듀테크/i.test(job.title || '');
+  if (teachingOnly && !teachingMatch) return false;
   if (!teachingOnly && !jobMarketScopes(job).includes(market)) return false;
   const q = value('query').trim().toLowerCase();
   const source = value('source');
@@ -12,45 +16,31 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
   const eligibility = value('eligibility');
   const domesticProvince = value('domesticProvince');
   const domesticLocality = value('domesticLocality');
-  const domesticNeighborhood = value('domesticNeighborhood');
   const compensationFilter = value('compensationFilter');
   const ageFilter = Number(value('ageFilter') || 0);
   const listingFilter = value('listingFilter');
   const sourceKindFilter = value('sourceKindFilter');
   const paymentFilter = value('paymentFilter');
   const requirementsFilter = value('requirementsFilter');
-  const fitFilter = value('fitFilter');
-  const status = value('statusFilter');
   const minScore = Number(value('minScore') || 0);
+  const status = value('statusFilter');
+  const includeAllFits = teachingOnly
+    || value('includeAllFits') === 'true'
+    || (!isNicole && listingFilter !== 'active')
+    || ['saved', 'hidden'].includes(status)
+    || (isNicole && value('archiveFilter') !== 'all');
   const haystack = [job.title, job.company, job.location, region.label, region.province, region.locality, job.description, job.category, salaryLabel(job), ...(job.tags || []), ...(job.matchedKeywords || [])].join(' ').toLowerCase();
   const jobState = state.jobStates[job.id] || '';
   const canonical = (text) => String(text || '').normalize('NFKC').replace(/\s+/g, ' ').trim().toLowerCase();
   const hidden = state.hiddenIds.has(job.id) || (isNicole && (
     state.hiddenCompanies?.has(canonical(job.company)) || state.hiddenSources?.has(canonical(job.source))));
-  if (teachingOnly) {
-    const tagMatch = (job.tags || []).some((tag) => /korean[- ](language[- ]teaching|edtech|customer[- ]support|localization|content|curriculum|learning)/i.test(String(tag)));
-    const titleMatch = /\bKorean\s+(Language\s+)?(Teacher|Instructor|Tutor|Teaching|EdTech|Customer\s+Support|Support|Localization|Content|Curriculum|Learning|Quality)\b/i.test(job.title || '');
-    const koreanTitleMatch = /한국어교원|한국어\s*강사|한국어\s*선생님|한국어\s*튜터|세종학당|한국어\s*콘텐츠|한국어\s*고객|한국어\s*CS|에듀테크/i.test(job.title || '');
-    if (!tagMatch && !titleMatch && !koreanTitleMatch) return false;
-    const reviewedIds = state.reviewedIdsAtLoad || state.reviewedIds;
-    if (value('statusFilter') === 'active' && hidden) return false;
-    if (value('statusFilter') === 'reviewed' && !reviewedIds.has(job.id)) return false;
-    if (value('statusFilter') === 'unreviewed' && reviewedIds.has(job.id)) return false;
-    if (value('listingFilter') === 'active' && ['stale', 'source_error', 'archived_missing', 'talent_pool', 'expired'].includes(job.listingStatus)) return false;
-    if (fitFilter) {
-      const fitStatus = profileFit(job).status;
-      if (fitFilter === 'eligible' ? fitStatus === 'fail' : fitStatus !== fitFilter) return false;
-    }
-    return true;
-  }
   if (isNicole) {
     const collection = job.collectionState || 'unknown';
     if (!skipped.has('archiveFilter') && value('archiveFilter') === 'current' && collection !== 'seen' && !job.manual) return false;
     if (!skipped.has('archiveFilter') && value('archiveFilter') === 'archived' && collection !== 'not_seen') return false;
     if (!skipped.has('archiveFilter') && value('archiveFilter') === 'unverified' && !['unverified', 'unknown'].includes(collection)) return false;
-    if (!skipped.has('languageFitFilter') && !['', 'all'].includes(value('languageFitFilter')) && (job.languageFitStatus || 'unknown') !== value('languageFitFilter')) return false;
+    if (!includeAllFits && (job.languageFitStatus || 'unknown') === 'mismatch') return false;
     if (!skipped.has('commuteFilter') && market === 'domestic' && !['', 'all'].includes(value('commuteFilter')) && (region.commuteClass || 'unknown') !== value('commuteFilter')) return false;
-    if (!skipped.has('savedOnly') && value('savedOnly') === 'true' && !state.favorites.has(job.id)) return false;
     if (market === 'overseas_remote' && (job.category === 'interpreting' || /live\s*interpret|video\s*interpret|remote\s*interpreter|실시간\s*통역/i.test(`${job.title || ''} ${job.description || ''}`))) return false;
   }
   if (!skipped.has('query') && q && !haystack.includes(q)) return false;
@@ -63,7 +53,6 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
   if (market === 'domestic') {
     if (!skipped.has('domesticProvince') && domesticProvince && region.province !== domesticProvince) return false;
     if (!skipped.has('domesticLocality') && !domesticLocalityMatches(region, domesticLocality)) return false;
-    if (!skipped.has('domesticNeighborhood') && domesticNeighborhood && region.neighborhood !== domesticNeighborhood) return false;
   }
   if (!skipped.has('compensationFilter') && !compensationMatches(job, compensationFilter)) return false;
   if (!skipped.has('ageFilter') && ageFilter) {
@@ -82,16 +71,13 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
     if (paymentFilter && !['', 'exclude_caution', 'has_caution'].includes(paymentFilter) && paymentEvidence !== paymentFilter) return false;
   }
   if (!skipped.has('requirementsFilter') && requirementsFilter && (job.requirementsStatus || 'clear') !== requirementsFilter) return false;
-  if (!skipped.has('fitFilter') && fitFilter) {
-    const fitStatus = profileFit(job).status;
-    if (fitFilter === 'eligible' ? fitStatus === 'fail' : fitStatus !== fitFilter) return false;
-  }
-  if (!skipped.has('minScore')) {
+  if (!includeAllFits && profileFit(job).status === 'fail') return false;
+  if (!includeAllFits && !skipped.has('minScore')) {
     if (job.score < minScore) return false;
     if (minScore >= 20 && !job.manual && (job.recommendationEligible === false || !roleFitEvidenceFor(job))) return false;
   }
   if (!skipped.has('statusFilter')) {
-    if (status === 'active' && hidden) return false;
+    if (['active', 'saved'].includes(status) && hidden) return false;
     const reviewedIds = state.reviewedIdsAtLoad || state.reviewedIds;
     if (status === 'new' && !state.newIds.has(job.id)) return false;
     if (status === 'unreviewed' && reviewedIds.has(job.id)) return false;

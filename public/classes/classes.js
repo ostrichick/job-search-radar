@@ -72,7 +72,6 @@ function levelMatches(course, level) {
 
 function costMatches(course, cost) {
   if (!cost) return true;
-  if (cost === 'low') return course.costType === 'free' || course.costType === 'varies';
   return course.costType === cost;
 }
 

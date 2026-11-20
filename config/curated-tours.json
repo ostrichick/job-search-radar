@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-17",
+  "updatedAt": "2026-11-20",
   "items": [
     {
       "id": "curated-jeonju-hanok-walking-tour",
@@ -22,7 +22,7 @@
       "sourceUrl": "https://hanok.jeonju.go.kr/contents/tour",
       "applyUrl": "https://hanok.jeonju.go.kr/contents/tour",
       "description": "문화관광해설사와 함께 경기전, 전라감영, 한옥마을 골목길 등을 걷는 무료 도보해설 투어입니다. 20인 미만 개인은 예약 없이 시간표에 맞춰 출발 장소로 가면 되고, 일부 코스는 영어 해설도 진행합니다.",
-      "checkedAt": "2026-11-17"
+      "checkedAt": "2026-11-20"
     },
     {
       "id": "curated-jeonju-museum-jeonbak-bingo",
@@ -45,7 +45,7 @@
       "sourceUrl": "https://jeonju.museum.go.kr/education.es?act=view&edu_seq=242&mid=a50301010100",
       "applyUrl": "https://jeonju.museum.go.kr/education.es?act=view&edu_seq=242&mid=a50301010100",
       "description": "상설전시실을 관람하며 스마트폰으로 QR코드를 스캔해 문제를 풀고 빙고를 완성하는 자율 참여형 전시 연계 체험입니다. 별도 예약 없이 무료로 참여할 수 있습니다.",
-      "checkedAt": "2026-11-17"
+      "checkedAt": "2026-11-20"
     },
     {
       "id": "curated-jeonju-museum-nahan",
@@ -67,8 +67,8 @@
       "sourceName": "국립전주박물관",
       "sourceUrl": "https://www.jb0479.or.kr/board/view.php?bbsId=program&nttId=9325&pageId=sub0503",
       "applyUrl": "https://jeonju.museum.go.kr/education.es?mid=a10302000000",
-      "description": "특별전 《도량으로의 귀환, 전주 서고사 나한》과 연계한 자율 체험입니다. 발원문 작성, 나한상 표정 만들기, 지물 붙이기, 페이퍼 토이 나한 만들기 등을 무료로 즐길 수 있습니다.",
-      "checkedAt": "2026-11-17"
+      "description": "Ends 2026-11-29 (9 days left as of 11-20). Free self-guided activities in the special-exhibition gallery: wish writing, arhat-expression making, attribute matching, paper-toy arhat. Photo booth ran only 09-15~10-15 and is over.",
+      "checkedAt": "2026-11-20"
     },
     {
       "id": "curated-jeonju-hanji-center",
@@ -91,7 +91,7 @@
       "sourceUrl": "https://www.ktcc.or.kr/main?menu=112&mode=view&no=107",
       "applyUrl": "https://www.jmhm.kr/main/?menu=86",
       "description": "전주천년한지관에서 전통한지 제조 과정을 직접 체험하는 무료 프로그램입니다. 초등학생 이상이면 참여할 수 있어 성인 부부도 함께 신청할 수 있습니다.",
-      "checkedAt": "2026-11-17"
+      "checkedAt": "2026-11-20"
     },
     {
       "id": "curated-ktcc-on-studio",
@@ -114,7 +114,76 @@
       "sourceUrl": "https://www.ktcc.or.kr/main?menu=112&mode=view&no=104",
       "applyUrl": "https://www.ktcc.or.kr/main?menu=112&mode=view&no=104",
       "description": "한국전통문화전당 2층의 무료 셀프 사진 스튜디오입니다. 한 타임에 한 팀만 이용할 수 있고 소품이 준비되어 있어, 두 사람이 편하게 사진을 남기기 좋습니다.",
-      "checkedAt": "2026-11-17"
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "curated-jeonju-gamyeong-observer",
+      "title": "[전주] 전라관찰사의 탄생",
+      "host": "문화예술공작소 (주최: 전북특별자치도·전주시)",
+      "category": "축제·행사",
+      "region": "전주",
+      "venue": "전라감영",
+      "address": "전북특별자치도 전주시 완산구 전라감영로 55",
+      "startDate": "2026-10-18",
+      "endDate": "2026-11-29",
+      "schedule": "매주 금·토·일 12:30~17:30",
+      "price": "무료",
+      "audience": "전 연령",
+      "openToAll": true,
+      "foreignerNote": "국적 제한 없음 · 연극·직업체험·전통놀이·추리게임",
+      "reservation": "예약 없음 · 현장 참여 (문의 063-232-9938)",
+      "language": "한국어 진행",
+      "sourceName": "전북문화포털",
+      "sourceUrl": "https://www.jbct.or.kr/portal/site/menu/MENU_000000000000376?id=4026",
+      "applyUrl": "https://www.jbct.or.kr/portal/site/menu/MENU_000000000000376?id=4026",
+      "description": "전라감영에서 열리는 무료 역사행사. 연극과 조선 직업 체험, 전통놀이, 역사 이야기, 추리 게임을 매주 금·토·일에 진행한다.",
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "curated-jeonju-ten-ways-jeonbuk",
+      "title": "[전주] 전북을 만나는 열 가지 방법",
+      "host": "전북특별자치도문화관광재단",
+      "category": "전시",
+      "region": "전주",
+      "venue": "하얀양옥집",
+      "address": "전북특별자치도 전주시 완산구 경기전길 67",
+      "startDate": "2026-11-10",
+      "endDate": "2026-11-29",
+      "schedule": "10:00~18:00 · 매일",
+      "price": "무료",
+      "audience": "누구나",
+      "openToAll": true,
+      "foreignerNote": "국적 제한 없음 · 전시 관람",
+      "reservation": "예약 없음 · 현장 관람 (문의 063-230-7487)",
+      "language": "한국어 중심 · 시각 관람 가능",
+      "sourceName": "전북문화포털",
+      "sourceUrl": "https://www.jbct.or.kr/portal/site/menu/MENU_000000000000376?id=4068",
+      "applyUrl": "https://www.jbct.or.kr/portal/site/menu/MENU_000000000000376?id=4068",
+      "description": "2025·2026 선정 전북 로컬 체험관광 10선을 소개하는 무료 전시. 공예·미식·자연 힐링 체험상품을 한옥마을 하얀양옥집에서 만난다.",
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "curated-jeonju-museum-seogosa-exhibit",
+      "title": "[전주] 도량으로의 귀환, 전주 서고사 나한 (특별전)",
+      "host": "국립전주박물관",
+      "category": "전시",
+      "region": "전주",
+      "venue": "국립전주박물관 기획전시실",
+      "address": "전북특별자치도 전주시 완산구 쑥고개로 249",
+      "startDate": "2026-09-16",
+      "endDate": "2026-11-29",
+      "schedule": "전시 관람 시간",
+      "price": "무료",
+      "audience": "누구나",
+      "openToAll": true,
+      "foreignerNote": "국적 제한 없음 · 전시 관람",
+      "reservation": "예약 없음 · 현장 관람 (문의 063-223-5651)",
+      "language": "한국어 중심 · 시각 관람 가능",
+      "sourceName": "전북문화포털",
+      "sourceUrl": "https://www.jbct.or.kr/portal/site/menu/MENU_000000000000376?id=2785",
+      "applyUrl": "https://jeonju.museum.go.kr/education.es?mid=a10302000000",
+      "description": "전주 서고사 나한상의 학술·역사적 가치와 과학조사 연구성과를 소개하는 무료 특별전. 기존 '나한전 즐기기' 체험의 모(母) 전시로, 둘을 함께 관람하기 좋다.",
+      "checkedAt": "2026-11-20"
     }
   ]
 }

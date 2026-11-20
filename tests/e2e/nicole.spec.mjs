@@ -56,7 +56,7 @@ test('German-language roles are omitted but Germany-based English jobs remain', 
   await expect(page.locator('#jobs .job-card')).toHaveCount(2);
   await page.locator('#marketDomestic').click();
   await expect(page.locator('#jobs')).not.toContainText('Sales & Marketing (German/Spanish)');
-  await expect(page.locator('#jobs .job-card')).toHaveCount(3);
+  await expect(page.locator('#jobs .job-card')).toHaveCount(2);
 });
 
 test('former Nicole preview URL redirects to the integrated Nicole screen and keeps deep-link parameters', async ({ page }) => {
@@ -81,31 +81,62 @@ test('Nicole shared screen renders the shared app with her own feed and branding
   await expect(page.locator('#updatedAt')).toHaveText(/^Last checked \d{4}\.\d{2}\.\d{2} \d{2}:\d{2}/);
 });
 
-test('Nicole fit filter hides confirmed disqualifiers and exposes the reason', async ({ page }) => {
+test('Nicole automatically hides fit failures and language mismatches', async ({ page }) => {
   await page.route('**/feeds/dubu.json?*', (route) => route.fulfill({ json: {
     ...feed, jobs: [...feed.jobs, job('korean-required', 'online', {
       title: 'Korean Content Marketer', description: 'TOPIK 4 required for this role.'
     })]
   } }));
   await page.goto('/nicole/');
-  await expect(page.locator('#fitFilter')).toHaveValue('eligible');
+  await expect(page.locator('#fitFilter')).toHaveCount(0);
+  await expect(page.locator('#languageFitFilter')).toHaveCount(0);
   await expect(page.locator('#jobs')).not.toContainText('Korean Content Marketer');
-  await page.locator('#fitFilter').selectOption('fail');
-  const card = page.locator('.job-card').filter({ hasText: 'Korean Content Marketer' });
-  await expect(card).toHaveCount(1);
-  await expect(card.locator('.profile-fit')).toContainText('Not eligible');
-  await page.locator('#fitFilter').selectOption('');
-  await expect(page.locator('#jobs')).toContainText('Korean Content Marketer');
+  await page.locator('#marketDomestic').click();
+  await expect(page.locator('#jobs')).not.toContainText('near');
 });
 
-test('Nicole filters retain language fit, commute, province and archived listings', async ({ page }) => {
+async function seedOriginalState(page, original) {
+  await page.route('**/munseong/app.js', (route) => route.fulfill({ body: '', contentType: 'text/javascript' }));
+  await page.goto('/nicole/');
+  await page.evaluate(async (doc) => {
+    const request = indexedDB.open('dubu-job-radar', 1);
+    await new Promise((resolve, reject) => {
+      request.onupgradeneeded = () => request.result.createObjectStore('state');
+      request.onsuccess = resolve;
+      request.onerror = reject;
+    });
+    const db = request.result;
+    const tx = db.transaction('state', 'readwrite');
+    tx.objectStore('state').put(doc, 'current');
+    await new Promise((resolve, reject) => { tx.oncomplete = resolve; tx.onabort = reject; });
+    db.close();
+  }, original);
+  await page.unroute('**/munseong/app.js');
+  await page.reload();
+}
+
+test('Nicole saved language-mismatch job remains available in saved history', async ({ page }) => {
+  await seedOriginalState(page, {
+    saved: ['near'], hidden: { jobs: [], companies: [], sources: [] }, manual: []
+  });
+  await page.locator('#marketDomestic').click();
+  await page.locator('#statusFilter').selectOption('saved');
+  await expect(page.locator('#jobs')).toContainText('Nicole test near');
+});
+
+test('Nicole hidden language-mismatch job remains available in hidden history', async ({ page }) => {
+  await seedOriginalState(page, {
+    saved: [], hidden: { jobs: ['near'], companies: [], sources: [] }, manual: []
+  });
+  await page.locator('#marketDomestic').click();
+  await page.locator('#statusFilter').selectOption('hidden');
+  await expect(page.locator('#jobs')).toContainText('Nicole test near');
+});
+test('Nicole retains commute, province and archived filters without language controls', async ({ page }) => {
   await page.goto('/nicole/');
   await page.locator('#marketDomestic').click();
-  await expect(page.locator('#jobs .job-card')).toHaveCount(3);
-  await page.locator('#languageFitFilter').selectOption('mismatch');
-  await expect(page.locator('#jobs .job-card')).toHaveCount(1);
-  await expect(page.locator('#jobs')).toContainText('near');
-  await page.locator('#languageFitFilter').selectOption('all');
+  await expect(page.locator('#jobs .job-card')).toHaveCount(2);
+  await expect(page.locator('#jobs')).not.toContainText('near');
   await page.locator('#commuteFilter').selectOption('nearby');
   await expect(page.locator('#jobs')).toContainText('local');
   await expect(page.locator('#jobs .job-card')).toHaveCount(1);
@@ -118,7 +149,7 @@ test('Nicole filters retain language fit, commute, province and archived listing
 test('Nicole can save, hide company or source, restore and keep states after reload', async ({ page }) => {
   await page.goto('/nicole/');
   await page.locator('#jobs .favorite').first().click();
-  await page.locator('#savedOnly').check();
+  await page.locator('#statusFilter').selectOption('saved');
   await expect(page.locator('#jobs .job-card')).toHaveCount(1);
   await page.locator('#jobs .hide-actions').getByRole('button', { name: 'Hide company' }).click();
   await expect(page.locator('#jobs .job-card')).toHaveCount(0);

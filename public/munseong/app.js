@@ -94,36 +94,38 @@ function commitState(mode = 'edit') {
   return storage.commit(mode).catch(() => { syncStoredState(); showStorageStatus(); });
 }
 
-const controls = ['query', 'source', 'category', 'remote', 'eligibility', 'domesticProvince', 'domesticLocality', 'domesticNeighborhood', 'compensationFilter', 'ageFilter', 'listingFilter', 'sourceKindFilter', 'paymentFilter', 'requirementsFilter', 'fitFilter', 'minScore', 'sort', 'statusFilter', 'teachingOnly', ...(isNicole ? ['languageFitFilter', 'commuteFilter', 'archiveFilter', 'savedOnly'] : [])];
+const controls = ['query', 'source', 'category', 'remote', 'eligibility', 'domesticProvince', 'domesticLocality', 'compensationFilter', 'ageFilter', 'listingFilter', 'sourceKindFilter', 'paymentFilter', 'requirementsFilter', 'minScore', 'includeAllFits', 'sort', 'statusFilter', 'teachingOnly', ...(isNicole ? ['commuteFilter', 'archiveFilter'] : [])];
 const fallbackDomesticProvinceOptions = [
   '서울특별시', '전남광주통합특별시', '부산광역시', '대구광역시', '인천광역시', '대전광역시', '울산광역시', '세종특별자치시',
   '경기도', '충청북도', '충청남도', '경상북도', '경상남도', '제주특별자치도', '강원특별자치도', '전북특별자치도'
 ];
 const activeFilterLabels = {
   query: '검색', source: '출처', category: '분야', remote: '근무 형태', eligibility: '지원 범위',
-  domesticProvince: '시·도', domesticLocality: '시·군·구', domesticNeighborhood: '읍·면·동',
+  domesticProvince: '시·도', domesticLocality: '시·군·구',
   compensationFilter: '보수 정보', ageFilter: '게시 시점', listingFilter: '모집 상태',
   sourceKindFilter: '출처 검증', paymentFilter: '지급 신뢰 근거', requirementsFilter: '필수요건 확인',
-  fitFilter: '맞춤 적합도',
-  minScore: '최소 검토 우선순위', statusFilter: '내 상태', teachingOnly: '한국어 관련'
+  statusFilter: '내 상태', teachingOnly: '한국어 관련'
 };
 const filterDefaults = {
-  overseas_remote: { query: '', source: '', category: '', remote: '', eligibility: 'likely', domesticProvince: '', domesticLocality: '', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', fitFilter: 'eligible', minScore: '20', sort: 'score', statusFilter: 'active', teachingOnly: '' },
-  domestic: { query: '', source: '', category: '', remote: 'local', eligibility: '', domesticProvince: '전북특별자치도', domesticLocality: '전주·완주', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', fitFilter: 'eligible', minScore: '20', sort: 'distance', statusFilter: 'active', teachingOnly: '' }
+  overseas_remote: { query: '', source: '', category: '', remote: '', eligibility: 'likely', domesticProvince: '', domesticLocality: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', includeAllFits: '', sort: 'score', statusFilter: 'active', teachingOnly: '' },
+  domestic: { query: '', source: '', category: '', remote: 'local', eligibility: '', domesticProvince: '전북특별자치도', domesticLocality: '전주·완주', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', includeAllFits: '', sort: 'distance', statusFilter: 'active', teachingOnly: '' }
 };
 if (isNicole) {
   for (const market of Object.keys(filterDefaults)) Object.assign(filterDefaults[market], {
-    eligibility: '', remote: '', domesticProvince: '', domesticLocality: '', domesticNeighborhood: '',
-    listingFilter: 'all', minScore: '0', sort: 'fit', languageFitFilter: 'all',
-    commuteFilter: 'all', archiveFilter: 'all', savedOnly: ''
+    eligibility: '', remote: '', domesticProvince: '', domesticLocality: '',
+    listingFilter: 'all', minScore: '0', sort: 'fit',
+    commuteFilter: 'all', archiveFilter: 'all'
   });
+}
+function normalizeFilterValues(values = {}, market = state.marketTab) {
+  return { ...values, minScore: filterDefaults[market]?.minScore ?? '' };
 }
 const currentFilterSchemaVersion = 8;
 const legacyDomesticFilterDefaults = [
-  { query: '', source: '', category: '', remote: '', eligibility: '', domesticProvince: '', domesticLocality: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score', statusFilter: 'active' },
-  { query: '', source: '', category: '', remote: '', eligibility: '', domesticProvince: '', domesticLocality: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'distance', statusFilter: 'active' },
-  { query: '', source: '', category: '', remote: '', eligibility: '', domesticProvince: '', domesticLocality: '', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'score', statusFilter: 'active' },
-  { query: '', source: '', category: '', remote: '', eligibility: '', domesticProvince: '', domesticLocality: '', domesticNeighborhood: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', sort: 'distance', statusFilter: 'active' }
+  { query: '', source: '', category: '', remote: '', eligibility: '', domesticProvince: '', domesticLocality: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', sort: 'score', statusFilter: 'active' },
+  { query: '', source: '', category: '', remote: '', eligibility: '', domesticProvince: '', domesticLocality: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', sort: 'distance', statusFilter: 'active' },
+  { query: '', source: '', category: '', remote: '', eligibility: '', domesticProvince: '', domesticLocality: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', sort: 'score', statusFilter: 'active' },
+  { query: '', source: '', category: '', remote: '', eligibility: '', domesticProvince: '', domesticLocality: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', sort: 'distance', statusFilter: 'active' }
 ];
 function exactFilterState(value, expected) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
@@ -145,7 +147,6 @@ function normalizeDomesticProvinceFilter(value) {
   return ({ '광주광역시': '전남광주통합특별시', '전라남도': '전남광주통합특별시' })[value] || value || '';
 }
 if (!isNicole && filterSchemaVersion < 3) {
-  if (legacySavedFilters.minScore === undefined || legacySavedFilters.minScore === '0') legacySavedFilters.minScore = '20';
   if (legacySavedFilters.listingFilter === undefined) legacySavedFilters.listingFilter = 'active';
   const oldEligibilityMap = {
     '한국 명시': 'korea',
@@ -195,7 +196,7 @@ if (!isNicole && filterSchemaVersion < currentFilterSchemaVersion) {
   storage.setItem('jobFilterSchemaVersion', String(currentFilterSchemaVersion));
 }
 if (!savedFiltersByMarket.overseas_remote) savedFiltersByMarket.overseas_remote = { ...legacySavedFilters };
-const savedFilters = { ...filterDefaults[state.marketTab], ...(savedFiltersByMarket[state.marketTab] || {}) };
+const savedFilters = normalizeFilterValues({ ...filterDefaults[state.marketTab], ...(savedFiltersByMarket[state.marketTab] || {}) });
 function updateAdvancedFilterSummary() {
   const summary = $('advancedFiltersSummary');
   if (!summary) return;
@@ -220,16 +221,12 @@ let queryTimer;
 for (const id of controls) {
   const element = $(id);
   if (!element) continue;
-  if (id === 'savedOnly' || id === 'teachingOnly') element.checked = savedFilters[id] === 'true';
-  else if (!['source', 'category', 'domesticProvince', 'domesticLocality', 'domesticNeighborhood'].includes(id) && savedFilters[id] !== undefined) element.value = savedFilters[id];
+  if (id === 'teachingOnly') element.checked = savedFilters[id] === 'true';
+  else if (!['source', 'category', 'domesticProvince', 'domesticLocality'].includes(id) && savedFilters[id] !== undefined) element.value = savedFilters[id];
   const update = () => {
     state.visibleLimit = 60;
     state.selectedIds.clear();
-    if (id === 'domesticProvince') {
-      updateDomesticLocalityOptions('');
-      updateDomesticNeighborhoodOptions('');
-    }
-    if (id === 'domesticLocality') updateDomesticNeighborhoodOptions('');
+    if (id === 'domesticProvince') updateDomesticLocalityOptions('');
     persistFilters();
     updateDynamicFilters();
     updateAdvancedFilterSummary();
@@ -355,7 +352,7 @@ function migrateLegacyState() {
 }
 
 function currentFilterValues() {
-  return Object.fromEntries(controls.map((id) => [id, id === 'savedOnly' ? ($('savedOnly')?.checked ? 'true' : '') : id === 'teachingOnly' ? ($('teachingOnly')?.checked ? 'true' : '') : ($(id)?.value ?? '')]));
+  return Object.fromEntries(controls.map((id) => [id, id === 'teachingOnly' ? ($('teachingOnly')?.checked ? 'true' : '') : ($(id)?.value ?? '')]));
 }
 
 function deadlineDaysRemaining(job, now = Date.now()) {
@@ -402,12 +399,12 @@ function persistFilters() {
 }
 
 function applyFilterValues(values = {}) {
-  const merged = { ...filterDefaults[state.marketTab], ...values };
+  const merged = normalizeFilterValues({ ...filterDefaults[state.marketTab], ...values });
   for (const id of controls) {
     const element = $(id);
-    if (!element || ['source', 'category', 'domesticProvince', 'domesticLocality', 'domesticNeighborhood'].includes(id)) continue;
+    if (!element || ['source', 'category', 'domesticProvince', 'domesticLocality'].includes(id)) continue;
     const value = String(merged[id] ?? '');
-    if (id === 'savedOnly' || id === 'teachingOnly') { element.checked = value === 'true'; continue; }
+    if (id === 'teachingOnly') { element.checked = value === 'true'; continue; }
     if (element.tagName === 'SELECT' && ![...element.options].some((option) => option.value === value)) continue;
     element.value = value;
   }
@@ -697,12 +694,12 @@ function broadActiveFilterValues({ includeHidden = false } = {}) {
   return {
     ...filterDefaults[state.marketTab],
     query: '', source: '', category: '', remote: '', eligibility: '',
-    domesticProvince: '', domesticLocality: '', domesticNeighborhood: '',
+    domesticProvince: '', domesticLocality: '',
     compensationFilter: '', ageFilter: '', listingFilter: 'active',
-    sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', fitFilter: '', minScore: '0',
+    sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '0', includeAllFits: 'true',
     sort: state.marketTab === 'domestic' ? 'distance' : 'score',
     statusFilter: includeHidden ? 'all' : 'active',
-    ...(isNicole ? { languageFitFilter: 'all', commuteFilter: 'all', archiveFilter: 'all', savedOnly: '' } : {})
+    ...(isNicole ? { commuteFilter: 'all', archiveFilter: 'all' } : {})
   };
 }
 
@@ -721,7 +718,7 @@ function applyBroadFilterValues(values) {
     const element = $(id);
     if (!element) continue;
     if (element.tagName === 'SELECT' && ![...element.options].some((option) => option.value === String(value))) continue;
-    if (id === 'savedOnly' || id === 'teachingOnly') element.checked = String(value) === 'true';
+    if (id === 'teachingOnly') element.checked = String(value) === 'true';
     else element.value = String(value);
   }
   state.visibleLimit = 60;
@@ -759,7 +756,7 @@ function activeFilterEntries() {
   const current = currentFilterValues();
   const broad = broadActiveFilterValues();
   return controls
-    .filter((id) => id !== 'sort' && String(current[id] ?? '') !== String(broad[id] ?? ''))
+    .filter((id) => !['sort', 'minScore', 'includeAllFits'].includes(id) && String(current[id] ?? '') !== String(broad[id] ?? ''))
     .map((id) => ({
       id,
       label: activeFilterLabels[id] || id,
@@ -793,14 +790,9 @@ function clearFilterConstraint(id) {
   if (!element) return;
   const nextValue = String(broad[id] ?? '');
   if (element.tagName === 'SELECT' && ![...element.options].some((option) => option.value === nextValue)) return;
-  if (id === 'savedOnly' || id === 'teachingOnly') element.checked = nextValue === 'true';
+  if (id === 'teachingOnly') element.checked = nextValue === 'true';
   else element.value = nextValue;
-  if (id === 'domesticProvince') {
-    $('domesticLocality').value = '';
-    $('domesticNeighborhood').value = '';
-  } else if (id === 'domesticLocality') {
-    $('domesticNeighborhood').value = '';
-  }
+  if (id === 'domesticProvince') $('domesticLocality').value = '';
   state.visibleLimit = 60;
   state.selectedIds.clear();
   updateDynamicFilters();
@@ -1443,7 +1435,7 @@ function resetFilters() {
   const defaults = filterDefaults[state.marketTab];
   for (const [id, value] of Object.entries(defaults)) if ($(id)) $(id).value = value;
   updateDomesticLocalityOptions();
-  updateDomesticNeighborhoodOptions();
+
   state.visibleLimit = 60;
   persistFilters();
   updateDynamicFilters();
@@ -1582,14 +1574,14 @@ async function importState(file) {
         const importedFilters = market === 'domestic'
           ? migrateDomesticFilterState(payload.filtersByMarket[market], importedFilterSchemaVersion)
           : payload.filtersByMarket[market];
-        savedFiltersByMarket[market] = { ...filterDefaults[market], ...importedFilters };
+        savedFiltersByMarket[market] = normalizeFilterValues({ ...filterDefaults[market], ...importedFilters }, market);
         if (market === 'domestic') {
           savedFiltersByMarket[market].domesticProvince = normalizeDomesticProvinceFilter(savedFiltersByMarket[market].domesticProvince);
         }
       }
     }
   } else if (payload.filters && typeof payload.filters === 'object') {
-    savedFiltersByMarket.overseas_remote = { ...filterDefaults.overseas_remote, ...payload.filters };
+    savedFiltersByMarket.overseas_remote = normalizeFilterValues({ ...filterDefaults.overseas_remote, ...payload.filters }, 'overseas_remote');
   }
   storage.setItem('jobFilterSchemaVersion', String(currentFilterSchemaVersion));
   if (['overseas_remote', 'domestic'].includes(payload.marketTab)) state.marketTab = payload.marketTab;
@@ -1646,7 +1638,7 @@ function updateDomesticLocalityOptions(preferred = null, values = currentFilterV
   const regions = matchingJobs({
     market: 'domestic',
     values: { ...values, domesticProvince: province },
-    ignore: ['domesticLocality', 'domesticNeighborhood']
+    ignore: ['domesticLocality']
   })
     .map((job) => job.domesticRegion || {});
   const localityValues = regions.flatMap((region) => [region.city, region.locality]).filter(Boolean);
@@ -1655,25 +1647,9 @@ function updateDomesticLocalityOptions(preferred = null, values = currentFilterV
   if (desired && [...$('domesticLocality').options].some((option) => option.value === desired)) $('domesticLocality').value = desired;
 }
 
-function updateDomesticNeighborhoodOptions(preferred = null, values = currentFilterValues()) {
-  const province = $('domesticProvince')?.value || '';
-  const locality = $('domesticLocality')?.value || '';
-  const desired = preferred ?? $('domesticNeighborhood').value;
-  const neighborhoodValues = matchingJobs({
-    market: 'domestic',
-    values: { ...values, domesticProvince: province, domesticLocality: locality },
-    ignore: ['domesticNeighborhood']
-  })
-    .map((job) => job.domesticRegion || {})
-    .map((region) => region.neighborhood)
-    .filter(Boolean);
-  fillSelect('domesticNeighborhood', desired ? [...neighborhoodValues, desired] : neighborhoodValues);
-  if (desired && [...$('domesticNeighborhood').options].some((option) => option.value === desired)) $('domesticNeighborhood').value = desired;
-}
-
 function updateDynamicFilters(forceSaved = false) {
   const desired = forceSaved || !state.dynamicFiltersInitialized
-    ? { ...filterDefaults[state.marketTab], ...(savedFiltersByMarket[state.marketTab] || {}) }
+    ? normalizeFilterValues({ ...filterDefaults[state.marketTab], ...(savedFiltersByMarket[state.marketTab] || {}) })
     : currentFilterValues();
   const values = { ...currentFilterValues(), ...desired };
   const sourceJobs = matchingJobs({ values, ignore: ['source'] });
@@ -1684,7 +1660,7 @@ function updateDynamicFilters(forceSaved = false) {
     const provinceJobs = matchingJobs({
       market: 'domestic',
       values,
-      ignore: ['domesticProvince', 'domesticLocality', 'domesticNeighborhood']
+      ignore: ['domesticProvince', 'domesticLocality']
     });
     const feedProvinceOptions = Array.isArray(state.meta?.domesticProvinceOptions) && state.meta.domesticProvinceOptions.length
       ? state.meta.domesticProvinceOptions
@@ -1698,11 +1674,9 @@ function updateDynamicFilters(forceSaved = false) {
       $('domesticProvince').value = desired.domesticProvince;
     }
     updateDomesticLocalityOptions((forceSaved || !state.dynamicFiltersInitialized) ? desired.domesticLocality : null, values);
-    updateDomesticNeighborhoodOptions((forceSaved || !state.dynamicFiltersInitialized) ? desired.domesticNeighborhood : null, values);
   } else {
     $('domesticProvince').value = '';
     updateDomesticLocalityOptions('');
-    updateDomesticNeighborhoodOptions('');
   }
   if (forceSaved || !state.dynamicFiltersInitialized) {
     for (const id of ['source', 'category']) {
@@ -1860,7 +1834,12 @@ function applyFeedData(data, detectNew = true) {
   const updatedLabel = isNicole ? 'Last checked' : '최종 확인일';
   $('updatedAt').textContent = data.updatedAt
     ? `${updatedLabel} ${formatDisplayDateTime(data.updatedAt)}`
-    : (isNicole ? 'Collection time unavailable' : '수집 시각 미상');
+    : (isNicole ? 'Collection time unavailable' : '수집 시각 이상');
+  if ($('feedUpdatedAt')) {
+    $('feedUpdatedAt').textContent = data.updatedAt
+      ? formatDisplayDate(data.updatedAt)
+      : (isNicole ? 'Unavailable' : '확인 불가');
+  }
   const failedSources = (data.sourceStatus || []).filter((source) => !source.ok);
   if (failedSources.length) {
     const labels = failedSources.map((source) => `${source.source}${source.preserved ? `(${source.preserved}개 유지)` : ''}`).join(', ');

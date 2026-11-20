@@ -1,5 +1,5 @@
 {
-  "researchedAt": "2026-11-17",
+  "researchedAt": "2026-11-20",
   "courses": [
     {
       "id": "gseek-spanish-basics",
@@ -10,13 +10,13 @@
       "costLabel": "무료 · 수료증은 회원가입",
       "level": "초급",
       "audience": "온라인 기초 회화 과정을 찾는 성인",
-      "schedule": "17차시 · 신청일로부터 60일",
+      "schedule": "17차시(4시간 20분) · 신청일로부터 60일",
       "location": "온라인",
       "summary": "여행·일상 상황별 회화와 기초 문법을 17차시로 구성한 온라인 스페인어 강좌입니다.",
       "url": "https://www.gseek.kr/course/online/foreign-languages/other-languages/spanish-speaking-basics",
       "applyUrl": "https://www.gseek.kr/course/online/foreign-languages/other-languages/spanish-speaking-basics",
-      "verifiedAt": "2026-11-16",
-      "sourceNote": "경기도평생학습포털 GSEEK 강좌 및 서비스 소개 확인(2026-11-16). 17차시(4시간 20분), 초급, 신청일로부터 60일, 수료 기준 60% 이상. GSEEK 온라인 학습은 회원가입·로그인 없이 무료로 수강할 수 있고, 수료증 발급에는 회원가입이 필요하다.",
+      "verifiedAt": "2026-11-20",
+      "sourceNote": "gseek.kr 강좌 페이지 실재 확인(2026-11-20). 17차시·60일·수료기준 60%·초급 변동 없음. 수강평 240개·만족도 4.7 유지. URL 변경 없음.",
       "enrollment": "open"
     }
   ],
@@ -35,8 +35,8 @@
       "summary": "인사·알파벳·숫자·국적·가족·기본 동사 활용을 영어 설명과 함께 배우는 A1 입문 과정입니다.",
       "url": "https://www.edx.org/learn/language/universitat-politecnica-de-valencia-basic-spanish-1-getting-started",
       "applyUrl": "https://www.edx.org/learn/language/universitat-politecnica-de-valencia-basic-spanish-1-getting-started",
-      "verifiedAt": "2026-11-16",
-      "sourceNote": "edX 공식 강좌 페이지 확인(2026-11-16). 7주·주 4~5시간, A1 입문, 영어로 진행되는 초급 스페인어 과정. edX audit(무료 청강)이 제공되며, 평가·수료증은 유료 트랙이고 무료 청강은 기간이 제한될 수 있다."
+      "verifiedAt": "2026-11-20",
+      "sourceNote": "edx.org/school/upvalenciax 및 upv.es 안내 확인(2026-11-20). Basic Spanish 1·2·3 edX 게재 유지, 무료 audit 가능. 과정별 종료일·인증서 유료 정책은 강좌 페이지에서 확인."
     },
     {
       "id": "edx-basic-spanish-2",
@@ -52,8 +52,8 @@
       "summary": "기초 스페인어를 한 단계 확장해 일상 상황의 듣기·말하기·읽기·쓰기를 연습하는 과정입니다.",
       "url": "https://www.edx.org/learn/spanish/universitat-politecnica-de-valencia-basic-spanish-2-one-step-further",
       "applyUrl": "https://www.edx.org/learn/spanish/universitat-politecnica-de-valencia-basic-spanish-2-one-step-further",
-      "verifiedAt": "2026-11-16",
-      "sourceNote": "edX 공식 강좌 페이지 확인(2026-11-16). UPValenciaX의 Basic Spanish 시리즈 두 번째 과정. edX audit(무료 청강)이 제공되며, 평가·수료증은 유료 트랙이다. 무료 청강은 기간이 제한될 수 있다."
+      "verifiedAt": "2026-11-20",
+      "sourceNote": "위와 동일 — UPValenciaX Basic Spanish 시리즈 edX 게재 유지(2026-11-20)."
     },
     {
       "id": "edx-basic-spanish-3",
@@ -69,8 +69,8 @@
       "summary": "여행·일상 상황에서 필요한 스페인어 표현과 문화 배경을 함께 다루는 중급 진입 과정입니다.",
       "url": "https://www.edx.org/learn/spanish/universitat-politecnica-de-valencia-basic-spanish-3-getting-there",
       "applyUrl": "https://www.edx.org/learn/spanish/universitat-politecnica-de-valencia-basic-spanish-3-getting-there",
-      "verifiedAt": "2026-11-16",
-      "sourceNote": "edX 공식 강좌 페이지 확인(2026-11-16). UPValenciaX의 Basic Spanish 시리즈 세 번째 과정. edX audit(무료 청강)이 제공되며, 평가·수료증은 유료 트랙이고 무료 청강은 기간이 제한될 수 있다."
+      "verifiedAt": "2026-11-20",
+      "sourceNote": "위와 동일 — UPValenciaX Basic Spanish 시리즈 edX 게재 유지(2026-11-20)."
     },
     {
       "id": "language-transfer-spanish",

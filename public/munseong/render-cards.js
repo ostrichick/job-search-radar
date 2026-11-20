@@ -31,13 +31,11 @@ function render() {
   if (!jobs.length && !state.loadError) {
     const province = state.marketTab === 'domestic' ? $('domesticProvince').value : '';
     const locality = state.marketTab === 'domestic' ? $('domesticLocality').value : '';
-    const neighborhood = state.marketTab === 'domestic' ? $('domesticNeighborhood').value : '';
-    const regionLabel = [province, locality, neighborhood].filter(Boolean).join(' ');
+    const regionLabel = [province, locality].filter(Boolean).join(' ');
     const hasRegionJobs = state.marketTab === 'domestic' && province
       ? state.jobs.some((job) => jobMarketScopes(job).includes('domestic')
         && job.domesticRegion?.province === province
-        && domesticLocalityMatches(job.domesticRegion, locality)
-        && (!neighborhood || job.domesticRegion?.neighborhood === neighborhood))
+        && domesticLocalityMatches(job.domesticRegion, locality))
       : true;
     $('emptyMessage').textContent = regionLabel && !hasRegionJobs
       ? `현재 연결된 공식 소스에서 ${regionLabel} 공고를 확인하지 못했습니다. 지역 조건을 넓히거나 나중에 다시 확인해 주세요.`

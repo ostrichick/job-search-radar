@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-11-19T02:00:00.000Z",
-  "notice": "쿠팡 CS는 2026-11-19 19:00 마감입니다. 전주에서 서울 2주 교육 체류비를 먼저 계산한 뒤 지원 여부를 결정하세요.",
+  "updatedAt": "2026-11-20T01:34:57.568Z",
+  "notice": "2026-11-20 확인: 쿠팡 CS는 접수마감, 셀리맥스는 11월 30일 마감, 세종학당 파견은 다음 공고를 확인하세요.",
   "items": [
     {
       "id": "coupang-cs-2026-11",
@@ -16,16 +16,20 @@
       "eligibility": "주 5일 09:00~18:00 · 최초 3개월 계약 · 장비 지급",
       "caveat": "전주에서 서울 2주 체류비가 한 달 소득의 10%를 넘으면 보류",
       "nextAction": "19:00 전 지원 여부 결정",
-      "statusNote": "대화 시점 모집 중 · 지원 전 원문 재확인",
+      "statusNote": "공고 접수마감 확인(2026-11-19 19:00)",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "지원 페이지",
           "url": "https://jobs.daangn.com/job-posts/%EC%BF%A0%ED%8C%A1cs-%EA%B3%A0%EA%B0%9D%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%A0%84%EB%AC%B8%EA%B0%80-%EB%AA%A8%EC%A7%91-%EC%9E%AC%ED%83%9D%EA%B7%BC%EB%AC%B4-%EB%B3%91%ED%96%89-wski1nmu4hwn"
         }
       ],
-      "tags": ["CS", "국내", "긴급"]
+      "tags": [
+        "CS",
+        "국내",
+        "긴급"
+      ]
     },
     {
       "id": "outlier-korean-2026-11",
@@ -43,7 +47,7 @@
       "nextAction": "기존 계정 재활성 또는 신규 지원",
       "statusNote": "채용 피드에도 등록된 플랫폼 · 실제 배정 확인 필요",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "지원",
@@ -54,7 +58,11 @@
           "url": "https://outlier.ai/languages/ko-kr"
         }
       ],
-      "tags": ["AI 평가", "원격", "플랫폼"]
+      "tags": [
+        "AI 평가",
+        "원격",
+        "플랫폼"
+      ]
     },
     {
       "id": "welo-ads-2026-11",
@@ -72,14 +80,18 @@
       "nextAction": "지원 후 온보딩 일정 확인",
       "statusNote": "대화 시점 모집 중 · 지원 전 원문 재확인",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "지원",
           "url": "https://jobs.lever.co/weloglobal/40f3e59d-35fc-4431-8fad-d5b97900b962"
         }
       ],
-      "tags": ["AI 평가", "광고", "플랫폼"]
+      "tags": [
+        "AI 평가",
+        "광고",
+        "플랫폼"
+      ]
     },
     {
       "id": "mercor-korean-2026-11",
@@ -97,14 +109,18 @@
       "nextAction": "프로필 등록 후 한국어 프로젝트 지원",
       "statusNote": "대화 시점 모집 중 · 지원 전 원문 재확인",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "지원",
           "url": "https://work.mercor.com/jobs/list_AAABodVCqTI3CAevx5dBo4bW/"
         }
       ],
-      "tags": ["AI 평가", "언어", "플랫폼"]
+      "tags": [
+        "AI 평가",
+        "언어",
+        "플랫폼"
+      ]
     },
     {
       "id": "alignerr-korean-2026-11",
@@ -122,14 +138,18 @@
       "nextAction": "사전 평가 가능 여부 확인",
       "statusNote": "대화 시점 모집 중 · 지원 전 원문 재확인",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "지원",
           "url": "https://www.alignerr.com/jobs/7473ad09-f4f9-4caa-8057-3326606637f1"
         }
       ],
-      "tags": ["AI 평가", "음성", "플랫폼"]
+      "tags": [
+        "AI 평가",
+        "음성",
+        "플랫폼"
+      ]
     },
     {
       "id": "gotranscript-korean-2026-11",
@@ -147,14 +167,18 @@
       "nextAction": "가이드 시험·샘플 제출",
       "statusNote": "대화 시점 모집 중 · 지원 전 원문 재확인",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "지원",
           "url": "https://gotranscript.com/korean-transcription-job"
         }
       ],
-      "tags": ["전사", "원격", "플랫폼"]
+      "tags": [
+        "전사",
+        "원격",
+        "플랫폼"
+      ]
     },
     {
       "id": "italki-tutor-2026-11",
@@ -172,7 +196,7 @@
       "nextAction": "프로필·소개 영상 등록",
       "statusNote": "채용 피드에도 등록된 플랫폼 · 상시 지원",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "튜터 지원",
@@ -183,7 +207,11 @@
           "url": "https://www.italki.com/en/teachers/korean"
         }
       ],
-      "tags": ["한국어 강의", "과외", "플랫폼"]
+      "tags": [
+        "한국어 강의",
+        "과외",
+        "플랫폼"
+      ]
     },
     {
       "id": "preply-tutor-2026-11",
@@ -201,7 +229,7 @@
       "nextAction": "Preply 접속 후 튜터 등록 경로 확인",
       "statusNote": "채용 피드에도 등록된 플랫폼 · 상시 지원",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "Preply 열기",
@@ -212,7 +240,11 @@
           "url": "https://preply.com/en/online/korean-tutors"
         }
       ],
-      "tags": ["한국어 강의", "과외", "플랫폼"]
+      "tags": [
+        "한국어 강의",
+        "과외",
+        "플랫폼"
+      ]
     },
     {
       "id": "kmong-tutoring-2026-11",
@@ -230,7 +262,7 @@
       "nextAction": "전문가 등록 후 첨삭 상품 1개 게시",
       "statusNote": "상시 플랫폼 · 수요 확인 필요",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "크몽",
@@ -241,7 +273,11 @@
           "url": "https://soomgo.com"
         }
       ],
-      "tags": ["첨삭", "한국어", "플랫폼"]
+      "tags": [
+        "첨삭",
+        "한국어",
+        "플랫폼"
+      ]
     },
     {
       "id": "cellimax-latam-2026-11",
@@ -257,16 +293,20 @@
       "eligibility": "한국어·스페인어·포르투갈어 요건 · K뷰티 남미 마케팅",
       "caveat": "한국어 요건이 높을 수 있으므로 원문의 한국어 수준을 먼저 확인.",
       "nextAction": "한국어 요건 확인 후 지원 여부 결정",
-      "statusNote": "대화 시점 모집 중 · 지원 전 원문 재확인",
+      "statusNote": "2026-11-30 마감 확인",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "공고 열기",
           "url": "https://www.jobploy.kr/ko/recruit/marketingadvertising-seoul-influencer-marketing-manager-179236"
         }
       ],
-      "tags": ["마케팅", "LATAM", "서울"]
+      "tags": [
+        "마케팅",
+        "LATAM",
+        "서울"
+      ]
     },
     {
       "id": "workana-nicole-2026-11",
@@ -284,7 +324,7 @@
       "nextAction": "프로필·원페이지 등록 후 제안 5건",
       "statusNote": "상시 플랫폼 · 실제 수요 확인 필요",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "Workana",
@@ -295,7 +335,11 @@
           "url": "https://www.upwork.com"
         }
       ],
-      "tags": ["SNS", "스페인어", "플랫폼"]
+      "tags": [
+        "SNS",
+        "스페인어",
+        "플랫폼"
+      ]
     },
     {
       "id": "proz-nicole-2026-11",
@@ -313,7 +357,7 @@
       "nextAction": "프로필 등록 후 샘플 2개",
       "statusNote": "상시 플랫폼 · 수요 확인 필요",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "ProZ",
@@ -324,7 +368,11 @@
           "url": "https://www.fiverr.com"
         }
       ],
-      "tags": ["번역", "스페인어", "플랫폼"]
+      "tags": [
+        "번역",
+        "스페인어",
+        "플랫폼"
+      ]
     },
     {
       "id": "korean-teacher-search",
@@ -342,7 +390,7 @@
       "nextAction": "주 1회 새 공고 3건 확인",
       "statusNote": "검색 링크 · 공고는 사이트에서 직접 확인",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "한국어교원 채용",
@@ -361,7 +409,11 @@
           "url": "https://www.liveinkorea.kr"
         }
       ],
-      "tags": ["한국어 강의", "검색", "세종학당"]
+      "tags": [
+        "한국어 강의",
+        "검색",
+        "세종학당"
+      ]
     },
     {
       "id": "cs-search",
@@ -379,7 +431,7 @@
       "nextAction": "마감 임박 3건 확인",
       "statusNote": "검색 링크 · 공고는 사이트에서 직접 확인",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "잡코리아 재택CS",
@@ -394,7 +446,11 @@
           "url": "https://www.albamon.com"
         }
       ],
-      "tags": ["CS", "재택", "검색"]
+      "tags": [
+        "CS",
+        "재택",
+        "검색"
+      ]
     },
     {
       "id": "nicole-job-search",
@@ -412,7 +468,7 @@
       "nextAction": "주 2회 신규 공고 5건 확인",
       "statusNote": "검색 링크 · 공고는 사이트에서 직접 확인",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "잡플로이",
@@ -427,7 +483,11 @@
           "url": "https://www.jobkorea.co.kr"
         }
       ],
-      "tags": ["스페인어", "외국인", "검색"]
+      "tags": [
+        "스페인어",
+        "외국인",
+        "검색"
+      ]
     },
     {
       "id": "sejong-dispatch-2026",
@@ -436,23 +496,27 @@
       "priority": "watch",
       "title": "세종학당 해외 파견",
       "org": "세종학당재단",
-      "deadlineAt": null,
+      "deadlineAt": "2026-11-05T23:59:59+09:00",
       "payNote": "월 238만~293만 원 + 주거·특수 수당 (참고)",
       "firstIncome": "다음 공고",
       "location": "해외 파견",
       "eligibility": "한국어교원 2급 · 교육 경력",
       "caveat": "2026 하반기 3차는 마감. 2027 공고는 미확인.",
       "nextAction": "ALIO 알림 설정 후 새 공고 확인",
-      "statusNote": "대기 프로그램 · 다음 공고 확인 필요",
+      "statusNote": "2026 하반기 3차 접수마감(11-05), 다음 공고 확인",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "ALIO",
           "url": "https://job.alio.go.kr"
         }
       ],
-      "tags": ["세종학당", "파견", "대기"]
+      "tags": [
+        "세종학당",
+        "파견",
+        "대기"
+      ]
     },
     {
       "id": "employment-support-2026",
@@ -470,7 +534,7 @@
       "nextAction": "고용24에서 자격 확인",
       "statusNote": "자격 확인 필요 · 신청 전 상담",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-18",
+      "verifiedAt": "2026-11-20",
       "links": [
         {
           "label": "고용24",
@@ -481,7 +545,11 @@
           "url": "https://www.hrd.go.kr"
         }
       ],
-      "tags": ["생활안정", "자격", "대기"]
+      "tags": [
+        "생활안정",
+        "자격",
+        "대기"
+      ]
     }
   ],
   "checklist": [

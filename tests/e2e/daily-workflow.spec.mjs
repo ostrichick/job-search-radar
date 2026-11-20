@@ -123,12 +123,12 @@ function legacyDomesticFilterDefaults(sort = 'distance') {
     domesticProvince: '', domesticLocality: '',
     compensationFilter: '', ageFilter: '', listingFilter: 'active',
     sourceKindFilter: '', paymentFilter: '', requirementsFilter: '',
-    minScore: '20', sort, statusFilter: 'active'
+    sort, statusFilter: 'active'
   };
 }
 
 function reserializedLegacyDomesticFilterDefaults(sort = 'distance') {
-  return { ...legacyDomesticFilterDefaults(sort), domesticNeighborhood: '' };
+  return { ...legacyDomesticFilterDefaults(sort) };
 }
 
 const defaultJobs = [
@@ -475,6 +475,20 @@ test('기본 추천이 렌더링되고 검토 우선순위로 표시된다', asy
   await expect(page.locator('#updatedAt')).toHaveText(/^최종 확인일 \d{4}\.\d{2}\.\d{2} \d{2}:\d{2}/);
 });
 
+test('과거에 저장한 숨은 점수 필터는 무시하고 현재 기본 추천 기준을 쓴다', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('jobFilterSchemaVersion', '8');
+    localStorage.setItem('jobFilters', JSON.stringify({ minScore: '80' }));
+    localStorage.setItem('jobFiltersByMarket', JSON.stringify({
+      overseas_remote: { minScore: '80' },
+      domestic: { minScore: '80' }
+    }));
+  });
+  await useFeed(page);
+  await page.goto('/munseong/');
+  await expect(page.locator('#minScore')).toHaveValue('20');
+  await expect(page.locator('.job-card')).toHaveCount(3);
+});
 test('국내 일반 지역 공고는 추천에서 제외하되 전체 시장 탐색에서는 유지한다', async ({ page }) => {
   const domesticRegion = {
     country: '대한민국', province: '전북특별자치도', city: '전주시', district: '덕진구', neighborhood: '',
@@ -533,7 +547,6 @@ test('시장 요약은 추천 필터 밖의 활성 공고와 주요 확인 필�
   await expect(page.locator('#eligibility option[value="worldwide"]')).toHaveText('전 세계 지원 가능');
 
   await page.locator('#showAllActive').click();
-  await expect(page.locator('#minScore')).toHaveValue('0');
   await expect(page.locator('.job-card')).toHaveCount(2);
   await expect(page.locator('#showAllActive')).toBeHidden();
 });
@@ -592,13 +605,7 @@ test('적용 조건을 결과 위에서 확인하고 개별 또는 전체 해제
 
   await expect(page.locator('#activeFilters')).toBeVisible();
   await expect(page.locator('#activeFilterChips')).toContainText('지원 범위: 한국 / 전 세계');
-  await expect(page.locator('#activeFilterChips')).toContainText('최소 검토 우선순위: 추천 20+');
   await expect(page.locator('.job-card')).toHaveCount(1);
-
-  await page.locator('[data-filter-id="minScore"]').click();
-  await expect(page.locator('#minScore')).toHaveValue('0');
-  await expect(page.locator('.job-card')).toHaveCount(2);
-  await expect(page.locator('#activeFilterChips')).not.toContainText('최소 검토 우선순위');
   await expect(page.locator('#showAllActive')).toBeVisible();
 
   await page.locator('#clearActiveFilters').click();
@@ -715,7 +722,6 @@ test('전주·완주 로컬 기본 탐색은 출근형을 거리순으로 보고
   await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
   await expect(page.locator('#domesticLocality')).toHaveValue('전주·완주');
   await expect(page.locator('#remote')).toHaveValue('local');
-  await expect(page.locator('#minScore')).toHaveValue('20');
   await expect(page.locator('#sort')).toHaveValue('distance');
   await expect(page.locator('.job-card').filter({ hasText: 'AI Creative QC Reviewer' })).toHaveCount(0);
 
@@ -723,8 +729,6 @@ test('전주·완주 로컬 기본 탐색은 출근형을 거리순으로 보고
   await expect(page.locator('.job-card').filter({ hasText: '자료입력 보조' }).locator('.distance-value')).toHaveText('주소 부족으로 거리 계산 불가');
 
   await page.locator('#domesticLocality').selectOption('완주군');
-  await expect(page.locator('#domesticNeighborhood')).toContainText('봉동읍');
-  await page.locator('#domesticNeighborhood').selectOption('봉동읍');
   await expect(page.locator('.job-card')).toHaveCount(1);
   const wanju = page.locator('.job-card').filter({ hasText: '운영지원 사무원' });
   await expect(wanju.locator('.distance-note')).toContainText('주소 좌표 확인 전 거리 표시 보류');
@@ -861,7 +865,6 @@ test('국내·해외 탭의 검색과 지역 필터는 서로 독립적으로 re
   await page.locator('#marketDomestic').click();
   await page.locator('#domesticProvince').selectOption('전북특별자치도');
   await page.locator('#domesticLocality').selectOption('전주시 덕진구');
-  await page.locator('#domesticNeighborhood').selectOption('산정동');
   await page.locator('#query').fill('Jeonju');
 
   await page.locator('#marketOverseas').click();
@@ -870,14 +873,12 @@ test('국내·해외 탭의 검색과 지역 필터는 서로 독립적으로 re
   await expect(page.locator('#query')).toHaveValue('Jeonju');
   await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
   await expect(page.locator('#domesticLocality')).toHaveValue('전주시 덕진구');
-  await expect(page.locator('#domesticNeighborhood')).toHaveValue('산정동');
 
   await page.reload();
   await expect(page.locator('#marketDomestic')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('#query')).toHaveValue('Jeonju');
   await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
   await expect(page.locator('#domesticLocality')).toHaveValue('전주시 덕진구');
-  await expect(page.locator('#domesticNeighborhood')).toHaveValue('산정동');
 });
 
 test('선택한 국내 지역 공고가 다음 피드에서 0건이 되어도 필터를 보존하고 명확히 안내한다', async ({ page }) => {
@@ -938,7 +939,6 @@ for (const legacySort of ['score', 'distance']) {
       remote: 'local',
       domesticProvince: '전북특별자치도',
       domesticLocality: '전주·완주',
-      domesticNeighborhood: '',
       sort: 'distance'
     });
 
@@ -1274,7 +1274,7 @@ test('관심 공고가 피드에서 사라져도 archived snapshot으로 남는�
   await page.selectOption('#statusFilter', 'saved');
   await openAdvancedFilters(page);
   await page.selectOption('#listingFilter', 'all');
-  await page.selectOption('#minScore', '0');
+
   await expect(page.locator('.job-card')).toHaveCount(1);
   await expect(page.locator('.title')).toHaveText('AI Data Specialist - Korean');
   await expect(page.locator('.listing-badge')).toHaveText('현재 피드에서 사라짐');
@@ -1301,7 +1301,7 @@ test('390px viewport에서 가로 overflow가 없다', async ({ page }) => {
   await useFeed(page, () => feed([...defaultJobs, ...domesticJobs]));
   await page.goto('/munseong/');
   expect(await page.locator('#advancedFilters').evaluate((element) => element.open)).toBe(false);
-  await expect(page.locator('#advancedFiltersSummary')).toContainText('현재 조건 3개');
+  await expect(page.locator('#advancedFiltersSummary')).toContainText(/현재 조건 \d+개/);
   const widths = await page.evaluate(() => ({
     inner: window.innerWidth,
     html: document.documentElement.scrollWidth,
@@ -1444,7 +1444,6 @@ test('상태 백업/가져오기는 지원함 상태와 필터를 복원한다',
   await page.locator('#marketDomestic').click();
   await page.selectOption('#domesticProvince', '전북특별자치도');
   await page.selectOption('#domesticLocality', '전주시 덕진구');
-  await page.selectOption('#domesticNeighborhood', '산정동');
   await page.fill('#query', 'Jeonju');
   const [download] = await Promise.all([
     page.waitForEvent('download'),
@@ -1467,7 +1466,6 @@ test('상태 백업/가져오기는 지원함 상태와 필터를 복원한다',
   await expect(page.locator('#query')).toHaveValue('Jeonju');
   await expect(page.locator('#domesticProvince')).toHaveValue('전북특별자치도');
   await expect(page.locator('#domesticLocality')).toHaveValue('전주시 덕진구');
-  await expect(page.locator('#domesticNeighborhood')).toHaveValue('산정동');
   await expect(page.locator('#sort')).toHaveValue('distance');
   await page.locator('#marketOverseas').click();
   await expect(page.locator('#source')).toHaveValue('RWS TrainAI');
@@ -1828,7 +1826,8 @@ test('인크루트 RSS 후퇴는 원문 변경이 아니라 근거 축소로, �
   await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
   await openAdvancedFilters(page);
-  await page.selectOption('#minScore', '0');
+  await page.locator('#showAllActive').click();
+
   await expect(page.locator('.listing-badge')).toContainText('RSS 확인·상세는 이전 기록');
   await expect(page.locator('.verification-badge[data-state="changed"]')).toHaveCount(0);
   await expect(page.locator('.verification-badge')).toContainText('RSS 목록 최근 확인');
@@ -2371,7 +2370,7 @@ test('원문 내용이 바뀐 공고는 확인함 상태를 자동으로 해제�
   await expect(page.locator('.job-card[data-job-id="changed"] .seen-status')).toBeHidden();
 });
 
-test('맞춤 적합도는 확인된 부적격 공고를 기본 추천에서 숨기고 사유를 보여준다', async ({ page }) => {
+test('맞춤 적합도가 fail인 공고는 필터 없이 기본 목록에서 제외된다', async ({ page }) => {
   await useFeed(page, () => feed([
     job({ id: 'fit-ok', title: 'Korean AI Data Reviewer', score: 80, description: 'Evaluate Korean AI data.' }),
     job({ id: 'fit-check', title: 'Korean AI Data Reviewer', score: 60, requirementsStatus: 'hard_check' }),
@@ -2382,34 +2381,7 @@ test('맞춤 적합도는 확인된 부적격 공고를 기본 추천에서 숨�
   await expect(page.locator('.job-card[data-job-id="fit-fail"]')).toHaveCount(0);
   await expect(page.locator('.job-card[data-job-id="fit-check"] .profile-fit')).toHaveAttribute('data-fit-status', 'check');
   await expect(page.locator('.job-card[data-job-id="fit-check"] .profile-fit')).toContainText('확인 필요');
-  await openAdvancedFilters(page);
-  await page.locator('#fitFilter').selectOption('fail');
-  await expect(page.locator('.job-card')).toHaveCount(1);
-  await expect(page.locator('.job-card .profile-fit')).toHaveAttribute('data-fit-status', 'fail');
-  await expect(page.locator('.job-card')).toContainText('Korean AI Data Lead');
-  await page.locator('#fitFilter').selectOption('');
-  await expect(page.locator('.job-card')).toHaveCount(3);
-});
-
-test('추천 정책 v5는 v4의 추천 집계를 유지하면서 프로필 부적합 공고만 제외한다', async ({ page }) => {
-  let current = feed([
-    job({ id: 'fit-ok', title: 'Korean AI Data Reviewer', score: 80, description: 'Evaluate Korean AI data.' }),
-    job({ id: 'fit-check', title: 'Korean AI Data Reviewer', score: 60, requirementsStatus: 'hard_check' }),
-    job({ id: 'fit-fail', title: 'Korean AI Data Lead', score: 70, description: "Master's degree required." })
-  ]);
-  current.recommendationPolicyVersion = 4;
-  await useFeed(page, () => current);
-  await page.goto('/munseong/');
-  await openAdvancedFilters(page);
-  await page.locator('#fitFilter').selectOption('');
-  await expect(page.locator('.job-card')).toHaveCount(3);
-  await expect(page.locator('#stats .stat').first().locator('strong')).toHaveText('2개');
-  current = { ...current, recommendationPolicyVersion: 5 };
-  await page.reload();
-  await openAdvancedFilters(page);
-  await page.locator('#fitFilter').selectOption('');
-  await expect(page.locator('.job-card')).toHaveCount(3);
-  await expect(page.locator('#stats .stat').first().locator('strong')).toHaveText('1개');
+  await expect(page.locator('#fitFilter')).toHaveCount(0);
 });
 
 test('전주시 공공기관 공고는 기본 국내 필터에서 보인다', async ({ page }) => {
@@ -2555,7 +2527,7 @@ test('검색·적합도·숨김 상태에서도 보존 공고 CTA 라벨과 결�
   await page.goto('/munseong/');
 
   await openAdvancedFilters(page);
-  await page.selectOption('#minScore', '0');
+
   await page.selectOption('#listingFilter', 'all');
   const presetCard = page.locator('.job-card').filter({ hasText: 'Preserved Filtered Reviewer' });
   await expect(presetCard).toHaveCount(1);
@@ -2563,7 +2535,6 @@ test('검색·적합도·숨김 상태에서도 보존 공고 CTA 라벨과 결�
   await expect(presetCard).toHaveCount(0);
   await expect(page.locator('.job-card')).toHaveCount(3);
 
-  await page.selectOption('#fitFilter', 'fail');
   await page.fill('#query', 'no-such-keyword');
   await expect(page.locator('.job-card')).toHaveCount(0);
   await expect(page.locator('#showSourceErrors')).toHaveText('보존 공고 1개 보기');

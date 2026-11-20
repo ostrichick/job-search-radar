@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en" data-profile="nicole">
 <head>
   <meta charset="utf-8">
@@ -43,6 +43,12 @@
       <button id="addJobBtn" class="button secondary">Add a job</button>
       <button id="refreshBtn" class="button primary">Refresh jobs</button>
     </div>
+    <div class="hero-aside">
+      <span class="pulse"></span>
+      <span>Last checked</span>
+      <strong id="feedUpdatedAt">-</strong>
+      <small>May change after this date · verify original</small>
+    </div>
   </header>
 
   <main>
@@ -68,6 +74,8 @@
       <p id="marketPulseNote" class="market-pulse-note"></p>
     </section>
 
+    <input id="minScore" type="hidden" value="0">
+    <input id="includeAllFits" type="hidden" value="" aria-label="Include all fit statuses">
     <section class="panel filters">
       <div class="field search-field">
         <label for="query">Search</label>
@@ -95,10 +103,6 @@
       <div class="field market-domestic-only" hidden>
         <label for="domesticLocality">City / District</label>
         <select id="domesticLocality"><option value="">All cities / districts</option></select>
-      </div>
-      <div class="field market-domestic-only" hidden>
-        <label for="domesticNeighborhood">Neighborhood</label>
-        <select id="domesticNeighborhood"><option value="">All neighborhoods</option></select>
       </div>
       <div class="field">
         <label for="compensationFilter">Pay information</label>
@@ -131,14 +135,6 @@
           <div class="field">
             <label for="category">Field</label>
             <select id="category"><option value="">All fields</option></select>
-          </div>
-          <div class="field">
-            <label for="remote">Work setting</label>
-            <select id="remote">
-              <option value="">All settings</option>
-              <option value="local">On-site</option>
-              <option value="remote">Remote</option>
-            </select>
           </div>
           <div class="field">
             <label for="ageFilter">Date posted</label>
@@ -200,25 +196,6 @@
               <option value="hard_check">Required criteria need review</option>
             </select>
           </div>
-          <div class="field">
-            <label for="fitFilter">Fit</label>
-            <select id="fitFilter">
-              <option value="">All fits</option>
-              <option value="eligible" selected>Recommended fit</option>
-              <option value="high">Strong fit</option>
-              <option value="check">Needs check</option>
-              <option value="fail">Not eligible</option>
-            </select>
-          </div>
-          <div class="field nicole-only">
-            <label for="languageFitFilter">Language fit</label>
-            <select id="languageFitFilter">
-              <option value="all">All language fits</option>
-              <option value="match">Matches</option>
-              <option value="mismatch">Does not match</option>
-              <option value="unknown">Not verified</option>
-            </select>
-          </div>
           <div class="field nicole-only">
             <label for="commuteFilter">Commuting area</label>
             <select id="commuteFilter">
@@ -236,20 +213,6 @@
               <option value="current">Current listings</option>
               <option value="archived">Past listings</option>
               <option value="unverified">Not yet verified</option>
-            </select>
-          </div>
-          <div class="field nicole-only saved-only-field">
-            <label for="savedOnly">Saved jobs</label>
-            <label class="check"><input id="savedOnly" type="checkbox"> Show saved only</label>
-          </div>
-          <div class="field">
-            <label for="minScore">Minimum review priority</label>
-            <select id="minScore">
-              <option value="0">All scores</option>
-              <option value="20" selected>Recommended 20+</option>
-              <option value="40">40+</option>
-              <option value="60">60+</option>
-              <option value="80">80+</option>
             </select>
           </div>
           <div class="field">
