@@ -13,7 +13,13 @@ const CITY_KO = {
 };
 const PREFERRED_LABELS = /preferred|optional|a plus|nice to have|not required|not mandatory|not specified|not stated|not necessary|no requirement|우대|선호|불필요|무관|필수\s*(?:아님|아니|없)/i;
 const NON_REQUIREMENT_CONTEXT = /\bresume\b|\bcv\b|이력서|not specified|not stated|not required|not mandatory|불필요|무관|아님/i;
-const REMOTE_RESTRICTION = /\b(?:us|usa|canada|uk|united kingdom|europe|eu|emea|apac|latam|mena)\s*(?:only|based|residents?)\b|only\s+(?:us|usa|canada|uk|europe|eu)\b/i;
+// APAC includes South Korea. Do not classify APAC-only roles as geographically
+// impossible, and do not treat an employer's office address as a worker rule.
+const REMOTE_RESTRICTION = /\b(?:us|usa|united states|canada|uk|united kingdom|europe|eu|emea|latam|mena)\s+(?:residents?|applicants?|candidates?)\s+only\b|\bonly\s+(?:for\s+)?(?:us|usa|united states|canada|uk|united kingdom|europe|eu|emea|latam|mena)\s+(?:residents?|applicants?|candidates?)\b/i;
+const REMOTE_LOCATION_ONLY = /\b(?:us|usa|united states|canada|uk|united kingdom|europe|eu|emea|latam|mena)\s+only\b|\bonly\s+(?:us|usa|united states|canada|uk|united kingdom|europe|eu|emea|latam|mena)\b/i;
+const OTHER_COUNTRY = /\b(?:mexico|brazil|colombia|argentina|peru|chile|philippines|bulgaria|romania|turkey|türkiye|ireland|united kingdom|uk|united states|usa|canada|germany|france|spain|poland|india|indonesia|vietnam|pakistan|australia|new zealand)\b/i;
+const INCLUDES_KOREA = /\b(?:south korea|republic of korea|korea|worldwide|anywhere|any country|apac|asia pacific|global remote)\b|대한민국|한국/i;
+const WORKER_RESIDENCY = /\b(?:open to applicants|open to candidates|available to applicants|only accepting applicants|applications accepted|applicants must be|candidates must be|must be|need to be|looking for candidates|seeking applicants|position is|role is)\b.{0,80}\b(?:in|from|based in|located in|residing in)\s+(?:the\s+)?/i;
 const FIVE_YEARS = /(?:[5-9]|1[0-9]|20)\s*\+?\s*years?\D{0,45}(?:experience|경력|실무)|(?:experience|경력|실무)\D{0,25}(?:[5-9]|1[0-9]|20)\s*\+?\s*years?|(?:경력|실무|근무)\D{0,15}(?:[5-9]|1[0-9]|20)\s*년|(?:[5-9]|1[0-9]|20)\s*년\s*이상\s*(?:경력|근무|실무)/i;
 const SENIOR = /\b(?:senior|principal|director|head of|vp|vice president)\b/i;
 const MASTER = /\bmaster'?s?\s+(?:degree|in)\b|석사\s*(?:학위|이상|필수)|석사\s*소지/i;
@@ -28,6 +34,10 @@ function hasFiveYearRequirement(value) {
 }
 const KOREAN_HIGH = /(?:topik\s*(?:level\s*)?[3-6]|한국어.{0,20}(?:중급|고급|능통|유창|비즈니스|원어민)|(?:fluent|native|business|advanced|professional|intermediate).{0,25}korean|korean.{0,25}(?:fluent|native|business|advanced|intermediate|c1|c2))/i;
 const OTHER_LANGUAGE_REQUIRED = /(?:japanese|chinese|일본어|중국어).{0,30}(?:required|mandatory|fluent|native|business|능통|필수)|(?:required|mandatory|fluent|native|business|능통|필수).{0,30}(?:japanese|chinese|일본어|중국어)/i;
+// An explicitly language-specific specialist role is not equivalent to a
+// general AI/data job just because its title contains "AI Trainer". Only
+// languages outside either profile, with no OR alternative, trigger this gate.
+const UNSUPPORTED_LANGUAGE_SPECIALIST = /\b(?:kinyarwanda|swahili|amharic|yoruba|igbo|arabic|hebrew|burmese|danish|french|german|portuguese|russian|japanese|chinese|turkish|dutch|thai|vietnamese|indonesian|hindi|urdu|punjabi)\s+(?:language\s+)?(?:specialist|expert|trainer|translator|linguist|teacher|tutor|interpreter|annotator|evaluator|transcriber|speaker|speaking|translation|transcription)\b/i;
 const SPANISH_HIGH = /(?:native|fluent|advanced|business|professional).{0,25}spanish|spanish.{0,25}(?:native|fluent|advanced|business|required)/i;
 const ENGLISH_HIGH = /english.{0,25}(?:c1|c2|fluent|native|business|professional)|(?:c1|c2).{0,25}english/i;
 const TEACHING = /korean\s+(?:language\s+)?(?:teacher|instructor|tutor|teaching)|한국어\s*(?:강사|교원|선생님|튜터|교육)|세종학당|korean language (?:education|teaching)/i;
@@ -129,6 +139,9 @@ export function evaluateProfileFit(job, { isNicole = false, age = null, now = Da
   if (hasFiveYearRequirement(combined) || SENIOR.test(title)) check('5년 이상·시니어 요건 확인');
   if (requiredIn(combined, MASTER) && !MASTER_ALTERNATIVE.test(combined)) fail('석사 학위 필수');
   if (requiredIn(combined, OTHER_LANGUAGE_REQUIRED)) fail('일본어·중국어 필수');
+  if (UNSUPPORTED_LANGUAGE_SPECIALIST.test(title) && !/\b(?:or|oder|또는)\b/i.test(title)) {
+    fail('프로필에 없는 언어 전문직 명시');
+  }
 
   if (isNicole) {
     if (requiredIn(combined, KOREAN_HIGH)) fail('한국어 중급 이상 필수');
@@ -153,9 +166,26 @@ export function evaluateProfileFit(job, { isNicole = false, age = null, now = Da
   if (!isNicole && Number.isFinite(age) && age >= 35 && AGE_UNDER_35.test(combined)) fail('연령 제한(35세 미만)');
   const specialistTitle = SPECIALIST_DOMAIN.test(title);
   if (specialistTitle && !/\b(?:ai|evaluat|annotat|quality|data|linguist|language)\b/i.test(title)) {
-    fail('전문 분야 경험 필요');
+    check('전문 분야 경험 확인');
   }
-  if (REMOTE_RESTRICTION.test(combined) && workplace.group === 'remote') fail('원격 지원 국가 제한');
+  if (workplace.group === 'remote') {
+    // Inspect short requirement clauses, not an arbitrary country appearing in
+    // the company's business description. A bare location is only a check.
+    const restrictions = String([job.description, job.visaRequirements, job.eligibility].filter(Boolean).join(' '))
+      .split(/[.!?;\n]/).filter((part) => part.length < 500);
+    const explicitOtherCountry = restrictions.some((part) => {
+      const trigger = part.match(WORKER_RESIDENCY);
+      return trigger && OTHER_COUNTRY.test(part.slice(trigger.index + trigger[0].length)) && !INCLUDES_KOREA.test(part);
+    });
+    const workersOnly = restrictions.some((part) => REMOTE_RESTRICTION.test(part) && !/\bkorea\s+(?:residents?|applicants?|candidates?)\s+(?:also\s+)?(?:allowed|accepted|eligible)\b/i.test(part));
+    if (explicitOtherCountry || workersOnly || REMOTE_LOCATION_ONLY.test(job.location || '')) {
+      fail('원격 지원 국가 제한 명시');
+    } else if (job.eligibilityCode === 'restricted' || job.eligibilityStatus === 'restricted') {
+      fail('수집 자료에 지원 국가 제한 표시');
+    } else if (OTHER_COUNTRY.test(job.location || '') && !INCLUDES_KOREA.test(job.location || '')) {
+      check('해당 국가 외 원격 지원 가능 여부 확인');
+    }
+  }
 
   if (workplace.group === 'remote') {
     pass('원격 근무');

@@ -2,7 +2,7 @@ import { validatePublicFeed } from './backup-rules.js';
 
 const clean = (value) => typeof value === 'string' ? value.trim() : '';
 const germanLanguage = /\b(?:german|deutsch|deutschkenntnisse|deutschsprachig)\b|독일어/i;
-const germanRequired = /\b(?:fluent|native|advanced|excellent|proficient|business[- ]level)\s+(?:in\s+)?german\b|\bgerman\s+(?:(?:language|speaking)\s+)?(?:skills?|fluency|proficiency)\b|\bgerman\s+(?:required|mandatory|essential|speaker|speaking)\b|\b(?:must|need\s+to)\s+speak\s+german\b|\bdeutschkenntnisse\b|\b(?:sehr\s+gute\w*|flie[ßs]end\w*|verhandlungssicher\w*)\s+deutsch\b|\b(?:sprichst|sprechen)\b.{0,24}\bdeutsch\b|독일어.{0,25}(?:필수|능통|원어민|요구)/i;
+const germanRequired = /\b(?:fluent|native|advanced|excellent|proficient|business[- ]level)\s+(?:in\s+)?german\b|\bgerman[- ](?:speaking|speaker)\b|\bgerman\s+(?:(?:language|speaking)\s+)?(?:skills?|fluency|proficiency)\b|\bgerman\s+(?:required|mandatory|essential|speaker|speaking)\b|\b(?:must|need\s+to)\s+speak\s+german\b|\bdeutschkenntnisse\b|\b(?:sehr\s+gute\w*|flie[ßs]end\w*|verhandlungssicher\w*)\s+deutsch\b|\b(?:sprichst|sprechen)\b.{0,24}\bdeutsch\b|독일어.{0,25}(?:필수|능통|원어민|요구)/i;
 const germanProseMarkers = [
   /\b(?:wir|unser(?:e|en|em|er)?)\b/i,
   /\b(?:du|dich|dir|deine[msnr]?)\b/i,
@@ -11,14 +11,20 @@ const germanProseMarkers = [
   /\b(?:suchen|suchst|erwarten|bieten)\b/i,
   /\b(?:und|mit|für|sowie|über)\b/i
 ];
+const optionalGerman = /\b(?:optional|preferred|a\s+plus|nice\s+to\s+have|not\s+required|not\s+mandatory)\b|\b(?:우대|선호|필수\s*(?:아님|없음))\b/i;
+function germanIsRequired(value) {
+  // A positive-looking regex must not turn "German language skills optional"
+  // into a mandatory requirement. Keep separate clauses independently scored.
+  return clean(value).split(/[.;\n]/).some((part) => germanRequired.test(part) && !optionalGerman.test(part));
+}
 
 // Filter German-language roles, not companies merely based in Germany or
 // English-language postings that mention German customers in their background.
 export function isGermanLanguageJob(job) {
   const description = clean(job?.description);
-  return germanLanguage.test(clean(job?.title)) ||
-    germanLanguage.test(clean(job?.languageRequirements)) ||
-    germanRequired.test(description) ||
+  return germanIsRequired(job?.title) ||
+    germanIsRequired(job?.languageRequirements) ||
+    germanIsRequired(description) ||
     (description.length >= 180 && germanProseMarkers.filter((re) => re.test(description)).length >= 4);
 }
 const provinces = [

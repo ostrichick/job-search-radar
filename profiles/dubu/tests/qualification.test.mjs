@@ -15,12 +15,12 @@ test('preferred and explicitly optional Korean do not become mandatory qualifica
   }
 });
 
-test('Korean-language specialist roles are excluded, not all Korea market jobs', () => {
-  assert.equal(excludeQualificationReason({ title: '[Studio Support Div.] Korean Localization Specialist (1년 이상 / 계약직)' }), 'korean_language_professional');
-  assert.equal(excludeQualificationReason({ title: 'Korean Translator / Linguist' }), 'korean_language_professional');
-  assert.equal(excludeQualificationReason({ title: '한국어 번역 담당자' }), 'korean_language_professional');
+test('Korean source/target translation direction and sales seniority are checked, not assumed', () => {
+  assert.equal(excludeQualificationReason({ title: '[Studio Support Div.] Korean Localization Specialist (1년 이상 / 계약직)' }), null);
+  assert.equal(excludeQualificationReason({ title: 'Korean Translator / Linguist' }), null);
+  assert.equal(excludeQualificationReason({ title: '한국어 번역 담당자' }), null);
   assert.equal(excludeQualificationReason({ title: '한일 통번역 담당자' }), 'unsupported_language_or_sales_role');
-  assert.equal(excludeQualificationReason({ title: 'Sales Manager, Advertising Solutions' }), 'unsupported_language_or_sales_role');
+  assert.equal(excludeQualificationReason({ title: 'Sales Manager, Advertising Solutions' }), null);
   assert.equal(excludeQualificationReason({ title: 'Spanish marketing assistant for Korea', description: 'Marketing to Korean consumers.' }), null);
   assert.equal(excludeQualificationReason({ title: 'International marketing assistant', description: 'Fluent Korean required.' }), 'advanced_korean_required');
   assert.equal(excludeQualificationReason({ title: '해외 마케팅 담당자', description: '한국어 비즈니스 회화 수준 필수' }), 'advanced_korean_required');
@@ -36,17 +36,17 @@ test('explicit five-plus professional years excluded without treating company hi
   assert.equal(excludeQualificationReason({ title: 'Spanish marketing junior', description: 'Since 2015 our company has supported 5,000 brands.' }), null);
 });
 
-test('official Korean ATS rejects Korean professional and 5+/10+ roles', () => {
+test('official Korean ATS keeps ambiguous translation direction but rejects proven 5+/10+ roles', () => {
   const board = { board: 'krafton', company: 'KRAFTON', source: 'KRAFTON' };
   const job = (id, title) => ({ id, title, location: { name: 'Seoul' },
     absolute_url: `https://boards.greenhouse.io/krafton/jobs/${id}`, content: '<p>Marketing</p>' });
-  assert.equal(normalizeAtsJob(job(1, 'Korean Localization Specialist'), board), null);
+  assert.ok(normalizeAtsJob(job(1, 'Korean Localization Specialist'), board));
   assert.equal(normalizeAtsJob(job(2, 'Brand Planning Manager (5년 이상)'), board), null);
   assert.equal(normalizeAtsJob(job(3, 'PR Manager (10년 이상)'), board), null);
   assert.ok(normalizeAtsJob(job(4, 'Korea Marketing Coordinator (1년 이상)'), board));
 });
 
-test('previously seen excluded offline listings do not reappear as historical', () => {
+test('ambiguous Korean translation stays as a historical review candidate; proven 5+ requirement stays excluded', () => {
   const now = '2026-10-19T02:20:00Z';
   const baseline = { updatedAt: '2026-10-17T02:20:00Z', jobs: [
     { id: 'bad-korean', title: 'Korean Localization Specialist', source: 'KRAFTON', sourceKind: 'official_ats', company: 'KRAFTON', market: 'offline', location: 'Seoul', url: 'https://boards.greenhouse.io/krafton/jobs/1', lastSeenAt: now },
@@ -55,7 +55,7 @@ test('previously seen excluded offline listings do not reappear as historical', 
   ] };
   const incoming = { updatedAt: now, jobs: [], sourceStatus: [{ source: 'KRAFTON', status: 'ok' }] };
   const next = mergeHistoricalFeed(incoming, baseline);
-  assert.deepEqual(next.jobs.map((x) => x.id), ['good-1yr']);
+  assert.deepEqual(next.jobs.map((x) => x.id), ['bad-korean', 'good-1yr']);
   assert.equal(next.jobs[0].collectionState, 'not_seen');
 });
 

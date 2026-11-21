@@ -33,9 +33,12 @@ const specialistJob = {
   title: 'Freelance Translators/Checkers - Korean to English - Surgery',
   description: 'Surgery terminology translation.'
 };
-assert.equal(evaluateProfileFit(specialistJob, { age: 38 }).status, 'fail');
-assert.equal(isDefaultRecommendation(specialistJob, 5, { age: 38 }), false,
-  'policy 5 recommendations must not include profile-fit failures');
+assert.equal(evaluateProfileFit(specialistJob, { age: 38 }).status, 'check',
+  'domain expertise without a verified mandatory credential is a review condition, not confirmed ineligibility');
+assert.equal(isDefaultRecommendation(specialistJob, 5, { age: 38 }), true,
+  'profile-fit review status does not itself establish a hard ineligibility');
+assert.equal(isDefaultRecommendation({ ...specialistJob, requirementsStatus: 'hard_check' }, 5, { age: 38 }), false,
+  'unresolved explicit hard requirements remain outside the confident recommendation tier');
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'job-radar-runtime-'));

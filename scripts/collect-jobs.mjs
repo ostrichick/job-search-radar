@@ -1616,8 +1616,8 @@ function eligibilityFor(job) {
   const locationRaw = evidenceSnippet(job.location || '위치 미상');
   const description = lower(job._fullDescription || job.description);
   const restrictionDescription = description.replace(/\bu\.s\.a?\.?/gi, 'us').replace(/\bu\.k\./gi, 'uk');
-  const restrictedRegion = /\b(?:usa|us|united states|us only|canada|uk|united kingdom|europe|eu|emea|apac|latam|mena|north america|south america|germany|france|australia|singapore|japan|india|philippines|mexico|brazil|spain|italy|netherlands|poland|romania)\b/;
-  const residencyPattern = /(?:must|should|currently)\s+(?:reside|live|be based|be located)\s+(?:in|within)\s+([^;\n]{2,80}?)(?=\.(?:\s|$)|;|\n|$)|(?:candidates?|applicants?)\s+(?:must|should)\s+(?:be\s+)?(?:based|located|resident)\s+(?:in|within)\s+([^;\n]{2,80}?)(?=\.(?:\s|$)|;|\n|$)/gi;
+  const restrictedRegion = /\b(?:usa|us|united states|us only|canada|uk|united kingdom|europe|eu|emea|latam|mena|north america|south america|germany|france|australia|singapore|japan|india|philippines|mexico|brazil|spain|italy|netherlands|poland|romania)\b/;
+  const residencyPattern = /(?:must|should|currently)\s+(?:reside|live|be based|be located)\s+(?:in|within)\s+([^;\n]{2,80}?)(?=\.(?:\s|$)|;|\n|$)|(?:candidates?|applicants?)\s+(?:must|should)\s+(?:be\s+)?(?:based|located|resident)\s+(?:in|within)\s+([^;\n]{2,80}?)(?=\.(?:\s|$)|;|\n|$)|(?:open|available|limited|restricted)\s+to\s+(?:applicants?|candidates?|workers?)\s+(?:based\s+)?(?:in|from)\s+([^;\n]{2,80}?)(?=\.(?:\s|$)|;|\n|$)/gi;
   const residencyText = lower([...restrictionDescription.matchAll(residencyPattern)]
     .map((match) => text(match.slice(1).find(Boolean) || ''))
     .filter(Boolean)
@@ -1629,18 +1629,26 @@ function eligibilityFor(job) {
   const locationLooksRestrictive = /\b(?:only|except(?:ing)?|worldwide|world\s+wide|globally|remote|south korea|republic of korea|korea|seoul|한국)\b/.test(locationRestrictionText)
     || restrictedRegion.test(locationRestrictionText);
   const rawRestrictionText = residencyText || (locationLooksRestrictive ? locationRestrictionText : '');
-  const genericRemoteRestriction = /^(?:remote(?:\s+job)?|home\s*office|homeoffice|remoto|anywhere|location independent|work from home|wfh|unknown|not specified|n\/?a|위치 미상)$/i.test(rawRestrictionText);
+  const genericRemoteRestriction = /^(?:remote(?:\s+job)?|home\s*office|homeoffice|remoto|anywhere|location independent|work from home|wfh|unknown|not specified|n\/?a|위치 미상)$/i.test(rawRestrictionText)
+    || /^remote\s+(?:we\s+(?:are|seek|have)|our\s+team|the\s+(?:role|company|position)|this\s+(?:role|position|job))\b/i.test(rawRestrictionText);
   const restrictionText = genericRemoteRestriction || (/^remote\b/.test(rawRestrictionText)
     && /\b(?:engagement|employment|job type|schedule|hours|compensation|pay|salary|requirements?)\s*:/.test(rawRestrictionText))
     ? ''
     : rawRestrictionText;
   const koreaMentioned = /south korea|republic of korea|\bkorea\b|seoul|한국/.test(restrictionText);
   const foreignMentioned = restrictedRegion.test(restrictionText);
-  const foreignOnly = /\b(?:usa|us|united states|canada|uk|united kingdom|europe|eu|emea|apac|latam|mena|north america|south america|germany|france|australia|singapore|japan|india|philippines|mexico|brazil|spain|italy|netherlands|poland|romania)\b[^.;\n]{0,24}\bonly\b|\bonly\b[^.;\n]{0,24}\b(?:usa|us|united states|canada|uk|united kingdom|europe|eu|emea|apac|latam|mena|north america|south america|germany|france|australia|singapore|japan|india|philippines|mexico|brazil|spain|italy|netherlands|poland|romania)\b/i.test(restrictionText);
+  const foreignOnly = /\b(?:usa|us|united states|canada|uk|united kingdom|europe|eu|emea|latam|mena|north america|south america|germany|france|australia|singapore|japan|india|philippines|mexico|brazil|spain|italy|netherlands|poland|romania)\b[^.;\n]{0,24}\bonly\b|\bonly\b[^.;\n]{0,24}\b(?:usa|us|united states|canada|uk|united kingdom|europe|eu|emea|latam|mena|north america|south america|germany|france|australia|singapore|japan|india|philippines|mexico|brazil|spain|italy|netherlands|poland|romania)\b/i.test(restrictionText);
   const worldwideMentioned = /\b(worldwide|world\s+wide|anywhere in the world|work from anywhere|globally)\b/.test(restrictionText);
   const koreaExcluded = /\b(?:not|excluding|except(?:ing)?(?:\s+for)?|outside|other than)\b[^.;\n]{0,60}\bkorea\b|\bkorea\b[^.;\n]{0,30}\b(?:not|excluded|except(?:ed)?)\b/i.test(restrictionText);
+  if (/\b(?:anywhere in|within)\s+(?:france|germany|mexico|united states|usa|canada|united kingdom|uk|europe|eu|latam|brazil|india|singapore)\b/.test(location)
+    && !koreaMentioned) {
+    return { code: 'restricted', label: '특정 국가 제한', basis: 'location', reason: `해당 지역 안에서만 근무 가능하다는 범위가 명시됨: ${locationRaw}` };
+  }
   if (koreaExcluded) {
     return { code: 'restricted', label: '특정 국가 제한', basis: 'restriction_text', reason: `거주·근무 제한 문구에서 한국이 제외됨: ${evidenceSnippet(restrictionText)}` };
+  }
+  if (residencyText && foreignMentioned && !koreaMentioned && !/\b(?:apac|asia pacific|asia-pacific)\b/.test(residencyText)) {
+    return { code: 'restricted', label: '특정 국가 제한', basis: 'restriction_text', reason: `지원자 거주 국가가 한국 외 지역으로 명시됨: ${evidenceSnippet(residencyText)}` };
   }
   if (foreignOnly && koreaMentioned) {
     return { code: 'unknown', label: '확인 필요', basis: 'restriction_text', reason: `거주·근무 제한 문구가 특정 국가만 허용하면서 한국도 언급함: ${evidenceSnippet(restrictionText)}` };
@@ -1657,27 +1665,34 @@ function eligibilityFor(job) {
   if (koreaMentioned) {
     return { code: 'korea', label: '한국에서 지원 가능', basis: 'restriction_text', reason: `거주·근무 제한 문구에 한국이 명시됨: ${evidenceSnippet(restrictionText)}` };
   }
-  if (foreignMentioned) {
-    return { code: 'restricted', label: '특정 국가 제한', basis: 'restriction_text', reason: `거주·근무 제한 문구에 다른 국가·지역이 명시됨: ${evidenceSnippet(restrictionText)}` };
+  // APAC (unlike EMEA/LATAM) contains South Korea, but a regional label alone
+  // does not verify that an employer can legally engage a Korea-based worker.
+  if (/\b(?:apac|asia pacific|asia-pacific)\b/.test(restrictionText || location)) {
+    return { code: 'unknown', label: '확인 필요', basis: 'regional_scope', reason: `아시아·태평양 지역 표기, 한국 지원 가능 여부 별도 확인: ${locationRaw}` };
   }
-  if (restrictionText) return { code: 'restricted', label: '특정 국가 제한', basis: 'restriction_text', reason: `거주·근무 제한 문구가 있음: ${evidenceSnippet(restrictionText)}` };
+  if (foreignMentioned) {
+    return { code: 'unknown', label: '확인 필요', basis: 'restriction_text', reason: `외국 지역 언급만으로 한국 지원 금지를 확정하지 않음: ${evidenceSnippet(restrictionText)}` };
+  }
+  if (restrictionText) return { code: 'unknown', label: '확인 필요', basis: 'restriction_text', reason: `구체적인 한국 지원 가능 국가 범위 미확인: ${evidenceSnippet(restrictionText)}` };
   if (job.countryCode === 'KR') {
     return { code: 'korea', label: '한국에서 지원 가능', basis: 'country_code', reason: '원천 데이터의 국가 코드가 KR로 명시됨' };
   }
   if (/south korea|republic of korea|\bkorea\b|seoul|한국/.test(location)) {
     return { code: 'korea', label: '한국에서 지원 가능', basis: 'location', reason: `공고 위치에 한국이 명시됨: ${locationRaw}` };
   }
-  if (/\b(anywhere in|within)\s+[a-z]/.test(location)) return { code: 'restricted', label: '특정 국가 제한', basis: 'location', reason: `특정 지역 범위가 명시됨: ${locationRaw}` };
+  if (/\b(?:anywhere in|within)\s+(?:france|germany|mexico|united states|usa|canada|united kingdom|uk|europe|eu|latam|brazil|india|singapore)\b/.test(location)) {
+    return { code: 'restricted', label: '특정 국가 제한', basis: 'location', reason: `해당 지역 안에서만 근무 가능하다는 범위가 명시됨: ${locationRaw}` };
+  }
   if (/\b(worldwide|world\s+wide|remote, worldwide|anywhere in the world|work from anywhere|globally)\b/.test(location)) {
     return { code: 'worldwide', label: 'Worldwide', basis: 'location', reason: `Worldwide/전 세계 지원 범위가 명시됨: ${locationRaw}` };
   }
   if (restrictedRegion.test(location)) {
-    return { code: 'restricted', label: '특정 국가 제한', basis: 'location', reason: `특정 국가·지역 위치가 명시됨: ${locationRaw}` };
+    return { code: 'unknown', label: '확인 필요', basis: 'location', reason: `소재 지역만으로 지원 국가 제한을 확정하지 않음: ${locationRaw}` };
   }
   if (job.remote) {
     const genericRemote = /^(?:remote(?:\s+job)?|home\s*office|homeoffice|remoto|anywhere|location independent|work from home|wfh|unknown|not specified|n\/?a|위치 미상)$/i;
     if (genericRemote.test(location.trim())) return { code: 'unknown', label: '확인 필요', basis: 'remote_unspecified', reason: '원격 표기만 있고 지원 가능한 국가 범위가 명시되지 않음' };
-    return { code: 'restricted', label: '특정 국가 제한', basis: 'location', reason: `원격이지만 위치가 특정 지역으로 표시됨: ${locationRaw}` };
+    return { code: 'unknown', label: '확인 필요', basis: 'location', reason: `원격이지만 한국 지원 가능 여부가 불명확함: ${locationRaw}` };
   }
   return { code: 'restricted', label: '특정 국가 제한', basis: 'onsite_location', reason: `원격이 아닌 특정 위치 공고: ${locationRaw}` };
 }

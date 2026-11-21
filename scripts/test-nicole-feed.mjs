@@ -20,8 +20,10 @@ for (let i = 0; i < eligible.length; i++) {
     assert.equal(job[key], src[key] || '');
   }
 }
-assert.equal(isGermanLanguageJob({ title: 'German/Spanish Marketing' }), true);
-assert.equal(isGermanLanguageJob({ languageRequirements: 'English, German' }), true);
+assert.equal(isGermanLanguageJob({ title: 'German/Spanish Marketing' }), false, 'mixed market tags alone do not prove German fluency is required');
+assert.equal(isGermanLanguageJob({ languageRequirements: 'English, German' }), false, 'a language mention is not a mandatory criterion');
+assert.equal(isGermanLanguageJob({ title: 'Native German Speaking Marketer' }), true);
+assert.equal(isGermanLanguageJob({ title: 'German-speaking Marketing Coordinator' }), true);
 assert.equal(isGermanLanguageJob({ description: 'You must speak German to work in this role.' }), true);
 assert.equal(isGermanLanguageJob({ description: 'Sehr gute Deutschkenntnisse in Wort und Schrift.' }), true);
 assert.equal(isGermanLanguageJob({ description: 'Wir suchen Dich in unserem Team. Du bringst Berufserfahrung mit und entwickelst kreative Ideen für unsere Kunden. Unsere Aufgaben umfassen die Umsetzung von Kampagnen und die Zusammenarbeit mit dem Marketing-Team. Wir bieten flexible Arbeitszeiten und eine Bewerbung ist jederzeit möglich.' }), true);

@@ -85,19 +85,23 @@ for (const [input, code, label] of [
   [remote('Worldwide (US only)', '', 'KR'), 'restricted', '특정 국가 제한'],
   [remote('Seoul', 'Location: South Korea. Candidates must reside in Germany.', 'KR'), 'restricted', '특정 국가 제한'],
   [remote('Remote', 'Location: South Korea (Work from Home).'), 'korea', '한국에서 지원 가능'],
+  [remote('South Korea', 'This is fully remote, open to candidates based in South Korea. Location: Remote We are engaging Korean speakers in a project.', 'KR'), 'korea', '한국에서 지원 가능'],
+  [remote('Remote (online platform)', 'Live online Korean tutor platform.'), 'unknown', '확인 필요'],
   [remote('Remote', 'Candidates must reside in the US or Korea.'), 'korea', '한국에서 지원 가능'],
   [remote('Remote', 'Candidates must reside in the US and Korea.'), 'unknown', '확인 필요'],
   [remote('Remote', 'Candidates must reside in the U.S. and Korea.'), 'unknown', '확인 필요'],
   [remote('Remote', 'Candidates must reside in Germany and Korea.'), 'unknown', '확인 필요'],
   [remote('Remote', 'Location: Remote'), 'unknown', '확인 필요'],
   [remote('Remote', 'Candidates must reside in Germany.'), 'restricted', '특정 국가 제한'],
-  [remote('Hong Kong'), 'restricted', '특정 국가 제한'],
-  [remote('Sweden'), 'restricted', '특정 국가 제한'],
-  [remote('Greater Orlando'), 'restricted', '특정 국가 제한']
+  // Bare locations can be company headquarters; no applicant-only proof.
+  [remote('Hong Kong'), 'unknown', '확인 필요'],
+  [remote('Sweden'), 'unknown', '확인 필요'],
+  [remote('Greater Orlando'), 'unknown', '확인 필요'],
+  [remote('Remote (APAC only)'), 'unknown', '확인 필요']
 ]) {
   const result = eligibilityFor(input);
-  assert.equal(result.code, code);
-  assert.equal(result.label, label);
+  assert.equal(result.code, code, `${input.location}: ${input.description}`);
+  assert.equal(result.label, label, `${input.location}: ${input.description}`);
   assert.ok(result.reason, 'eligibility classification must include a user-readable reason');
   assert.ok(result.basis, 'eligibility classification must include an evidence basis');
 }

@@ -97,7 +97,10 @@ test('German-only remote jobs in Germany and explicit foreign residency are scre
   assert.equal(filter({ source: 'Arbeitnow', category: 'marketing', title: 'Spanish Social Media Manager', location: 'Berlin', description: `${germanAd} Diese Remote-Stelle ist worldwide und from anywhere möglich.` }), null);
   assert.equal(filter({ source: 'Jobicy', category: 'advertising', title: 'Campaign Coordinator', location: 'Worldwide', description: 'We need a Campaign Coordinator based in Latin America.' }), 'outside_supported_residence');
   assert.equal(filter({ source: 'Jobicy', category: 'marketing', title: 'Growth Manager LATAM', location: 'Worldwide', description: 'Manage campaigns for LATAM customers. Work from anywhere.' }), null);
-  assert.equal(filter({ source: 'Jobicy', category: 'marketing', title: 'Growth Manager LATAM', location: 'LATAM', description: 'Remote manager for LATAM market.' }), 'outside_supported_residence');
+  assert.equal(filter({ source: 'Jobicy', category: 'marketing', title: 'Growth Manager LATAM', location: 'LATAM', description: 'Remote manager for LATAM market.' }), null,
+    'LATAM target market or bare location does not prove an applicant-only residency restriction');
+  assert.equal(filter({ source: 'Jobicy', category: 'marketing', title: 'Growth Manager LATAM', restriction: 'LATAM', location: 'Remote', description: 'Remote manager for LATAM market.' }), 'outside_supported_residence',
+    'explicit applicant geo restriction remains a hard exclusion');
   assert.equal(filter({ source: 'Remotive', title: 'Marketing Manager', location: 'South Korea', description: 'Create campaigns for Latin America.' }), null);
   assert.equal(filter({ source: 'Remotive', title: 'Marketing Manager', location: 'Worldwide', description: 'Must reside in Mexico City, Mexico.' }), 'outside_supported_residence');
   assert.equal(filter({ source: 'Arbeitnow', title: 'Freelance Acquisition Paid Media (Google Ads, Meta Ads)',

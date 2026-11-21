@@ -111,7 +111,10 @@ const activeFilterLabels = {
 };
 const filterDefaults = {
   overseas_remote: { query: '', source: '', category: '', remote: '', eligibility: 'likely', domesticProvince: '', domesticLocality: '', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', includeAllFits: '', sort: 'score', statusFilter: 'active', teachingOnly: '' },
-  domestic: { query: '', source: '', category: '', remote: 'local', eligibility: '', domesticProvince: '전북특별자치도', domesticLocality: '전주·완주', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '20', includeAllFits: '', sort: 'distance', statusFilter: 'active', teachingOnly: '' }
+  // Keep current local jobs discoverable even when the keyword matcher cannot
+  // prove a personalized recommendation. Source/role uncertainty is displayed,
+  // not silently transformed into ineligibility.
+  domestic: { query: '', source: '', category: '', remote: 'local', eligibility: '', domesticProvince: '전북특별자치도', domesticLocality: '전주·완주', compensationFilter: '', ageFilter: '', listingFilter: 'active', sourceKindFilter: '', paymentFilter: '', requirementsFilter: '', minScore: '0', includeAllFits: '', sort: 'distance', statusFilter: 'active', teachingOnly: '' }
 };
 if (isNicole) {
   for (const market of Object.keys(filterDefaults)) Object.assign(filterDefaults[market], {
@@ -581,7 +584,9 @@ function mergeJobs() {
       archivedSnapshot: true
     });
   }
-  state.jobs = [...byId.values()].filter((job) => !isNicole || job.manual || !isGermanLanguageJob(job));
+  // Do not make a previously saved/applied historical snapshot disappear just
+  // because today's language classifier rejects that old source listing.
+  state.jobs = [...byId.values()].filter((job) => !isNicole || job.manual || job.archivedSnapshot || !isGermanLanguageJob(job));
 }
 
 function snapshotJob(id) {

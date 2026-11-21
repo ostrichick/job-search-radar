@@ -40,7 +40,7 @@ test('Nicole local refresh failure retains the last known feed', async ({ page }
   await expect(page.locator('#loadErrorBanner')).toBeVisible();
 });
 
-test('German-language roles are omitted but Germany-based English jobs remain', async ({ page }) => {
+test('mandatory German jobs are omitted but optional German/Spanish and Germany-based English jobs remain', async ({ page }) => {
   await page.route('**/feeds/dubu.json?*', (route) => route.fulfill({ json: {
     ...feed, jobs: [
       ...feed.jobs,
@@ -55,8 +55,8 @@ test('German-language roles are omitted but Germany-based English jobs remain', 
   await expect(page.locator('#jobs')).not.toContainText('German-speaking Marketing Coordinator');
   await expect(page.locator('#jobs .job-card')).toHaveCount(2);
   await page.locator('#marketDomestic').click();
-  await expect(page.locator('#jobs')).not.toContainText('Sales & Marketing (German/Spanish)');
-  await expect(page.locator('#jobs .job-card')).toHaveCount(2);
+  await expect(page.locator('#jobs')).toContainText('Sales & Marketing (German/Spanish)');
+  await expect(page.locator('#jobs .job-card')).toHaveCount(3);
 });
 
 test('former Nicole preview URL redirects to the integrated Nicole screen and keeps deep-link parameters', async ({ page }) => {

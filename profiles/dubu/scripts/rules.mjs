@@ -4,7 +4,11 @@ const ROLE_RULES = [
   { category: 'translation', re: /\b(translat(?:e|es|ed|ion|ions|or|ors|ing)|locali[sz](?:ation|e|ing|ed|er|ers)|language\s+(?:quality|review|qa|specialist)|linguist|subtitl(?:e|es|ing|er)|proofread(?:er|ing)?)\b|번역|현지화|교정|traducci[oó]n|traductor(?:a)?|traducir|localizaci[oó]n/i },
   { category: 'advertising', re: /\b(advertis(?:ing|ement|ements|er)|ads?\s+(?:ops|operations|campaigns?|specialist|manager|buyer|buying)|paid\s+(?:media|social|search|ads?|acquisition)|media\s+buy(?:er|ing)|ppc|programmatic|performance\s+market(?:er|ing)|google\s+ads?|meta\s+ads?)\b|광고|퍼포먼스\s*마케팅|publicidad|anuncios?\s+digitales?/i },
   { category: 'marketing', re: /\b(marketing|marketer|growth\s+(?:specialist|manager|marketing|associate)|seo|sem|crm|social\s+media(?:\s*&\s*community)?\s+(?:manager|specialist|strategist|coordinator)|brand\s+(?:manager|strategist|marketing)|email\s+marketing|demand\s+generation|campaign\s+manager|community\s+(?:manager|coordinator|specialist|associate)|digital\s+campaigns?)\b|마케팅|브랜드\s*관리|mercadotecnia|mercadeo|m[aá]rketing/i },
-  { category: 'content', re: /\b(content\s+(?:creat(?:or|ion)|writer|editor|strategist|manager|marketing|producer|specialist|coordinator|moderator)|copywrit(?:er|ing)|social\s+(?:content|media\s+content)|video\s+editor|editorial\s+(?:writer|specialist|manager)|newsletter\s+(?:writer|editor)|ugc\s+creator)\b|콘텐츠\s*(?:제작|기획|마케팅|에디터)|카피라이터|redactor(?:a)?\s+de\s+contenidos?|creaci[oó]n\s+de\s+contenido/i }
+  { category: 'content', re: /\b(content\s+(?:creat(?:or|ion)|writer|editor|strategist|manager|marketing|producer|specialist|coordinator|moderator)|copywrit(?:er|ing)|social\s+(?:content|media\s+content)|video\s+editor|editorial\s+(?:writer|specialist|manager)|newsletter\s+(?:writer|editor)|ugc\s+creator)\b|콘텐츠\s*(?:제작|기획|마케팅|에디터)|카피라이터|redactor(?:a)?\s+de\s+contenidos?|creaci[oó]n\s+de\s+contenido/i },
+  { category: 'support', re: /\b(?:customer|client)\s+(?:support|service|success|care|experience)\b|\bhelp\s*desk\b|\bsupport\s+(?:agent|representative|specialist)\b|고객\s*(?:상담|지원|응대)|atenci[oó]n\s+al\s+cliente|soporte\s+al\s+cliente/i },
+  { category: 'ai_data', re: /\b(?:ai\s+(?:data|trainer|evaluator|annotation|reviewer)|data\s+(?:annotat(?:or|ion|ing)|label(?:er|ing))|\b(?:search|ads?|data)\s+(?:engine\s+|quality\s+)?(?:rater|evaluator)|llm\s+(?:evaluator|annotator)|language\s+(?:data|evaluator)|data\s+entry\s+annotator)\b|데이터\s*(?:라벨링|어노테이션)|인공지능\s*평가/i },
+  { category: 'education', re: /\b(?:spanish|english|language)\s+(?:teacher|tutor|instructor|teaching|lessons?)\b|\b(?:online|remote)\s+(?:spanish|english)\s+(?:tutor|teacher)\b|스페인어\s*(?:강사|교사|튜터)|(?:profesor(?:a)?|tutor(?:a)?)\s+de\s+(?:espa[nñ]ol|ingl[eé]s)/i },
+  { category: 'admin', re: /\b(?:data\s+entry|virtual\s+assistant|administrative\s+assistant|remote\s+assistant|transcription\s+(?:specialist|assistant)|bilingual\s+administrative)\b|자료\s*입력|원격\s*사무보조/i }
 ];
 
 const INTERPRETING_RE = /\b(interpreter|interpreters|interpreting|interpretation\s+(?:services?|specialist)|simultaneous\s+translation|consecutive\s+translation|live\s+interpretation)\b|통역|int[eé]rprete|interpretaci[oó]n/i;
@@ -18,15 +22,13 @@ const ENGLISH_RE = /\b(english|anglophone|englisch)\b|영어/i;
 export function excludeQualificationReason({ title = '', description = '' } = {}) {
   const heading = safeText(title, 400);
   const body = safeText(description, 10000);
-  if (/한일\s*(?:통번역|번역|통역)|일본어\s*(?:통번역|번역|통역)|^(?:account\s+manager|sales\s+manager|business\s+development\s+manager)\b/i.test(heading)) {
+  if (/한일\s*(?:통번역|번역|통역)|일본어\s*(?:통번역|번역|통역)/i.test(heading)) {
     return 'unsupported_language_or_sales_role';
   }
   const combined = `${heading} ${body}`;
-  // A Korean-language localization professional is necessarily being hired
-  // to produce/review Korean, regardless of whether the ad spells out TOPIK.
-  if (/(?:\bkorean\b|한국어)\s+(?:locali[sz](?:ation|er|ing)|translat(?:ion|or|ing)|linguist|copy\s*edit(?:or|ing)|proofread(?:er|ing)|subtitl(?:e|ing))\b|한국어\s*(?:번역|현지화|감수|교정|자막)/i.test(heading)) {
-    return 'korean_language_professional';
-  }
+  // Translation *direction* is not known from a title alone: Korean→Spanish
+  // can be suitable even if Korean-native copywriting would not be. Only an
+  // explicit mandatory Korean proficiency clause is a hard exclusion.
   const koreanHigh = /\b(?:native|near[- ]native|fluent|advanced|business[- ]level|professional[- ]level|excellent)\s+(?:spoken\s+|written\s+|oral\s+)?korean\b|\bkorean\b.{0,40}\b(?:native|near[- ]native|fluen(?:t|cy)|advanced|business[- ]level|professional[- ]level|c1|c2)\b|한국어.{0,20}(?:능통|원어민\s*수준|고급|상급|비즈니스\s*(?:수준|회화)|유창|5급|6급)|(?:비즈니스\s*한국어|한국어\s*원어민)/i;
   // A role title is explicit. In the body, preference/negation applies only
   // to its own clause; a later mandatory clause must still exclude the role.
@@ -216,10 +218,39 @@ const RESTRICTED_COUNTRIES = [
   [/(?:^|\b)(?:united\s+states|usa|u\.?s\.?a?\.?|us\s+only|america\s+only|canada|canadian|uk\s+only|united\s+kingdom|britain|australia|new\s+zealand|germany|france|poland|portugal|spain|italy|netherlands|europe|eu\s+only|emea|north\s+america|latin\s+america|latam|south\s+america)\b/i, 'outside the stated location'],
 ];
 
-const NON_KOREAN_RESIDENCY_RE = /\b(?:wohn(?:sitz|haft)|ans[aä]ssig|residen(?:t|ce)|based|located|resid(?:e|ing))\b.{0,90}\b(?:deutschland|[oö]sterreich|germany|austria|france|spain|united\s+states|canada|usa|uk|europa|europe)\b|\b(?:ausschlie[sß]lich|nur|only)\b.{0,100}\b(?:kandidat(?:en|innen|:innen)|bewerber(?:innen|:innen)?|applicants?|candidates?)\b.{0,100}\b(?:deutschland|[oö]sterreich|germany|austria|france|spain|usa|europe)\b|\b(?:residentes?|candidatos?)\b.{0,70}\b(?:espa[nñ]a|m[eé]xico|argentina)\b/i;
+const NON_KOREAN_RESIDENCY_RE = /\b(?:wohn(?:sitz|haft)|ans[aä]ssig|residen(?:t|ce)|residing)\b.{0,90}\b(?:deutschland|[oö]sterreich|germany|austria|france|spain|united\s+states|canada|usa|uk|europa|europe)\b|\b(?:ausschlie[sß]lich|nur|only)\b.{0,100}\b(?:kandidat(?:en|innen|:innen)|bewerber(?:innen|:innen)?|applicants?|candidates?)\b.{0,100}\b(?:deutschland|[oö]sterreich|germany|austria|france|spain|usa|europe)\b|\b(?:residentes?|candidatos?)\b.{0,70}\b(?:espa[nñ]a|m[eé]xico|argentina)\b/i;
+const APPLICANT_KOREA_RE = /\b(?:south\s+korea|republic\s+of\s+korea|korea)\b|대한민국|한국/i;
+const APPLICANT_NOUN = '(?:applicants?|candidates?|workers?|contractors?|freelancers?)';
+const APPLICANT_LOCATION = new RegExp(`\\b${APPLICANT_NOUN}\\s+(?:(?:must|should|may|can|will|are|is)\\s+)?(?:be\\s+)?(?:based\\s+|residing\\s+|located\\s+)?(?:in|from|within)\\s+([^.;\\n]{1,120})`, 'gi');
+const LOCATION_TAIL = /\b(?:for\s+(?:projects?|work|clients?|customers?|markets?|services?)|who\b|where\b|to\s+(?:work|support)|are\s+|is\s+|must\s+|may\s+|can\s+|will\s+|should\s+|with\s+|not\s+|but\s+)/i;
+const KOREA_APPLICANT_NEGATIVE = /\b(?:applicants?|candidates?|workers?|contractors?|freelancers?)\s+(?:in|from|based\s+in|residing\s+in)\s+(?:south\s+)?korea\b.{0,45}\b(?:not\s+(?:accepted|eligible|allowed|considered|permitted)|cannot\s+apply|ineligible|excluded|not\s+hired)\b|\b(?:do\s+not|don't|does\s+not|cannot|can't|will\s+not|won't|never|not\s+currently|not)\s+(?:accept|hire|consider|allow|permit|recruit|take|accepting|hiring)\s+(?:any\s+)?(?:applicants?|candidates?|workers?|contractors?|freelancers?)\s+(?:in|from|based\s+in|residing\s+in)\s+(?:south\s+)?korea\b|\b(?:exclude(?:d|s|ing)?|except(?:ing)?|not\s+(?:in|from|for)|outside|other\s+than)\b.{0,45}\bkorea\b/i;
+const KOREA_APPLICANT_DENIAL = [
+  /\b(?:applicants?|candidates?|workers?|contractors?|freelancers?)\s+(?:in|from|based\s+in|residing\s+in)\s+(?:south\s+)?korea\b.{0,50}\b(?:must\s+not|should\s+not|cannot|can't|may\s+not|will\s+not|are\s+not|not\s+permitted\s+to)\s+(?:apply|qualify|be\s+(?:accepted|considered|hired|eligible|allowed))\b/i,
+  /\b(?:do\s+not|don't|cannot|can't|will\s+not|won't|never|not\s+currently)\s+(?:accept|hire|consider|allow|permit|recruit)\s+(?:any\s+)?(?:south\s+)?korea[- ]based\s+(?:applicants?|candidates?|workers?|contractors?|freelancers?)\b/i,
+  /\b(?:south\s+)?korea[- ]based\s+(?:applicants?|candidates?|workers?|contractors?|freelancers?)\b.{0,45}\b(?:are\s+not|cannot|can't|must\s+not|ineligible|excluded|not\s+allowed|not\s+permitted)\b/i,
+  /\b(?:no|not\s+accepting|do\s+not\s+accept)\s+(?:applicants?|candidates?|workers?|contractors?|freelancers?)\s+(?:in|from|based\s+in|residing\s+in)\s+(?:south\s+)?korea\b/i
+];
+function explicitlyRejectsKoreanApplicants(body) {
+  return safeText(body, 9000).split(/[.;\n]/).some((part) => KOREA_APPLICANT_NEGATIVE.test(part)
+    || KOREA_APPLICANT_DENIAL.some((pattern) => pattern.test(part)));
+}
+function explicitlyIncludesKoreanApplicants(body) {
+  return safeText(body, 9000).split(/[.;\n]/).some((part) => {
+    if (KOREA_APPLICANT_NEGATIVE.test(part) || KOREA_APPLICANT_DENIAL.some((pattern) => pattern.test(part))) return false;
+    if (/\b(?:korea[- ]based|south\s+korea[- ]based)\s+(?:applicants?|candidates?|workers?)\b/i.test(part)) return true;
+    for (const match of part.matchAll(APPLICANT_LOCATION)) {
+      const countryList = match[1].split(LOCATION_TAIL, 1)[0];
+      if (APPLICANT_KOREA_RE.test(countryList)) return true;
+    }
+    return /\b(?:applications?\s+(?:are\s+)?(?:accepted|welcome)\s+from|(?:accept|welcome)\s+applications?\s+from)\s+(?:south\s+)?korea\b/i.test(part);
+  });
+}
 
-const FOREIGN_RESIDENCE = '(?:latam|latin\\s+america|south\\s+america|mexico|mexico\\s+city|argentina|brazil|colombia|peru|philippines|philippine|germany|deutschland|austria|[oö]sterreich|france|spain|europe|eu|usa|united\\s+states|canada|united\\s+kingdom|uk|australia|new\\s+zealand)';
+const FOREIGN_RESIDENCE = '(?:latam|latin\\s+america|south\\s+america|mexico|mexico\\s+city|argentina|brazil|colombia|peru|philippines|philippine|germany|deutschland|austria|[oö]sterreich|france|spain|ireland|europe|eu|usa|united\\s+states|canada|united\\s+kingdom|uk|australia|new\\s+zealand)';
 const FOREIGN_RESIDENCE_RULES = [
+  // "Open to applicants in Mexico" is an applicant residency requirement,
+  // unlike a company address or "marketing to customers in Mexico".
+  new RegExp(`\\b(?:open\\s+to|available\\s+to|limited\\s+to|restricted\\s+to|only\\s+accepting)\\s+(?:applicants?|candidates?|contractors?|freelancers?|workers?)\\s+(?:in|from)\\s+(?:the\\s+)?${FOREIGN_RESIDENCE}\\b`, 'i'),
   new RegExp(`\\b(?:candidates?|applicants?|freelancers?|contractors?|employees?|talent|you|someone|somebody|person)\\b.{0,100}\\b(?:must\\s+)?(?:be\\s+)?(?:based|located|resid(?:e|ing))\\s+(?:in|within)\\s+(?:the\\s+)?${FOREIGN_RESIDENCE}\\b`, 'i'),
   new RegExp(`\\b(?:we\\s+(?:need|seek|want|hire|are\\s+looking\\s+for)\\s+(?:a|an)?|(?:role|position|job)\\s+(?:is\\s+)?).{0,85}\\b(?:based|located|resid(?:e|ing))\\s+(?:in|within)\\s+(?:the\\s+)?${FOREIGN_RESIDENCE}\\b`, 'i'),
   new RegExp(`\\b(?:must|need\\s+to|required\\s+to)\\s+(?:be\\s+)?(?:based|located|resid(?:e|ing))\\s+(?:in|within)\\s+(?:the\\s+)?${FOREIGN_RESIDENCE}\\b`, 'i'),
@@ -291,7 +322,8 @@ export function excludeOnlineJobReason({ source = '', market = 'online', title =
     description, homeCountry,
   });
   if (eligibility.status === 'restricted') return 'outside_supported_residence';
-  if (FOREIGN_RESIDENCE_RULES.some((re) => re.test(safeText(description, 9000)))) return 'outside_supported_residence';
+  if (FOREIGN_RESIDENCE_RULES.some((re) => re.test(safeText(description, 9000)))
+    && !explicitlyIncludesKoreanApplicants(description)) return 'outside_supported_residence';
   // Arbeitnow's 'remote' flag can mean remote *within Germany*. The city is HQ,
   // so an English worldwide role should still survive.
   if (employerOnlyLocation &&
@@ -311,20 +343,34 @@ export function requiresPhysicalAttendance(description = '') {
 export function assessEligibility({ market = 'online', location = '', restriction = '', description = '', homeCountry = 'KR' }) {
   if (market === 'offline') return { status: 'unknown', geoScope: safeText(location, 140) || 'Unspecified', reason: 'On-site eligibility and commute require verification.', requiresVerification: true };
   const geo = safeText(restriction || location, 160);
+  const hasExplicitScope = Boolean(safeText(restriction, 160))
+    || /\b(?:only|residents?|applicants?|candidates?|within|anywhere\s+in|based\s+in)\b/i.test(geo);
   const body = safeText(description, 5000);
   const text = `${geo} ${body}`;
   const explicitKorea = /\b(south\s+korea|republic\s+of\s+korea|korea|seoul|kr\s+only)\b|대한민국|한국/i.test(geo);
   const universal = /\b(worldwide|anywhere|global|work\s+from\s+anywhere|no\s+geographic\s+restriction|any\s+country)\b/i.test(geo);
   const regional = /\b(apac|asia(?:\s+pacific)?|asia-wide)\b/i.test(geo);
   const restrictPattern = /\b(?:must\s+(?:be\s+)?(?:based|located|resid(?:e|ing))\s+in|only\s+(?:in|for|from)|residents?\s+of|candidates?\s+in|within\s+(?:the\s+)?(?:us|usa|eu|europe)|us\s+work\s+authori[sz]ation\s+required|(?:us|usa|u\.s\.|uk|eu|europe|canada)\s+(?:residents?|applicants?|candidates?)\s+only|(?:us|usa|u\.s\.|uk|eu|europe|canada)[ -]only)\b/i;
-  if (homeCountry === 'KR' && !explicitKorea && !universal && !regional && RESTRICTED_COUNTRIES.some(([re]) => re.test(geo))) {
+  const koreaApplicants = explicitlyIncludesKoreanApplicants(body);
+  const koreaRejected = explicitlyRejectsKoreanApplicants(body);
+  const foreignResidenceOnly = FOREIGN_RESIDENCE_RULES.some((re) => re.test(body)) || NON_KOREAN_RESIDENCY_RE.test(body);
+  if (homeCountry === 'KR' && koreaRejected) {
+    return { status: koreaApplicants ? 'unknown' : 'restricted', geoScope: geo || 'See posting',
+      reason: koreaApplicants ? 'Conflicting Korean applicant eligibility clauses require employer review.' : 'The posting expressly excludes applicants residing in South Korea.', requiresVerification: true };
+  }
+  if (homeCountry === 'KR' && koreaApplicants) {
+    const conflictingGeo = hasExplicitScope && !explicitKorea && !universal && !regional && RESTRICTED_COUNTRIES.some(([re]) => re.test(geo));
+    return { status: conflictingGeo ? 'unknown' : 'possible', geoScope: geo || 'See posting',
+      reason: conflictingGeo ? 'Applicant countries and location fields conflict; verify with employer.' : 'Applicant criteria explicitly mention Korea; legal eligibility still needs verification.', requiresVerification: true };
+  }
+  if (homeCountry === 'KR' && foreignResidenceOnly) {
+    return { status: 'restricted', geoScope: geo || 'See residency requirement in posting', reason: 'Applicant residence or physical work location is explicitly limited outside Korea.', requiresVerification: true };
+  }
+  if (homeCountry === 'KR' && hasExplicitScope && !explicitKorea && !universal && !regional && RESTRICTED_COUNTRIES.some(([re]) => re.test(geo))) {
     return { status: 'restricted', geoScope: geo, reason: 'The advertised geographic scope does not include South Korea.', requiresVerification: true };
   }
   const matchAt = text.search(restrictPattern);
   const context = matchAt >= 0 ? text.slice(Math.max(0, matchAt - 30), matchAt + 140) : '';
-  if (homeCountry === 'KR' && !explicitKorea && NON_KOREAN_RESIDENCY_RE.test(body)) {
-    return { status: 'restricted', geoScope: geo || 'See residency requirement in posting', reason: 'The job description explicitly limits country of residence or physical work location.', requiresVerification: true };
-  }
   if (homeCountry === 'KR' && !explicitKorea && matchAt >= 0 && /\b(us|usa|u\.s\.|united\s+states|canada|uk|europe|eu|australia|new\s+zealand)\b/i.test(context)) {
     return { status: 'restricted', geoScope: geo || 'See posting', reason: 'The description includes a geographic or work-authorization restriction.', requiresVerification: true };
   }

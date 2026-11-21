@@ -8,28 +8,32 @@ function filteredJobs() {
   jobs.sort((a, b) => {
     let exactDistanceDiff = 0;
     const reviewedIds = state.reviewedIdsAtLoad || state.reviewedIds;
-    if (sort !== 'distance') {
-      const aSeen = reviewedIds.has(a.id) ? 1 : 0;
-      const bSeen = reviewedIds.has(b.id) ? 1 : 0;
-      if (aSeen !== bSeen) return aSeen - bSeen;
-    }
     if (sort === 'newest') return (Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0);
     if (sort === 'oldest') return (Date.parse(a.postedAt) || 0) - (Date.parse(b.postedAt) || 0);
     if (sort === 'company') return a.company.localeCompare(b.company, 'ko');
     if (sort === 'title') return a.title.localeCompare(b.title, 'ko');
-    if (state.marketTab === 'domestic' && ['fit', 'score', 'distance'].includes(sort)) {
-      const groupDiff = classifyWorkplace(a).rank - classifyWorkplace(b).rank;
-      if (groupDiff) return groupDiff;
+    // A historical listing must not outrank a currently collected one merely
+    // because its job title has a higher heuristic fit score. History remains
+    // accessible through the collection-status filter.
+    if (isNicole && ['fit', 'score', 'distance'].includes(sort)) {
+      const freshness = (job) => job.collectionState === 'seen' ? 2
+        : job.collectionState === 'not_seen' ? 0 : 1;
+      const freshnessDiff = freshness(b) - freshness(a);
+      if (freshnessDiff) return freshnessDiff;
     }
     if (sort === 'fit') {
       const fitDiff = profileFit(b).score - profileFit(a).score;
       if (fitDiff) return fitDiff;
-      // Within the same fit band, show newly collected opportunities before
-      // historical listings without hiding or downgrading stronger older roles.
-      if (isNicole) {
-        const currentDiff = Number(b.collectionState === 'seen') - Number(a.collectionState === 'seen');
-        if (currentDiff) return currentDiff;
-      }
+    }
+    if (sort === 'score') {
+      const scoreDiff = Number(b.score || 0) - Number(a.score || 0);
+      if (scoreDiff) return scoreDiff;
+    }
+    // The distance mode groups by commute convenience. The fit and score
+    // modes must rank relevance *before* geographic tie-breaking.
+    if (state.marketTab === 'domestic' && ['fit', 'score', 'distance'].includes(sort)) {
+      const groupDiff = classifyWorkplace(a).rank - classifyWorkplace(b).rank;
+      if (groupDiff) return groupDiff;
     }
     if (sort === 'distance') {
       const aSummary = distanceSummary(a);
@@ -44,11 +48,11 @@ function filteredJobs() {
       exactDistanceDiff = (Number.isFinite(aDistance) ? aDistance : Number.POSITIVE_INFINITY)
         - (Number.isFinite(bDistance) ? bDistance : Number.POSITIVE_INFINITY);
     }
+    const scoreDiff = Number(b.score || 0) - Number(a.score || 0);
+    if (scoreDiff) return scoreDiff;
     const aReviewed = reviewedIds.has(a.id) ? 1 : 0;
     const bReviewed = reviewedIds.has(b.id) ? 1 : 0;
     if (aReviewed !== bReviewed) return aReviewed - bReviewed;
-    const scoreDiff = b.score - a.score;
-    if (scoreDiff) return scoreDiff;
     const reliabilityRank = { reliable: 3, observed: 2, unstable: 1, degraded: 0 };
     const reliabilityDiff = (reliabilityRank[b.sourceReliabilityState] || 0) - (reliabilityRank[a.sourceReliabilityState] || 0);
     if (reliabilityDiff) return reliabilityDiff;

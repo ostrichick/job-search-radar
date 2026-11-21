@@ -489,7 +489,7 @@ test('과거에 저장한 숨은 점수 필터는 무시하고 현재 기본 추
   await expect(page.locator('#minScore')).toHaveValue('20');
   await expect(page.locator('.job-card')).toHaveCount(3);
 });
-test('국내 일반 지역 공고는 추천에서 제외하되 전체 시장 탐색에서는 유지한다', async ({ page }) => {
+test('국내 일반 지역 공고는 기본 탐색에 보이되 추천 근거 미확인을 표시한다', async ({ page }) => {
   const domesticRegion = {
     country: '대한민국', province: '전북특별자치도', city: '전주시', district: '덕진구', neighborhood: '',
     locality: '전주시', precision: 'district', evidenceLevel: 'source_structured'
@@ -511,8 +511,8 @@ test('국내 일반 지역 공고는 추천에서 제외하되 전체 시장 탐
   await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
 
-  await expect(page.locator('.job-card')).toHaveCount(1);
-  await expect(page.locator('.job-card .title')).toHaveText('자료입력 사무보조');
+  await expect(page.locator('.job-card')).toHaveCount(2);
+  await expect(page.locator('.job-card .title').first()).toHaveText('자료입력 사무보조');
   await page.locator('#showAllActive').click();
   await expect(page.locator('.job-card')).toHaveCount(2);
   const genericCard = page.locator('.job-card', { hasText: '카페 매장 직원' });
@@ -795,6 +795,7 @@ test('국내 거리 전체 보기에서는 글로벌 원격을 제외하고 국�
   await page.locator('#remote').selectOption('');
   await page.locator('#domesticProvince').selectOption('');
   await page.locator('#domesticLocality').selectOption('');
+  await page.locator('#sort').selectOption('distance');
 
   await expect(page.locator('.job-card .title')).toHaveText(['자료입력 보조', '조금 더 먼 마감임박 사무 지원', '가까운 상시 매장 지원']);
   await expect(page.locator('.job-card').filter({ hasText: '조금 더 먼 마감임박 사무 지원' }).locator('.posted')).toContainText('마감 임박');
@@ -841,6 +842,8 @@ test('지역 중심점 거리는 보수적 밴드로 정렬하고 지원 판단 
   await page.goto('/munseong/');
   await page.locator('#marketDomestic').click();
 
+  await openAdvancedFilters(page);
+  await page.locator('#sort').selectOption('distance');
   await expect(page.locator('.job-card .title')).toHaveText(['정확 좌표 기반 사무 지원', '지역 중심점 기반 사무 지원']);
 
   const coarseCard = page.locator('.job-card', { hasText: '지역 중심점 기반 사무 지원' });
@@ -2423,7 +2426,7 @@ test('국내 정렬은 원격→전북권→그 외→서울→수도권 순으�
   await page.locator('#remote').selectOption('');
   await page.locator('#domesticProvince').selectOption('');
   await page.locator('#domesticLocality').selectOption('');
-  await page.locator('#sort').selectOption('fit');
+  await page.locator('#sort').selectOption('distance');
   await expect.poll(async () => (await page.locator('.job-card .workplace-value').allTextContents())).toEqual([
     '원격', '전북권 · 전주', '그 외 · 대전', '서울', '수도권 · 성남'
   ]);
