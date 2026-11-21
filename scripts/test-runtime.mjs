@@ -130,6 +130,24 @@ try {
   const latest = { ...before, jobFavorites: '["a","b"]' };
   const merged = mergeStorageChanges(latest, before, { jobFavorites: '[]', jobStates: '{"a":""}' });
   assert.deepEqual(JSON.parse(merged.jobFavorites), ['b']); assert.equal(JSON.parse(merged.jobStates).a, '');
+  const hiddenBefore = { jobHidden: '["a"]', jobHiddenReasons: '{"a":"location"}' };
+  const hiddenLatest = { jobHidden: '["a","b"]', jobHiddenReasons: '{"a":"location","b":"pay"}' };
+  const hiddenAfter = { jobHidden: '["a"]', jobHiddenReasons: '{"a":"duplicate"}' };
+  const hiddenMerged = mergeStorageChanges(hiddenLatest, hiddenBefore, hiddenAfter);
+  assert.deepEqual(JSON.parse(hiddenMerged.jobHiddenReasons), { a: 'duplicate', b: 'pay' },
+    'a concurrent edit to one hidden reason must not erase another tab\'s reason');
+  assert.deepEqual(JSON.parse(hiddenMerged.jobHidden), ['a', 'b']);
+  const restoringLatest = { jobHidden: '[]', jobHiddenReasons: '{}' };
+  const staleReasonChoice = { jobHidden: '["a"]', jobHiddenReasons: '{"a":"pay"}' };
+  const concurrentRestore = mergeStorageChanges(restoringLatest, { jobHidden: '["a"]', jobHiddenReasons: '{}' }, staleReasonChoice);
+  assert.deepEqual(JSON.parse(concurrentRestore.jobHidden), []);
+  assert.deepEqual(JSON.parse(concurrentRestore.jobHiddenReasons), {},
+    'a concurrent restore must discard a late-arriving hidden reason rather than resurrect it');
+  const validReasonBackup = validateBackup({ schema: 'job-search-radar-state', version: 2,
+    hiddenIds: ['a'], hiddenReasons: { a: 'requirements' } });
+  assert.equal(validReasonBackup.hiddenReasons.a, 'requirements');
+  assert.throws(() => validateBackup({ schema: 'job-search-radar-state', version: 2,
+    hiddenIds: ['a'], hiddenReasons: { a: 'free text PII' } }), /hiddenReasons/);
   assert.equal(JSON.parse(mergeStorageChanges(latest, before, { ...before, jobStates: '{"a":"planned"}' }, 'import').jobStates).a, 'applied');
 
   const RealDate = Date, now = Date.parse('2026-10-10T09:00:00Z');

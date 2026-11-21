@@ -1,4 +1,4 @@
-export function createFilterRules({ state, currentFilterValues, jobMarketScopes, filterDefaults, salaryLabel, domesticLocalityMatches, compensationMatches, paymentEvidenceState, roleFitEvidenceFor, profileFit, isNicole = false }) {
+export function createFilterRules({ state, currentFilterValues, jobMarketScopes, filterDefaults, salaryLabel, domesticLocalityMatches, compensationMatches, paymentEvidenceState, roleFitEvidenceFor, profileFit, isNicole = false, isNicoleReviewCandidate = () => false }) {
 function jobMatchesFilters(job, values = currentFilterValues(), { market = state.marketTab, ignore = [] } = {}) {
   const skipped = ignore instanceof Set ? ignore : new Set(ignore);
   const region = job.domesticRegion || {};
@@ -37,6 +37,7 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
   if (isNicole) {
     const collection = job.collectionState || 'unknown';
     if (!skipped.has('archiveFilter') && value('archiveFilter') === 'current' && collection !== 'seen' && !job.manual) return false;
+    if (!skipped.has('archiveFilter') && value('archiveFilter') === 'review' && !isNicoleReviewCandidate(job, profileFit(job))) return false;
     if (!skipped.has('archiveFilter') && value('archiveFilter') === 'archived' && collection !== 'not_seen') return false;
     if (!skipped.has('archiveFilter') && value('archiveFilter') === 'unverified' && !['unverified', 'unknown'].includes(collection)) return false;
     if (!includeAllFits && (job.languageFitStatus || 'unknown') === 'mismatch') return false;

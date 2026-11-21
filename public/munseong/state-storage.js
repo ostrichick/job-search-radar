@@ -1,7 +1,7 @@
 import { mergeStorageChanges, validateJob } from './backup-rules.js';
 
 const arrayKeys = ['jobDismissed', 'jobHidden', 'jobHiddenCompanies', 'jobHiddenSources', 'jobFavorites', 'jobNewIds', 'reviewedJobIds', 'knownJobIds', 'manualJobs'];
-const mapKeys = ['jobStates', 'trackedJobs', 'jobFilters', 'jobFiltersByMarket'];
+const mapKeys = ['jobStates', 'trackedJobs', 'jobHiddenReasons', 'jobFilters', 'jobFiltersByMarket'];
 const scalarKeys = ['jobMarketTab', 'jobFilterSchemaVersion', 'jobAdvancedFiltersOpen'];
 const isObject = (v) => v && typeof v === 'object' && !Array.isArray(v);
 const request = (req) => new Promise((resolve, reject) => { req.onsuccess = () => resolve(req.result); req.onerror = () => reject(req.error); });
@@ -24,6 +24,7 @@ function legacyState() {
         if (key === 'manualJobs') value.forEach((j, i) => validateJob(j, `${key}[${i}]`));
         if (key === 'trackedJobs') Object.entries(value).forEach(([id, j]) => validateJob(j, `${key}.${id}`, true));
         if (key === 'jobStates' && !Object.values(value).every((s) => ['', 'planned', 'applied', 'hidden'].includes(s))) throw new Error('지원 상태 불일치');
+        if (key === 'jobHiddenReasons' && !Object.values(value).every((v) => ['not_relevant', 'location', 'requirements', 'pay', 'duplicate', 'other'].includes(v))) throw new Error('숨김 사유 불일치');
         if (key === 'jobFiltersByMarket' && !Object.values(value).every(isObject)) throw new Error('시장 필터 불일치');
       }
       values[key] = raw;

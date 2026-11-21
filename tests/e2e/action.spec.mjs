@@ -48,14 +48,16 @@ test('모든 탭의 최종 확인일 안내와 날짜 형식이 일치한다', a
     ['/munseong/', '최종 확인일', '#feedUpdatedAt'],
     ['/household/', '최종 확인일', '#sourceDate'],
     ['/classes/', '최종 확인일', '#sourceDate'],
-    ['/tours/', '최종 확인일', '#tourUpdatedAt'],
+    ['/tours/', '목록 갱신 시각', '#tourUpdatedAt'],
     ['/action/', '최종 확인일', '#actionUpdatedAt']
   ];
   for (const [path, label, dateSelector] of pages) {
     await page.goto(path);
     await expect(page.locator('.data-caveat')).toHaveCount(1);
     await expect(page.locator('main > .data-caveat:first-child')).toHaveCount(1);
-    await expect(page.locator('.data-caveat')).toHaveText(koreanCaveat);
+    await expect(page.locator('.data-caveat')).toHaveText(path === '/tours/'
+      ? '가격·일정·참가 자격·촬영 허용 여부는 변동될 수 있습니다. 출처 확인일과 현재 예약 가능 여부는 별개이므로 기관에 재확인하세요.'
+      : koreanCaveat);
     await expect(page.locator('.hero-aside')).toContainText(label);
     await expect(page.locator(dateSelector)).toHaveText(datePattern);
   }

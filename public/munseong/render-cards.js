@@ -1,5 +1,7 @@
 import { formatDate as formatDisplayDate } from '../shared/date-format.js';
 
+import { workKindLabel } from './work-kind.js';
+
 export function createCardRenderer({ $, activeMarketJobs, captureJobCardFocus, distanceSummary, domesticLocalityMatches, effectivePaymentEvidence, eligibilityDisplayLabel, escapeHtml, filteredJobs, formatDate, formatDeadline, friendlyUiText, hideWithUndo, isBroadActiveView, jobFingerprint, jobMarketScopes, listingDisplayLabel, openDetails, paymentFreshnessLabel, persist, profileFit, qualityClass, renderActiveFilters, renderCollectionCoverage, renderStats, renderVerificationBadges, requirementsDisplayLabel, restoreJobCardFocus, roleFitEvidenceFor, salarySummary, setHidden, setJobState, showStorageStatus, snapshotJob, syncStoredState, updateBatchUI, workplaceDisplay, workplaceModeLabel, state, storage, renderCache, decorateCard, afterRender }) {
 let renderWaiting = false;
 const isoDay = (raw) => {
@@ -139,7 +141,7 @@ function render() {
     const fit = profileFit(job);
     const fitNode = node.querySelector('.profile-fit');
     if (fitNode) {
-      const fitLabels = { high: '지원 가능성 높음', check: '확인 필요', fail: '지원 불가 확인' };
+      const fitLabels = { high: '관련 직무 단서 있음 · 자격 미확인', check: '추가 확인 필요', fail: '필수조건 충돌 감지 · 원문 재확인' };
       fitNode.hidden = false;
       fitNode.className = `profile-fit ${fit.status}`;
       fitNode.dataset.fitStatus = fit.status;
@@ -169,9 +171,17 @@ function render() {
       noteNode.textContent = distance.cardNote || '';
       noteNode.hidden = !distance.cardNote;
     }
+    const isNicole = document.documentElement.dataset.profile === 'nicole';
+    const hiddenReasonNames = isNicole
+      ? { not_relevant: 'Not relevant', location: 'Location or residency', requirements: 'Requirements', pay: 'Pay or terms', duplicate: 'Duplicate', other: 'Other' }
+      : { not_relevant: '관심 직무 아님', location: '지역·거주 제한', requirements: '필수조건', pay: '보수·계약 조건', duplicate: '중복 공고', other: '기타' };
+    const hiddenReason = state.hiddenIds.has(job.id) ? hiddenReasonNames[state.hiddenReasons?.[job.id]] : '';
     const meta = [
       state.marketTab === 'domestic' ? workplaceModeLabel(job) : '',
+      workKindLabel(job, isNicole),
       job.type,
+      String(job.salaryInfo?.period || '').toLowerCase() === 'hour' ? (isNicole ? 'Hourly pay basis' : '시급 기준') : '',
+      hiddenReason ? `${isNicole ? 'Hidden reason' : '숨김 사유'}: ${hiddenReason}` : '',
       state.marketTab === 'domestic' && job.workSchedule ? `근무 ${job.workSchedule}` : '',
       state.marketTab === 'domestic' && job.workPeriod ? `기간 ${job.workPeriod}` : '',
       state.marketTab === 'domestic' && (job.preferredConditions || []).length ? `우대 ${job.preferredConditions.slice(0, 2).join(', ')}` : '',

@@ -63,6 +63,8 @@
     <section class="summary-block" aria-labelledby="workflowSummaryTitle">
       <div class="section-heading"><h2 id="workflowSummaryTitle">My application progress</h2><span>Based on current filters</span></div>
       <section class="stats" id="stats"></section>
+      <button id="nicoleReviewCurrent" class="button compact secondary-light" type="button" aria-controls="archiveFilter">View current review candidates</button>
+      <details class="review-guidance"><summary>Review candidates are not confirmed eligible · How this works</summary><p>“Current listings to review” means recently collected and not clearly incompatible, not confirmed eligibility or an open employer vacancy. Check the original listing before applying. Use “Collection status” to review past listings.</p></details>
     </section>
 
     <section id="marketPulse" class="panel market-pulse" aria-labelledby="marketPulseTitle">
@@ -210,6 +212,7 @@
             <label for="archiveFilter">Collection status</label>
             <select id="archiveFilter">
               <option value="all">All collection statuses</option>
+              <option value="review">Current review candidates</option>
               <option value="current">Current listings</option>
               <option value="archived">Past listings</option>
               <option value="unverified">Not yet verified</option>

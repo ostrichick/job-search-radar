@@ -33,8 +33,11 @@ test('가구 지원 목록은 공식 링크와 신청기한을 구분한다', as
 
 test('별도 IndexedDB로 가구 정보와 신청 메모를 저장하고 새로고침 후 복원한다', async ({ page }) => {
   await page.goto('/household/');
+  // The page opens IndexedDB asynchronously; a fast navigation can finish
+  // before its first transaction starts, especially under parallel E2E load.
+  await expect.poll(() => page.evaluate(async () => (await indexedDB.databases()).map((db) => db.name)))
+    .toContain('jeonju-household-support-v1');
   const before = await page.evaluate(async () => (await indexedDB.databases()).map((db) => db.name));
-  expect(before).toContain('jeonju-household-support-v1');
   expect(before).not.toContain('job-search-radar');
   expect(before).not.toContain('dubu-job-radar');
   await page.locator('#profileToggle').click();
@@ -118,6 +121,7 @@ test('복지카드에 머물면 확인 안 함 표시가 사라지고 확인 여
 
 test('복지 카드를 숨기고 숨김 필터에서 복원한다', async ({ page }) => {
   await page.goto('/household/');
+  await expect(page.locator('.card')).toHaveCount(43);
   const total = await page.locator('.card').count();
   await expect(page.locator('.card .card-hide')).toHaveCount(total);
   await page.locator('.card .card-hide').first().click();

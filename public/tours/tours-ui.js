@@ -1,6 +1,7 @@
 const REGION_ORDER = ['전주', '완주', '군산', '익산', '정읍', '남원', '김제', '진안', '무주', '장수', '임실', '순창', '고창', '부안'];
 
 import { formatDate, formatDateTime } from '../shared/date-format.js';
+import { tourPriceStatus } from './price-status.js';
 
 const todayIso = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' });
 
@@ -15,7 +16,9 @@ const formatDay = (value) => formatDate(value);
 
 const statusOf = (item, today = todayIso()) => {
   if (item.startDate && item.startDate > today) return { key: 'upcoming', label: '예정' };
-  if (!item.endDate) return { key: 'always', label: item.startDate ? '진행 중' : '상시·문의' };
+  if (!item.endDate) return item.startDate
+    ? { key: 'always', label: '기간 미확인' }
+    : { key: 'always', label: '운영·회차 확인 필요' };
   if (item.endDate < today) return { key: 'ended', label: '종료' };
   return { key: 'open', label: '진행 중' };
 };
@@ -80,12 +83,13 @@ function attachTourSeen(card, item, badge) {
 }
 
 export function createToursView({ $ }) {
-  const state = { feed: null, loading: false, error: null, filters: { query: '', category: '', region: '전주·완주', audience: 'adults', period: 'current', sort: 'soon', visibility: 'active' } };
+  const state = { feed: null, loading: false, error: null, filters: { query: '', category: '', region: '전주·완주', audience: 'adults', cost: '', period: 'current', sort: 'soon', visibility: 'active' } };
 
   const query = $('tourQuery');
   const category = $('tourCategory');
   const region = $('tourRegion');
   const audience = $('tourAudience');
+  const cost = $('tourCost');
   const period = $('tourPeriod');
   const sort = $('tourSort');
   const visibility = $('tourVisibility');
@@ -126,6 +130,7 @@ export function createToursView({ $ }) {
       const status = statusOf(item);
       if (filters.period === 'current' && status.key === 'ended') return false;
       if (filters.audience === 'adults' && !canAdultsJoin(item.audience)) return false;
+      if (filters.cost && tourPriceStatus(item) !== filters.cost) return false;
       if (filters.category && item.category !== filters.category) return false;
       if (filters.region === '전주·완주' && !['전주', '완주'].includes(item.region)) return false;
       if (filters.region && filters.region !== '전주·완주' && item.region !== filters.region) return false;
@@ -148,6 +153,7 @@ export function createToursView({ $ }) {
 
   function renderCard(item) {
     const status = statusOf(item);
+    const price = tourPriceStatus(item);
     const card = el('article', 'tour-card');
     const badges = el('div', 'tour-badges');
     const seen = tourSeenIds.has(item.id);
@@ -157,7 +163,7 @@ export function createToursView({ $ }) {
     card.classList.toggle('is-seen', seen);
     badges.append(
       seenStatus,
-      el('span', 'tour-badge free', '무료'),
+      el('span', `tour-badge ${price}`, { free: '무료', paid: '유료', unknown: '비용 확인 필요' }[price]),
       el('span', 'tour-badge category', item.category || '프로그램'),
       el('span', `tour-badge status ${status.key}`, status.label)
     );
@@ -193,14 +199,20 @@ export function createToursView({ $ }) {
     fact('기간', periodText(item));
     fact('장소', item.venue || item.address);
     fact('대상', item.audience || '대상 미표기');
-    fact('참가비', item.price || '무료');
+    fact('참가비', item.priceText || item.price || '참가비 확인 필요');
+    if (item.priceNote) fact('요금 주의', item.priceNote);
     if (item.reservation) fact('신청', item.reservation);
     card.append(facts);
 
+    if (item.contentIdea) fact('영상 소재', item.contentIdea);
+    if (item.transitNote) fact('교통', item.transitNote);
+    if (item.filmingNote) fact('촬영', item.filmingNote);
+    if (item.availabilityStatus !== 'verified_open') fact('참가 가능', '현재 예약·접수 여부 확인 필요');
+    if (item.sourceVerificationState === 'source_error') fact('출처 상태', '이번 수집에서 재확인하지 못한 이전 정보');
     if (item.description) card.append(el('p', 'tour-description', item.description));
 
     const foreigner = el('p', 'tour-foreigner');
-    foreigner.append(el('strong', '', '외국인 참가 '), el('span', '', item.foreignerNote || '출처에 국적 제한 언급 없음 · 신청처 확인'));
+    foreigner.append(el('strong', '', '외국인 참가 '), el('span', '', item.foreignerNote || '국적·참가 요건은 신청처에 확인 필요'));
     card.append(foreigner);
 
     const actions = el('div', 'tour-actions');
@@ -218,7 +230,9 @@ export function createToursView({ $ }) {
       source.addEventListener('click', () => markTourSeen(item.id, card, seenStatus));
       actions.append(source);
     }
-    if (item.checkedAt) actions.append(el('span', 'tour-checked', `확인 ${formatDay(item.checkedAt)}`));
+    const itemCheckedAt = item.lastCheckedAt || item.checkedAt;
+    if (itemCheckedAt) actions.append(el('span', 'tour-checked', `원문 확인 ${formatDay(itemCheckedAt)}`));
+    else actions.append(el('span', 'tour-checked', '원문 확인일 미상'));
     card.append(actions);
     return card;
   }
@@ -245,9 +259,9 @@ export function createToursView({ $ }) {
     list.replaceChildren(...items.map(renderCard));
     if (empty) empty.hidden = items.length > 0;
     if (emptyMessage) {
-      emptyMessage.textContent = state.loading ? '무료 투어·체험 목록을 불러오는 중입니다…'
+      emptyMessage.textContent = state.loading ? '투어·체험 목록을 불러오는 중입니다…'
         : state.error ? `목록을 불러오지 못했습니다: ${state.error}`
-          : state.feed ? '조건에 맞는 무료 투어·체험이 없습니다. 필터를 넓혀 보세요.'
+          : state.feed ? '조건에 맞는 투어·체험이 없습니다. 필터를 넓혀 보세요.'
             : '아직 투어 목록이 생성되지 않았습니다. 투어 새로고침을 눌러 주세요.';
     }
   }
@@ -305,15 +319,17 @@ export function createToursView({ $ }) {
   bindFilter(category, 'category');
   bindFilter(region, 'region');
   bindFilter(audience, 'audience');
+  bindFilter(cost, 'cost');
   bindFilter(period, 'period');
   bindFilter(sort, 'sort');
   bindFilter(visibility, 'visibility');
   $('tourReset')?.addEventListener('click', () => {
-    Object.assign(state.filters, { query: '', category: '', region: '전주·완주', audience: 'adults', period: 'current', sort: 'soon', visibility: 'active' });
+    Object.assign(state.filters, { query: '', category: '', region: '전주·완주', audience: 'adults', cost: '', period: 'current', sort: 'soon', visibility: 'active' });
     if (query) query.value = '';
     if (category) category.value = '';
     if (region) region.value = '전주·완주';
     if (audience) audience.value = 'adults';
+    if (cost) cost.value = '';
     if (period) period.value = 'current';
     if (sort) sort.value = 'soon';
     if (visibility) visibility.value = 'active';

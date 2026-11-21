@@ -1,6 +1,6 @@
 import { classifyWorkplace } from './profile-fit.js';
 
-export function createSortRules({ state, currentFilterValues, matchingJobs, distanceSummary, distanceSortBand, deadlinePriority, salarySummary, profileFit }) {
+export function createSortRules({ state, currentFilterValues, matchingJobs, distanceSummary, distanceSortBand, deadlinePriority, salarySummary, profileFit, isNicole = false }) {
 function filteredJobs() {
   const values = currentFilterValues();
   let jobs = matchingJobs({ values });
@@ -24,6 +24,12 @@ function filteredJobs() {
     if (sort === 'fit') {
       const fitDiff = profileFit(b).score - profileFit(a).score;
       if (fitDiff) return fitDiff;
+      // Within the same fit band, show newly collected opportunities before
+      // historical listings without hiding or downgrading stronger older roles.
+      if (isNicole) {
+        const currentDiff = Number(b.collectionState === 'seen') - Number(a.collectionState === 'seen');
+        if (currentDiff) return currentDiff;
+      }
     }
     if (sort === 'distance') {
       const aSummary = distanceSummary(a);

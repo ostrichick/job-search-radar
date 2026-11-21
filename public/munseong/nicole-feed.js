@@ -66,7 +66,8 @@ export function adaptNicoleJob(job) {
   const source = clean(job.source) || 'Unknown source';
   const manual = clean(job.id).startsWith('manual:');
   const languageFitStatus = ['match', 'mismatch'].includes(job.languageFitStatus) ? job.languageFitStatus : 'unknown';
-  const eligibilityCode = job.eligibilityStatus === 'possible' ? 'korea' : job.eligibilityStatus === 'restricted' ? 'restricted' : 'unknown';
+  // A source's "possible" is not affirmative country eligibility evidence.
+  const eligibilityCode = job.eligibilityStatus === 'restricted' ? 'restricted' : 'unknown';
   return {
     ...job,
     source: manual ? sourceForManual(job.url, source) : source,
@@ -103,4 +104,16 @@ export function adaptNicoleFeed(raw) {
     }))
   };
   return validatePublicFeed(data);
+}
+
+// This is a triage queue, not an assertion that the employer will accept an
+// application. Nicole's source feed has no comparable review-priority scores.
+export function isNicoleReviewCandidate(job, fit) {
+  return job?.collectionState === 'seen'
+    && !job?.manual
+    && !['restricted'].includes(job?.eligibilityStatus)
+    && job?.eligibilityCode !== 'restricted'
+    && job?.languageFitStatus !== 'mismatch'
+    && fit?.status !== 'fail'
+    && !['expired', 'stale', 'source_error', 'archived_missing', 'talent_pool'].includes(job?.listingStatus);
 }

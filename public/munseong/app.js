@@ -18,6 +18,7 @@ const nicoleModules = isNicole ? await Promise.all([
   import('./nicole-feed.js'), import('./nicole-migration.js'), import('./nicole-ui.js'), import('./i18n.js')
 ]) : null;
 const adaptNicoleFeed = nicoleModules?.[0].adaptNicoleFeed;
+const isNicoleReviewCandidate = nicoleModules?.[0].isNicoleReviewCandidate;
 const isGermanLanguageJob = nicoleModules?.[0].isGermanLanguageJob;
 const sourceForManual = nicoleModules?.[0].sourceForManual;
 const readOriginalNicoleState = nicoleModules?.[1].readOriginalNicoleState;
@@ -47,6 +48,7 @@ const state = {
   hiddenSources: new Set(JSON.parse(storage.getItem('jobHiddenSources') || '[]')),
   jobStates: storedStates,
   hiddenIds: storedHidden,
+  hiddenReasons: JSON.parse(storage.getItem('jobHiddenReasons') || '{}'),
   manualJobs: JSON.parse(storage.getItem('manualJobs') || '[]'),
   newIds: new Set(JSON.parse(storage.getItem('jobNewIds') || '[]')),
   reviewedIds: new Set(JSON.parse(storage.getItem('reviewedJobIds') || '[]')),
@@ -69,6 +71,7 @@ function syncStoredState() {
   state.favorites = new Set(JSON.parse(storage.getItem('jobFavorites') || '[]'));
   state.jobStates = JSON.parse(storage.getItem('jobStates') || '{}');
   state.hiddenIds = new Set(JSON.parse(storage.getItem('jobHidden') || '[]'));
+  state.hiddenReasons = JSON.parse(storage.getItem('jobHiddenReasons') || '{}');
   state.hiddenCompanies = new Set(JSON.parse(storage.getItem('jobHiddenCompanies') || '[]'));
   state.hiddenSources = new Set(JSON.parse(storage.getItem('jobHiddenSources') || '[]'));
   state.reviewedIds = new Set(JSON.parse(storage.getItem('reviewedJobIds') || '[]'));
@@ -210,9 +213,9 @@ const renderCache = createRenderCache();
 const distanceSummary = renderCache.wrap('distance', calculateDistanceSummary);
 const { salaryLabel, salarySummary: uncachedSalarySummary, compensationMatches } = createCompensationUI({  });
 const salarySummary = renderCache.wrap('salary', uncachedSalarySummary);
-const { jobMatchesFilters, matchingJobs: uncachedMatchingJobs } = createFilterRules({ state, currentFilterValues, jobMarketScopes, filterDefaults, salaryLabel, domesticLocalityMatches, compensationMatches, paymentEvidenceState, roleFitEvidenceFor, profileFit, isNicole });
+const { jobMatchesFilters, matchingJobs: uncachedMatchingJobs } = createFilterRules({ state, currentFilterValues, jobMarketScopes, filterDefaults, salaryLabel, domesticLocalityMatches, compensationMatches, paymentEvidenceState, roleFitEvidenceFor, profileFit, isNicole, isNicoleReviewCandidate });
 const matchingJobs = renderCache.wrap('matches', uncachedMatchingJobs, (options = {}) => JSON.stringify([state.marketTab, currentFilterValues(), options]));
-const { filteredJobs } = createSortRules({ state, currentFilterValues, matchingJobs, distanceSummary, distanceSortBand, deadlinePriority, salarySummary, profileFit });
+const { filteredJobs } = createSortRules({ state, currentFilterValues, matchingJobs, distanceSummary, distanceSortBand, deadlinePriority, salarySummary, profileFit, isNicole });
 const { manualJobRecord } = createManualJobRules({  });
 const nicoleUi = isNicole ? createNicoleUI({ state, storage, persist, mergeJobs, rerender: () => render() }) : null;
 const { render } = createCardRenderer({ $, activeMarketJobs, captureJobCardFocus, distanceSummary, domesticLocalityMatches, effectivePaymentEvidence, eligibilityDisplayLabel, escapeHtml, filteredJobs, formatDate, formatDeadline, friendlyUiText, hideWithUndo, isBroadActiveView, jobFingerprint: jobContentFingerprint, jobMarketScopes, listingDisplayLabel, openDetails, paymentFreshnessLabel, persist, profileFit, qualityClass, renderActiveFilters, renderCollectionCoverage, renderStats, renderVerificationBadges, requirementsDisplayLabel, restoreJobCardFocus, roleFitEvidenceFor, salarySummary, setHidden, setJobState, showStorageStatus, snapshotJob, syncStoredState, updateBatchUI, workplaceDisplay, workplaceModeLabel, state, storage, renderCache, decorateCard: nicoleUi?.decorateCard, afterRender: () => { nicoleUi?.update(); if (isNicole) localizeNicoleUI(); } });
@@ -238,6 +241,13 @@ for (const id of controls) {
     else update();
   });
 }
+if (isNicole) $('nicoleReviewCurrent')?.addEventListener('click', () => {
+  const collectionFilter = $('archiveFilter');
+  if (!collectionFilter) return;
+  collectionFilter.value = 'review';
+  collectionFilter.dispatchEvent(new Event('input', { bubbles: true }));
+  $('resultCount')?.scrollIntoView({ block: 'start' });
+});
 $('marketOverseas').addEventListener('click', () => setMarketTab('overseas_remote'));
 $('marketDomestic').addEventListener('click', () => setMarketTab('domestic'));
 const advancedFilters = $('advancedFilters');
@@ -301,6 +311,7 @@ function persist() {
   storage.setItem('jobFavorites', JSON.stringify([...state.favorites]));
   storage.setItem('jobStates', JSON.stringify(state.jobStates));
   storage.setItem('jobHidden', JSON.stringify([...state.hiddenIds]));
+  storage.setItem('jobHiddenReasons', JSON.stringify(state.hiddenReasons));
   if (isNicole) {
     storage.setItem('jobHiddenCompanies', JSON.stringify([...state.hiddenCompanies]));
     storage.setItem('jobHiddenSources', JSON.stringify([...state.hiddenSources]));
@@ -322,6 +333,11 @@ function migrateLegacyState() {
       if (!legacyId || legacyId === job.id) continue;
       if (state.favorites.delete(legacyId)) { state.favorites.add(job.id); changed = true; }
       if (state.hiddenIds.delete(legacyId)) { state.hiddenIds.add(job.id); changed = true; }
+      if (state.hiddenReasons[legacyId]) {
+        state.hiddenReasons[job.id] ||= state.hiddenReasons[legacyId];
+        delete state.hiddenReasons[legacyId];
+        changed = true;
+      }
       if (state.reviewedIds.delete(legacyId)) {
         state.reviewedIds.add(job.id);
         if (state.reviewedFingerprints[legacyId]) {
@@ -599,7 +615,7 @@ function renderStats(filtered = matchingJobs()) {
   const reviewedIds = state.reviewedIdsAtLoad || state.reviewedIds;
   const unreviewed = filtered.filter((job) => !reviewedIds.has(job.id) && isRecommendedJob(job)).length;
   $('stats').innerHTML = [
-    ['추천 공고', `${recommended}개`],
+    [isNicole ? '현재 원문 검토 후보' : '추천 공고', `${recommended}개`],
     ['관심 공고', `${saved}개`],
     ['지원 예정', `${planned}개`],
     ['아직 안 본 공고', `${unreviewed}개`]
@@ -813,6 +829,7 @@ async function setJobState(id, value) {
 async function setHidden(id, hidden) {
   state.newIds.delete(id);
   hidden ? state.hiddenIds.add(id) : state.hiddenIds.delete(id);
+  if (!hidden) delete state.hiddenReasons[id];
   await persist();
   render();
 }
@@ -821,6 +838,7 @@ function captureHideState(ids) {
   return ids.map((id) => ({
     id,
     hidden: state.hiddenIds.has(id),
+    reason: state.hiddenReasons[id] || '',
     isNew: state.newIds.has(id)
   }));
 }
@@ -829,6 +847,8 @@ function restoreHideState(items = []) {
   for (const item of items) {
     if (!item?.id) continue;
     item.hidden ? state.hiddenIds.add(item.id) : state.hiddenIds.delete(item.id);
+    if (item.reason) state.hiddenReasons[item.id] = item.reason;
+    else delete state.hiddenReasons[item.id];
     item.isNew ? state.newIds.add(item.id) : state.newIds.delete(item.id);
   }
 }
@@ -844,6 +864,30 @@ function showUndoToast(message) {
   clearTimeout(state.toastTimer);
   $('toast').hidden = true;
   $('undoToastText').textContent = message;
+  let choice = $('hideReasonChoice');
+  if (!choice) {
+    choice = document.createElement('select');
+    choice.id = 'hideReasonChoice';
+    choice.setAttribute('aria-label', isNicole ? 'Reason for hiding these jobs (optional)' : '공고를 숨긴 이유 (선택)');
+    const options = isNicole ? [
+      ['', 'Reason (optional)'], ['not_relevant', 'Not relevant'], ['location', 'Too far or restricted'],
+      ['requirements', 'Requirements mismatch'], ['pay', 'Pay or terms'], ['duplicate', 'Duplicate'], ['other', 'Other']
+    ] : [
+      ['', '사유 선택 (선택사항)'], ['not_relevant', '관심 직무 아님'], ['location', '지역·거주 제한'],
+      ['requirements', '필수 조건 불일치'], ['pay', '보수·계약 조건'], ['duplicate', '중복 공고'], ['other', '기타']
+    ];
+    for (const [value, text] of options) choice.append(new Option(text, value));
+    choice.addEventListener('change', () => {
+      for (const item of state.lastHidden?.items || []) {
+        if (!state.hiddenIds.has(item.id)) continue;
+        if (choice.value) state.hiddenReasons[item.id] = choice.value;
+        else delete state.hiddenReasons[item.id];
+      }
+      void persist();
+    });
+    $('undoHide').before(choice);
+  }
+  choice.value = '';
   $('undoHide').hidden = false;
   $('undoToast').hidden = false;
 }
@@ -1016,6 +1060,7 @@ function paymentFreshnessLabel(job) {
 }
 
 function isRecommendedJob(job) {
+  if (isNicole) return isNicoleReviewCandidate(job, profileFit(job));
   return recommendationRule(job, state.meta?.recommendationPolicyVersion || 0, {
     age: profile.age, isNicole
   });
@@ -1455,6 +1500,7 @@ async function exportState() {
     favorites: [...state.favorites],
     jobStates: state.jobStates,
     hiddenIds: [...state.hiddenIds],
+    hiddenReasons: state.hiddenReasons,
     reviewedIds: [...state.reviewedIds],
     reviewedFingerprints: state.reviewedFingerprints,
     newIds: [...state.newIds],
@@ -1543,6 +1589,11 @@ async function importState(file) {
   const importedFilterSchemaVersion = Number(payload.filterSchemaVersion || 0);
   mergeArraySet(state.favorites, payload.favorites);
   mergeArraySet(state.hiddenIds, payload.hiddenIds);
+  if (payload.hiddenReasons && typeof payload.hiddenReasons === 'object' && !Array.isArray(payload.hiddenReasons)) {
+    for (const [id, reason] of Object.entries(payload.hiddenReasons)) {
+      if (state.hiddenIds.has(id)) state.hiddenReasons[id] = reason;
+    }
+  }
   mergeArraySet(state.reviewedIds, payload.reviewedIds);
   if (payload.reviewedFingerprints && typeof payload.reviewedFingerprints === 'object' && !Array.isArray(payload.reviewedFingerprints)) {
     for (const [id, fingerprint] of Object.entries(payload.reviewedFingerprints)) {

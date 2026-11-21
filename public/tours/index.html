@@ -7,15 +7,15 @@
   <link rel="apple-touch-icon" href="../shared/icons/apple-touch-icon.png">
   <meta name="theme-color" content="#161c1a">
   <link rel="manifest" href="../shared/site.webmanifest">
-  <meta name="description" content="전주·전북의 무료 언어·체험 프로그램을 지역과 대상에 맞춰 찾아봅니다.">
+  <meta name="description" content="전주·전북의 무료·유료 투어와 체험을 비용, 지역, 대상에 맞춰 찾아봅니다.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="무료 투어·체험 | 전주·전북">
-  <meta property="og:description" content="전주·전북의 무료 언어·체험 프로그램을 지역과 대상에 맞춰 찾아봅니다.">
+  <meta property="og:title" content="투어·체험 | 전주·전북">
+  <meta property="og:description" content="전주·전북의 무료·유료 투어와 체험을 비용, 지역, 대상에 맞춰 찾아봅니다.">
   <meta property="og:image" content="https://ostrichick.github.io/job-search-radar/shared/icons/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <title>무료 투어·체험 | 전주·전북</title>
+  <title>투어·체험 | 전주·전북</title>
   <link rel="stylesheet" href="../shared/tokens.css">
   <link rel="stylesheet" href="../shared/app-shell.css">
   <link rel="stylesheet" href="./tours.css">
@@ -33,16 +33,16 @@
     </nav>
     <div class="hero-content">
       <div>
-        <p class="eyebrow">JEONJU · FREE TOURS &amp; EXPERIENCES</p>
-        <h1>전주·전북 <em>무료 투어·체험</em></h1>
-        <p class="subtitle">지자체와 공공기관이 여는 무료 프로그램 중, 한국인과 외국인이 함께 신청할 수 있는 항목을 모읍니다. 국적 제한이 확인된 항목은 제외하며, 최종 참가 가능 여부는 신청처에 확인하세요.</p>
+        <p class="eyebrow">JEONJU · TOURS &amp; EXPERIENCES</p>
+        <h1>전주·전북 <em>투어·체험</em></h1>
+        <p class="subtitle">둘이 함께 즐길 수 있는 무료·유료 체험을 모았습니다. 가격·참가 자격·예약·촬영 가능 여부는 프로그램별로 확인하세요.</p>
       </div>
-      <div class="hero-aside"><span class="pulse"></span><span>최종 확인일</span><strong id="tourUpdatedAt">-</strong><small>확인일 이후 변동 가능 · 원문 재확인</small></div>
+      <div class="hero-aside"><span class="pulse"></span><span>목록 갱신 시각</span><strong id="tourUpdatedAt">-</strong><small>개별 정보 확인일은 카드에서 확인 · 목록 갱신이 원문 재검증을 뜻하지 않음</small></div>
     </div>
   </header>
 
   <main>
-    <p class="data-caveat">최종 확인일 · 카드의 확인일 이후 모집·마감·자격이 바뀔 수 있으니 지원 전 공식 원문을 다시 확인하세요.</p>
+    <p class="data-caveat">가격·일정·참가 자격·촬영 허용 여부는 변동될 수 있습니다. 출처 확인일과 현재 예약 가능 여부는 별개이므로 기관에 재확인하세요.</p>
     <a class="results-jump" href="#toursList">결과 목록으로 이동</a>
     <section class="panel tours-filters" aria-label="투어·체험 필터">
       <div class="field search-field">
@@ -70,6 +70,15 @@
         <select id="tourAudience">
           <option value="adults" selected>성인 참가 가능</option>
           <option value="all">대상 전체</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="tourCost">참가비</label>
+        <select id="tourCost">
+          <option value="" selected>전체 (미확인 포함)</option>
+          <option value="free">무료만</option>
+          <option value="paid">유료만</option>
+          <option value="unknown">비용 확인 필요</option>
         </select>
       </div>
       <div class="field">
@@ -107,9 +116,9 @@
     <section id="tourSourceStatus" class="source-health" hidden aria-live="polite"></section>
     <div id="toursList" class="tour-grid"></div>
     <section id="toursEmpty" class="empty" hidden>
-      <p id="toursEmptyMessage">조건에 맞는 무료 투어·체험이 없습니다.</p>
+      <p id="toursEmptyMessage">조건에 맞는 투어·체험이 없습니다.</p>
     </section>
-    <p class="tour-attribution">출처: 전북문화포털과 각 기관 공고. 무료 여부·대상·일정은 변경될 수 있으니 신청 전 원문을 확인하세요.</p>
+    <p class="tour-attribution">출처: 전북문화포털과 각 기관 공식 안내. 참가비·대상·일정·예약은 변경될 수 있으니 신청 전 원문을 확인하세요. 콘텐츠 촬영·공개는 별도로 허가 여부를 확인하세요.</p>
   </main>
 </body>
 </html>

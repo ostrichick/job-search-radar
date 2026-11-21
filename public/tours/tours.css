@@ -17,6 +17,8 @@
 .tour-badges { display: flex; flex-wrap: wrap; gap: 6px; }
 .tour-badge { display: inline-flex; align-items: center; min-height: 27px; padding: 4px 9px; border-radius: var(--radius-pill); background: var(--surface-muted); color: var(--text-muted); font-size: 12px; font-weight: 800; }
 .tour-badge.free { background: var(--accent-soft-strong); color: var(--text-accent); }
+.tour-badge.paid { background: var(--status-info-soft); color: var(--status-info-text); }
+.tour-badge.unknown { background: var(--status-warn-soft); color: var(--status-warn-text); }
 .tour-badge.status.open, .tour-badge.status.always { background: var(--accent-soft-strong); color: var(--status-ok-text); }
 .tour-badge.status.upcoming { background: var(--status-info-soft); color: var(--status-info-text); }
 .tour-badge.status.ended { background: var(--status-danger-soft); color: var(--status-danger-text); }

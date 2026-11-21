@@ -81,6 +81,80 @@ test('Nicole shared screen renders the shared app with her own feed and branding
   await expect(page.locator('#updatedAt')).toHaveText(/^Last checked \d{4}\.\d{2}\.\d{2} \d{2}:\d{2}/);
 });
 
+test('Nicole prioritizes currently collected review candidates without certifying work eligibility', async ({ page }) => {
+  await page.route('**/feeds/dubu.json?*', (route) => route.fulfill({ json: {
+    ...feed,
+    jobs: [
+      job('fresh-possible', 'online', { title: 'Digital Marketing Assistant', eligibilityStatus: 'possible', collectionState: 'seen' }),
+      job('older', 'online', { title: 'Digital Marketing Assistant', collectionState: 'not_seen' }),
+      job('restricted', 'online', { title: 'Digital Marketing Assistant', eligibilityStatus: 'restricted', collectionState: 'seen' }),
+      job('wrong-language', 'online', { title: 'Digital Marketing Assistant', languageFitStatus: 'mismatch', collectionState: 'seen' })
+    ]
+  } }));
+  await page.goto('/nicole/');
+  await expect(page.locator('#stats')).toContainText('Current listings to review');
+  await expect(page.locator('#stats .stat').first()).toContainText('1');
+  await expect(page.locator('.job-card').first()).toContainText('Digital Marketing Assistant');
+  await expect(page.locator('.job-card').first().locator('.eligibility-badge')).toContainText('possible');
+  await expect(page.locator('#jobs')).not.toContainText('wrong-language');
+  await page.locator('#nicoleReviewCurrent').click();
+  await expect(page.locator('#archiveFilter')).toHaveValue('review');
+  await expect(page.locator('#jobs .job-card')).toHaveCount(1);
+  await expect(page.locator('#jobs')).not.toContainText('older');
+  await page.locator('#archiveFilter').selectOption('archived');
+  await expect(page.locator('#jobs')).toContainText('Digital Marketing Assistant');
+  await expect(page.locator('#stats .stat').first()).toContainText('0');
+});
+
+test('Nicole preserves optional hide reasons across reload and restores them without losing saved jobs', async ({ page }) => {
+  await page.goto('/nicole/');
+  await page.locator('.job-card .favorite').first().click();
+  await page.locator('.job-card .dismiss').first().click();
+  await expect(page.locator('#hideReasonChoice')).toBeVisible();
+  await page.locator('#hideReasonChoice').selectOption('not_relevant');
+  await expect.poll(() => page.evaluate(async () => {
+    const db = await new Promise((resolve, reject) => {
+      const r = indexedDB.open('job-search-radar-nicole');
+      r.onsuccess = () => resolve(r.result);
+      r.onerror = () => reject(r.error);
+    });
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('state', 'readonly');
+      const r = tx.objectStore('state').get('current');
+      r.onsuccess = () => { const values = r.result?.values || {}; db.close(); resolve(JSON.parse(values.jobHiddenReasons || '{}')); };
+      r.onerror = () => reject(r.error);
+    });
+  })).toEqual({ online: 'not_relevant' });
+  await page.reload();
+  await page.locator('#statusFilter').selectOption('hidden');
+  await expect(page.locator('#jobs')).toContainText('Hidden reason: Not relevant');
+  await page.locator('.job-card .dismiss').first().click();
+  await page.locator('#statusFilter').selectOption('active');
+  await expect(page.locator('#jobs')).toContainText('Nicole test online');
+  await expect(page.locator('.job-card .favorite').first()).toHaveClass(/active/);
+  await expect(page.locator('.job-card .dismiss').first()).toHaveAttribute('aria-label', /hide/i);
+});
+
+test('Nicole hidden manager restore buttons discard stale reason metadata', async ({ page }) => {
+  await page.goto('/nicole/');
+  await page.locator('.job-card .dismiss').first().click();
+  await page.locator('#hideReasonChoice').selectOption('location');
+  await page.locator('#nicoleHiddenList').getByRole('button', { name: /Restore hidden job: Nicole test online/ }).click();
+  await expect(page.locator('#nicoleHiddenCount')).toHaveText('0 hidden');
+  await page.locator('.job-card .dismiss').first().click();
+  await page.locator('#hideReasonChoice').selectOption('pay');
+  await page.locator('#nicoleRestoreAll').click();
+  await expect(page.locator('#nicoleHiddenCount')).toHaveText('0 hidden');
+  await expect.poll(() => page.evaluate(async () => {
+    const request = indexedDB.open('job-search-radar-nicole');
+    const db = await new Promise((resolve, reject) => { request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error); });
+    const tx = db.transaction('state', 'readonly');
+    const row = await new Promise((resolve, reject) => { const r = tx.objectStore('state').get('current'); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); });
+    db.close();
+    return JSON.parse(row?.values?.jobHiddenReasons || '{}');
+  })).toEqual({});
+});
+
 test('Nicole automatically hides fit failures and language mismatches', async ({ page }) => {
   await page.route('**/feeds/dubu.json?*', (route) => route.fulfill({ json: {
     ...feed, jobs: [...feed.jobs, job('korean-required', 'online', {

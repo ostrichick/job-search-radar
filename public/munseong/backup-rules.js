@@ -62,6 +62,12 @@ export function validateBackup(payload, normalizeManual = (job) => job) {
     check(object(result.jobStates), 'jobStates');
     for (const [id, v] of Object.entries(result.jobStates)) check(safeId(id) && ['planned', 'applied', ''].includes(v), `jobStates.${id}`);
   }
+  if (result.hiddenReasons !== undefined) {
+    check(object(result.hiddenReasons), 'hiddenReasons');
+    for (const [id, reason] of Object.entries(result.hiddenReasons)) {
+      check(safeId(id) && ['not_relevant', 'location', 'requirements', 'pay', 'duplicate', 'other'].includes(reason), `hiddenReasons.${id}`);
+    }
+  }
   if (result.manualJobs !== undefined) {
     check(Array.isArray(result.manualJobs), 'manualJobs');
     result.manualJobs = result.manualJobs.map((job, i) => {
@@ -89,7 +95,7 @@ export function validateBackup(payload, normalizeManual = (job) => job) {
 export function mergeStorageChanges(latest, before, after, mode = 'edit') {
   const result = { ...latest };
   const sets = new Set(['jobFavorites', 'jobHidden', 'jobHiddenCompanies', 'jobHiddenSources', 'reviewedJobIds', 'jobNewIds', 'knownJobIds', 'jobDismissed']);
-  const maps = new Set(['jobStates', 'trackedJobs', 'jobFiltersByMarket', 'reviewedJobFingerprints']);
+  const maps = new Set(['jobStates', 'jobHiddenReasons', 'trackedJobs', 'jobFiltersByMarket', 'reviewedJobFingerprints']);
   for (const key of new Set([...Object.keys(before), ...Object.keys(after)])) {
     if (before[key] === after[key]) continue;
     if (sets.has(key)) {
@@ -113,6 +119,14 @@ export function mergeStorageChanges(latest, before, after, mode = 'edit') {
   if (result.jobNewIds && result.reviewedJobIds) {
     const reviewed = new Set(JSON.parse(result.reviewedJobIds));
     result.jobNewIds = JSON.stringify(JSON.parse(result.jobNewIds).filter((id) => !reviewed.has(id)));
+  }
+  // Set/map edits from two browser tabs may arrive in either order. Never
+  // retain reason metadata for a job another tab has already restored.
+  if (result.jobHiddenReasons) {
+    const hidden = new Set(JSON.parse(result.jobHidden || '[]'));
+    const reasons = JSON.parse(result.jobHiddenReasons);
+    for (const id of Object.keys(reasons)) if (!hidden.has(id)) delete reasons[id];
+    result.jobHiddenReasons = JSON.stringify(reasons);
   }
   return result;
 }

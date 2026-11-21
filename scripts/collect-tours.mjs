@@ -2,6 +2,8 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { atomicWriteJson } from './file-storage.mjs';
+import { tourPriceStatus } from '../public/tours/price-status.js';
+export { tourPriceStatus } from '../public/tours/price-status.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const portalUrl = 'https://www.jbct.or.kr/portal';
@@ -103,7 +105,7 @@ const regionFromAddress = (address = '', fallback = '') =>
   REGION_NAMES.find((name) => String(address).includes(name)) || fallback;
 
 const hasPaidAmount = (description = '') =>
-  /(?:입장료|참가비|수강료|체험비|이용료|관람료|참가\s*비용)[^0-9]{0,12}(\d{1,3}(?:,\d{3})+|\d{4,})\s*원/.test(description);
+  /(?:입장료|참가비|수강료|체험비|이용료|관람료|참가\s*비용)[^0-9]{0,16}(?:\d{1,3}(?:,\d{3})+|\d{4,}|\d+\s*[만천])\s*원/.test(description);
 
 export function parseTourDetail(html = '', fallback = {}) {
   const category = stripHtml(html.match(/class="evt_cate[^"]*">([\s\S]*?)<\/span>/)?.[1] || '') || fallback.category || '';
@@ -119,7 +121,10 @@ export function parseTourDetail(html = '', fallback = {}) {
     || html.match(/<a href="(https?:\/\/[^"]+)"[^>]*class="evt_view_link/)?.[1]
     || '';
   const imagePath = html.match(/class="evt_view_hero_img"[^>]*src="([^"]+)"/)?.[1] || fallback.image || '';
-  const free = !hasPaidAmount(descriptionFull) && (/class="evt_free"/.test(html) || /무료/.test(price));
+  const paidInDetails = hasPaidAmount(descriptionFull);
+  const freeMarker = /class="evt_free"/.test(html) || /무료/.test(price);
+  const priceStatus = paidInDetails && freeMarker ? 'unknown'
+    : paidInDetails ? 'paid' : tourPriceStatus({ price, free: freeMarker });
   const audience = classifyAudience(title, descriptionFull);
   return {
     title,
@@ -129,12 +134,13 @@ export function parseTourDetail(html = '', fallback = {}) {
     duration,
     venue,
     price,
+    priceStatus,
     address,
     descriptionFull,
     description: descriptionFull.slice(0, 500),
     audience,
     openToAll: /누구나|제한\s*없|일반인|관광객/.test(descriptionFull) || /누구나|제한\s*없/.test(audience),
-    free,
+    free: priceStatus === 'free',
     applyUrl: /^https?:/i.test(applyUrl) ? applyUrl : '',
     image: imagePath ? new URL(imagePath, portalUrl).href : '',
     startDate: toIsoDate(period) || fallback.startDate || '',
@@ -168,14 +174,20 @@ async function readJson(file, fallback = null) {
   try { return JSON.parse(await fs.readFile(file, 'utf8')); } catch { return fallback; }
 }
 
-function normalizeCurated(item) {
+export function normalizeCurated(item) {
+  const priceStatus = tourPriceStatus(item);
+  const lastCheckedAt = item.lastCheckedAt || item.checkedAt || null;
   return {
     ...item,
     id: item.id || `curated-${Buffer.from(item.title || '').toString('base64url').slice(0, 24)}`,
     source: 'curated',
-    free: true,
+    priceStatus,
+    priceText: item.priceText || item.price || (priceStatus === 'free' ? '무료' : '참가비 확인 필요'),
+    free: priceStatus === 'free',
     openToAll: item.openToAll !== false,
-    checkedAt: item.checkedAt || todayIso()
+    lastCheckedAt,
+    checkedAt: lastCheckedAt,
+    availabilityStatus: item.availabilityStatus || 'unverified'
   };
 }
 
@@ -204,7 +216,7 @@ async function collectAutoItems(sourceStatus) {
       return null;
     }
   });
-  const items = details.filter((item) => item && item.free && adultsCanJoin(item.audience) && !childFocusedTitle(item.title)).map((item) => ({
+  const items = details.filter((item) => item && adultsCanJoin(item.audience) && !childFocusedTitle(item.title)).map((item) => ({
     id: `jbct-${new URL(item.detailUrl).searchParams.get('id') || Buffer.from(item.detailUrl).toString('base64url').slice(0, 20)}`,
     source: 'jbct',
     sourceName: '전북문화포털',
@@ -219,36 +231,46 @@ async function collectAutoItems(sourceStatus) {
     startDate: item.startDate,
     endDate: item.endDate,
     schedule: item.duration || item.period,
-    price: '무료',
+    price: item.priceStatus === 'free' ? '무료' : item.price || '참가비 확인 필요',
+    priceStatus: item.priceStatus,
+    priceText: item.priceStatus === 'free' ? '무료' : item.price || '참가비 확인 필요',
     audience: item.audience,
     openToAll: item.openToAll,
-    foreignerNote: item.openToAll
-      ? '국적 제한 없음 · 공개 모집'
-      : '출처에 국적 제한 언급 없음 · 신청처 확인',
+    foreignerNote: '참가 대상·국적 조건은 신청처에 확인 필요',
     reservation: '자세한 신청 방법은 원문 확인',
     language: '한국어 진행',
     description: item.description,
     image: item.image,
-    free: true,
-    checkedAt: today
+    free: item.priceStatus === 'free',
+    lastCheckedAt: today,
+    checkedAt: today,
+    availabilityStatus: 'unverified'
   }));
   const status = failed === 0 ? 'ok' : items.length ? 'partial' : 'failed';
   sourceStatus.push({
     source: '전북문화포털',
     status,
     count: items.length,
-    message: failed ? `${failed}개 상세 페이지를 확인하지 못했습니다.` : `${active.length}개 행사 중 무료·성인 참여 가능 항목만 반영했습니다.`
+    message: failed ? `${failed}개 상세 페이지를 확인하지 못했습니다.` : `${active.length}개 행사 중 성인 참여 가능 항목을 반영했습니다(가격 미상 포함).`
   });
   return items;
 }
 
-export async function collectTours({ previousFeed = null, output = outputPath, persist = true } = {}) {
+export async function collectTours({ previousFeed = null, output = outputPath, persist = true, autoCollector = collectAutoItems } = {}) {
   const sourceStatus = [];
   const curated = await readJson(curatedPath, { items: [] });
   const curatedItems = (curated.items || []).map(normalizeCurated);
-  const autoItems = await collectAutoItems(sourceStatus);
+  const autoItems = await autoCollector(sourceStatus);
   const previousItems = previousFeed?.items || [];
-  const fallbackAuto = autoItems.length ? [] : previousItems.filter((item) => item.source !== 'curated');
+  const sourceUnavailable = sourceStatus.some((source) => ['failed', 'partial'].includes(source.status));
+  const fallbackAuto = sourceUnavailable ? previousItems.filter((item) => item.source !== 'curated').map((item) => ({
+    ...item,
+    priceStatus: tourPriceStatus(item),
+    priceText: item.priceText || item.price || '참가비 확인 필요',
+    lastCheckedAt: item.lastCheckedAt || item.checkedAt || null,
+    availabilityStatus: 'unverified',
+    sourceVerificationState: 'source_error'
+  })) : [];
 
   const seen = new Set();
   const items = [];
@@ -269,10 +291,10 @@ export async function collectTours({ previousFeed = null, output = outputPath, p
     checkedAt: todayIso(),
     locationReference: { label: '전북특별자치도 전주시 덕진구 산정동', lat: 35.84434, lon: 127.1736277 },
     policy: {
-      freeOnly: true,
+      freeOnly: false,
       adultsCanJoin: true,
-      scope: '전주·전북 공공기관·지자체 프로그램',
-      foreignerNote: '국적 제한이 확인된 항목은 제외하고, 참가 가능 여부는 원문과 신청처에서 최종 확인합니다.'
+      scope: '전주·전북 공공기관·지자체 프로그램 및 직접 확인한 체험',
+      foreignerNote: '국적·참가 가능 여부와 예약 가능성은 원문 및 신청처에서 최종 확인합니다.'
     },
     sourceStatus,
     items

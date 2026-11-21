@@ -41,7 +41,7 @@ export function createNicoleUI({ state, storage, persist, mergeJobs, rerender })
     if (pay && ['금액 미공개', '보수 미공개', '급여 미공개'].includes(pay.textContent.trim())) pay.textContent = 'Pay not listed';
     const eligibility = node.querySelector('.eligibility-badge');
     if (eligibility) {
-      eligibility.textContent = job.eligibilityCode === 'korea' ? 'Korea eligibility possible'
+      eligibility.textContent = job.eligibilityStatus === 'possible' ? 'Korea eligibility possible · verify'
         : job.eligibilityCode === 'restricted' ? 'Location restrictions apply' : 'Work eligibility unverified';
     }
     const dates = node.querySelector('.collection-dates');
@@ -84,7 +84,7 @@ export function createNicoleUI({ state, storage, persist, mergeJobs, rerender })
     const button = document.createElement('button'); button.type = 'button';
     button.textContent = 'Restore'; button.setAttribute('aria-label', `Restore hidden ${kind === 'jobs' ? 'job' : kind === 'companies' ? 'company' : 'source'}: ${display}`);
     button.addEventListener('click', async () => {
-      if (kind === 'jobs') state.hiddenIds.delete(value);
+      if (kind === 'jobs') { state.hiddenIds.delete(value); delete state.hiddenReasons[value]; }
       if (kind === 'companies') state.hiddenCompanies.delete(value);
       if (kind === 'sources') state.hiddenSources.delete(value);
       await persist(); rerender();
@@ -137,6 +137,7 @@ export function createNicoleUI({ state, storage, persist, mergeJobs, rerender })
           if (storage.readOnly || !confirm(`Delete "${job.title}"?`)) return;
           state.manualJobs = state.manualJobs.filter((item) => item.id !== job.id);
           state.favorites.delete(job.id); state.hiddenIds.delete(job.id);
+          delete state.hiddenReasons[job.id];
           await persist(); mergeJobs(); rerender();
         });
         row.append(link, remove); entries.append(row);
@@ -175,6 +176,7 @@ export function createNicoleUI({ state, storage, persist, mergeJobs, rerender })
     }
     $('nicoleRestoreAll')?.addEventListener('click', async () => {
       state.hiddenIds.clear(); state.hiddenCompanies.clear(); state.hiddenSources.clear();
+      state.hiddenReasons = {};
       await persist(); rerender();
     });
   }
