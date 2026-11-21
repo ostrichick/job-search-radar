@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-21T23:41:09.467Z",
+  "updatedAt": "2026-11-21T23:59:26.606Z",
   "jobs": [
     {
       "id": "himalayas-b166e15360e81825f323",
@@ -27,13 +27,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish, English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-b7877c1dd8f3191681b6",
@@ -61,13 +61,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T07:10:53.366Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "jobicy-378cc2b236290c9e6f0c",
@@ -95,81 +95,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
-    },
-    {
-      "id": "jobicy-d79bed4415069b0407f2",
-      "title": "Localisation Project Manager",
-      "company": "Smartling",
-      "source": "Jobicy",
-      "url": "https://jobicy.com/jobs/156175-localisation-project-manager",
-      "description": "Overview Smartling is an AI-native translation platform that's redefining how the world's biggest brands go global — ranked #3 on Fast Company's Most Innovative Companies list . We're growing rapidly at scale and are backed by Battery Ventures, a global technology-focused investment firm. While most companies are still figuring out how to use AI, we've spent years building it into the core of our platform — and we're just getting started. We're looking for a Localisation Project Manager (Localisation Operations Specialist) based in Ireland to join our Managed Services team. In this role, you'll own the end-to-end localisation lifecycle for a portfolio of enterprise clients, serving as both their operational point of contact and a key contributor to how our team delivers value. This is a role for someone who brings real localisation experience, thrives in a fast-paced, remote-first environment, and is energized by the challenge of balancing operational precision with strong client relationships. You Will Act as your clients' embedded localisation operations expert, serving as the primary operational point of contact and trusted advisor for assigned accounts. Foster strong stakeholder relationships, navigate competing priorities, and coordinate cross-functional teams to ensure the successful execution and continuous improvement of clients' localization programs. Design and optimize localisation processes within Smartling’s platform and client-preferred project management and content management tools, overseeing the end-to-end job lifecycle and tailoring configurations to each client’s unique requirements, including effective use of AI tooling where applicable. Solve problems both independently and collaboratively, bringing a solutions-first mindset to client challenges and internal roadblocks. Proactively drive operational excellence by identifying and implementing process improvements, documenting best practices, and leveraging automation and AI-enabled solutions to streamline workflows, enhance scalability, and improve team efficiency You Have At least 2-3 years of experience in localisation or translation project management, ideally within a managed services or agency environment Solid understanding of localisation file formats, content types, and CAT/TMS tooling Strong client management skills: comfortable leading calls, navigating difficult conversations, and representing the team externally Proficiency with project management and reporting tools (e.g., Jira, Asana, Google Sheets, Looker, or equivalent) Experience coordinating with cross-functional teams across engineering, QA, and vendor management Excellent organizational and time management skills, with sharp attention to detail and the ability to manage competing priorities across time zones Strong written and verbal communication skills Preferred but not required Hands-on experience with Smartling or other TMS platforms (such as Phrase, XTM, or MemoQ) Experience supporting enterprise or SaaS clients in an operational or customer-facing role. Fluency or working proficiency in a second language Interest in language, technology, or global content strategy You Are Accountable. You take full ownership of your accounts, addressing issues promptly and documenting root causes and preventative actions for future improvement. Customer-Focused. You understand that client deadlines and requirements are real business commitments and consistently approach them with urgency, accountability, and care. Adaptable. You adjust effectively to changing scope, priorities, and unexpected client inputs without losing focus or execution quality. Communicative. You proactively stay ahead of client needs by sharing status updates, surfacing risks early, and contributing insights, guidance, and best practices. Process-Driven. You adhere to established processes while actively identifying opportunities to improve efficiency and consistency. You Will Enjoy Freedom 🏡- we are remote-first Growth - an opportunity to learn and advance your career Wealth 💰 - we offer a competitive salary Wellness - company-sponsored Health insurance plan & pension plan with company matching Balance - flexible PTO + 10 bank holidays! Generous parental leave Culture 🤝- an energetic, value-driven, and fun culture and team spirit Bonus - employee referral programs and Apple equipment Smartling is proud to be an equal-opportunity employer. We are committed to building an inclusive global team that represents a variety of backgrounds, perspectives, beliefs, skills, and experiences. To all recruitment agencies: Smartling does not accept unsolicited agency resumes. Please do not forward resumes to our jobs alias or Smartling employees. Smartling is not responsible for any fees related to unsolicited resumes. *To work from home, you must have a strong internet connection, a quiet space, and a professional (distraction and clutter-free) background.",
-      "location": "Ireland, UK",
-      "workplaceMode": "remote",
-      "market": "online",
-      "category": "translation",
-      "postedAt": "2026-11-21T03:20:24.000Z",
-      "deadline": null,
-      "listingExpiresAt": null,
-      "pay": null,
-      "languageRequirements": "공고 원문 확인 필요",
-      "eligibility": "한국 거주 지원 제한 · 공고의 아일랜드 근무 기반 명시",
-      "eligibilityStatus": "restricted",
-      "eligibilityDetail": {
-        "status": "restricted",
-        "geoScope": "Ireland, UK",
-        "reason": "The posting explicitly seeks a Localisation Project Manager based in Ireland.",
-        "requiresVerification": true
-      },
-      "languageFitStatus": "unknown",
-      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
-      "sourceKind": "public_api",
-      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
-      "legacyIds": [],
-      "collectionState": "seen",
-      "firstSeenAt": "2026-10-22T04:56:50.212Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
-    },
-    {
-      "id": "jobicy-e238730596488296675a",
-      "title": "Graduate Customer Success Manager",
-      "company": "Canonical",
-      "source": "Jobicy",
-      "url": "https://jobicy.com/jobs/153669-graduate-customer-success-manager",
-      "description": "The role of a Customer Success Manager at Canonical Customer success is a new and strategic department at Canonical, with the objective to reduce risk and churn, facilitate the adoption of new products or services and support expansion within existing accounts. Customer Success Managers (CSM) are responsible for developing trust with their assigned customers and providing them with the best possible experience navigating Canonical's vast offering. Through a clear understanding of their customer’s objectives, the CSM can activate a large range of internal and external capabilities to alleviate any pain point, align expectations, as well as help draw and deliver on an appropriate collaboration roadmap. We are growing our Customer Success team to continue offering thoughtful, smart, precise interactions across our product portfolio, from Ubuntu to open source infrastructure and applications. This role is a first step in the CSM organisation. Although you will primarily focus on the Tech segment, including the store customers, you will also have a portfolio assigned. Ubuntu is chosen by thousands of new users every month. Our responsibility is to ensure the best user experience for them through problem-solving, onboarding, enablement and value realisation all the way to success. Collaborating with other teams and participating in campaign efforts, you will connect with a diverse set of users of Canonical products and identify our future champions. Location: This role will be based remotely worldwide. What your day will look like A strong focus on supporting customers by finding solutions to ticket requests. Enrich documentation about problem solving, Q&A, onboarding materials. Drive campaigns targeting multiple customers through digital touch-points and activities. Identify high potential as well as high risk customers from newly onboarded users or customers Onboard new customers and introduce them to our products and support processes. Products include: Ubuntu Pro, MAAS, Landscape, Openstack, Ceph, Kubernetes, data applications and many more. Collaborate with Sales and Support in developing and delivering engagement plans that fulfill the customer's objectives. Engage with your portfolio of customers to ensure risk identification Collect feedback from customers and format them for review by the product team What we are looking for in you Customer-facing experience An empathetic individual with a natural drive to help others Passion for technology, infrastructure and Ubuntu in particular is a must Excellent presentation skills Strong organisational skills, ability to structure and constantly update documentation A team player capable of interacting with all departments internally Additional skills that you might also bring We at the Customer Success team strongly appreciate various languages! Therefore, if you possess proficiency (both written and spoken) in Japanese, Korean, Spanish, Portuguese, German, French, or Italian, alongside an excellent command of English, please inform us! What we offer you We consider geographical location, experience, and performance in shaping compensation worldwide. We revisit compensation annually (and more often for graduates and associates) to ensure we recognise outstanding performance. In addition to base pay, we offer a performance-driven annual bonus. We provide all team members with additional benefits, which reflect our values and ideals. We balance our programs to meet local needs and ensure fairness globally. Distributed work environment with twice-yearly team sprints in person - we’ve been working remotely since 2004! Personal learning and development budget of USD 2,000 per year Annual compensation review Recognition rewards Annual holiday leave Maternity and paternity leave Employee Assistance Programme Opportunity to travel to new locations to meet colleagues from your team and others Priority Pass for travel and travel upgrades for long haul company events About Canonical Canonical is a pioneering tech firm that is at the forefront of the global move to open source. As the company that publishes Ubuntu, one of the most important open source projects and the platform for AI, IoT and the cloud, we are changing the world on a daily basis. We recruit on a global basis and set a very high standard for people joining the company. We expect excellence - in order to succeed, we need to be the best at what we do. Canonical has been a remote-first company since its inception in 2004.​ Work at Canonical is a step into the future, and will challenge you to think differently, work smarter, learn new skills, and raise your game. Canonical provides a unique window into the world of 21st-century digital business. Canonical is an equal opportunity employer We are proud to foster a workplace free from discrimination. Diversity of experience, perspectives, and background create a better work environment and better products. Whatever your identity, we will give your application fair consideration. #LI-remote",
-      "location": "Anywhere",
-      "workplaceMode": "remote",
-      "market": "online",
-      "category": "support",
-      "postedAt": "2026-11-21T03:10:24.000Z",
-      "deadline": null,
-      "listingExpiresAt": null,
-      "pay": null,
-      "languageRequirements": "Spanish, Korean, German, French, Japanese, Portuguese, Italian",
-      "eligibility": "한국에서 지원 가능성 있음 · Anywhere (확인 필요)",
-      "eligibilityStatus": "possible",
-      "eligibilityDetail": {
-        "status": "possible",
-        "geoScope": "Anywhere",
-        "reason": "The stated region may include South Korea; employment, language and tax eligibility remain unverified.",
-        "requiresVerification": true
-      },
-      "languageFitStatus": "mismatch",
-      "languageFitReason": "German, French, Japanese, Portuguese, Italian: 현재 확인된 언어 역량으로는 직무 요구 수준을 충족한다고 판단하기 어렵습니다. 실제 능력과 요건 확인 필요.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
-      "sourceKind": "public_api",
-      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
-      "legacyIds": [],
-      "collectionState": "seen",
-      "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-afed549410d8681fbc81",
@@ -197,13 +129,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-03664e3fbfd9f6a2f29e",
@@ -231,13 +163,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-e23f6212e01b71781eb4",
@@ -265,47 +197,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
-    },
-    {
-      "id": "remote-ok-649d57af2ca830f70125",
-      "title": "Senior Manager, Product Analytics (Growth)",
-      "company": "iFIT",
-      "source": "Remote OK",
-      "url": "https://remoteok.com/remote-jobs/remote-senior-manager-product-analytics-growth-ifit-1137912",
-      "description": "iFITâs vision is to create the world's most holistic health and fitness platform, integrating all elements of health - physical fitness, mental health, nutrition and active recovery - into a seamless interactive experience. We develop proprietary software that learns and adjusts to the habits of each person as it delivers immersive content that guides them on their own individual fitness journey. We are currently seeking an ambitious pace-setter to join our team as aÂ Senior Manager, Product Analytics (Growth) remotely in the US. iFIT is building its next generation subscription product, and the Senior Manager, Product Analytics (Growth) is the analytics owner of the funnel. You are accountable for the data and insight behind every step between a new visitor and a paying, retained member: onboarding, activation, paywall, trial to paid, and free to paid. You sit on the Analytics team and partner daily with the Growth Product Leader and the Growth Marketing Leader and the Chief Subscription Officer. ROLE COMMITMENTS Own measurement of onboarding, activation, paywall, trial to paid, and free to paid. Own methodology for Growth A/B tests: hypotheses, power, success metrics, and readouts. Analyze demographics, behavior, acquisition channel, and equipment ownership to show who converts and retains, and where we canÂ lift results. Define the early behaviors and activation moments that predict long term subscribers, and report on engagement through the first 30 days. KPI definitions. Own definitions for activation, conversion, cohorts, LTV, and CAC, so every team works from the same numbers. ESSENTIAL DUTIES AND RESPONSIBILITIES Own the app analytics framework, including event taxonomy, tracking plans, and instrumentation standards, partnering with Product and Engineering to ensure data is accurate, complete, and consistent across iOS, Android, web, and connected equipment. Build and maintain funnel analytics from install and trial start through paid conversion, activation, and renewal, identifying drop-off points and sizing the opportunity. Analyze user engagement and behavior including feature adoption, engagement frequency, and content consumption, and identify the leading indicators of retention and churn. Develop cohort, retention, and lifecycle analyses, and translate behavioral signals into churn-risk and propensity models that CRM can act on. Design and analyze A/B tests and experiments with Product and Growth teams, defining success metrics, sample sizing, and readouts. Monitor subscription, churn, and revenue performance against forecast, and maintain forecasting and retention models. Build and maintain dashboards and self-serve reporting that give Product, Finance, and CRM a shared view of subscriber health. EDUCATION & EXPERIENCE Education and Basic Qualifications 5 or more years in product analytics, data analysis, or business intelligence, including ownership of recurring reporting that others depend on Proven record of moving funnel metrics through experimentation: onboarding, paywall, trial, and conversion. Strong command of A/B testing and statistics (power, significance, causal inference). Strong command of subscription metrics: LTV, CAC, cohort retention, and conversion funnels. Hands-on experience with subscription or recurring revenue metrics: cohort retention, churn, conversion, and LTV Advanced SQL against a cloud data warehouse, with the ability to build and maintain models rather than only query them Authorized to work in the United States without sponsorship. Preferred Qualifications Snowflake and Tableau proficiency Python or dbt for transformation and pipeline work Experience supporting a new product launch or a business in its first year of revenue Familiarity with product and event analytics tools such as Amplitude, and with attribution logic Consumer subscription, fitness, or direct-to-consumer background DISCLAIMER Compensation may vary based on the job level, your geographic work location, position incentive plan, and exemption status. Although we currently may consider hiring in the states listed below, not all positions are available in all locations, and work in a particular state is not guaranteed. Current list of states where iFIT may consider hiring: AK, AL, AR, AZ, CA, CO, CT, FL, GA, ID, IL, IN, KS, KY, LA, MA, MD, MI, MN, MO, MS, NC, NH, NJ, NV, NY, OH, OK, OR, PA, RI, SC, SD, TN, TX, UT, VA, WA, WI, WY. Subject to applicable state laws, your employment at iFIT is âat-willâ. At-will employment means that you and the company each have the right to terminate the employment relationship at any time for any cause or for no cause at all. Â Pay Range: $115,000 â $135,000 USD iFIT doesÂ not discriminateÂ in employment opportunities or practices on the basis of race, color, religion, sex, national origin, age, ancestry, mental or physical disability, sexual orientation, gender identity, medical condition, genetic information, marital status, veteran status or any other characteristic protected by law. Â Please mention the word **ADVOCATE** and tag RMy40Mi4xNTcuMjA= when applying to show you read the job post completely (#RMy40Mi4xNTcuMjA=). This is a beta feature to avoid spam applicants. Companies can search these words to find applicants that read this and see they're human.",
-      "location": "Worldwide",
-      "workplaceMode": "remote",
-      "market": "online",
-      "category": "marketing",
-      "postedAt": "2026-11-20T10:40:04.000Z",
-      "deadline": null,
-      "listingExpiresAt": null,
-      "pay": null,
-      "languageRequirements": "공고 원문 확인 필요",
-      "eligibility": "Restricted to US remote work and US work authorization",
-      "eligibilityStatus": "restricted",
-      "eligibilityDetail": {
-        "status": "restricted",
-        "geoScope": "United States (posting text)",
-        "reason": "Posting requires US remote location and authorization to work in the United States without sponsorship, despite worldwide source metadata.",
-        "requiresVerification": true
-      },
-      "languageFitStatus": "unknown",
-      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
-      "sourceKind": "public_api",
-      "evidenceNote": "Remote OK의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
-      "legacyIds": [],
-      "collectionState": "seen",
-      "firstSeenAt": "2026-11-21T12:36:03.774Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "jobicy-67f88d522de6f5b51c09",
@@ -333,13 +231,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-20T20:22:42.356Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-d24767c381920dee8e21",
@@ -367,13 +265,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-dac3d08c246b19060f44",
@@ -401,13 +299,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-5c78c06afbced59be206",
@@ -435,13 +333,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-dd36889236afc72fc2b1",
@@ -469,13 +367,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-b1260e97fe9391b9f601",
@@ -503,13 +401,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-18a1d3a498dd52fda9c6",
@@ -537,13 +435,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-06T04:01:39.890Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-f7e2f32314fd0c67b0a1",
@@ -571,13 +469,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-09T02:30:45.303Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-e7871b70a2e120e90021",
@@ -605,13 +503,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-09T02:30:45.303Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-77ec2b3705d918782d5b",
@@ -639,13 +537,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-13T04:00:38.642Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-d6be9b1deaf6079665dc",
@@ -673,13 +571,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-22d4c8fa9337b9adafb6",
@@ -707,13 +605,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-5243700bca9862b0a13d",
@@ -741,13 +639,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-1769bc9aa4742602217f",
@@ -775,13 +673,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-ac6e018893b701bce1aa",
@@ -809,13 +707,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-b8677f2cbd31db79a350",
@@ -843,13 +741,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-3826d3a0ae63a7e7d2bc",
@@ -877,13 +775,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-18T13:17:08.080Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "remote-ok-bc7c3e75bc5750eba90a",
@@ -891,7 +789,7 @@
       "company": "NIKI Digital Engineering",
       "source": "Remote OK",
       "url": "https://remoteok.com/remote-jobs/remote-marketing-and-communications-officer-niki-digital-engineering-1137838",
-      "description": "NIKI is looking for Media and Communication, Journalism, Marketing, Public Relations graduates, or similar disciplines, to gain exciting insights into strategic marketing and communication practices. Â Become a member of NIKI Digital Engineering! If you have completed your studies and are looking for new challenges, interdisciplinary and diverse teams, and projects, send us your resume. Our strategy is to transfer the know-how into practice. TWT is our trusted long-term partner, sharing and supporting our vision. Through close, daily collaboration, we design and deliver innovative solutions for clients and partners across the energy, health, and automotive industries. Combining interdisciplinary expertise in IT, digital engineering, and consulting, we turn ideas into impactful results that reflect our shared vision for progress. What to expect Be active in an innovative environment. Enjoy the challenges of helping to build a great organization of talented individuals. Develop a spirit of collaboration, confidentiality, and responsibility. Collaboration in interdisciplinary teams and continuous knowledge exchange. Task Description Manage and maintain relationships with networks and clients, contributing to business development and the expansion of partnerships. Provide support to the Customer Relations and Marketing departments. Facilitate effective communication across different disciplines and departments. Develop and implement communication strategies to promote product launches and increase awareness among partners. Support the companyâs participation in industry events, conferences, and other professional gatherings. Monitor public perception and support communication strategies. Basic Qualifications Studies in Media and Communication, Journalism, Marketing, Public Relations, or similar disciplines. Excellent communication skills, customer focus, and a strong sense of responsibility. Fluent in English, including technical terminology. Strong analytical skills and ability to monitor, evaluate, and report on communication initiatives. Creativity and problem-solving skills to develop innovative communication solutions. Ability to collaborate across teams and manage projects from concept to execution. What we offer Structured learning on the job, professional feedback, and a mentor open to all your questions. Open doors, and the chance to take over responsibility quickly â participate, shape, and leave your fingerprint. Discover new talents and shape your career path. Workplace flexibility. Flexible working hours, supported by an attractive work organization model tailored to the needs of each project. Enjoy working with great colleagues in your day-to-day work. Are you intrigued to find out more about this position? Then apply for a job with us! Please mention the word **VALIANT** and tag RMy40Mi4xNTcuMjA= when applying to show you read the job post completely (#RMy40Mi4xNTcuMjA=). This is a beta feature to avoid spam applicants. Companies can search these words to find applicants that read this and see they're human.",
+      "description": "NIKI is looking for Media and Communication, Journalism, Marketing, Public Relations graduates, or similar disciplines, to gain exciting insights into strategic marketing and communication practices. Â Become a member of NIKI Digital Engineering! If you have completed your studies and are looking for new challenges, interdisciplinary and diverse teams, and projects, send us your resume. Our strategy is to transfer the know-how into practice. TWT is our trusted long-term partner, sharing and supporting our vision. Through close, daily collaboration, we design and deliver innovative solutions for clients and partners across the energy, health, and automotive industries. Combining interdisciplinary expertise in IT, digital engineering, and consulting, we turn ideas into impactful results that reflect our shared vision for progress. What to expect Be active in an innovative environment. Enjoy the challenges of helping to build a great organization of talented individuals. Develop a spirit of collaboration, confidentiality, and responsibility. Collaboration in interdisciplinary teams and continuous knowledge exchange. Task Description Manage and maintain relationships with networks and clients, contributing to business development and the expansion of partnerships. Provide support to the Customer Relations and Marketing departments. Facilitate effective communication across different disciplines and departments. Develop and implement communication strategies to promote product launches and increase awareness among partners. Support the companyâs participation in industry events, conferences, and other professional gatherings. Monitor public perception and support communication strategies. Basic Qualifications Studies in Media and Communication, Journalism, Marketing, Public Relations, or similar disciplines. Excellent communication skills, customer focus, and a strong sense of responsibility. Fluent in English, including technical terminology. Strong analytical skills and ability to monitor, evaluate, and report on communication initiatives. Creativity and problem-solving skills to develop innovative communication solutions. Ability to collaborate across teams and manage projects from concept to execution. What we offer Structured learning on the job, professional feedback, and a mentor open to all your questions. Open doors, and the chance to take over responsibility quickly â participate, shape, and leave your fingerprint. Discover new talents and shape your career path. Workplace flexibility. Flexible working hours, supported by an attractive work organization model tailored to the needs of each project. Enjoy working with great colleagues in your day-to-day work. Are you intrigued to find out more about this position? Then apply for a job with us! Please mention the word **VALIANT** and tag RNC4xNTAuMTk3LjU4 when applying to show you read the job post completely (#RNC4xNTAuMTk3LjU4). This is a beta feature to avoid spam applicants. Companies can search these words to find applicants that read this and see they're human.",
       "location": "Remote",
       "workplaceMode": "remote",
       "market": "online",
@@ -911,13 +809,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Remote OK의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-20T20:22:42.356Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "remote-ok-1bf0cfd5882c78ef4d4e",
@@ -945,13 +843,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Remote OK의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "remote-ok-0026aec496592cc6d15b",
@@ -979,13 +877,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Remote OK의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "channel-corp--bb21291a044c643754cc",
@@ -1015,12 +913,12 @@
       "eligibility": "Check language, hiring eligibility and job requirements at the employer site.",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "evidenceNote": "Channel Corp. official Lever job posting feed. Job description is abbreviated; check original posting.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-19T07:28:39.070Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "remote-ok-a1ad11dc3457325e29ee",
@@ -1028,7 +926,7 @@
       "company": "Treatwell",
       "source": "Remote OK",
       "url": "https://remoteok.com/remote-jobs/remote-seo-full-stack-engineer-treatwell-1137805",
-      "description": "We're looking for a full-stack engineer to join our Product Engineering team, reporting to one of the Engineering Managers of the Marketplace area, with a dotted line to the Marketing SEO Manager, focused on supporting the Growth and Marketing area. This role will have a 60% focus on Front End, and 40% focus on Back End. You'll work on Treatwellâs Marketplace products and help Treatwell be discovered, understood, and chosen across 13 markets: SEO foundations, site performance, experimentation, analytics instrumentation, and the product surfaces that connect customer intent with booking, alongside three product engineering teams in the Marketplace area, contributing across the full breadth of what makes Treatwell's marketplace tick. As a full-stack engineer, you're the person who can move fluidly between teams accelerating growth and marketing efforts wherever the need is greatest. You bring the mindset of someone who cares about how people find Treatwell, what experience they land on, and whether the product helps them make a confident booking. You are comfortable partnering with marketing and growth stakeholders, while staying grounded in engineering quality and product outcomes. â¡ï¸ Our product is built on: Backend: Java, Spring Boot, RabbitMQ, PostgreSQL, MS-SQL Frontend: React, TypeScript, Cypress, Jest Infrastructure: Kubernetes, GitLab CI/CD, AWS, Datadog Mindset: DevOps, DDD, event-driven architecture ð¡ About Treatwell Hi, weâre Treatwell. Nice to meet you. Weâre a team of 800 passionate and brilliantly talented people across Europe. Weâre the industryâs smartest salon management software, all connected to Europeâs leading bookings platform, working with over 95,000 salon partners across 14 countries, processing over 14 million bookings every month. Andâ¦.breathe. But weâre not done yet. Weâre on an exciting journey to digitally revolutionise the hair and beauty community. If this excites you, we might just have the role for you. ð§ You will be responsible for: Growth and marketing engineering - build and evolve the technical foundations that support customer acquisition, activation, and retention across Treatwell's markets Discoverability - improve how search engines and users understand Treatwell's marketplace, without turning the role into a pure SEO implementation function Experimentation and measurement - instrument your work, support testing frameworks, and help teams validate ideas with data before scaling them Product surfaces - ship user-facing improvements to landing pages, discovery journeys, and conversion flows, owning the work from problem framing through production Platform quality - own your services end-to-end, from architecture through deployment, with a DevOps mindset baked in Cross-functional clarity - translate growth and marketing opportunities into clear engineering work, challenge scope when needed, and keep quality standards high ð About you: You have proven experience owning production-grade web applications end-to-end, and understand that the best technical decisions come from deeply understanding the problem - not just the code (mid/senior level) You own features end-to-end - from database schema to UI, without needing a handoff You think in systems and trade-offs, not just tickets - you spot the upstream cause, not just the downstream symptom You have a product mindset - you think about the person using what you build, ask why before how, and push back when something doesn't make sense You're data-driven and hypothesis-led - you instrument your work, measure impact, and use evidence to make decisions You can partner with non-engineering stakeholders, turning ambiguous growth or marketing needs into sensible technical options You will act as the key technical partner for marketing stakeholders, evaluating the feasibility of their requests, managing expectations, and finding the right trade-off between business speed and technical quality (TBC). You are able to make progress in evolving or complex domains while collaborating to create clarity - growth work often moves fast, and you know how to navigate that without getting paralysed Experience with SEO, experimentation, analytics, performance, or growth-related product areas Experience with AI-assisted development tools such as Claude, Cursor, or similar - and clear opinions about where they genuinely add value is a plus You can communicate fluently in English. You are based in any city within Italy or Spain, with a valid right to work - candidates outside of these countries will not be considered. NOTE: If you don't meet every requirement but believe you'd thrive in this role, we'd still love to hear from you. ð¼ Weâll treat you with: 28-days holiday, plus bank holidays ðï¸ Monthly Â£/â¬40 Treatwell vouchers so you can treat yourself too ðð» 100% remote position ð§ð»âð» Market-specific benefits that will be discussed in the interview process âï¸ Equal Opportunities Treatwell is an 'Open to All' employer and warmly welcomes everybody to the team. We are committed to making reasonable adjustments to the recruitment process as required. Please add any adjustment requests to your application. Please mention the word **TENDER** and tag RMy40Mi4xNTcuMjA= when applying to show you read the job post completely (#RMy40Mi4xNTcuMjA=). This is a beta feature to avoid spam applicants. Companies can search these words to find applicants that read this and see they're human.",
+      "description": "We're looking for a full-stack engineer to join our Product Engineering team, reporting to one of the Engineering Managers of the Marketplace area, with a dotted line to the Marketing SEO Manager, focused on supporting the Growth and Marketing area. This role will have a 60% focus on Front End, and 40% focus on Back End. You'll work on Treatwellâs Marketplace products and help Treatwell be discovered, understood, and chosen across 13 markets: SEO foundations, site performance, experimentation, analytics instrumentation, and the product surfaces that connect customer intent with booking, alongside three product engineering teams in the Marketplace area, contributing across the full breadth of what makes Treatwell's marketplace tick. As a full-stack engineer, you're the person who can move fluidly between teams accelerating growth and marketing efforts wherever the need is greatest. You bring the mindset of someone who cares about how people find Treatwell, what experience they land on, and whether the product helps them make a confident booking. You are comfortable partnering with marketing and growth stakeholders, while staying grounded in engineering quality and product outcomes. â¡ï¸ Our product is built on: Backend: Java, Spring Boot, RabbitMQ, PostgreSQL, MS-SQL Frontend: React, TypeScript, Cypress, Jest Infrastructure: Kubernetes, GitLab CI/CD, AWS, Datadog Mindset: DevOps, DDD, event-driven architecture ð¡ About Treatwell Hi, weâre Treatwell. Nice to meet you. Weâre a team of 800 passionate and brilliantly talented people across Europe. Weâre the industryâs smartest salon management software, all connected to Europeâs leading bookings platform, working with over 95,000 salon partners across 14 countries, processing over 14 million bookings every month. Andâ¦.breathe. But weâre not done yet. Weâre on an exciting journey to digitally revolutionise the hair and beauty community. If this excites you, we might just have the role for you. ð§ You will be responsible for: Growth and marketing engineering - build and evolve the technical foundations that support customer acquisition, activation, and retention across Treatwell's markets Discoverability - improve how search engines and users understand Treatwell's marketplace, without turning the role into a pure SEO implementation function Experimentation and measurement - instrument your work, support testing frameworks, and help teams validate ideas with data before scaling them Product surfaces - ship user-facing improvements to landing pages, discovery journeys, and conversion flows, owning the work from problem framing through production Platform quality - own your services end-to-end, from architecture through deployment, with a DevOps mindset baked in Cross-functional clarity - translate growth and marketing opportunities into clear engineering work, challenge scope when needed, and keep quality standards high ð About you: You have proven experience owning production-grade web applications end-to-end, and understand that the best technical decisions come from deeply understanding the problem - not just the code (mid/senior level) You own features end-to-end - from database schema to UI, without needing a handoff You think in systems and trade-offs, not just tickets - you spot the upstream cause, not just the downstream symptom You have a product mindset - you think about the person using what you build, ask why before how, and push back when something doesn't make sense You're data-driven and hypothesis-led - you instrument your work, measure impact, and use evidence to make decisions You can partner with non-engineering stakeholders, turning ambiguous growth or marketing needs into sensible technical options You will act as the key technical partner for marketing stakeholders, evaluating the feasibility of their requests, managing expectations, and finding the right trade-off between business speed and technical quality (TBC). You are able to make progress in evolving or complex domains while collaborating to create clarity - growth work often moves fast, and you know how to navigate that without getting paralysed Experience with SEO, experimentation, analytics, performance, or growth-related product areas Experience with AI-assisted development tools such as Claude, Cursor, or similar - and clear opinions about where they genuinely add value is a plus You can communicate fluently in English. You are based in any city within Italy or Spain, with a valid right to work - candidates outside of these countries will not be considered. NOTE: If you don't meet every requirement but believe you'd thrive in this role, we'd still love to hear from you. ð¼ Weâll treat you with: 28-days holiday, plus bank holidays ðï¸ Monthly Â£/â¬40 Treatwell vouchers so you can treat yourself too ðð» 100% remote position ð§ð»âð» Market-specific benefits that will be discussed in the interview process âï¸ Equal Opportunities Treatwell is an 'Open to All' employer and warmly welcomes everybody to the team. We are committed to making reasonable adjustments to the recruitment process as required. Please add any adjustment requests to your application. Please mention the word **TENDER** and tag RNC4xNTAuMTk3LjU4 when applying to show you read the job post completely (#RNC4xNTAuMTk3LjU4). This is a beta feature to avoid spam applicants. Companies can search these words to find applicants that read this and see they're human.",
       "location": "Remote",
       "workplaceMode": "remote",
       "market": "online",
@@ -1048,13 +946,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Remote OK의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-de20abea510704763404",
@@ -1082,47 +980,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
-    },
-    {
-      "id": "jobicy-26d408720940b77e697c",
-      "title": "English to Spanish (ESMX native) Linguist for Life Sciences",
-      "company": "Welo Global",
-      "source": "Jobicy",
-      "url": "https://jobicy.com/jobs/163035-english-to-spanish-esmx-native-linguist-for-life-sciences",
-      "description": "About Welo Life Sciences Welo Life Sciences, a Welo Global brand, is a specialized language and technology partner serving pharmaceutical, CRO, and medical device organizations operating in regulated global markets. We deliver regulator-ready translation, linguistic validation, and localization solutions that support clinical trials, pharmacovigilance, regulatory affairs, labeling, and global commercialization. Our approach combines subject matter expertise with ISO-certified quality processes and technology-enabled workflows designed to integrate seamlessly into life sciences operations. With extensive experience supporting global product development and post-market requirements, Welo Life Sciences helps organizations accelerate timelines, protect data integrity, and maintain compliance across languages and regions. All solutions are delivered within a secure, audit-ready framework supported by seven ISO certifications. welolifesciences.com About the Role We are looking for experienced English into Spanish (Mexico) linguists specializing in Clinical-trial, Pharmacovigilance and Regulatory document translation. Key Responsibilities Translate clinical research, regulatory and pharmacovigilance documents from English to Spanish LatAm. Perform Machine Translation Post-Editing (MTPE) on machine-translated safety content. Perform Copy Edit (translation review) of translated/post-edited content for accuracy, tone, and consistency. Meet strict, non-extendable turnaround times on time-sensitive content. Work within the client's CAT tool environment (XTM/Phrase), also Track Changes in Microsoft Word following project-specific setup instructions. Field of Expertise Clinical Research Documents (protocols and synopses, IB, ICF, Patient Sheets, Patient Diaries) Regulatory Documents (SmPC, PIL, Labels, CTD Modules) Pharmacovigilance Documents (PSUR, DSUR, RMP, SAE and AE) Must-Have Criteria Applicant must meet at least one of the following criteria: Education A degree in Translation, Linguistics, or Language Studies (or an equivalent degree) or Recognized graduate qualification in any other field, plus a minimum of two years of full-time professional experience in translation or A minimum of five years of full-time professional experience in translation Relevant translation experience At least two years of practical translation experience, specifically with life sciences (clinical trials and pharmacovigilance) and medical documents Technical Skills Familiarity with CAT tools (XTM/Phrase), License will be provided. Familiarity with Track Changes in Microsoft Word Native Language A candidate must be native in ESMX (Mexican Spanish) Nice-to-Have Degree in Medicine, Biology, Biochemistry, Clinical Research, Translation, Linguistics, Philology or similar In-house industry experience at a CRO or pharmaceutical company. Before Applying Please note there will be an assessment as part of our onboarding and quality procedure, please only apply if you're willing to complete our assessment. Please ensure your latest English CV accurately reflects your Life Sciences and Medical translation experience, including years of experience specifically in Life Sciences, the document types you’ve translated, CAT tool you've used, and relevant details also your contact information (email AND phone number). Beware of recruitment scams. Welo Global and all of its brands never recruit through direct messages on social media or WhatsApp, and never asks candidates to pay money for a job. Official emails come only from @welocalize.com, @welodata.ai, or @hire.lever.co, and all applications go through jobs.lever.co/weloglobal. Be wary of unexpected offers, generic email addresses (such as Gmail or Yahoo), and requests for fees or sensitive information. Report suspicious messages and learn more: Recognizing Scams and Confirming Legitimate Welocalize Communications – Welo Global We look forward to receiving your application! Job Reference: #LI-JC1 Compensation Additional Information",
-      "location": "Mexico",
-      "workplaceMode": "remote",
-      "market": "online",
-      "category": "translation",
-      "postedAt": "2026-11-17T16:50:10.000Z",
-      "deadline": null,
-      "listingExpiresAt": null,
-      "pay": null,
-      "languageRequirements": "Spanish, English",
-      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · Mexico",
-      "eligibilityStatus": "unknown",
-      "eligibilityDetail": {
-        "status": "unknown",
-        "geoScope": "Mexico",
-        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
-        "requiresVerification": true
-      },
-      "languageFitStatus": "match",
-      "languageFitReason": "Spanish, English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
-      "sourceKind": "public_api",
-      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
-      "legacyIds": [],
-      "collectionState": "seen",
-      "firstSeenAt": "2026-11-18T04:00:23.768Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-6fa7329062b3060f9440",
@@ -1150,13 +1014,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-16T01:22:24.879Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-3c73e09208bc53531c1b",
@@ -1184,13 +1048,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-10T03:12:37.915Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-bb3706bde734b6c8de23",
@@ -1218,13 +1082,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-d303a78527b4c39a46e5",
@@ -1252,13 +1116,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-475fd9c7ed1920207757",
@@ -1286,13 +1150,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-d0f5225c6b551b4c37db",
@@ -1320,13 +1184,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-c2e68f444878b5667ff4",
@@ -1354,13 +1218,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-64c71a0eb9e12c977521",
@@ -1388,13 +1252,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "himalayas-91c89c3cc1b60c9bbbc3",
@@ -1422,13 +1286,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "remotive-070943a3485895acf31b",
@@ -1456,13 +1320,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Remotive의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T01:38:30.324Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "greenhouse:krafton:8921058002",
@@ -1483,14 +1347,14 @@
       "description": "<div class=&quot;content-intro&quot;><p><span style=&quot;font-size: 10pt;&quot;>우리는 게이머의 로망을 실현하기 위해, 누구도 가지 않는 길을 갑니다.</span><br><span style=&quot;font-size: 10pt;&quot;>예상을 뛰어넘는 과감한 상상력과 기술로, 전 세계 팬들이 잊지 못할 세상을 만들기 위해 </span><span style=&quot;font-size: 10pt;&quot;>담대하게 도전하고 개척합니다.&nbsp;&nbsp;</span></p> <p><span style=&quot;font-size: 10pt;&quot;>We pioneer the path to players&#39; dreams.</span><br><span style=&quot;font-size: 10pt;&quot;>With bold imagination and breakthrough technology, </span><span style=&quot;font-size: 10pt;&quot;>we create unforgettable worlds for fans across the globe.</span></p> <hr> <p>&nbsp;</p></div><h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀(프로젝트)을 소개합니다.&nbsp;</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>크래프톤은 2022년부터 사회 공헌 사업의 일환으로 ‘크래프톤 정글’을 출범하여 기술 산업의 미래 인재, SW 개발자를 양성해오고 있습니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>크래프톤 정글은 경기도 용인에 위치한 크래프톤 정글 캠퍼스에서, 자기 주도적 학습과 몰입 경험, 팀 기반의 프로젝트 수행을 바탕으로 기본기가 탄탄한 개발자로 성장하게 하는 교육 과정을 운영하고 있습니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>Jungle Operations &amp; Outreach Team은 정글의 사업을 관리하며, 정글 브랜드 관리, 교육생 모집을 위한 마케팅 캠페인 실행, 지원 및 선발 절차, 교육 과정의 주요 행사, 교육생 지원과 같은 크래프톤 정글의 전반적인 사업과 운영을 담당합니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>정글의 지속 성장을 위하여 더 효과적인 마케팅 운영안을 설계/실행하고, 팀과 협업하여 정글을 성장시키는 여정에 참여하고 싶은 분을 기다립니다.</span></li> </ul> <h4>&nbsp;</h4> <h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀과 함께할 미션을 소개합니다.</strong></span></h3> <p><span style=&quot;font-size: 10pt;&quot;>Jungle Operations &amp; Outreach Team은 동료를 존중하는 태도와 끈기 있고 성숙한 사고, 긍정적인 에너지를 바탕으로 팀의 방향성에 맞추어 적극적으로 협력하는 팀 플레이어를 찾고 있습니다.</span></p> <ul> <li><span style=&quot;font-size: 10pt;&quot;><strong>[주요 역할]</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>정글 교육 과정의 성과 극대화를 위하여 효과적인 캠페인 전략을 기획/실행하며, 타 사례와 정글의 캠페인 결과를 분석하고, 더 효과적인 실행 방안을 도출합니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>캠페인 정성/정량 데이터를 수집하고, 데이터 기반의 성과 분석 프로세스 및 대시보드 구축을 실행합니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>교육생 모집 선발, 학사운영 및 입소식, 수료식, 발표회 등 주요 교육 행사와 프로그램의 준비 및 실행, 운영을 지원합니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>교육과정이 원활하게 운영될 수 있도록 기타 운영 업무 전반을 지원합니다.</span></li> </ul> </li> <li><span style=&quot;font-size: 10pt;&quot;><strong>이 직무를 통해 이런 경험을 할 수 있습니다.</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>교육 사업 기반의 캠페인 설계 및 실행, 교육 사업 분야에 대한 전문적 인사이트와 업무 경력을 축적할 수 있습니다.</span></li> <l",
       "eligibility": "지원자격 확인 필요",
       "languageRequirements": "공고 원문 확인 필요",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "evidenceNote": "회사 공식 Greenhouse 채용목록 · Employment Type: Contractor · Sector: Chairman Projects · Corp./Studios: KRAFTON · Job Category - Art:  · Job Category - Business & Service:  · Job Category - Data:  · Job Category - Development Management:  · Job Category - Game Design:  · Job Category - Tech:  · Job Category - TA:  · Job Category - QA:  · Job Category - Sound:  · Job Category - U",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T22:37:03.341Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "greenhouse:krafton:8904989002",
@@ -1511,14 +1375,14 @@
       "description": "<div class=&quot;content-intro&quot;><p><span style=&quot;font-size: 10pt;&quot;>우리는 게이머의 로망을 실현하기 위해, 누구도 가지 않는 길을 갑니다.</span><br><span style=&quot;font-size: 10pt;&quot;>예상을 뛰어넘는 과감한 상상력과 기술로, 전 세계 팬들이 잊지 못할 세상을 만들기 위해 </span><span style=&quot;font-size: 10pt;&quot;>담대하게 도전하고 개척합니다.&nbsp;&nbsp;</span></p> <p><span style=&quot;font-size: 10pt;&quot;>We pioneer the path to players&#39; dreams.</span><br><span style=&quot;font-size: 10pt;&quot;>With bold imagination and breakthrough technology, </span><span style=&quot;font-size: 10pt;&quot;>we create unforgettable worlds for fans across the globe.</span></p> <hr> <p>&nbsp;</p></div><h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀(프로젝트)을 소개합니다.&nbsp;</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>배틀그라운드 모바일(PUBG Mobile)은 2018년 5월부터 한국 지역에서 서비스 되고 있는 PUBG의 모바일 버전 게임입니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>배틀그라운드 모바일 서비스 조직은 배틀그라운드 모바일의 전반적인 서비스 전략을 세우고, 실행하며, 게임 서비스를 위해 협업하는 많은 유관 부서의 커뮤니케이션 허브 역할을 수행 하고 있습니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>배틀그라운드 모바일 서비스 조직은 팬 분들께서 안정적으로 게임을 플레이 할 수 있는 환경을 마련하고, 즐거움을 느끼실 수 있는 콘텐츠를 기획하고 운영합니다.</span></li> </ul> <h4>&nbsp;</h4> <h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀과 함께할 미션을 소개합니다.</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;><strong>캠페인 운영</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>업데이트/시즌/콜라보/이스포츠 등 라이브 서비스 마케팅 캠페인 기획 참여 및 운영</span></li> <li><span style=&quot;font-size: 10pt;&quot;>디지털·SNS·인플루언서 등 멀티 채널 캠페인 운영 및 성과 측정</span></li> <li><span style=&quot;font-size: 10pt;&quot;>이스포츠 대회·리그 연계 마케팅 운영 지원 및 파트너(팀·선수·스트리머 등) 협업 실행</span></li> </ul> </li> <li><span style=&quot;font-size: 10pt;&quot;><strong>콘텐츠 &amp; 크리에이티브</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>YouTube·TikTok·Meta 등 주요 미디어 콘텐츠 제작 진행 및 운영</span></li> <li><span style=&quot;font-size: 10pt;&quot;>대행사·크리에이터 협업을 통한 콘텐츠 제작 및 일정 관리</span></li> </ul> </li> <li><span style=&quot;font-size: 10pt;&quot;><strong>데이터 분석 &amp; 리포팅</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>캠페인 성과 데이터 수집 및 정리</span></li> <li><span style=&quot;font-size: 10pt;&quot;>채널별(디지털·SNS·인플루언서) 성과 지표 트래킹 및 대시보드 업데이트</span></li> </ul> </li> </ul> <p>&nbsp;</p> <h3><span style=&quot;font-size: 12pt;&quot;><strong>이런 경험을 가진 분과 함께 성장하고 싶습니다! (필수요건)</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>마케팅 경력&nbsp;1년차 이상</span></li> <li><span style=&qu",
       "eligibility": "지원자격 확인 필요",
       "languageRequirements": "공고 원문 확인 필요",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "evidenceNote": "회사 공식 Greenhouse 채용목록 · Employment Type: Contractor · Sector: IP Franchise · Corp./Studios: KRAFTON · Job Category - Art:  · Job Category - Business & Service: Marketing · Job Category - Data:  · Job Category - Development Management:  · Job Category - Game Design:  · Job Category - Tech:  · Job Category - TA:  · Job Category - QA:  · Job Category - Sound:  · Job Category",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-26T13:05:13.850Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "remotive-74c8a53c86621e10fce6",
@@ -1546,13 +1410,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "sourceKind": "public_api",
       "evidenceNote": "Remotive의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "curated-411ccb6a7a52c85f057d",
@@ -1592,7 +1456,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-11-17. NOT refreshed by the automated crawler. Recheck the original job for current availability. Public Saramin posting checked 2026-11-17. New path: Saramin general listing outside the existing remote-aggregator set. Closing date is listed as rolling/always open; confirm the posting remains active before applying.",
       "collectionState": "seen",
       "firstSeenAt": "2026-11-17T04:02:51.250Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "greenhouse:krafton:8798601002",
@@ -1613,14 +1477,14 @@
       "description": "<div class=&quot;content-intro&quot;><p><span style=&quot;font-size: 10pt;&quot;>우리는 게이머의 로망을 실현하기 위해, 누구도 가지 않는 길을 갑니다.</span><br><span style=&quot;font-size: 10pt;&quot;>예상을 뛰어넘는 과감한 상상력과 기술로, 전 세계 팬들이 잊지 못할 세상을 만들기 위해 </span><span style=&quot;font-size: 10pt;&quot;>담대하게 도전하고 개척합니다.&nbsp;&nbsp;</span></p> <p><span style=&quot;font-size: 10pt;&quot;>We pioneer the path to players&#39; dreams.</span><br><span style=&quot;font-size: 10pt;&quot;>With bold imagination and breakthrough technology, </span><span style=&quot;font-size: 10pt;&quot;>we create unforgettable worlds for fans across the globe.</span></p> <hr> <p>&nbsp;</p></div><h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀(프로젝트)을 소개합니다.&nbsp;</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>KRAFTON Localization Department는 다양한 장르의 독창적인 게임을 전 세계 플레이어가 각자의 언어와 문화 안에서 자연스럽게 경험할 수 있도록 지원하는 조직입니다. 단순히 언어를 번역하는 것을 넘어, 게임의 세계관과 캐릭터, 플레이 경험이 각 언어에서도 온전히 전달될 수 있도록 번역 품질과 로컬라이제이션 프로세스 전반을 담당합니다. 플레이어가 사용하는 언어로 KRAFTON의 경험을 새롭게 구현하고 전달하는 일에 큰 열정을 가지고 있습니다.</span></li> </ul> <h4>&nbsp;</h4> <h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀과 함께할 미션을 소개합니다.</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>사람 번역 및 AI 번역으로 제작되는 게임 콘텐츠의 번역, 편집 및 교정</span></li> <li><span style=&quot;font-size: 10pt;&quot;>한국어 로컬라이제이션의 최종 품질을 담당하며, 게임 전반의 언어적 품질, 일관성 및 톤 관리</span></li> <li><span style=&quot;font-size: 10pt;&quot;>용어집, 스타일 가이드 및 언어 품질 가이드라인을 작성하고, 외부 벤더와 협업하여 일관된 품질 기준 유지</span></li> <li><span style=&quot;font-size: 10pt;&quot;>정립된 지표와 평가 체계를 기반으로 번역 품질을 평가하고 언어 품질 보증 업무를 계획 및 수행</span></li> <li><span style=&quot;font-size: 10pt;&quot;>AI 번역 콘텐츠를 검토하고, 모델, 프롬프트 및 후처리 로직을 포함한 번역 품질 개선 프로세스에 언어적 피드백 제공</span></li> </ul> <p>&nbsp;</p> <h3><span style=&quot;font-size: 12pt;&quot;><strong>이런 경험을 가진 분과 함께 성장하고 싶습니다! (필수요건)</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>게임 로컬라이제이션 분야에서 번역, 편집 또는 언어 품질 검수 업무를 1년 이상 수행한 경험이 있으신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>게임 내 내러티브와 UI 등 다양한 맥락을 고려하여 자연스럽고 유려한 한국어를 작성할 수 있는 뛰어난 언어 감각과 문장력을 갖추신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>영어 원문의 의미와 뉘앙스를 정확하게 이해하고, 언어 및 문화적 맥락을 고려하여 자연스러운 한국어로 전달할 수 있으신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>게임 메커니즘과 게임 용어에 대한 폭넓은 지식과 이해를 갖추신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>다양한 게임 장르와 각 장르의 특성, 플레이어가 사용하는 언어와 문화에 대한 높은 이해도를 갖추신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>AI",
       "eligibility": "지원자격 확인 필요",
       "languageRequirements": "공고 원문 확인 필요",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "evidenceNote": "회사 공식 Greenhouse 채용목록 · Employment Type: Contractor · Sector: Corporate Support · Corp./Studios: KRAFTON · Job Category - Art:  · Job Category - Business & Service: Localization · Job Category - Data:  · Job Category - Development Management:  · Job Category - Game Design:  · Job Category - Tech:  · Job Category - TA:  · Job Category - QA:  · Job Category - Sound:  · Job ",
       "languageFitStatus": "mismatch",
       "languageFitReason": "Korean: 현재 확인된 언어 역량으로는 직무 요구 수준을 충족한다고 판단하기 어렵습니다. 실제 능력과 요건 확인 필요.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "channel-corp--f7c2cbad583f14a4a457",
@@ -1650,12 +1514,12 @@
       "eligibility": "Check language, hiring eligibility and job requirements at the employer site.",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "evidenceNote": "Channel Corp. official Lever job posting feed. Job description is abbreviated; check original posting.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "curated-eac3cce711b15d75ed1d",
@@ -1695,7 +1559,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-11-17. NOT refreshed by the automated crawler. Recheck the original job for current availability. New public path: Wanted startup job board. The posting was still listed on 2026-11-17; deadline is rolling. Korean level and visa support are not stated, so the lead is conditional.",
       "collectionState": "seen",
       "firstSeenAt": "2026-11-17T04:02:51.250Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "curated-f749096991d2dcbdc2dc",
@@ -1735,7 +1599,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-28. NOT refreshed by the automated crawler. Recheck the original job for current availability. Individual Wehome careers page checked 2026-10-28. No close date or pay shown. Office address listed in Mapo-gu, Seoul, so this is a relocation/commute lead rather than a Jeonju online job.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T04:47:49.197Z",
-      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "id": "kowork-d3d99fe264be46900a05",
@@ -1759,11 +1623,79 @@
       "languageFitReason": "Public metadata was checked; language requirements still need confirmation.",
       "eligibilityStatus": "possible",
       "eligibility": "Preferred visas: Job Seeking Visa (D-10) Employment Visa (E-1 ~ E-7) Residence (F-2) Overseas Korean (F-4) Permanent Residence (F-5) International Marriage (F-6)",
-      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "verifiedAt": "2026-11-21T23:59:26.606Z",
       "evidenceNote": "Minimal structured metadata and source link only. No description text or copyrighted images reproduced.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-22T21:38:00.306Z",
+      "lastSeenAt": "2026-11-21T23:59:26.606Z"
+    },
+    {
+      "id": "jobicy-26d408720940b77e697c",
+      "title": "English to Spanish (ESMX native) Linguist for Life Sciences",
+      "company": "Welo Global",
+      "source": "Jobicy",
+      "url": "https://jobicy.com/jobs/163035-english-to-spanish-esmx-native-linguist-for-life-sciences",
+      "description": "About Welo Life Sciences Welo Life Sciences, a Welo Global brand, is a specialized language and technology partner serving pharmaceutical, CRO, and medical device organizations operating in regulated global markets. We deliver regulator-ready translation, linguistic validation, and localization solutions that support clinical trials, pharmacovigilance, regulatory affairs, labeling, and global commercialization. Our approach combines subject matter expertise with ISO-certified quality processes and technology-enabled workflows designed to integrate seamlessly into life sciences operations. With extensive experience supporting global product development and post-market requirements, Welo Life Sciences helps organizations accelerate timelines, protect data integrity, and maintain compliance across languages and regions. All solutions are delivered within a secure, audit-ready framework supported by seven ISO certifications. welolifesciences.com About the Role We are looking for experienced English into Spanish (Mexico) linguists specializing in Clinical-trial, Pharmacovigilance and Regulatory document translation. Key Responsibilities Translate clinical research, regulatory and pharmacovigilance documents from English to Spanish LatAm. Perform Machine Translation Post-Editing (MTPE) on machine-translated safety content. Perform Copy Edit (translation review) of translated/post-edited content for accuracy, tone, and consistency. Meet strict, non-extendable turnaround times on time-sensitive content. Work within the client's CAT tool environment (XTM/Phrase), also Track Changes in Microsoft Word following project-specific setup instructions. Field of Expertise Clinical Research Documents (protocols and synopses, IB, ICF, Patient Sheets, Patient Diaries) Regulatory Documents (SmPC, PIL, Labels, CTD Modules) Pharmacovigilance Documents (PSUR, DSUR, RMP, SAE and AE) Must-Have Criteria Applicant must meet at least one of the following criteria: Education A degree in Translation, Linguistics, or Language Studies (or an equivalent degree) or Recognized graduate qualification in any other field, plus a minimum of two years of full-time professional experience in translation or A minimum of five years of full-time professional experience in translation Relevant translation experience At least two years of practical translation experience, specifically with life sciences (clinical trials and pharmacovigilance) and medical documents Technical Skills Familiarity with CAT tools (XTM/Phrase), License will be provided. Familiarity with Track Changes in Microsoft Word Native Language A candidate must be native in ESMX (Mexican Spanish) Nice-to-Have Degree in Medicine, Biology, Biochemistry, Clinical Research, Translation, Linguistics, Philology or similar In-house industry experience at a CRO or pharmaceutical company. Before Applying Please note there will be an assessment as part of our onboarding and quality procedure, please only apply if you're willing to complete our assessment. Please ensure your latest English CV accurately reflects your Life Sciences and Medical translation experience, including years of experience specifically in Life Sciences, the document types you’ve translated, CAT tool you've used, and relevant details also your contact information (email AND phone number). Beware of recruitment scams. Welo Global and all of its brands never recruit through direct messages on social media or WhatsApp, and never asks candidates to pay money for a job. Official emails come only from @welocalize.com, @welodata.ai, or @hire.lever.co, and all applications go through jobs.lever.co/weloglobal. Be wary of unexpected offers, generic email addresses (such as Gmail or Yahoo), and requests for fees or sensitive information. Report suspicious messages and learn more: Recognizing Scams and Confirming Legitimate Welocalize Communications – Welo Global We look forward to receiving your application! Job Reference: #LI-JC1 Compensation Additional Information",
+      "location": "Mexico",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "translation",
+      "postedAt": "2026-11-17T16:50:10.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": null,
+      "languageRequirements": "Spanish, English",
+      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · Mexico",
+      "eligibilityStatus": "unknown",
+      "eligibilityDetail": {
+        "status": "unknown",
+        "geoScope": "Mexico",
+        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "match",
+      "languageFitReason": "Spanish, English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
+      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "unverified",
+      "firstSeenAt": "2026-11-18T04:00:23.768Z",
+      "lastSeenAt": "2026-11-21T23:41:09.467Z"
+    },
+    {
+      "id": "jobicy-e238730596488296675a",
+      "title": "Graduate Customer Success Manager",
+      "company": "Canonical",
+      "source": "Jobicy",
+      "url": "https://jobicy.com/jobs/153669-graduate-customer-success-manager",
+      "description": "The role of a Customer Success Manager at Canonical Customer success is a new and strategic department at Canonical, with the objective to reduce risk and churn, facilitate the adoption of new products or services and support expansion within existing accounts. Customer Success Managers (CSM) are responsible for developing trust with their assigned customers and providing them with the best possible experience navigating Canonical's vast offering. Through a clear understanding of their customer’s objectives, the CSM can activate a large range of internal and external capabilities to alleviate any pain point, align expectations, as well as help draw and deliver on an appropriate collaboration roadmap. We are growing our Customer Success team to continue offering thoughtful, smart, precise interactions across our product portfolio, from Ubuntu to open source infrastructure and applications. This role is a first step in the CSM organisation. Although you will primarily focus on the Tech segment, including the store customers, you will also have a portfolio assigned. Ubuntu is chosen by thousands of new users every month. Our responsibility is to ensure the best user experience for them through problem-solving, onboarding, enablement and value realisation all the way to success. Collaborating with other teams and participating in campaign efforts, you will connect with a diverse set of users of Canonical products and identify our future champions. Location: This role will be based remotely worldwide. What your day will look like A strong focus on supporting customers by finding solutions to ticket requests. Enrich documentation about problem solving, Q&A, onboarding materials. Drive campaigns targeting multiple customers through digital touch-points and activities. Identify high potential as well as high risk customers from newly onboarded users or customers Onboard new customers and introduce them to our products and support processes. Products include: Ubuntu Pro, MAAS, Landscape, Openstack, Ceph, Kubernetes, data applications and many more. Collaborate with Sales and Support in developing and delivering engagement plans that fulfill the customer's objectives. Engage with your portfolio of customers to ensure risk identification Collect feedback from customers and format them for review by the product team What we are looking for in you Customer-facing experience An empathetic individual with a natural drive to help others Passion for technology, infrastructure and Ubuntu in particular is a must Excellent presentation skills Strong organisational skills, ability to structure and constantly update documentation A team player capable of interacting with all departments internally Additional skills that you might also bring We at the Customer Success team strongly appreciate various languages! Therefore, if you possess proficiency (both written and spoken) in Japanese, Korean, Spanish, Portuguese, German, French, or Italian, alongside an excellent command of English, please inform us! What we offer you We consider geographical location, experience, and performance in shaping compensation worldwide. We revisit compensation annually (and more often for graduates and associates) to ensure we recognise outstanding performance. In addition to base pay, we offer a performance-driven annual bonus. We provide all team members with additional benefits, which reflect our values and ideals. We balance our programs to meet local needs and ensure fairness globally. Distributed work environment with twice-yearly team sprints in person - we’ve been working remotely since 2004! Personal learning and development budget of USD 2,000 per year Annual compensation review Recognition rewards Annual holiday leave Maternity and paternity leave Employee Assistance Programme Opportunity to travel to new locations to meet colleagues from your team and others Priority Pass for travel and travel upgrades for long haul company events About Canonical Canonical is a pioneering tech firm that is at the forefront of the global move to open source. As the company that publishes Ubuntu, one of the most important open source projects and the platform for AI, IoT and the cloud, we are changing the world on a daily basis. We recruit on a global basis and set a very high standard for people joining the company. We expect excellence - in order to succeed, we need to be the best at what we do. Canonical has been a remote-first company since its inception in 2004.​ Work at Canonical is a step into the future, and will challenge you to think differently, work smarter, learn new skills, and raise your game. Canonical provides a unique window into the world of 21st-century digital business. Canonical is an equal opportunity employer We are proud to foster a workplace free from discrimination. Diversity of experience, perspectives, and background create a better work environment and better products. Whatever your identity, we will give your application fair consideration. #LI-remote",
+      "location": "Anywhere",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "support",
+      "postedAt": "2026-11-21T03:10:24.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": null,
+      "languageRequirements": "Spanish, Korean, German, French, Japanese, Portuguese, Italian",
+      "eligibility": "한국에서 지원 가능성 있음 · Anywhere (확인 필요)",
+      "eligibilityStatus": "possible",
+      "eligibilityDetail": {
+        "status": "possible",
+        "geoScope": "Anywhere",
+        "reason": "The stated region may include South Korea; employment, language and tax eligibility remain unverified.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "mismatch",
+      "languageFitReason": "German, French, Japanese, Portuguese, Italian: 현재 확인된 언어 역량으로는 직무 요구 수준을 충족한다고 판단하기 어렵습니다. 실제 능력과 요건 확인 필요.",
+      "verifiedAt": "2026-11-21T23:41:09.467Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "unverified",
+      "firstSeenAt": "2026-11-21T23:41:09.467Z",
       "lastSeenAt": "2026-11-21T23:41:09.467Z"
     },
     {
@@ -5194,40 +5126,6 @@
       "lastSeenAt": "2026-10-29T05:49:52.826Z"
     },
     {
-      "id": "himalayas-3eebc1670689144293c1",
-      "title": "Video Editor",
-      "company": "Storm Ideas",
-      "source": "Himalayas",
-      "url": "https://himalayas.app/companies/storm-ideas/jobs/video-editor?utm_source=api",
-      "description": "💸 Up to USD 25,000 per year, on a full time, contractor contract 🌎 Fully remote working with working hours of 9:00am–5:30pm PT. 🎬 Create video content for globally recognised brands in US TV and entertainment. 💻 High-end, fast computer and all the latest creative software and AI tools you'll need About the Role We're looking for a Video Editor with a strong portfolio, sharp storytelling instincts and an eye for detail. You'll turn TV and entertainment footage into engaging social content, using your judgement on pacing, sound, motion and format to make every edit work for its audience. You'll learn what we make and the standard it needs to meet: character supercuts, compelling short-form edits and polished motion graphics. You'll work closely with our production team to deliver strong work, respond to feedback and keep projects moving. AI is part of how we improve production. We want someone who understands how it can support tasks such as searching source footage, transcription, captioning, audio clean-up and versioning, and has explored some of these uses in practice. You can explain what helped, what needed correcting and when your own editorial judgement was the better guide. You'll build on that understanding using Storm's stack of AI and creative tools, with responsibility for the quality of everything you deliver. About Storm Ideas At Storm Ideas , we supercharge the digital presence of some of the biggest names in US TV and entertainment. Since 2008, our international team has delivered creative and technical solutions for globally recognised clients. We build products, produce social content and develop better ways for our teams and partners to work. Creativity, technology and collaboration shape what we do. What You'll Make Happen Use Adobe Creative Suite to produce high-quality short- and long-form video, tailored to the brief, brand, audience and platform. Design new motion graphics or work with existing packages, bringing creative ideas that strengthen the finished edit. Understand the brief and source material thoroughly, and ask for clarification when something is missing or unclear. Check your work before review, including pacing, audio, captions, on-screen text, accessibility, export settings and anything produced or changed with AI. Use AI where it improves quality, speed or consistency, while protecting confidential material, rights and brand standards. Apply feedback carefully, manage your time against deadlines and changing priorities, and flag blockers early with clear context and practical options. Keep project files, versions and handovers organised so another team member can pick up the work easily. Keep developing your editing skills and understanding of production technology. Test useful improvements and share effective techniques, reusable prompts or workflows with the team. Your Expertise A strong portfolio or showreel demonstrating editing craft, storytelling, pacing and an understanding of social content. Personal projects and fan edits count too. Confident use of Adobe Creative Suite, particularly Premiere Pro, After Effects and Photoshop. Knowledge of encoding, export specifications and optimisation for social platforms. A fundamental understanding of AI in production workflows, supported by examples of tools or features you've tried and what you learned from using them. The ability to critically review AI output, spot errors and explain where a tool adds value. A strong eye for detail, reliable delivery under deadlines, and the judgement to balance polish with the time available. Clear communication, openness to feedback and the initiative to investigate problems and keep improving your work. Based in LATAM and available to work 9:00am–5:30pm Pacific Time (PT). What It's Like To Work Here Modern Tools and Technology Work with current hardware and creative tools, with opportunities to learn and apply useful developments in AI-supported production. Ideas Welcome We encourage practical suggestions that make the work better. When a technique proves useful, share it so others can benefit too. An International Team Join a collaborative team working across countries, disciplines and projects. We value skill, initiative and clear communication. Remote Working This role is fully remote within LATAM, with a regular 9:00am–5:30pm Pacific Time schedule. Your local working hours may change when Pacific Time moves between standard and daylight saving time. RECRUITMENT PROCESS Apply with your CV and portfolio or showreel. If shortlisted, you'll meet members of our production leadership or recruitment team to discuss your experience, approach and the role. You'll complete a practical editing task. We'll ask you to explain your creative choices and show your working, including how you used AI and checked its output. We'll consider the finished edit, your process, reliability and communication. The final stage is an interview with a senior member of the team. Not sure you tick every box? Apply anyway if this sounds like how you already work. We're more interested in your craft, your judgment, and how you work with AI than in a perfect traditional CV. Privacy Notice We process your personal data for recruitment purposes in line with UK data protection law. AI tools may assist in reviewing applications, but decisions are made by our team. We retain data only as necessary for recruitment and compliance. You can request access or deletion of your data at any time by emailing . Originally posted on Himalayas",
-      "location": "Worldwide",
-      "workplaceMode": "remote",
-      "market": "online",
-      "category": "content",
-      "postedAt": "2026-10-26T02:02:12.000Z",
-      "deadline": null,
-      "listingExpiresAt": null,
-      "pay": "USD 25000–25000 annual",
-      "languageRequirements": "공고 원문 확인 필요",
-      "eligibility": "Remote work is limited to LATAM",
-      "eligibilityStatus": "restricted",
-      "eligibilityDetail": {
-        "status": "restricted",
-        "geoScope": "LATAM (posting text)",
-        "reason": "Posting explicitly states fully remote within LATAM; worldwide source metadata is broader than the worker restriction.",
-        "requiresVerification": true
-      },
-      "languageFitStatus": "unknown",
-      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-29T05:49:52.826Z",
-      "sourceKind": "public_api",
-      "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
-      "legacyIds": [],
-      "collectionState": "not_seen",
-      "firstSeenAt": "2026-10-28T05:25:41.333Z",
-      "lastSeenAt": "2026-10-29T05:49:52.826Z"
-    },
-    {
       "id": "himalayas-41d31d7309133473bae7",
       "title": "Marketing Coordinator & Digital Marketing Specialist",
       "company": "Vitalis Outsourcing LLC",
@@ -7203,31 +7101,35 @@
       "source": "Remotive",
       "status": "ok",
       "count": 2,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "detail": "1/1 요청 완료. 2개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://remotive.com/api/remote-jobs?limit=500"
     },
     {
       "source": "Jobicy",
-      "status": "ok",
-      "count": 5,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
-      "detail": "4/4 요청 완료. 5개 관련 공고. 출처 공고 URL 원문 확인 필요",
-      "url": "https://jobicy.com/api/v2/remote-jobs?count=200"
+      "status": "partial",
+      "count": 2,
+      "checkedAt": "2026-11-21T23:59:26.606Z",
+      "detail": "2/4 요청 완료. 2개 관련 공고. 오류: HTTP 429 (rate-limited); HTTP 429 (rate-limited)",
+      "url": "https://jobicy.com/api/v2/remote-jobs?count=200",
+      "failures": [
+        "HTTP 429 (rate-limited)",
+        "HTTP 429 (rate-limited)"
+      ]
     },
     {
       "source": "Remote OK",
       "status": "ok",
-      "count": 5,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
-      "detail": "1/1 요청 완료. 5개 관련 공고. 출처 공고 URL 원문 확인 필요",
+      "count": 4,
+      "checkedAt": "2026-11-21T23:59:26.606Z",
+      "detail": "1/1 요청 완료. 4개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://remoteok.com/api"
     },
     {
       "source": "Arbeitnow",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "detail": "1/1 요청 완료. 0개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://www.arbeitnow.com/api/job-board-api?page=1"
     },
@@ -7235,7 +7137,7 @@
       "source": "Himalayas",
       "status": "ok",
       "count": 31,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "detail": "9/9 요청 완료. 31개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://himalayas.app/jobs/api/search?q=korean&country=KR&sort=recent&page=1"
     },
@@ -7243,7 +7145,7 @@
       "source": "RemoteJobs.org",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "detail": "5/5 요청 완료. 0개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://remotejobs.org/api/v1/jobs?q=korean&country=KR&eligibility=known&limit=50"
     },
@@ -7252,36 +7154,36 @@
       "status": "ok",
       "count": 3,
       "detail": "회사 공식 Greenhouse 목록 65건 확인, 한국 근무지·관련 직무·최근 90일 기준 3건 보존",
-      "checkedAt": "2026-11-21T23:41:09.467Z"
+      "checkedAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "source": "Appier",
       "status": "ok",
       "count": 0,
       "detail": "회사 공식 Greenhouse 목록 60건 확인, 한국 근무지·관련 직무·최근 90일 기준 0건 보존",
-      "checkedAt": "2026-11-21T23:41:09.467Z"
+      "checkedAt": "2026-11-21T23:59:26.606Z"
     },
     {
       "source": "ShopBack",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "url": "https://jobs.lever.co/shopback-2",
       "detail": "72 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
     {
       "source": "Xsolla",
-      "status": "ok",
+      "status": "error",
       "count": 0,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "url": "https://jobs.lever.co/xsolla",
-      "detail": "188 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
+      "detail": "The operation was aborted due to timeout"
     },
     {
       "source": "Channel Corp.",
       "status": "ok",
       "count": 2,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "url": "https://jobs.lever.co/zoyi",
       "detail": "73 employer postings checked; 2 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7289,7 +7191,7 @@
       "source": "Match Group",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "url": "https://jobs.lever.co/matchgroup",
       "detail": "72 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7297,7 +7199,7 @@
       "source": "Sahara AI",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "url": "https://jobs.ashbyhq.com/Sahara",
       "detail": "3 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7305,7 +7207,7 @@
       "source": "Plaud",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "url": "https://jobs.ashbyhq.com/Plaud",
       "detail": "52 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7314,28 +7216,28 @@
       "status": "ok",
       "count": 1,
       "url": "https://kowork.kr/en",
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "detail": "One public list with 15 cards, 6 limited detail checks. 1 profile-relevant leads. No full description copied; current opening status must be verified."
     },
     {
       "source": "ChatGPT Research",
       "status": "manual",
       "count": 3,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "detail": "3 individually researched leads; 13 excluded or expired; 20 manually withdrawn from the radar. Not live-checked at each scheduled refresh."
     },
     {
       "source": "사용자 저장 공고",
       "status": "not_configured",
       "count": 0,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "detail": "config/manual-jobs.json 미생성. 선택 기능"
     },
     {
       "source": "Upwork",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "detail": "Upwork 공개 RSS 자동 수집 기능이 중단되어 검색 결과를 생성하지 않습니다. 계정 로그인 후 수동 검색 링크를 이용하세요.",
       "url": "https://www.upwork.com/nx/search/jobs/",
       "manualSearches": [
@@ -7365,7 +7267,7 @@
       "source": "K-WORK",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "detail": "Korean government SME/foreign talent job platform. Each listing needs language and visa verification. Original-site browsing only.",
       "url": "https://k-work.or.kr/empmnInfo/empmn/list.do"
     },
@@ -7373,7 +7275,7 @@
       "source": "Hanultari",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "detail": "Seoul multicultural-family job portal. Automatic republication restricted; verify jobs at original source.",
       "url": "https://mcfamily.or.kr/en/jobs/opening"
     },
@@ -7381,7 +7283,7 @@
       "source": "JOBPLOY",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "detail": "Foreigner-focused Korea jobs. Terms restrict unlicensed copying; use original-site search.",
       "url": "https://www.jobploy.kr/en"
     },
@@ -7389,7 +7291,7 @@
       "source": "Wanted",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "detail": "Additional Korean employer listings for Spanish-language content and marketing. Search on the original site; individual postings can already be closed.",
       "url": "https://www.wanted.co.kr/"
     },
@@ -7397,7 +7299,7 @@
       "source": "ProZ",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-21T23:41:09.467Z",
+      "checkedAt": "2026-11-21T23:59:26.606Z",
       "detail": "Specialist translation and localization jobs; verify deadlines, professional experience and ability to work from Korea on each original posting.",
       "url": "https://www.proz.com/translation-jobs"
     }
