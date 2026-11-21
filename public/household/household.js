@@ -22,6 +22,7 @@ const $ = (id) => document.getElementById(id);
 
 const blankState = () => ({ version: BACKUP_VERSION, profile: {}, tracking: {}, hiddenIds: [] });
 let state = blankState();
+let allPrograms = [];
 let programs = [];
 let storage = null;
 let saveSequence = Promise.resolve();
@@ -82,7 +83,7 @@ function cleanState(input) {
     const value = input.profile[key];
     if (typeof value === 'string' && value.length <= 80) result.profile[key] = value;
   }
-  const known = new Set(programs.map(({ id }) => id));
+  const known = new Set((allPrograms.length ? allPrograms : programs).map(({ id }) => id));
   result.hiddenIds = Array.isArray(input.hiddenIds)
     ? [...new Set(input.hiddenIds.filter((id) => typeof id === 'string' && known.has(id)))].slice(0, 500)
     : [];
@@ -139,6 +140,10 @@ function periodInfo(program) {
   if (program.end && program.end < today) return { type: 'closed', title: '2026년 신청 종료', sort: 3 };
   if (program.start && program.start > today) return { type: 'soon', title: '모집 예정', sort: 2 };
   return { type: 'open', title: '공고상 기간 내 · 재확인', sort: 0 };
+}
+
+function isOpenProgram(program) {
+  return !(program.end && program.end < kstDate());
 }
 
 function assessment(program, period) {
@@ -319,24 +324,21 @@ function updateTracking(id, value) {
 }
 
 function renderStats() {
-  $('totalCount').textContent = String(programs.length);
-  $('openCount').textContent = String(programs.filter((p) => periodInfo(p).type === 'open').length);
-  $('closedCount').textContent = String(programs.filter((p) => periodInfo(p).type === 'closed').length);
+  const active = programs.filter(isOpenProgram);
+  $('totalCount').textContent = String(active.length);
+  $('openCount').textContent = String(active.filter((p) => periodInfo(p).type === 'open').length);
   $('savedCount').textContent = String(Object.values(state.tracking).filter((p) => p.status && p.status !== 'none').length);
 }
 
 function renderPrograms() {
   const query = $('query').value.trim().toLowerCase();
   const category = $('category').value;
-  const period = $('period').value;
   const tracking = $('tracking').value;
-  const matches = programs.filter((p) => {
+  const matches = programs.filter(isOpenProgram).filter((p) => {
     const hidden = state.hiddenIds.includes(p.id);
     if (tracking === 'hidden') return hidden;
     if (hidden) return false;
     if (category && p.category !== category) return false;
-    if (period === 'closed' && periodInfo(p).type !== 'closed') return false;
-    if (period === 'active' && periodInfo(p).type !== 'open') return false;
     const status = state.tracking[p.id]?.status || 'none';
     if (tracking === 'saved' && status === 'none') return false;
     if (tracking === 'done' && !['applied', 'finished'].includes(status)) return false;
@@ -349,7 +351,8 @@ function renderPrograms() {
     || a.title.localeCompare(b.title, 'ko'));
   $('programs').replaceChildren(...matches.map(renderCard));
   $('empty').hidden = matches.length !== 0;
-  $('resultCount').textContent = `${matches.length}건 표시`;
+  $('resultCount').textContent = `${matches.length}개 표시`;
+  renderStats();
 }
 
 function exportBackup() {
@@ -388,7 +391,8 @@ async function init() {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
     if (!Array.isArray(data.programs)) throw new Error('지원사업 목록 형식 오류');
-    programs = data.programs.filter((program) => HOUSEHOLD_PROGRAM_IDS.has(program.id) && applyLinkLabel(program.applyUrl) && !(program.end && program.end < kstDate()));
+    allPrograms = data.programs;
+    programs = data.programs.filter((program) => HOUSEHOLD_PROGRAM_IDS.has(program.id) && applyLinkLabel(program.applyUrl) && isOpenProgram(program));
     $('sourceDate').textContent = formatDate(data.researchedAt);
   } catch (error) { notice(`공식 사업 목록을 읽을 수 없습니다: ${error.message}`); return; }
   try {
@@ -415,7 +419,7 @@ async function init() {
     const ok = await saveState();
     if (ok) notice('가구 정보가 이 브라우저에 저장되었습니다. 공식 수급 자격 심사는 별도로 필요합니다.');
   });
-  for (const id of ['query', 'category', 'period', 'tracking']) $(id).addEventListener('input', renderPrograms);
+  for (const id of ['query', 'category', 'tracking']) $(id).addEventListener('input', renderPrograms);
   $('exportBtn').addEventListener('click', exportBackup);
   $('importFile').addEventListener('change', importBackup);
 }

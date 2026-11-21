@@ -10,7 +10,6 @@ test('가구 지원 목록은 공식 링크와 신청기한을 구분한다', as
   await page.goto('/household/');
   await expect(page.getByRole('heading', { name: /우리 집에 맞는 혜택을/ })).toBeVisible();
   await expect(page.locator('#totalCount')).toHaveText('8');
-  await expect(page.locator('#closedCount')).toHaveText('0');
   await expect(page.locator('.card')).toHaveCount(8);
   await expect(page.getByRole('link', { name: '공식 근거 ↗' })).toHaveCount(8);
   await expect(page.getByRole('link', { name: '신청·조회 페이지 ↗' })).toHaveCount(7);
@@ -36,14 +35,70 @@ test('가구 지원 목록은 공식 링크와 신청기한을 구분한다', as
   await expect(page.locator('#programs')).not.toContainText('전세대출 이자');
   await expect(page.locator('#programs')).not.toContainText('난임부부');
   await expect(page.locator('[data-program-id="jeonju-family-center-topik-fall-2026"]').getByRole('link', { name: '프로그램 목록 ↗' })).toHaveCount(1);
-  await page.locator('#period').selectOption('closed');
-  await expect(page.locator('.card')).toHaveCount(0);
-  await expect(page.locator('#empty')).toBeVisible();
-  await expect(page.locator('#programs')).not.toContainText('2026 전주시 청년월세 지원');
   await page.locator('#category').selectOption('tax');
   await expect(page.locator('.card')).toHaveCount(0);
   await expect(page.locator('#empty')).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test('허용 목록·신청 링크·마감 여부를 각각 검증한다', async ({ page }) => {
+  const data = JSON.parse(await readFile(new URL('../../public/household/data/programs.json', import.meta.url), 'utf8'));
+  const source = new Map(data.programs.map((program) => [program.id, program]));
+  const open = structuredClone(source.get('employment-support-i-2026'));
+  open.end = '2026-11-21';
+  const noLink = structuredClone(source.get('tomorrow-learning-2026'));
+  delete noLink.applyUrl;
+  const closed = structuredClone(source.get('housing-benefit-2026'));
+  closed.end = '2026-11-19';
+  const notAllowed = structuredClone(source.get('jeonju-exam-fee-2026'));
+  notAllowed.end = '2026-12-31';
+  notAllowed.applyUrl = 'https://example.org/apply';
+
+  await page.clock.install({ time: new Date('2026-11-20T12:00:00+09:00') });
+  await page.route('**/household/data/programs.json*', (route) => route.fulfill({
+    json: { researchedAt: '2026-11-20', programs: [open, noLink, closed, notAllowed] }
+  }));
+  await page.goto('/household/');
+  await expect(page.locator('.card')).toHaveCount(1);
+  await expect(page.locator('.card')).toHaveAttribute('data-program-id', 'employment-support-i-2026');
+  await page.locator('#query').fill('국민취업지원제도');
+  await expect(page.locator('.card')).toHaveCount(1);
+  await expect(page.locator('#totalCount')).toHaveText('1');
+
+  await page.clock.fastForward(2 * 24 * 60 * 60 * 1000);
+  await page.locator('#query').dispatchEvent('input');
+  await expect(page.locator('.card')).toHaveCount(0);
+  await expect(page.locator('#totalCount')).toHaveText('0');
+  await expect(page.locator('#openCount')).toHaveText('0');
+});
+
+test('마감된 추적 프로그램의 상태와 메모를 잃지 않는다', async ({ page }) => {
+  const data = JSON.parse(await readFile(new URL('../../public/household/data/programs.json', import.meta.url), 'utf8'));
+  const source = new Map(data.programs.map((program) => [program.id, program]));
+  const open = structuredClone(source.get('tomorrow-learning-2026'));
+  open.end = '2026-12-31';
+  const expired = structuredClone(open);
+  expired.end = '2026-01-01';
+  let showExpired = false;
+
+  await page.route('**/household/data/programs.json*', (route) => route.fulfill({
+    json: { researchedAt: '2026-11-20', programs: [showExpired ? expired : open] }
+  }));
+  await page.goto('/household/');
+  const card = page.locator('[data-program-id="tomorrow-learning-2026"]');
+  await card.getByRole('combobox', { name: /신청 상태/ }).selectOption('preparing');
+  await card.getByRole('textbox', { name: /개인 메모/ }).fill('만료 후에도 보존');
+  await card.getByRole('textbox', { name: /개인 메모/ }).blur();
+  await expect(page.locator('#savedCount')).toHaveText('1');
+
+  showExpired = true;
+  await page.reload();
+  await expect(page.locator('.card')).toHaveCount(0);
+  await expect(page.locator('#savedCount')).toHaveText('1');
+  const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#exportBtn').click()]);
+  const backup = JSON.parse(await readFile(await download.path(), 'utf8'));
+  expect(backup.tracking['tomorrow-learning-2026'].status).toBe('preparing');
+  expect(backup.tracking['tomorrow-learning-2026'].note).toBe('만료 후에도 보존');
 });
 
 test('별도 IndexedDB로 가구 정보와 신청 메모를 저장하고 새로고침 후 복원한다', async ({ page }) => {
