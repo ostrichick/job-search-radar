@@ -5,6 +5,16 @@ const DB_NAME = 'jeonju-household-support-v1';
 const DB_STORE = 'household';
 const BACKUP_VERSION = 1;
 const PROFILE_KEYS = ['selfBirthYear', 'spouseBirthYear', 'selfWork', 'spouseWork', 'housing', 'monthlyIncome', 'deposit', 'rent', 'assets', 'insurance'];
+const HOUSEHOLD_PROGRAM_IDS = new Set([
+  'employment-support-i-2026',
+  'tomorrow-learning-2026',
+  'housing-benefit-2026',
+  'jeonju-family-center-employment-service',
+  'jeonju-interview-suit-2026',
+  'jeonju-family-center-topik-fall-2026',
+  'kiip-social-integration-2026',
+  'jeonju-multicultural-interpreting-2026'
+]);
 const STATUS_VALUES = ['none', 'interested', 'preparing', 'applied', 'finished'];
 const STATUS_LABELS = { none: '아직 기록 없음', interested: '관심', preparing: '신청 준비', applied: '신청 완료 · 결과 대기', finished: '결과 확인 완료' };
 const CATEGORY_LABELS = { work: '취업·훈련', housing: '주거', tax: '세금·환급', welfare: '복지', savings: '생활비 절약' };
@@ -378,7 +388,7 @@ async function init() {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
     if (!Array.isArray(data.programs)) throw new Error('지원사업 목록 형식 오류');
-    programs = data.programs.filter((program) => applyLinkLabel(program.applyUrl) && !(program.end && program.end < kstDate()));
+    programs = data.programs.filter((program) => HOUSEHOLD_PROGRAM_IDS.has(program.id) && applyLinkLabel(program.applyUrl) && !(program.end && program.end < kstDate()));
     $('sourceDate').textContent = formatDate(data.researchedAt);
   } catch (error) { notice(`공식 사업 목록을 읽을 수 없습니다: ${error.message}`); return; }
   try {
