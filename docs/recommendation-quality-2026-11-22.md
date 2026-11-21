@@ -40,3 +40,20 @@
 - 복지·강좌·투어 등 다른 탭은 코드를 변경하지 않았고, 별도 동시 작업 때문에 실행 중 파일 변경에 따른 전체 테스트 실패는 별도 식별 및 재검증이 필요.
 
 배포 후 검증은 최신 `main` GitHub Actions와 Pages의 정확한 실행 ID·배포 파일에 근거해 별도 기재한다. 문서 생성만으로 배포 완료를 선언하지 않는다.
+
+## 운영 피드 갱신 및 교정 — 2026-11-21 23:41 UTC
+
+첫 배포 `27fbe91`의 Actions 실행 [44962683333](https://github.com/ostrichick/job-search-radar/actions/runs/44962683333)은 build/check/E2E/수집/Pages 배포가 성공했다. 당시 실제 공개 피드는 정적 A/B의 19:18Z 수집본이 아니라 **23:41Z 재수집본**으로, 문성 348건·니콜 216건·투어 19건이었으며 7개 HTML, 4개 추천 JS, 3개 JSON HTTP 200을 확인했다. 이 데이터 변화는 추천 개선 성능 지표에 합쳐 해석하지 않는다.
+
+운영 피드 원문 검사에서 추가 경계 사례를 발견해 수집·브라우저 규칙을 보강했다. `Jobicy Localisation Project Manager`의 “We're looking for ... Manager (...) based in Ireland”는 종전 수집기가 놓쳤으며, 제목/사무소 주소와 근로자 거주조건을 구분한 새 제한 패턴과 fixture를 추가했다. `Video Editor`의 “fully remote within LATAM”, `Senior Manager, Product Analytics`의 “remotely in the US / Authorized to work in the United States without sponsorship”는 해외 근로자 제한이 명백한 사례다. 반대로 일본어가 **제목에만** 표시된 이중·삼중언어 liaison 공고, Ukraine/Greece 제목과 “Work From Anywhere”가 충돌하는 공고, 싱가포르 고객시장 언급, 원어민 수준 영어 요구는 필수요건 확정 없이 하드제외하지 않고 `check`로 유지한다. `Taiwanese language required`처럼 언어 필수가 제목에 명시된 경우에는 프로필 밖 필수 언어로 판정한다. 재수집 및 공개 반영 여부는 후속 실행 확인이 필요하다.
+
+추가 고정 A/B 스냅샷은 `docs/recommendation-ranking-ab-operational-20261122.json`이다. 같은 23:41Z 피드 양쪽에 고정 코드 `6d7f4a6`과 보정 코드를 적용했다.
+
+| 기본 탭 | 과거 코드 표시 | 보정 코드 표시 | 상위20 현재 수집(전→후) | 상위20 명시 제한(전→후) |
+|---|---:|---:|---:|---:|
+| 문성 해외·원격 | 36 | 37 | 해당 없음 | 0→0 |
+| 문성 전주·완주 | 10 | 103 | 해당 없음 | 0→0 |
+| 니콜 해외 원격 | 146 | 143 | **12→20** | **1→0** |
+| 니콜 국내 대면 | 27 | 28 | 6→8 | 0→0 |
+
+독립 수동 검토에서는 제목/메타데이터만으로 ‘확정 부적합’으로 본 사례를 재판정했다. 실제 공고 원문에서 의무요건이 확인되지 않으면 H(명시 부적합)가 아니라 C(확인 필요)로 표시해야 한다. 따라서 이 보고서는 top20 고정 표본의 **명시 제한 건수**와 목록 변화만 확정적으로 제시하며, 독립 라벨의 임시 G/C/H를 채용 적격 판정 또는 통계적 정밀도 향상으로 주장하지 않는다.

@@ -37,15 +37,41 @@ assert.deepEqual(sorted([
 
 const abroadOnly = 'This is a 100% remote contract position open to applicants in Mexico.';
 const irelandOnly = 'We are looking for a Localisation Project Manager based in Ireland to join our team.';
+const latamOnly = 'Based in LATAM. This role is fully remote within LATAM with regular Pacific Time hours.';
+const usOnly = 'We are seeking a Senior Manager, Product Analytics remotely in the US. Authorized to work in the United States without sponsorship.';
+const usNotRequired = 'This is a fully remote role worldwide. You do not need to be authorized to work in the United States.';
+const noAuthorizationNeeded = 'No authorization required to work in the United States.';
 const locationUnsure = 'Remote team serves Spanish-speaking customers in Mexico.';
 assert.equal(evaluateProfileFit(make('language-hard', { title: 'Kinyarwanda Language Specialist - AI Trainer' })).status, 'fail',
   'a required non-profile language cannot score as generic AI trainer');
+assert.equal(evaluateProfileFit(make('trilingual-review', { title: 'Tri-Lingual Patient Liaison (English, Korean, Japanese) - S. Korea' })).status, 'check',
+  'title language list without an explicit mandatory clause is a verification gap, not indisputable exclusion');
+assert.ok(evaluateProfileFit(make('bilingual-review', { title: 'Bi-Lingual Patient Liaison (English, Korean, Japanese) - S. Korea' })).gaps.some(x=>x.includes('다국어')));
+assert.notEqual(evaluateProfileFit(make('bilingual-alternative', { title: 'Bi-Lingual English or Japanese Support' })).status, 'fail',
+  'language alternatives are verification candidates, not conclusive mismatches');
 assert.notEqual(evaluateProfileFit(make('language-alt', { title: 'Spanish or French Translator' }), { isNicole: true }).status, 'fail',
   'alternative Spanish language must remain eligible for review');
 assert.notEqual(evaluateProfileFit(make('language-market', { title: 'Marketing campaigns for French market' })).status, 'fail',
   'market/language mention is not a required fluency');
 assert.equal(assessEligibility({ description: abroadOnly, location: 'Mexico' }).status, 'restricted');
 assert.equal(assessEligibility({ description: irelandOnly, location: 'Ireland, UK' }).status, 'restricted');
+const irelandObserved = "We're looking for a Localisation Project Manager (Localisation Operations Specialist) based in Ireland to join our Managed Services team.";
+assert.equal(assessEligibility({ description: irelandObserved, location: 'Ireland, UK' }).status, 'restricted', 'source wording with We’re and parenthetical job title is an explicit worker restriction');
+assert.equal(excludeOnlineJobReason({ title: 'Localisation Project Manager', category: 'translation', description: irelandObserved, location: 'Ireland, UK' }), 'outside_supported_residence');
+for(const text of [latamOnly,usOnly]) {
+  assert.equal(assessEligibility({location:'Worldwide',description:text}).status,'restricted',text);
+  assert.equal(excludeOnlineJobReason({title:'Video Editor',category:'content',location:'Worldwide',description:text}),'outside_supported_residence',text);
+  assert.equal(evaluateProfileFit(make('worker-geo', {title:'Video Editor',location:'Worldwide',description:text}),{isNicole:true}).status,'fail',text);
+}
+for (const text of [usNotRequired, noAuthorizationNeeded]) {
+  assert.notEqual(assessEligibility({location:'Worldwide',description:text}).status,'restricted',text);
+  assert.equal(excludeOnlineJobReason({title:'Video Editor',category:'content',location:'Worldwide',description:text}),null,text);
+  assert.notEqual(evaluateProfileFit(make('no-us-auth',{title:'Video Editor',location:'Worldwide',description:text}),{isNicole:true}).status,'fail',text);
+}
+assert.notEqual(evaluateProfileFit(make('market-only',{title:'Video Editor',location:'Worldwide',description:'We edit videos for customers in LATAM.'}),{isNicole:true}).status,'fail');
+assert.notEqual(assessEligibility({location:'Worldwide',description:'Campaigns for customers in LATAM.'}).status,'restricted');
+assert.equal(evaluateProfileFit(make('taiwanese-required',{title:'Taiwanese language required Marketing Specialist',location:'Seoul, South Korea',remote:false}),{isNicole:true}).status,'fail');
+assert.equal(assessEligibility({ description: "We're looking for a marketing specialist supporting customers based in Ireland.", location: 'Remote' }).status, 'unknown', 'a customer location is not the worker country');
 assert.notEqual(assessEligibility({ location: 'South Korea', description: 'Open to applicants in Mexico and Korea.' }).status, 'restricted', 'the same explicit applicant clause allows Korea');
 assert.equal(excludeOnlineJobReason({ title: 'Spanish Marketing', category: 'marketing', location: 'South Korea', description: 'Open to applicants in Mexico and Korea.' }), null);
 for (const description of [

@@ -253,6 +253,10 @@ const FOREIGN_RESIDENCE_RULES = [
   new RegExp(`\\b(?:open\\s+to|available\\s+to|limited\\s+to|restricted\\s+to|only\\s+accepting)\\s+(?:applicants?|candidates?|contractors?|freelancers?|workers?)\\s+(?:in|from)\\s+(?:the\\s+)?${FOREIGN_RESIDENCE}\\b`, 'i'),
   new RegExp(`\\b(?:candidates?|applicants?|freelancers?|contractors?|employees?|talent|you|someone|somebody|person)\\b.{0,100}\\b(?:must\\s+)?(?:be\\s+)?(?:based|located|resid(?:e|ing))\\s+(?:in|within)\\s+(?:the\\s+)?${FOREIGN_RESIDENCE}\\b`, 'i'),
   new RegExp(`\\b(?:we\\s+(?:need|seek|want|hire|are\\s+looking\\s+for)\\s+(?:a|an)?|(?:role|position|job)\\s+(?:is\\s+)?).{0,85}\\b(?:based|located|resid(?:e|ing))\\s+(?:in|within)\\s+(?:the\\s+)?${FOREIGN_RESIDENCE}\\b`, 'i'),
+  // The contracted worker, not the employer or customer, is based abroad:
+  // "We're looking for a Localisation Project Manager (Operations Specialist)
+  // based in Ireland". Require a role noun immediately before the location.
+  new RegExp(`\\bwe(?:['’]re|\\s+are)\\s+(?:looking\\s+for|seeking|hiring)\\s+(?:an?\\s+)?[^.!?\\n]{0,110}?\\b(?:specialist|manager|engineer|assistant|coordinator|analyst|translator|editor|tutor|consultant|designer|writer|developer|representative|associate|agent|professional|expert|candidate|applicant|person|freelancer|contractor)(?:\\s*\\([^)]{0,80}\\))?\\s+(?:based|located|residing)\\s+(?:in|within)\\s+(?:the\\s+)?${FOREIGN_RESIDENCE}\\b`, 'i'),
   new RegExp(`\\b(?:must|need\\s+to|required\\s+to)\\s+(?:be\\s+)?(?:based|located|resid(?:e|ing))\\s+(?:in|within)\\s+(?:the\\s+)?${FOREIGN_RESIDENCE}\\b`, 'i'),
   new RegExp(`\\b(?:based|located|residing)\\s+(?:in|within)\\s+(?:the\\s+)?${FOREIGN_RESIDENCE}\\s+(?:residents?|candidates?|applicants?)\\s+only\\b`, 'i'),
   new RegExp(`\\b(?:looking\\s+for|seeking|hiring)\\s+(?:[a-z-]+\\s+)?(?:${FOREIGN_RESIDENCE})[- ]based\\s+(?:residents?|candidates?|applicants?)\\b`, 'i'),
@@ -262,6 +266,21 @@ const FOREIGN_RESIDENCE_RULES = [
 // the WORKER must physically work within Europe, including French-language posts
 // that Arbeitnow marks as remote without exposing a machine-readable geo scope.
 const EUROPE_ONLY_REMOTE_RE = /(?:^|\s)(?:[àa]\s+distance|t[eé]l[eé]travail|remote|work\s+from\s+home)\b.{0,100}\b(?:depuis|uniquement\s+(?:depuis|en)|from|within)\s+(?:l['’]\s*|the\s+)?(?:europe|europa|european\s+economic\s+area|eea)\b/i;
+const WORKER_REMOTE_REGION_LIMIT = /\b(?:fully\s+remote|remote(?:ly)?|work\s+remotely)\s+(?:in|within|from)\s+(?:the\s+)?(?:latam|latin\s+america|north\s+america|south\s+america|united\s+states|u\.?s\.?a?\.?|canada|europe|emea|uk|united\s+kingdom)\b/i;
+const US_WORK_AUTH_REQUIRED = /\b(?:authorized|eligible|authorization\s+required|legally\s+permitted)\s+to\s+work\s+in\s+(?:the\s+)?(?:united\s+states|u\.?s\.?a?\.?)\b/i;
+function requiresUsWorkAuthorization(value) {
+  return safeText(value, 9000).split(/[.!?;\n]|\bbut\b/i).some((clause) => {
+    const hit = clause.match(US_WORK_AUTH_REQUIRED);
+    if (!hit) return false;
+    const before = clause.slice(Math.max(0, hit.index - 90), hit.index);
+    const after = clause.slice(hit.index + hit[0].length, hit.index + hit[0].length + 45);
+    // "No authorization required" and "do not need to be authorized" are
+    // affirmative eligibility information, not reasons to hard-exclude.
+    const negatedBefore = /\b(?:do(?:es)?|did)\s+not\s+(?:need|require)(?:\s+.{0,35}?)?(?:\s+to\s+be)?\s*$|\bnot\s+(?:required|needed|necessary|mandatory)(?:\s+to\s+be)?\s*$|\bno(?:\s+[a-z-]+){0,3}\s*$/i.test(before);
+    const negatedAfter = /^\s*(?:is\s+)?(?:not\s+(?:required|needed|necessary|mandatory)|optional)\b/i.test(after);
+    return !negatedBefore && !negatedAfter;
+  });
+}
 
 // An exclusion requires a clear demand, rather than mere mentions of target markets,
 // translations in marketing copy, or a language marked optional/preferred.
@@ -353,15 +372,19 @@ export function assessEligibility({ market = 'online', location = '', restrictio
   const restrictPattern = /\b(?:must\s+(?:be\s+)?(?:based|located|resid(?:e|ing))\s+in|only\s+(?:in|for|from)|residents?\s+of|candidates?\s+in|within\s+(?:the\s+)?(?:us|usa|eu|europe)|us\s+work\s+authori[sz]ation\s+required|(?:us|usa|u\.s\.|uk|eu|europe|canada)\s+(?:residents?|applicants?|candidates?)\s+only|(?:us|usa|u\.s\.|uk|eu|europe|canada)[ -]only)\b/i;
   const koreaApplicants = explicitlyIncludesKoreanApplicants(body);
   const koreaRejected = explicitlyRejectsKoreanApplicants(body);
+  const restrictedRemoteWorker = WORKER_REMOTE_REGION_LIMIT.test(body) || requiresUsWorkAuthorization(body);
   const foreignResidenceOnly = FOREIGN_RESIDENCE_RULES.some((re) => re.test(body)) || NON_KOREAN_RESIDENCY_RE.test(body);
   if (homeCountry === 'KR' && koreaRejected) {
     return { status: koreaApplicants ? 'unknown' : 'restricted', geoScope: geo || 'See posting',
       reason: koreaApplicants ? 'Conflicting Korean applicant eligibility clauses require employer review.' : 'The posting expressly excludes applicants residing in South Korea.', requiresVerification: true };
   }
   if (homeCountry === 'KR' && koreaApplicants) {
-    const conflictingGeo = hasExplicitScope && !explicitKorea && !universal && !regional && RESTRICTED_COUNTRIES.some(([re]) => re.test(geo));
+    const conflictingGeo = restrictedRemoteWorker || (hasExplicitScope && !explicitKorea && !universal && !regional && RESTRICTED_COUNTRIES.some(([re]) => re.test(geo)));
     return { status: conflictingGeo ? 'unknown' : 'possible', geoScope: geo || 'See posting',
       reason: conflictingGeo ? 'Applicant countries and location fields conflict; verify with employer.' : 'Applicant criteria explicitly mention Korea; legal eligibility still needs verification.', requiresVerification: true };
+  }
+  if (homeCountry === 'KR' && restrictedRemoteWorker) {
+    return { status: 'restricted', geoScope: geo || 'See posting', reason: 'The description limits remote workers to a foreign region or requires US work authorization.', requiresVerification: true };
   }
   if (homeCountry === 'KR' && foreignResidenceOnly) {
     return { status: 'restricted', geoScope: geo || 'See residency requirement in posting', reason: 'Applicant residence or physical work location is explicitly limited outside Korea.', requiresVerification: true };

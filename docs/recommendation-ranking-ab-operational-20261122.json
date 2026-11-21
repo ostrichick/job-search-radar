@@ -1,0 +1,384 @@
+{
+  "method": "same current feeds; immutable pre-change code ref and proposed working tree",
+  "baselineRef": "6d7f4a6",
+  "limitations": "Simulated default-state filters with no personal saves/hides; domestic geographic ordering uses a fixed distance placeholder; counts and Nicole fit-sort are more meaningful than domestic top-order",
+  "inputDates": [
+    {
+      "who": "munseong",
+      "updatedAt": "2026-11-21T23:41:06.926Z",
+      "jobCount": 348
+    },
+    {
+      "who": "nicole",
+      "updatedAt": "2026-11-21T23:41:09.467Z",
+      "jobCount": 216
+    }
+  ],
+  "rows": [
+    {
+      "who": "munseong",
+      "market": "overseas_remote",
+      "raw": 348,
+      "prior": {
+        "who": "munseong",
+        "market": "overseas_remote",
+        "raw": 348,
+        "visible": 36,
+        "topN": 20,
+        "topCurrent": 0,
+        "topHistorical": 0,
+        "topExplicitlyRestricted": 0,
+        "topFit": {
+          "high": 10,
+          "check": 10,
+          "fail": 0
+        },
+        "topIds": [
+          "85754e19cfa4",
+          "adb7dc86dd5c",
+          "92dd67079bca",
+          "9859452f691a",
+          "054096832fc5",
+          "528867d0e7af",
+          "faaed230f492",
+          "9c1fae52a5f1",
+          "8c6aef9cffea",
+          "fdd813e1eb38",
+          "9cbb2b320e07",
+          "5944a8e5f9c0",
+          "e5c7d2d8a287",
+          "4a92b32ee0ef",
+          "95a1fa288f23",
+          "a5fd60370096",
+          "1ec1173e5933",
+          "e61e4dae2feb",
+          "eb8bfc3ba855",
+          "764af4c21e5a"
+        ]
+      },
+      "after": {
+        "who": "munseong",
+        "market": "overseas_remote",
+        "raw": 348,
+        "visible": 37,
+        "topN": 20,
+        "topCurrent": 0,
+        "topHistorical": 0,
+        "topExplicitlyRestricted": 0,
+        "topFit": {
+          "high": 10,
+          "check": 10,
+          "fail": 0
+        },
+        "topIds": [
+          "85754e19cfa4",
+          "adb7dc86dd5c",
+          "92dd67079bca",
+          "9859452f691a",
+          "054096832fc5",
+          "528867d0e7af",
+          "faaed230f492",
+          "9c1fae52a5f1",
+          "8c6aef9cffea",
+          "fdd813e1eb38",
+          "9cbb2b320e07",
+          "5944a8e5f9c0",
+          "e5c7d2d8a287",
+          "4a92b32ee0ef",
+          "95a1fa288f23",
+          "a5fd60370096",
+          "586e05cdd99e",
+          "1ec1173e5933",
+          "e61e4dae2feb",
+          "b05201824233"
+        ]
+      },
+      "addedTop": [
+        "586e05cdd99e",
+        "b05201824233"
+      ],
+      "displacedTop": [
+        "eb8bfc3ba855",
+        "764af4c21e5a"
+      ]
+    },
+    {
+      "who": "munseong",
+      "market": "domestic",
+      "raw": 348,
+      "prior": {
+        "who": "munseong",
+        "market": "domestic",
+        "raw": 348,
+        "visible": 10,
+        "topN": 10,
+        "topCurrent": 0,
+        "topHistorical": 0,
+        "topExplicitlyRestricted": 0,
+        "topFit": {
+          "high": 0,
+          "check": 10,
+          "fail": 0
+        },
+        "topIds": [
+          "50d98f1aa088",
+          "6510eb3b9c7f",
+          "31ae7a121b82",
+          "562fde79ed1b",
+          "8c90ccb8e475",
+          "4a496a8cdfd3",
+          "4d0b70a169d4",
+          "995a90a2757f",
+          "6d9cd1b8ed8b",
+          "17b5bf79ffd2"
+        ]
+      },
+      "after": {
+        "who": "munseong",
+        "market": "domestic",
+        "raw": 348,
+        "visible": 103,
+        "topN": 20,
+        "topCurrent": 0,
+        "topHistorical": 0,
+        "topExplicitlyRestricted": 0,
+        "topFit": {
+          "high": 1,
+          "check": 19,
+          "fail": 0
+        },
+        "topIds": [
+          "50d98f1aa088",
+          "6510eb3b9c7f",
+          "31ae7a121b82",
+          "562fde79ed1b",
+          "8c90ccb8e475",
+          "4a496a8cdfd3",
+          "4d0b70a169d4",
+          "995a90a2757f",
+          "6d9cd1b8ed8b",
+          "17b5bf79ffd2",
+          "2fabd6c29d7a",
+          "8d141057d8b0",
+          "e87484831460",
+          "c360ffda3d5a",
+          "29773b536b77",
+          "16248ada2c67",
+          "1508602cf7d2",
+          "31917d0c63b5",
+          "d9d14ab8bb58",
+          "bea9c5316a52"
+        ]
+      },
+      "addedTop": [
+        "2fabd6c29d7a",
+        "8d141057d8b0",
+        "e87484831460",
+        "c360ffda3d5a",
+        "29773b536b77",
+        "16248ada2c67",
+        "1508602cf7d2",
+        "31917d0c63b5",
+        "d9d14ab8bb58",
+        "bea9c5316a52"
+      ],
+      "displacedTop": []
+    },
+    {
+      "who": "nicole",
+      "market": "overseas_remote",
+      "raw": 191,
+      "prior": {
+        "who": "nicole",
+        "market": "overseas_remote",
+        "raw": 191,
+        "visible": 146,
+        "topN": 20,
+        "topCurrent": 12,
+        "topHistorical": 8,
+        "topExplicitlyRestricted": 1,
+        "topFit": {
+          "high": 18,
+          "check": 2,
+          "fail": 0
+        },
+        "topIds": [
+          "4710124a10df",
+          "722a7e45d32b",
+          "fd1bbe49531b",
+          "9c9f51d03560",
+          "54ab3efd4977",
+          "53a08ca6ab1b",
+          "ddf0f7e560fb",
+          "d9e395593b2c",
+          "5d437b7726f2",
+          "3adc98a12bb9",
+          "60bfbe021996",
+          "59714ee9cb02",
+          "b5a286d48080",
+          "60c80e3047c7",
+          "f770b6eb2a62",
+          "0acc112d9bd6",
+          "6eefd32e52a6",
+          "cb925030152b",
+          "c519d8e42a59",
+          "2c6c07b1cca0"
+        ]
+      },
+      "after": {
+        "who": "nicole",
+        "market": "overseas_remote",
+        "raw": 199,
+        "visible": 143,
+        "topN": 20,
+        "topCurrent": 20,
+        "topHistorical": 0,
+        "topExplicitlyRestricted": 0,
+        "topFit": {
+          "high": 17,
+          "check": 3,
+          "fail": 0
+        },
+        "topIds": [
+          "4710124a10df",
+          "722a7e45d32b",
+          "fd1bbe49531b",
+          "9c9f51d03560",
+          "54ab3efd4977",
+          "53a08ca6ab1b",
+          "f770b6eb2a62",
+          "0acc112d9bd6",
+          "6eefd32e52a6",
+          "cb925030152b",
+          "c519d8e42a59",
+          "318c7f079299",
+          "c318ebc31b26",
+          "6680c99c96c9",
+          "df9136c46565",
+          "aa10a98c68fe",
+          "3af3409adf14",
+          "3e043a73f57d",
+          "2c6c07b1cca0",
+          "99535f358223"
+        ]
+      },
+      "addedTop": [
+        "318c7f079299",
+        "c318ebc31b26",
+        "6680c99c96c9",
+        "df9136c46565",
+        "aa10a98c68fe",
+        "3af3409adf14",
+        "3e043a73f57d",
+        "99535f358223"
+      ],
+      "displacedTop": [
+        "ddf0f7e560fb",
+        "d9e395593b2c",
+        "5d437b7726f2",
+        "3adc98a12bb9",
+        "60bfbe021996",
+        "59714ee9cb02",
+        "b5a286d48080",
+        "60c80e3047c7"
+      ]
+    },
+    {
+      "who": "nicole",
+      "market": "domestic",
+      "raw": 191,
+      "prior": {
+        "who": "nicole",
+        "market": "domestic",
+        "raw": 191,
+        "visible": 27,
+        "topN": 20,
+        "topCurrent": 6,
+        "topHistorical": 14,
+        "topExplicitlyRestricted": 0,
+        "topFit": {
+          "high": 0,
+          "check": 20,
+          "fail": 0
+        },
+        "topIds": [
+          "4c02376778e3",
+          "e49052bba310",
+          "a75bdef4e6bf",
+          "c4fc240561fa",
+          "cecd897311c0",
+          "a857a785807a",
+          "1b51e3ecd892",
+          "d20d22746d77",
+          "e2328d9be92e",
+          "afb6c725c4f6",
+          "9b74ce81f3a3",
+          "d179b636add2",
+          "9d24e5e54ed7",
+          "54af7b7ff7fb",
+          "05eb4c0eb65a",
+          "0e9fd0fa8b05",
+          "330706bc7c0d",
+          "18f119c43832",
+          "44795d312d04",
+          "521c18758045"
+        ]
+      },
+      "after": {
+        "who": "nicole",
+        "market": "domestic",
+        "raw": 199,
+        "visible": 28,
+        "topN": 20,
+        "topCurrent": 8,
+        "topHistorical": 12,
+        "topExplicitlyRestricted": 0,
+        "topFit": {
+          "high": 0,
+          "check": 20,
+          "fail": 0
+        },
+        "topIds": [
+          "e49052bba310",
+          "a75bdef4e6bf",
+          "c4fc240561fa",
+          "5e14c720d415",
+          "a857a785807a",
+          "d179b636add2",
+          "521c18758045",
+          "dde2917dcb85",
+          "cecd897311c0",
+          "1b51e3ecd892",
+          "e2328d9be92e",
+          "afb6c725c4f6",
+          "9b74ce81f3a3",
+          "da3d8b796a95",
+          "ab58d9d4cd1d",
+          "0a8a080f9dda",
+          "61cb99130f0b",
+          "bef5373e4c2d",
+          "9d24e5e54ed7",
+          "54af7b7ff7fb"
+        ]
+      },
+      "addedTop": [
+        "5e14c720d415",
+        "dde2917dcb85",
+        "da3d8b796a95",
+        "ab58d9d4cd1d",
+        "0a8a080f9dda",
+        "61cb99130f0b",
+        "bef5373e4c2d"
+      ],
+      "displacedTop": [
+        "4c02376778e3",
+        "d20d22746d77",
+        "05eb4c0eb65a",
+        "0e9fd0fa8b05",
+        "330706bc7c0d",
+        "18f119c43832",
+        "44795d312d04"
+      ]
+    }
+  ]
+}

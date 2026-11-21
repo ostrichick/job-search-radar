@@ -33,7 +33,20 @@ function hasFiveYearRequirement(value) {
   return false;
 }
 const KOREAN_HIGH = /(?:topik\s*(?:level\s*)?[3-6]|한국어.{0,20}(?:중급|고급|능통|유창|비즈니스|원어민)|(?:fluent|native|business|advanced|professional|intermediate).{0,25}korean|korean.{0,25}(?:fluent|native|business|advanced|intermediate|c1|c2))/i;
-const OTHER_LANGUAGE_REQUIRED = /(?:japanese|chinese|일본어|중국어).{0,30}(?:required|mandatory|fluent|native|business|능통|필수)|(?:required|mandatory|fluent|native|business|능통|필수).{0,30}(?:japanese|chinese|일본어|중국어)/i;
+const OTHER_LANGUAGE_REQUIRED = /(?:japanese|chinese|taiwanese|일본어|중국어|대만어).{0,30}(?:required|mandatory|fluent|native|business|능통|필수)|(?:required|mandatory|fluent|native|business|능통|필수).{0,30}(?:japanese|chinese|taiwanese|일본어|중국어|대만어)/i;
+const WORKER_REMOTE_REGION_LIMIT = /\b(?:fully\s+remote|remote(?:ly)?|work\s+remotely)\s+(?:in|within|from)\s+(?:the\s+)?(?:latam|latin\s+america|north\s+america|south\s+america|united\s+states|u\.?s\.?a?\.?|canada|europe|emea|uk|united\s+kingdom)\b/i;
+const US_WORK_AUTH_REQUIRED = /\b(?:authorized|eligible|authorization\s+required|legally\s+permitted)\s+to\s+work\s+in\s+(?:the\s+)?(?:united\s+states|u\.?s\.?a?\.?)\b/i;
+function requiresUsWorkAuthorization(value) {
+  return text(value).split(/[.!?;\n]|\bbut\b/i).some((clause) => {
+    const hit = clause.match(US_WORK_AUTH_REQUIRED);
+    if (!hit) return false;
+    const before = clause.slice(Math.max(0, hit.index - 90), hit.index);
+    const after = clause.slice(hit.index + hit[0].length, hit.index + hit[0].length + 45);
+    return !(/\b(?:do(?:es)?|did)\s+not\s+(?:need|require)(?:\s+.{0,35}?)?(?:\s+to\s+be)?\s*$|\bnot\s+(?:required|needed|necessary|mandatory)(?:\s+to\s+be)?\s*$|\bno(?:\s+[a-z-]+){0,3}\s*$/i.test(before)
+      || /^\s*(?:is\s+)?(?:not\s+(?:required|needed|necessary|mandatory)|optional)\b/i.test(after));
+  });
+}
+const UNSUPPORTED_MULTILINGUAL_TITLE = /\b(?:bi[- ]?lingual|tri[- ]?lingual|multi[- ]?lingual)\b.{0,110}\b(?:japanese|chinese)\b|(?:일본어|중국어).{0,100}(?:2개국어|3개국어|다국어\s*필수)/i;
 // An explicitly language-specific specialist role is not equivalent to a
 // general AI/data job just because its title contains "AI Trainer". Only
 // languages outside either profile, with no OR alternative, trigger this gate.
@@ -138,7 +151,10 @@ export function evaluateProfileFit(job, { isNicole = false, age = null, now = Da
   if (job.listingStatus === 'expired') fail('마감 경과');
   if (hasFiveYearRequirement(combined) || SENIOR.test(title)) check('5년 이상·시니어 요건 확인');
   if (requiredIn(combined, MASTER) && !MASTER_ALTERNATIVE.test(combined)) fail('석사 학위 필수');
-  if (requiredIn(combined, OTHER_LANGUAGE_REQUIRED)) fail('일본어·중국어 필수');
+  if (requiredIn(combined, OTHER_LANGUAGE_REQUIRED)) fail('프로필 밖 언어 필수');
+  if (UNSUPPORTED_MULTILINGUAL_TITLE.test(title) && !/\b(?:or|oder|또는)\b/i.test(title)) {
+    check('제목에 다국어가 언급되나 필수 수준 확인 필요');
+  }
   if (UNSUPPORTED_LANGUAGE_SPECIALIST.test(title) && !/\b(?:or|oder|또는)\b/i.test(title)) {
     fail('프로필에 없는 언어 전문직 명시');
   }
@@ -172,13 +188,20 @@ export function evaluateProfileFit(job, { isNicole = false, age = null, now = Da
     // Inspect short requirement clauses, not an arbitrary country appearing in
     // the company's business description. A bare location is only a check.
     const restrictions = String([job.description, job.visaRequirements, job.eligibility].filter(Boolean).join(' '))
-      .split(/[.!?;\n]/).filter((part) => part.length < 500);
+      .split(/[.!?;\n]|\bbut\b/i).filter((part) => part.length < 500);
     const explicitOtherCountry = restrictions.some((part) => {
       const trigger = part.match(WORKER_RESIDENCY);
-      return trigger && OTHER_COUNTRY.test(part.slice(trigger.index + trigger[0].length)) && !INCLUDES_KOREA.test(part);
+      if (!trigger) return false;
+      const context = part.slice(Math.max(0, trigger.index - 70), trigger.index + trigger[0].length);
+      if (/\b(?:do(?:es)?|did)\s+not\s+(?:need|require)|\bnot\s+(?:required|needed|necessary)|\bno\s+authorization\b/i.test(context)) return false;
+      return OTHER_COUNTRY.test(part.slice(trigger.index + trigger[0].length)) && !INCLUDES_KOREA.test(part);
     });
     const workersOnly = restrictions.some((part) => REMOTE_RESTRICTION.test(part) && !/\bkorea\s+(?:residents?|applicants?|candidates?)\s+(?:also\s+)?(?:allowed|accepted|eligible)\b/i.test(part));
-    if (explicitOtherCountry || workersOnly || REMOTE_LOCATION_ONLY.test(job.location || '')) {
+    const workerAbroad = WORKER_REMOTE_REGION_LIMIT.test(body) || requiresUsWorkAuthorization(body);
+    const koreaAlsoAccepted = /\b(?:open\s+to\s+(?:applicants?|candidates?)\s+(?:in|from)|(?:applicants?|candidates?)\s+based\s+in)\s+(?:south\s+)?korea\b/i.test(body);
+    if (workerAbroad && koreaAlsoAccepted) {
+      check('한국 지원 가능 문구와 해외 근무 제한 문구가 충돌함');
+    } else if (workerAbroad || explicitOtherCountry || workersOnly || REMOTE_LOCATION_ONLY.test(job.location || '')) {
       fail('원격 지원 국가 제한 명시');
     } else if (job.eligibilityCode === 'restricted' || job.eligibilityStatus === 'restricted') {
       fail('수집 자료에 지원 국가 제한 표시');
