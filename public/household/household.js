@@ -176,7 +176,7 @@ function applyLinkLabel(url) {
     if (parsed.hostname === 'fill4young.kinfa.or.kr' && path === '/yfs/main') return '가입·계좌개설 ↗';
     if (parsed.hostname === 'apply.lh.or.kr' && path === '') return 'LH 청약플러스 ↗';
     if (parsed.hostname === 'www.jeonju.go.kr' && path === '/together/card/form1') return '온라인 신청 ↗';
-    return '';
+    return '신청·조회 페이지 ↗';
   } catch {
     return '';
   }
@@ -378,7 +378,7 @@ async function init() {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
     if (!Array.isArray(data.programs)) throw new Error('지원사업 목록 형식 오류');
-    programs = data.programs;
+    programs = data.programs.filter((program) => applyLinkLabel(program.applyUrl) && !(program.end && program.end < kstDate()));
     $('sourceDate').textContent = formatDate(data.researchedAt);
   } catch (error) { notice(`공식 사업 목록을 읽을 수 없습니다: ${error.message}`); return; }
   try {

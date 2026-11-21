@@ -1,4 +1,4 @@
-﻿import { test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 
 // Optional local Chromium-family browser when Playwright's bundled browser is not installed.
@@ -9,11 +9,12 @@ test('가구 지원 목록은 공식 링크와 신청기한을 구분한다', as
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/household/');
   await expect(page.getByRole('heading', { name: /우리 집에 맞는 혜택을/ })).toBeVisible();
-  await expect(page.locator('#totalCount')).toHaveText('43');
-  await expect(page.locator('#closedCount')).toHaveText('8');
-  await expect(page.locator('.card')).toHaveCount(43);
-  await expect(page.getByRole('link', { name: '공식 근거 ↗' })).toHaveCount(43);
-  await expect(page.getByRole('link', { name: '신청·조회 페이지 ↗' })).toHaveCount(0);
+  await expect(page.locator('#totalCount')).toHaveText('21');
+  await expect(page.locator('#closedCount')).toHaveText('0');
+  await expect(page.locator('.card')).toHaveCount(21);
+  await expect(page.getByRole('link', { name: '공식 근거 ↗' })).toHaveCount(21);
+  await expect(page.getByRole('link', { name: '신청·조회 페이지 ↗' })).toHaveCount(17);
+  await expect(page.locator('[data-program-id="jeonju-exam-fee-2026"]')).toHaveCount(0);
   await expect(page.locator('#programs')).not.toContainText('스포츠강좌이용권');
   await expect(page.locator('#programs')).not.toContainText('문화누리카드');
   await expect(page.locator('#programs')).not.toContainText('소상공인 카드수수료');
@@ -22,9 +23,9 @@ test('가구 지원 목록은 공식 링크와 신청기한을 구분한다', as
   await expect(page.locator('#programs')).not.toContainText('난임부부');
   await expect(page.locator('[data-program-id="jeonju-family-center-topik-fall-2026"]').getByRole('link', { name: '프로그램 목록 ↗' })).toHaveCount(1);
   await page.locator('#period').selectOption('closed');
-  await expect(page.locator('.card')).toHaveCount(8);
-  await expect(page.locator('#programs')).toContainText('2026 전주시 청년월세 지원');
-  await expect(page.locator('#programs')).not.toContainText('국민취업지원제도');
+  await expect(page.locator('.card')).toHaveCount(0);
+  await expect(page.locator('#empty')).toBeVisible();
+  await expect(page.locator('#programs')).not.toContainText('2026 전주시 청년월세 지원');
   await page.locator('#category').selectOption('tax');
   await expect(page.locator('.card')).toHaveCount(0);
   await expect(page.locator('#empty')).toBeVisible();
@@ -86,7 +87,7 @@ test('모바일 390px 화면에서 가로 넘침 없이 목록 및 기존 프로
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/household/');
   await expect(page.getByRole('link', { name: 'Nicole' })).toHaveAttribute('href', '../nicole/');
-  await expect(page.locator('.card')).toHaveCount(43);
+  await expect(page.locator('.card')).toHaveCount(21);
   const widths = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
   expect(widths.scroll).toBeLessThanOrEqual(widths.client);
   await page.goto('/munseong/');
@@ -121,7 +122,7 @@ test('복지카드에 머물면 확인 안 함 표시가 사라지고 확인 여
 
 test('복지 카드를 숨기고 숨김 필터에서 복원한다', async ({ page }) => {
   await page.goto('/household/');
-  await expect(page.locator('.card')).toHaveCount(43);
+  await expect(page.locator('.card')).toHaveCount(21);
   const total = await page.locator('.card').count();
   await expect(page.locator('.card .card-hide')).toHaveCount(total);
   await page.locator('.card .card-hide').first().click();
