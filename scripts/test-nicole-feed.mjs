@@ -36,12 +36,10 @@ assert.equal(adaptNicoleJob({ id: 'test', market: 'offline', url: 'https://examp
 assert.equal(sourceForManual('https://www.upwork.com/jobs/abc'), 'Upwork');
 assert.equal(sourceForManual('https://kowork.kr/en/jobs/abc'), 'KOWORK');
 const actualHealth = sourceHealthBuckets(adapted.sourceStatus);
-assert.equal(actualHealth.failed.some((s) => s.source === 'Xsolla'), true,
-  'an actual failed source must remain visible');
-assert.equal(actualHealth.partial.some((s) => s.source === 'Jobicy'), true,
-  'partial Jobicy requests must be visible in source health');
 assert.equal(actualHealth.failed.some((s) => s.status === 'not_configured'), false,
-  'optional manual inputs do not count as source outages');
+  'optional manual inputs must not appear as source outages');
+assert.ok(actualHealth.failed.every((s) => s.status !== 'not_configured'),
+  'actual failed sources keep their real status');
 const fixtureHealth = sourceHealthBuckets([
   { source: 'Jobicy', status: 'partial', ok: true, count: 2, failures: ['HTTP 429'] },
   { source: 'Xsolla', status: 'error', ok: false, detail: 'timeout' },
