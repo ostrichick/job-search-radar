@@ -1,13 +1,12 @@
 import { test, expect } from '@playwright/test';
 
-test('사이드 기그 페이지는 큐레이션 목록과 정책 위험 안내를 보여준다', async ({ page }) => {
+test('사이드 기그 페이지는 큐레이션 목록과 필터를 보여준다', async ({ page }) => {
   await page.goto('/side-gigs/');
   await expect(page.locator('.gig-card')).toHaveCount(22);
   await expect(page.locator('#totalCount')).toHaveText('22');
   await expect(page.locator('#officialCount')).toHaveText('10');
   await expect(page.locator('#checkCount')).toHaveText('12');
-  await expect(page.locator('.policy-warning')).toContainText('YouTube 구독');
-  await expect(page.locator('.policy-warning')).toContainText('앱 별점');
+  await expect(page.locator('.policy-warning')).toHaveCount(0);
   await expect(page.locator('.gig-card').first()).toContainText('공식 페이지');
   await expect(page.locator('.gig-card').first()).toContainText('한국 수령');
   await expect(page.locator('.gig-pay-source').first()).toBeVisible();
