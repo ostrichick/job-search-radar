@@ -1,0 +1,688 @@
+{
+  "updatedAt": "2026-11-22",
+  "disclaimer": "보수·지급·이용 자격은 플랫폼 공지와 프로젝트별 공고에 따라 달라집니다. '확인 필요' 항목은 가입·신청 전 공식 페이지에서 다시 확인하세요.",
+  "items": [
+    {
+      "id": "outlier",
+      "platform": "Outlier",
+      "title": "한국어 AI 트레이너 · 응답 평가",
+      "category": "ai-data",
+      "taskTypes": [
+        "프롬프트 작성",
+        "응답 평가",
+        "한국어 데이터 검수"
+      ],
+      "payDisplay": "공고별 상이 · 한국어 역할 최대 $31/h 표기",
+      "payStatus": "check",
+      "payoutType": "cash",
+      "payoutDetail": "PayPal · AirTM · ACH, 주 1회(화)",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "yes",
+      "platformKoreaNote": "117개국 Flexible Working Guidelines에 한국 포함",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "한국어 · 영어",
+      "languages": [
+        "ko",
+        "en"
+      ],
+      "risk": "safe",
+      "riskNote": "보수와 프로젝트 존속은 공고별 확인 필요",
+      "url": "https://app.outlier.ai/opportunities",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "한국 거주 + 학사 + 한국어 원어민 조건의 역할이 안내된 사례가 있습니다. 실제 공고 조건을 확인하세요."
+    },
+    {
+      "id": "dataannotation",
+      "platform": "DataAnnotation",
+      "title": "챗봇 평가 · 한국어 스페셜리스트",
+      "category": "ai-data",
+      "taskTypes": [
+        "챗봇 평가",
+        "순위 비교",
+        "사실 확인",
+        "코딩·STEM"
+      ],
+      "payDisplay": "일반 $25~$50/h · 다국어 $20+/h (공식 FAQ)",
+      "payStatus": "official",
+      "payoutType": "cash",
+      "payoutDetail": "PayPal, 요청 후 수일 내",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "check",
+      "platformKoreaNote": "한국 거주자 참여 가능 여부가 공식 페이지에 명시되지 않음",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "한국어 · 영어",
+      "languages": [
+        "ko",
+        "en"
+      ],
+      "risk": "check",
+      "riskNote": "1회성 Starter Assessment와 높은 경쟁률",
+      "url": "https://dataannotation.tech/faq",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "코딩·STEM은 $40~$150+/h로 안내되지만, 한국어 역할의 실제 초대 물량은 확인이 필요합니다."
+    },
+    {
+      "id": "telus-digital",
+      "platform": "TELUS Digital AI Community",
+      "title": "한국어 검색·미디어 평가",
+      "category": "ai-data",
+      "taskTypes": [
+        "검색 품질 평가",
+        "미디어 평가",
+        "안전성 평가"
+      ],
+      "payDisplay": "한국어 Assessor 공고 약 $15/h · 공고별 상이",
+      "payStatus": "check",
+      "payoutType": "cash",
+      "payoutDetail": "Hyperwallet 등 · 한국 지급 조건 확인 필요",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "yes",
+      "platformKoreaNote": "한국 거주·한국어·현지 이해도 요구 공고 운영",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "한국어 · 영어",
+      "languages": [
+        "ko",
+        "en"
+      ],
+      "risk": "check",
+      "riskNote": "프로젝트 계약 형태·시험·거주 요건을 공고별 확인",
+      "url": "https://jobs.telusdigital.com/",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "예시 공고 기준 약 $15/h. 프로젝트 종료·재모집 여부는 수시로 바뀝니다."
+    },
+    {
+      "id": "mindrift",
+      "platform": "Mindrift",
+      "title": "AI 튜터 · 전문가 프로젝트",
+      "category": "ai-data",
+      "taskTypes": [
+        "프롬프트 작성",
+        "전문 분야 데이터",
+        "응답 평가",
+        "영상"
+      ],
+      "payDisplay": "All-access 통상 $20/h 미만 · Specialized $15~100+/h",
+      "payStatus": "check",
+      "payoutType": "cash",
+      "payoutDetail": "Payoneer($20~) · Tipalti PayPal/은행($5~), 월 2회",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "yes",
+      "platformKoreaNote": "전 세계 지원 가능, 전문 프로젝트는 자격 별도",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "한국어 · 영어",
+      "languages": [
+        "ko",
+        "en"
+      ],
+      "risk": "check",
+      "riskNote": "전문 프로젝트는 CV·평가·ID 요구",
+      "url": "https://www.mindrift.ai/welcome",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "전문 분야 프로젝트의 단가는 공고별로 크게 다릅니다."
+    },
+    {
+      "id": "prolific",
+      "platform": "Prolific",
+      "title": "학술·AI 설문 참여",
+      "category": "survey",
+      "taskTypes": [
+        "설문",
+        "간단한 실험",
+        "인터뷰"
+      ],
+      "payDisplay": "최소 £6/$8/h · 권장 £9/$12/h",
+      "payStatus": "official",
+      "payoutType": "cash",
+      "payoutDetail": "PayPal, £6/$6부터 출금",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "yes",
+      "platformKoreaNote": "지원 국가 목록에 한국 포함",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "영어 중심",
+      "languages": [
+        "en"
+      ],
+      "risk": "safe",
+      "riskNote": "웨이트리스트·ID 인증이 필요할 수 있음",
+      "url": "https://www.prolific.com/participants-how-it-works",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "한국 거주자는 참여 가능하지만 초대 물량은 시기별로 다릅니다."
+    },
+    {
+      "id": "clickworker",
+      "platform": "Clickworker",
+      "title": "데이터 수집 · 텍스트·오디오 작업",
+      "category": "microtask",
+      "taskTypes": [
+        "데이터 수집",
+        "텍스트 작성",
+        "오디오 녹음",
+        "설문"
+      ],
+      "payDisplay": "건당 수백 원~수 EUR · 시간당 보장 없음",
+      "payStatus": "check",
+      "payoutType": "cash",
+      "payoutDetail": "PayPal €10 · Payoneer €/$20 · SEPA €10 등",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "check",
+      "platformKoreaNote": "등록 국가 범위는 넓지만 국가별 작업 물량·지급 조건 차이",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "영어·한국어 혼합",
+      "languages": [
+        "ko",
+        "en"
+      ],
+      "risk": "check",
+      "riskNote": "UHRS 시험·과제별 자격 필요",
+      "url": "https://www.clickworker.com/",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "작업 단가가 낮고 물량 변동이 커서 시간당 실수입은 별도 확인이 필요합니다."
+    },
+    {
+      "id": "microworkers",
+      "platform": "Microworkers",
+      "title": "소액 마이크로잡",
+      "category": "microtask",
+      "taskTypes": [
+        "데이터 입력",
+        "설문",
+        "앱·웹 테스트",
+        "간단 검색"
+      ],
+      "payDisplay": "건당 $0.1~수 달러 · 작업별 상이",
+      "payStatus": "check",
+      "payoutType": "cash",
+      "payoutDetail": "PayPal·Skrill·Airtm $9 · Payoneer $20, 수수료 10%",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "check",
+      "platformKoreaNote": "공식 국가 목록 미공개 · KYC 필요",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "영어 중심",
+      "languages": [
+        "en"
+      ],
+      "risk": "check",
+      "riskNote": "가짜 참여·리뷰성 작업이 섞일 수 있어 작업 내용 확인 필수",
+      "url": "https://www.microworkers.com/",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "YouTube 구독·좋아요, 앱 별점·리뷰 구매성 작업은 정책 위반이므로 수락하지 마세요."
+    },
+    {
+      "id": "appen",
+      "platform": "Appen CrowdGen",
+      "title": "AI 학습 데이터 · 언어 프로젝트",
+      "category": "ai-data",
+      "taskTypes": [
+        "이미지·텍스트 라벨링",
+        "음성",
+        "RLHF",
+        "번역"
+      ],
+      "payDisplay": "프로젝트별 공고 · 시간당 보장 없음",
+      "payStatus": "check",
+      "payoutType": "cash",
+      "payoutDetail": "PayPal·Payoneer·Airtm·은행, 월 1회(익월 14일까지)",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "check",
+      "platformKoreaNote": "200개국 이상 대상이나 프로젝트별 자격 상이",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "프로젝트별",
+      "languages": [
+        "ko",
+        "en",
+        "es"
+      ],
+      "risk": "check",
+      "riskNote": "프로젝트 계약 형태·자격·지급 조건 확인 필요",
+      "url": "https://crowdgen.com/",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "플랫폼 가입과 프로젝트 합격은 별개입니다."
+    },
+    {
+      "id": "usertesting",
+      "platform": "UserTesting",
+      "title": "웹·앱 사용성 테스트",
+      "category": "testing",
+      "taskTypes": [
+        "비대면 사용성 테스트",
+        "라이브 인터뷰",
+        "설문"
+      ],
+      "payDisplay": "$4~$60/테스트 (공식 FAQ)",
+      "payStatus": "official",
+      "payoutType": "cash",
+      "payoutDetail": "PayPal, 완료 후 약 14일",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "check",
+      "platformKoreaNote": "전 세계 지원 가능, 한국 초대 물량은 확인 필요",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "영어·프랑스어·독일어 유창성 요구",
+      "languages": [
+        "en"
+      ],
+      "risk": "check",
+      "riskNote": "영어 구사·마이크·녹화 환경 필요",
+      "url": "https://www.usertesting.com/get-paid-to-test",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "테스트 유형·길이·수요에 따라 보수가 달라집니다."
+    },
+    {
+      "id": "userlytics",
+      "platform": "Userlytics",
+      "title": "사용성 테스트 · 인터뷰",
+      "category": "testing",
+      "taskTypes": [
+        "비대면 사용성 테스트",
+        "진행형 인터뷰"
+      ],
+      "payDisplay": "$10~$50/스터디",
+      "payStatus": "official",
+      "payoutType": "cash",
+      "payoutDetail": "PayPal, 승인 후 약 15일",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "check",
+      "platformKoreaNote": "PayPal 지원 국가 대상, 한국 초대 물량 확인 필요",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "영어 중심",
+      "languages": [
+        "en"
+      ],
+      "risk": "check",
+      "riskNote": "웹캠·마이크·브라우저 환경 필요",
+      "url": "https://www.userlytics.com/",
+      "paySourceUrl": "https://www.userlytics.com/make-money-online/",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "테스트 시작 전에 보수가 표시됩니다."
+    },
+    {
+      "id": "trymata",
+      "platform": "Trymata",
+      "title": "화면 녹화 사용성 테스트",
+      "category": "testing",
+      "taskTypes": [
+        "비대면 사용성 테스트",
+        "설문"
+      ],
+      "payDisplay": "$5~$30/테스트 · 대부분 $10 내외",
+      "payStatus": "check",
+      "payoutType": "cash",
+      "payoutDetail": "PayPal, 승인 후 평일 지급",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "check",
+      "platformKoreaNote": "한국 제외 공지 없음 · 물량 확인 필요",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "영어 중심",
+      "languages": [
+        "en"
+      ],
+      "risk": "check",
+      "riskNote": "브랜드 이전·초대 물량 변동",
+      "url": "https://trymata.com/",
+      "verification": "check",
+      "checkedAt": "2026-11-22",
+      "notes": "QuestionPro UX로 이전 중인 서비스라 가입 경로가 바뀔 수 있습니다."
+    },
+    {
+      "id": "respondent",
+      "platform": "Respondent",
+      "title": "유료 인터뷰 · 리서치 참여",
+      "category": "survey",
+      "taskTypes": [
+        "1:1 인터뷰",
+        "다이어리",
+        "비대면 과제",
+        "대면 인터뷰"
+      ],
+      "payDisplay": "인터뷰 $40~150 · 과제 $5~25 · 대면 $75~250+",
+      "payStatus": "official",
+      "payoutType": "cash",
+      "payoutDetail": "Tremendous 기프트/선불카드, 수수료 5%",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "check",
+      "platformKoreaNote": "한국 지급 수단은 지원되나 인터뷰 매칭은 별도",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "영어 중심",
+      "languages": [
+        "en"
+      ],
+      "risk": "check",
+      "riskNote": "스크리닝 탈락이 잦고 초대가 불규칙",
+      "url": "https://www.respondent.io/become-a-participant",
+      "paySourceUrl": "https://help.respondent.io/en/articles/12552545",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "B2B·전문직 인터뷰 비중이 높습니다."
+    },
+    {
+      "id": "user-interviews",
+      "platform": "User Interviews",
+      "title": "인터뷰 · 포커스 그룹",
+      "category": "survey",
+      "taskTypes": [
+        "1:1 인터뷰",
+        "포커스 그룹",
+        "다이어리",
+        "비대면 과제"
+      ],
+      "payDisplay": "평균 $45+ · 인터뷰 $20~300+",
+      "payStatus": "official",
+      "payoutType": "gift",
+      "payoutDetail": "Tremendous 기프트카드 또는 연구자 직접 지급(현금 등)",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "check",
+      "platformKoreaNote": "한국 대상 연구는 있으나 매칭 물량 확인 필요",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "영어 중심",
+      "languages": [
+        "en"
+      ],
+      "risk": "check",
+      "riskNote": "스크리닝·매칭 경쟁",
+      "url": "https://www.userinterviews.com/hello",
+      "paySourceUrl": "https://www.userinterviews.com/hello",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "한국어 대상 연구가 열리는 경우도 있습니다."
+    },
+    {
+      "id": "betatesting",
+      "platform": "BetaTesting",
+      "title": "베타 테스트 · 제품 리뷰",
+      "category": "testing",
+      "taskTypes": [
+        "앱·웹 베타 테스트",
+        "하드웨어",
+        "설문"
+      ],
+      "payDisplay": "대부분 $10~$20 · 45~60분 $15~30",
+      "payStatus": "official",
+      "payoutType": "cash",
+      "payoutDetail": "Tremendous, 프로젝트 종료 후 14일 내",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "check",
+      "platformKoreaNote": "18세 이상 누구나 지원 · 한국 초대 물량 확인 필요",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "영어 중심",
+      "languages": [
+        "en"
+      ],
+      "risk": "check",
+      "riskNote": "프로필·기기 조건에 따라 초대 0~5회/월",
+      "url": "https://betatesting.com/beta-testers",
+      "paySourceUrl": "https://betatesting.com/beta-testers",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "현금성 지급 시 Tremendous 수수료 6%가 붙을 수 있습니다."
+    },
+    {
+      "id": "playtestcloud",
+      "platform": "PlaytestCloud",
+      "title": "모바일 게임 플레이 테스트",
+      "category": "testing",
+      "taskTypes": [
+        "15분 게임 플레이",
+        "설문",
+        "생각 말하기"
+      ],
+      "payDisplay": "$5~$9/15분 · 초대별 상이",
+      "payStatus": "check",
+      "payoutType": "cash",
+      "payoutDetail": "Tremendous, 완료 후 최대 3일",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "check",
+      "platformKoreaNote": "전 세계 지원 · 한국 초대 물량 확인 필요",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "영어 중심",
+      "languages": [
+        "en"
+      ],
+      "risk": "check",
+      "riskNote": "조용한 환경·마이크·녹화 앱 필요",
+      "url": "https://www.playtestcloud.com/",
+      "verification": "check",
+      "checkedAt": "2026-11-22",
+      "notes": "게임 장르·기기 조건에 따라 초대가 달라집니다."
+    },
+    {
+      "id": "ovey",
+      "platform": "오베이 (오픈서베이)",
+      "title": "국내 설문 패널",
+      "category": "survey",
+      "taskTypes": [
+        "모바일 설문",
+        "간단한 리서치"
+      ],
+      "payDisplay": "월 수천 원 수준 · 설문별 상이",
+      "payStatus": "check",
+      "payoutType": "cash",
+      "payoutDetail": "현금 출금(주 5만 원 한도) · 네이버페이 전환",
+      "koreaPayout": "yes",
+      "platformKoreaAccess": "yes",
+      "platformKoreaNote": "국내 서비스, 본인인증 필요",
+      "f6Work": "allowed",
+      "siteLanguage": "한국어",
+      "taskLanguage": "한국어",
+      "languages": [
+        "ko"
+      ],
+      "risk": "safe",
+      "riskNote": "소액·포인트성, 출금 한도 확인",
+      "url": "https://ovey.io/",
+      "verification": "check",
+      "checkedAt": "2026-11-22",
+      "notes": "외국인 가입 조건은 공식 앱에서 확인이 필요합니다."
+    },
+    {
+      "id": "panelnow",
+      "platform": "패널나우",
+      "title": "국내 설문 · 리워드 패널",
+      "category": "survey",
+      "taskTypes": [
+        "설문",
+        "간단한 미션"
+      ],
+      "payDisplay": "1P=1원 · 회당 최대 10,000P · 월 약 20개",
+      "payStatus": "check",
+      "payoutType": "cash",
+      "payoutDetail": "현금 2,000원 단위 · 본인 계좌",
+      "koreaPayout": "yes",
+      "platformKoreaAccess": "yes",
+      "platformKoreaNote": "국내 서비스, 1인 1계정",
+      "f6Work": "allowed",
+      "siteLanguage": "한국어",
+      "taskLanguage": "한국어",
+      "languages": [
+        "ko"
+      ],
+      "risk": "safe",
+      "riskNote": "6개월 미활동 시 포인트 소멸",
+      "url": "https://www.panelnow.co.kr/",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "본인 명의 휴대폰·계좌가 필요합니다."
+    },
+    {
+      "id": "panelpower",
+      "platform": "패널파워 (엠브레인)",
+      "title": "설문 · 좌담회 패널",
+      "category": "survey",
+      "taskTypes": [
+        "온라인 설문",
+        "좌담회",
+        "심층 인터뷰"
+      ],
+      "payDisplay": "설문 수백~수천 원 · 좌담회 5~15만 원",
+      "payStatus": "check",
+      "payoutType": "cash",
+      "payoutDetail": "현금 1만 원 이상 · 본인 계좌, 월 2회",
+      "koreaPayout": "yes",
+      "platformKoreaAccess": "yes",
+      "platformKoreaNote": "국내 패널, 외국인 가입 조건 확인 필요",
+      "f6Work": "allowed",
+      "siteLanguage": "한국어",
+      "taskLanguage": "한국어",
+      "languages": [
+        "ko"
+      ],
+      "risk": "safe",
+      "riskNote": "좌담회는 모집 조건·일정 확인 필요",
+      "url": "https://www.panel.co.kr/",
+      "verification": "check",
+      "checkedAt": "2026-11-22",
+      "notes": "좌담회 단가는 모집 공고별로 다릅니다."
+    },
+    {
+      "id": "kmong",
+      "platform": "크몽",
+      "title": "소액 재능 판매 · 의뢰",
+      "category": "freelance",
+      "taskTypes": [
+        "번역·교정",
+        "디자인",
+        "문서 작성",
+        "간단한 개발"
+      ],
+      "payDisplay": "판매가의 약 78% 실수령(수수료 16.4% 등)",
+      "payStatus": "official",
+      "payoutType": "cash",
+      "payoutDetail": "구매확정 후 출금 신청 · 영업일 1~2일",
+      "koreaPayout": "yes",
+      "platformKoreaAccess": "check",
+      "platformKoreaNote": "외국인 판매는 사업자등록 등 조건 확인 필요",
+      "f6Work": "allowed",
+      "siteLanguage": "한국어",
+      "taskLanguage": "한국어 중심",
+      "languages": [
+        "ko"
+      ],
+      "risk": "check",
+      "riskNote": "외국인 판매 제한·수수료·세금 확인",
+      "url": "https://kmong.com/",
+      "paySourceUrl": "https://kmong.com/support/customer-center/posts/101",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "Nicole은 스페인어·영어 강점을 살리기 어려울 수 있어 Upwork/Fiverr도 함께 비교하세요."
+    },
+    {
+      "id": "fiverr",
+      "platform": "Fiverr",
+      "title": "긱 판매 · 번역·QA·콘텐츠",
+      "category": "freelance",
+      "taskTypes": [
+        "번역·교정",
+        "QA",
+        "콘텐츠 작성",
+        "디자인"
+      ],
+      "payDisplay": "판매액의 80% 수령 · 수수료 20%",
+      "payStatus": "official",
+      "payoutType": "cash",
+      "payoutDetail": "PayPal·은행·Payoneer, 14일 정산 후 출금",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "check",
+      "platformKoreaNote": "한국 판매자 가입 가능하나 PayPal·은행 수령 조건 확인 필요",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "영어·스페인어 등",
+      "languages": [
+        "en",
+        "es"
+      ],
+      "risk": "check",
+      "riskNote": "경쟁·수수료·정산 대기 존재",
+      "url": "https://www.fiverr.com/",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "Nicole은 스페인어 번역·교정 gig로 시작하기 좋지만 초기 주문 확보가 어렵습니다.",
+      "paySourceUrl": "https://www.fiverr.com/legal-portal/legal-terms/payment-terms-of-service"
+    },
+    {
+      "id": "upwork",
+      "platform": "Upwork",
+      "title": "프리랜서 프로젝트 · 번역·QA",
+      "category": "freelance",
+      "taskTypes": [
+        "번역",
+        "QA",
+        "데이터 정리",
+        "콘텐츠"
+      ],
+      "payDisplay": "계약별 상이 · 프리랜서 수수료 0~15%",
+      "payStatus": "official",
+      "payoutType": "cash",
+      "payoutDetail": "은행·PayPal·Payoneer, 마일스톤 승인 후",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "check",
+      "platformKoreaNote": "한국 가입 가능 · 지급 수단 확인 필요",
+      "f6Work": "allowed",
+      "siteLanguage": "영어",
+      "taskLanguage": "영어·스페인어 등",
+      "languages": [
+        "en",
+        "es"
+      ],
+      "risk": "check",
+      "riskNote": "제안서 경쟁·Connects 비용",
+      "url": "https://www.upwork.com/",
+      "paySourceUrl": "https://www.upwork.com/pricing/freelancer",
+      "verification": "official",
+      "checkedAt": "2026-11-22",
+      "notes": "정식 고용이 아닌 프로젝트 단위 계약입니다. 세금·계약 조건은 별도 확인이 필요합니다."
+    },
+    {
+      "id": "revu",
+      "platform": "레뷰 (REVU)",
+      "title": "체험단 · 리뷰 콘텐츠",
+      "category": "content",
+      "taskTypes": [
+        "방문형 체험",
+        "배송형 제품 리뷰",
+        "블로그·SNS 콘텐츠"
+      ],
+      "payDisplay": "제품·서비스 제공 + 일부 원고료 0~5만 원",
+      "payStatus": "check",
+      "payoutType": "mixed",
+      "payoutDetail": "현물 + 포인트·원고료 · 캠페인별 상이",
+      "koreaPayout": "check",
+      "platformKoreaAccess": "yes",
+      "platformKoreaNote": "국내 서비스, 블로그·인스타 계정 필요",
+      "f6Work": "allowed",
+      "siteLanguage": "한국어",
+      "taskLanguage": "한국어",
+      "languages": [
+        "ko"
+      ],
+      "risk": "safe",
+      "riskNote": "경제적 이해관계 표시 필수 · 미이행 시 패널티",
+      "url": "https://www.revu.net/",
+      "verification": "check",
+      "checkedAt": "2026-11-22",
+      "notes": "제품 제공이 중심이며 현금 원고료는 캠페인별로 다릅니다."
+    }
+  ]
+}

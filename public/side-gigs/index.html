@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="../shared/icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../shared/icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#161c1a">
+  <link rel="manifest" href="../shared/site.webmanifest">
+  <meta name="description" content="공식 계약 구직이 아닌 AI 데이터, 설문, 사용성 테스트, 체험단 등 소액 사이드 기그 플랫폼과 보수를 모아 봅니다.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="사이드 기그 | 전주">
+  <meta property="og:description" content="AI 데이터, 설문, 사용성 테스트, 체험단 등 소액 사이드 기그 플랫폼과 보수를 모아 봅니다.">
+  <meta property="og:image" content="https://ostrichick.github.io/job-search-radar/shared/icons/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>사이드 기그 | 전주</title>
+  <link rel="stylesheet" href="../shared/tokens.css">
+  <link rel="stylesheet" href="../shared/app-shell.css">
+  <link rel="stylesheet" href="./side-gigs.css">
+  <script type="module" src="./side-gigs.js"></script>
+</head>
+<body>
+  <header class="hero">
+    <nav class="sites" aria-label="페이지 이동">
+      <a href="../nicole/">Nicole</a>
+      <a href="../munseong/">Munseong</a>
+      <a href="../household/">우리 집 복지</a>
+      <a href="../classes/">언어 강의</a>
+      <a href="../tours/">투어·체험</a>
+      <a href="../action/">실행</a>
+      <a href="./" aria-current="page">사이드 기그</a>
+    </nav>
+    <div class="hero-content">
+      <div>
+        <p class="eyebrow">JEONJU · SIDE GIGS</p>
+        <h1>계약 구직이 아닌 <em>소액 사이드 기그</em></h1>
+        <p class="subtitle">AI 데이터 평가, 설문, 사용성 테스트, 체험단처럼 짧게 참여하는 플랫폼을 모았습니다. 보수·지급·한국 이용 가능 여부는 카드에 구분해 표시합니다.</p>
+      </div>
+      <div class="hero-aside"><span class="pulse"></span><span>목록 확인일</span><strong id="gigUpdatedAt">-</strong><small>보수·자격은 신청 전 공식 페이지에서 최종 확인</small></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="policy-warning" aria-labelledby="policyWarningTitle">
+      <strong id="policyWarningTitle">정책 위험으로 넣지 않은 일</strong>
+      <p>YouTube 구독·좋아요·조회수 구매, SNS 팔로우 미션, 앱 별점·리뷰 구매는 건당 수백 원 수준으로 알려져 있지만 플랫폼 정책 위반입니다. 채널·앱 제재, 수익 몰수·환수 위험이 있어 목록에서 제외했습니다.</p>
+    </section>
+
+    <section class="overview" aria-label="사이드 기그 현황">
+      <div class="metric"><small>플랫폼</small><strong id="totalCount">-</strong><span>정리한 항목</span></div>
+      <div class="metric"><small>공식 확인</small><strong id="officialCount">-</strong><span>보수 근거 확인</span></div>
+      <div class="metric"><small>확인 필요</small><strong id="checkCount">-</strong><span>자격·보수 재확인</span></div>
+      <div class="metric"><small>현금성</small><strong id="cashCount">-</strong><span>현금 지급 항목</span></div>
+    </section>
+
+    <section class="panel gig-filters" aria-label="사이드 기그 필터">
+      <div class="field search-field">
+        <label for="gigQuery">검색</label>
+        <input id="gigQuery" type="search" placeholder="플랫폼, 작업, 언어 검색">
+      </div>
+      <div class="field">
+        <label for="gigCategory">분류</label>
+        <select id="gigCategory">
+          <option value="">전체</option>
+          <option value="ai-data">AI 데이터</option>
+          <option value="survey">설문·리서치</option>
+          <option value="testing">사용성 테스트</option>
+          <option value="microtask">마이크로태스크</option>
+          <option value="content">콘텐츠·체험단</option>
+          <option value="freelance">긱 마켓</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="gigLanguage">언어</label>
+        <select id="gigLanguage">
+          <option value="">전체</option>
+          <option value="ko">한국어</option>
+          <option value="en">영어</option>
+          <option value="es">스페인어</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="gigPayout">지급</label>
+        <select id="gigPayout">
+          <option value="">전체</option>
+          <option value="cash">현금</option>
+          <option value="points">포인트</option>
+          <option value="gift">상품권</option>
+          <option value="product">현물</option>
+          <option value="mixed">현금+현물</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="gigRisk">위험도</label>
+        <select id="gigRisk">
+          <option value="">전체</option>
+          <option value="safe">일반</option>
+          <option value="check">조건 확인</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="gigSort">정렬</label>
+        <select id="gigSort">
+          <option value="official">공식 확인 우선</option>
+          <option value="name">이름순</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="result-head">
+      <div>
+        <strong id="gigCount" tabindex="-1">0개</strong>
+        <span id="gigUpdatedAtInline"></span>
+      </div>
+      <div class="result-actions">
+        <button id="gigReset" class="button secondary compact" type="button">필터 초기화</button>
+      </div>
+    </section>
+
+    <div id="gigs" class="gig-grid"></div>
+    <section id="gigsEmpty" class="empty" hidden>
+      <p id="gigsEmptyMessage">조건에 맞는 사이드 기그가 없습니다.</p>
+    </section>
+    <p id="gigDisclaimer" class="gig-disclaimer">보수·지급·이용 자격은 플랫폼 공지와 프로젝트별 공고에 따라 달라집니다. '확인 필요' 항목은 가입·신청 전 공식 페이지에서 다시 확인하세요.</p>
+  </main>
+</body>
+</html>

@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const publicDir = path.join(root, 'public');
 const siteBase = 'https://ostrichick.github.io/job-search-radar';
-const tabs = ['nicole', 'munseong', 'household', 'classes', 'tours', 'action'];
+const tabs = ['nicole', 'munseong', 'household', 'classes', 'tours', 'action', 'side-gigs'];
 
 async function walk(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
