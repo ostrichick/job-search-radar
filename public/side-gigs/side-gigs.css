@@ -18,7 +18,7 @@
 .metric strong { font-size: 30px; line-height: 1.1; font-weight: 850; font-variant-numeric: tabular-nums; }
 .metric span { color: var(--text-faint); font-size: 12px; }
 
-.gig-filters { display: grid; grid-template-columns: repeat(6, minmax(130px, 1fr)); gap: 12px; padding: 16px; align-items: end; }
+.gig-filters { display: grid; grid-template-columns: repeat(7, minmax(110px, 1fr)); gap: 12px; padding: 16px; align-items: end; }
 .gig-filters .search-field { grid-column: span 2; }
 .field { min-width: 0; }
 .field label { display: block; margin-bottom: 6px; color: var(--text-subtle); font-size: 13px; font-weight: 700; }

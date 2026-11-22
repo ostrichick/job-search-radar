@@ -35,6 +35,38 @@ test('모든 페이지의 상단 메뉴는 7개 탭을 서로 연결한다', asy
   }
 });
 
+test('사이드 기그 카드에 머물면 확인 상태가 저장된다', async ({ page }) => {
+  await page.goto('/side-gigs/');
+  const card = page.locator('.gig-card').first();
+  const id = await card.getAttribute('data-gig-id');
+  await expect(card).toHaveClass(/is-unreviewed/);
+  await card.hover();
+  await expect(card).not.toHaveClass(/is-unreviewed/);
+  await expect(card.locator('.seen-status')).toBeVisible();
+  await page.reload();
+  await expect(page.locator(`.gig-card[data-gig-id="${id}"]`)).not.toHaveClass(/is-unreviewed/);
+  await expect(page.locator(`.gig-card[data-gig-id="${id}"] .seen-status`)).toBeVisible();
+});
+
+test('사이드 기그 카드를 숨기고 숨김 보기에서 복원한다', async ({ page }) => {
+  await page.goto('/side-gigs/');
+  const card = page.locator('.gig-card').first();
+  const id = await card.getAttribute('data-gig-id');
+  await card.locator('.card-hide').click();
+  await expect(page.locator(`.gig-card[data-gig-id="${id}"]`)).toHaveCount(0);
+
+  await page.locator('#gigCategory').selectOption('ai-data');
+  await page.locator('#gigVisibility').selectOption('hidden');
+  await expect(page.locator(`.gig-card[data-gig-id="${id}"]`)).toHaveCount(1);
+
+  await page.locator(`.gig-card[data-gig-id="${id}"] .card-hide`).click();
+  await expect(page.locator(`.gig-card[data-gig-id="${id}"]`)).toHaveCount(0);
+
+  await page.locator('#gigReset').click();
+  await expect(page.locator('#gigVisibility')).toHaveValue('active');
+  await expect(page.locator(`.gig-card[data-gig-id="${id}"]`)).toHaveCount(1);
+});
+
 test('사이드 기그 페이지는 390px에서 가로로 넘치지 않는다', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/side-gigs/');

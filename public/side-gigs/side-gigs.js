@@ -13,8 +13,21 @@ const ACCESS_LABELS = { yes: '가능', check: '확인 필요', no: '불가' };
 const RISK_LABELS = { safe: '일반', check: '조건 확인' };
 const PAY_STATUS_LABELS = { official: '보수 공식 확인', check: '보수 확인 필요' };
 const LANGUAGE_LABELS = { ko: '한국어', en: '영어', es: '스페인어' };
+const SEEN_KEY = 'sideGigSeenIds';
+const HIDDEN_KEY = 'sideGigHiddenIds';
+let seenIds = new Set();
+let hiddenIds = new Set();
+try {
+  const stored = JSON.parse(localStorage.getItem(SEEN_KEY) || '[]');
+  if (Array.isArray(stored)) seenIds = new Set(stored);
+} catch { /* Start with an empty seen set when storage is unavailable. */ }
+try {
+  const stored = JSON.parse(localStorage.getItem(HIDDEN_KEY) || '[]');
+  if (Array.isArray(stored)) hiddenIds = new Set(stored);
+} catch { /* Start with an empty hidden set when storage is unavailable. */ }
+const displayedSeenIds = new Set(seenIds);
 
-const state = { items: [], updatedAt: '', filters: { query: '', category: '', language: '', payout: '', risk: '', sort: 'official' } };
+const state = { items: [], updatedAt: '', filters: { query: '', category: '', language: '', payout: '', risk: '', visibility: 'active', sort: 'official' } };
 
 const el = (tag, className, text) => {
   const node = document.createElement(tag);
@@ -23,8 +36,45 @@ const el = (tag, className, text) => {
   return node;
 };
 
+function toggleHidden(item) {
+  hiddenIds.has(item.id) ? hiddenIds.delete(item.id) : hiddenIds.add(item.id);
+  try { localStorage.setItem(HIDDEN_KEY, JSON.stringify([...hiddenIds])); } catch { /* Keep the in-memory state. */ }
+  render();
+  $('gigVisibility').focus({ preventScroll: true });
+}
+
+function markSeen(item, card, badge) {
+  if (seenIds.has(item.id)) return;
+  seenIds.add(item.id);
+  card.classList.remove('is-unreviewed');
+  card.classList.add('is-seen');
+  if (badge) badge.hidden = false;
+  try { localStorage.setItem(SEEN_KEY, JSON.stringify([...seenIds])); } catch { /* Keep the in-memory state. */ }
+}
+
+function attachSeenTracking(card, item, badge) {
+  let dwellTimer = null;
+  const armSeen = () => {
+    if (seenIds.has(item.id)) return;
+    clearTimeout(dwellTimer);
+    dwellTimer = setTimeout(() => markSeen(item, card, badge), 450);
+  };
+  const disarmSeen = () => { clearTimeout(dwellTimer); dwellTimer = null; };
+  card.addEventListener('pointerenter', (event) => {
+    if (event.pointerType !== 'touch') armSeen();
+  });
+  card.addEventListener('pointermove', (event) => {
+    if (event.pointerType !== 'touch' && !dwellTimer) armSeen();
+  }, { passive: true });
+  card.addEventListener('pointerleave', disarmSeen);
+  card.addEventListener('focusin', armSeen);
+  card.addEventListener('focusout', disarmSeen);
+}
+
 function matches(item) {
   const f = state.filters;
+  if (f.visibility === 'hidden') return hiddenIds.has(item.id);
+  if (hiddenIds.has(item.id)) return false;
   if (f.category && item.category !== f.category) return false;
   if (f.language && !(item.languages || []).includes(f.language)) return false;
   if (f.payout && item.payoutType !== f.payout) return false;
@@ -37,6 +87,8 @@ function matches(item) {
 
 function sorted(items) {
   return [...items].sort((a, b) => {
+    const seenDiff = Number(displayedSeenIds.has(a.id)) - Number(displayedSeenIds.has(b.id));
+    if (seenDiff) return seenDiff;
     if (state.filters.sort === 'name') return a.platform.localeCompare(b.platform, 'ko');
     const aOfficial = a.payStatus === 'official' ? 0 : 1;
     const bOfficial = b.payStatus === 'official' ? 0 : 1;
@@ -46,13 +98,27 @@ function sorted(items) {
 
 function renderCard(item) {
   const card = el('article', 'gig-card');
+  card.dataset.gigId = item.id;
+  const seen = seenIds.has(item.id);
+  card.classList.toggle('is-unreviewed', !seen);
+  card.classList.toggle('is-seen', seen);
   const badges = el('div', 'gig-badges');
+  const seenStatus = el('span', 'seen-status', '확인됨');
+  seenStatus.hidden = !seen;
   badges.append(
+    seenStatus,
     el('span', 'gig-badge category', CATEGORY_LABELS[item.category] || item.category),
     el('span', `gig-badge ${item.payStatus === 'official' ? 'official' : 'check'}`, PAY_STATUS_LABELS[item.payStatus] || '보수 확인 필요'),
     el('span', `gig-badge ${item.risk === 'safe' ? 'safe' : 'risk-check'}`, RISK_LABELS[item.risk] || '조건 확인')
   );
-  card.append(badges);
+  const isHidden = hiddenIds.has(item.id);
+  const hide = el('button', 'card-hide', isHidden ? '↶' : '×');
+  hide.type = 'button';
+  hide.title = isHidden ? '숨김 해제' : '숨기기';
+  hide.setAttribute('aria-label', `${item.title} ${isHidden ? '숨김 해제' : '숨기기'}`);
+  hide.addEventListener('click', () => toggleHidden(item));
+  card.append(badges, hide);
+  attachSeenTracking(card, item, seenStatus);
 
   const title = el('h3', 'gig-title');
   const link = el('a', '', item.title);
@@ -153,6 +219,7 @@ bind('gigCategory', 'category');
 bind('gigLanguage', 'language');
 bind('gigPayout', 'payout');
 bind('gigRisk', 'risk');
+bind('gigVisibility', 'visibility');
 bind('gigSort', 'sort');
 let timer = null;
 $('gigQuery').addEventListener('input', () => {
@@ -160,8 +227,9 @@ $('gigQuery').addEventListener('input', () => {
   timer = setTimeout(() => { state.filters.query = $('gigQuery').value; render(); }, 150);
 });
 $('gigReset').addEventListener('click', () => {
-  Object.assign(state.filters, { query: '', category: '', language: '', payout: '', risk: '', sort: 'official' });
+  Object.assign(state.filters, { query: '', category: '', language: '', payout: '', risk: '', visibility: 'active', sort: 'official' });
   for (const id of ['gigQuery', 'gigCategory', 'gigLanguage', 'gigPayout', 'gigRisk']) $(id).value = '';
+  $('gigVisibility').value = 'active';
   $('gigSort').value = 'official';
   render();
 });
