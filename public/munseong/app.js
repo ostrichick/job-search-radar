@@ -1,6 +1,7 @@
 import { createCardRenderer } from './render-cards.js';
 import { formatDate as formatDisplayDate, formatDateTime as formatDisplayDateTime } from '../shared/date-format.js';
 import { feedHealth } from './feed-health.js';
+import { sourceHealthBuckets } from './source-health.js';
 import { createRenderCache } from './render-cache.js';
 import { createCompensationUI } from './compensation-ui.js';
 import { createFilterRules } from './filter-rules.js';
@@ -1768,16 +1769,7 @@ function renderSourceHealth(sourceStatus = []) {
       .map((scope) => `${scope}: ${searchFailureLabels[reasons[scope]]}`);
     return details.length ? ` · ${details.join(', ')}` : '';
   };
-  const failed = (sourceStatus || []).filter((source) => !source.ok);
-  const partial = (sourceStatus || []).filter((source) => source.ok && (
-    Number(source.searchFailureCount || 0) > 0
-    || Number(source.rssListOnlyCount || 0) > 0
-    || Boolean(source.detailCollapseSuspected)
-    || Number(source.detailFailureCount || 0) > 0
-    || Number(source.workplaceUnverifiedCount || 0) > 0
-    || Number(source.accessRestrictedCount || 0) > 0
-    || Number(source.listFallbackCount || 0) > 0
-  ));
+  const { failed, partial } = sourceHealthBuckets(sourceStatus);
   const recovered = (sourceStatus || []).filter((source) => source.ok && (
     Number(source.detailRecoveredCount || 0) > 0 || Number(source.continuityRecoveredCount || 0) > 0));
   const sourceMetrics = state.meta?.sourceMetrics || {};
@@ -1797,7 +1789,7 @@ function renderSourceHealth(sourceStatus = []) {
       ? `일부 수집 제약 · ${partial.length}개 소스`
       : `출처 품질 주의 · ${qualityWarnings.length}개`;
   const text = document.createElement('span');
-  const failureText = failed.map((source) => `${source.source}${source.preserved ? ` · 이전 ${source.preserved}개 보존` : ''}${searchFailureDescription(source)}`);
+  const failureText = failed.map((source) => `${source.source}${source.preserved ? ` · 이전 ${source.preserved}개 보존` : ''}${searchFailureDescription(source)}${source.status === 'error' && source.detail ? ` · ${String(source.detail).slice(0, 160)}` : ''}`);
   const partialText = partial.map((source) => {
     const details = [];
     if (Number(source.preserved || 0) > 0) details.push(`이전 ${Number(source.preserved)}개 보존 · 현재 모집 미확인`);
@@ -1811,6 +1803,7 @@ function renderSourceHealth(sourceStatus = []) {
     if (Number(source.workplaceUnverifiedCount || 0) > 0) details.push(`근무지 확인 불가 ${Number(source.workplaceUnverifiedCount)}건 제외`);
     if (Number(source.accessRestrictedCount || 0) > 0) details.push(`로그인·연령 인증 필요 ${Number(source.accessRestrictedCount)}건 제외`);
     if (Number(source.listFallbackCount || 0) > 0) details.push(`상세 접근 제한 → 공개 목록 근거 ${Number(source.listFallbackCount)}건 유지`);
+    if (source.status === 'partial' && source.detail && details.length === 0) details.push(String(source.detail).slice(0, 200));
     return `${source.source} · ${details.join(' · ')}`;
   });
   const recoveryText = recovered.map((source) => {
@@ -1896,7 +1889,7 @@ function applyFeedData(data, detectNew = true) {
       ? formatDisplayDate(data.updatedAt)
       : (isNicole ? 'Unavailable' : '확인 불가');
   }
-  const failedSources = (data.sourceStatus || []).filter((source) => !source.ok);
+  const failedSources = sourceHealthBuckets(data.sourceStatus || []).failed;
   if (failedSources.length) {
     const labels = failedSources.map((source) => `${source.source}${source.preserved ? `(${source.preserved}개 유지)` : ''}`).join(', ');
     $('updatedAt').textContent += ` · 출처 오류: ${labels}`;

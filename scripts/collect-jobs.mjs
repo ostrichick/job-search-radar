@@ -1622,14 +1622,18 @@ function eligibilityFor(job) {
     .map((match) => text(match.slice(1).find(Boolean) || ''))
     .filter(Boolean)
     .join(' | '));
-  const locationFields = [...restrictionDescription.matchAll(/\blocation\s*:\s*([^.;\n]{2,80})/gi)]
-    .map((match) => text(match[1]))
+  // Decode whitespace entities before matching a bounded Location clause.
+  // Stopping at '&nbsp;' erases an actual "within LATAM" restriction after
+  // it, but a new "About the project" heading should not become a location.
+  const locationClauses = restrictionDescription.replace(/&(?:nbsp|#160|#x0*a0);?/gi, ' ');
+  const locationFields = [...locationClauses.matchAll(/\blocation\s*:\s*([^.;\n]{2,80})/gi)]
+    .map((match) => text(match[1].split(/\b(?:about\s+(?:the\s+)?project|job\s+description|responsibilities|requirements)\b/i)[0]))
     .filter(Boolean);
   const locationRestrictionText = lower(locationFields.join(' | ') || location);
   const locationLooksRestrictive = /\b(?:only|except(?:ing)?|worldwide|world\s+wide|globally|remote|south korea|republic of korea|korea|seoul|한국)\b/.test(locationRestrictionText)
     || restrictedRegion.test(locationRestrictionText);
   const rawRestrictionText = residencyText || (locationLooksRestrictive ? locationRestrictionText : '');
-  const genericRemoteRestriction = /^(?:remote(?:\s+job)?|home\s*office|homeoffice|remoto|anywhere|location independent|work from home|wfh|unknown|not specified|n\/?a|위치 미상)$/i.test(rawRestrictionText)
+  const genericRemoteRestriction = /^(?:remote(?:\s+job)?|(?:fully|entirely|100%)\s+remote(?:\s+(?:job|position))?|home\s*office|homeoffice|remoto|anywhere|location independent|work from home|wfh|unknown|not specified|n\/?a|위치 미상)$/i.test(rawRestrictionText)
     || /^remote\s+(?:we\s+(?:are|seek|have)|our\s+team|the\s+(?:role|company|position)|this\s+(?:role|position|job))\b/i.test(rawRestrictionText);
   const restrictionText = genericRemoteRestriction || (/^remote\b/.test(rawRestrictionText)
     && /\b(?:engagement|employment|job type|schedule|hours|compensation|pay|salary|requirements?)\s*:/.test(rawRestrictionText))

@@ -106,6 +106,45 @@ test('Nicole prioritizes currently collected review candidates without certifyin
   await expect(page.locator('#stats .stat').first()).toContainText('0');
 });
 
+test('Nicole current collection does not resurrect an explicitly unsupported language specialist', async ({ page }) => {
+  await page.route('**/feeds/dubu.json?*', (route) => route.fulfill({ json: {
+    ...feed,
+    jobs: [
+      job('language-hard', 'online', {
+        title: 'Kinyarwanda Language Specialist - AI Trainer', location: 'Worldwide',
+        languageFitStatus: 'match', description: 'Native fluency in Kinyarwanda is required.'
+      }),
+      job('spanish-content', 'online', { title: 'Spanish Social Media Content Specialist' })
+    ]
+  } }));
+  await page.goto('/nicole/');
+  await expect(page.locator('#jobs')).not.toContainText('Kinyarwanda Language Specialist');
+  await page.locator('#archiveFilter').selectOption('current');
+  await expect(page.locator('#jobs')).toContainText('Spanish Social Media Content Specialist');
+  await expect(page.locator('#jobs')).not.toContainText('Kinyarwanda Language Specialist');
+  await page.locator('#statusFilter').selectOption('all');
+  await expect(page.locator('#jobs')).toContainText('Kinyarwanda Language Specialist');
+});
+
+test('Nicole collection health distinguishes failed, partial and optional manual sources', async ({ page }) => {
+  await page.route('**/feeds/dubu.json?*', (route) => route.fulfill({ json: {
+    ...feed,
+    sourceStatus: [
+      { source: 'Jobicy', status: 'partial', count: 2, failures: ['HTTP 429'], detail: '2/4 requests completed; HTTP 429 rate-limited' },
+      { source: 'Xsolla', status: 'error', count: 0, detail: 'The operation was aborted due to timeout' },
+      { source: '사용자 저장 공고', status: 'not_configured', count: 0, detail: 'Optional manual file absent' },
+      { source: 'ProZ', status: 'manual', count: 0 }
+    ]
+  } }));
+  await page.goto('/nicole/');
+  await expect(page.locator('#sourceHealth')).toContainText('Xsolla');
+  await expect(page.locator('#sourceHealth')).toContainText('Jobicy');
+  await expect(page.locator('#sourceHealth')).toContainText('2/4');
+  await expect(page.locator('#sourceHealth')).not.toContainText('사용자 저장 공고');
+  await expect(page.locator('#updatedAt')).toContainText('Source errors: Xsolla');
+  await expect(page.locator('#updatedAt')).not.toContainText('사용자 저장 공고');
+});
+
 test('Nicole preserves optional hide reasons across reload and restores them without losing saved jobs', async ({ page }) => {
   await page.goto('/nicole/');
   await page.locator('.job-card .favorite').first().click();

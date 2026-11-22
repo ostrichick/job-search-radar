@@ -290,6 +290,26 @@ test('failed or partially refreshed source never mislabels missing jobs as close
     { jobs: [prevNotSeen], updatedAt: earlier }).jobs[0].collectionState, 'not_seen');
 });
 
+test('automated-source exclusion does not delete the same URL explicitly saved by the user', () => {
+  const targetUrl = 'https://jobicy.com/jobs/english-spanish-marketing';
+  const manual = { id: 'manual:my-job', source: '사용자 저장 공고', sourceKind: 'manual',
+    url: targetUrl, title: 'Saved Spanish Marketing', company: 'Acme',
+    market: 'online', category: 'marketing', location: 'Remote',
+    verifiedAt: '2026-10-18T00:00:00Z' };
+  const automated = { ...manual, id: 'jobicy:automatic', source: 'Jobicy', sourceKind: 'public_api' };
+  const updatedAt = '2026-10-19T00:00:00Z';
+  const sourceStatus = [{ source: 'Jobicy', status: 'ok' }];
+  const fresh = mergeHistoricalFeed({ updatedAt, jobs: [manual, automated], sourceStatus },
+    { jobs: [] }, { excludedUrls: [targetUrl] });
+  assert.deepEqual(fresh.jobs.map((job) => job.id), [manual.id]);
+  const prior = mergeHistoricalFeed({ updatedAt, jobs: [], sourceStatus },
+    { updatedAt: '2026-10-18T00:00:00Z', jobs: [manual, automated] },
+    { excludedUrls: [targetUrl] });
+  assert.deepEqual(prior.jobs.map((job) => job.id), [manual.id]);
+  assert.equal(prior.jobs[0].collectionState, 'unverified',
+    'manual lead collection status is not inferred from the removed API job');
+});
+
 test('historical records expire after configured retention and use bounded record limits', () => {
   const next = '2026-10-19T00:00:00.000Z';
   const old = [1, 2, 3].map((id) => ({ id: `x${id}`, source: 'Jobicy', url: `https://jobicy.com/jobs/${id}`,
@@ -390,6 +410,63 @@ function fakeFetch(url) {
   if (href.includes('arbeitnow.com')) return Promise.resolve({ ok: true, status: 200, json: async () => ({ data: [] }) });
   throw new Error(`Unexpected URL ${href}`);
 }
+
+test('Jobicy queries honor request spacing and Retry-After without losing successful leads', async (t) => {
+  const root = await setup();
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await writeFile(join(root, 'config/profile.json'), JSON.stringify({
+    homeCountry: 'KR', spokenLanguages: { es: 'native', en: 'unverified', ko: 'beginner' },
+    collectors: { remotive: false, jobicy: true, remoteok: false, arbeitnow: false,
+      himalayas: false, remotejobs: false, koreaAts: false, curatedResearch: false }
+  }));
+  const delays = [];
+  let marketingRequests = 0;
+  const calls = [];
+  const fetchImpl = async (url) => {
+    calls.push(url);
+    if (url.includes('industry=marketing') && marketingRequests++ === 0) {
+      return { ok: false, status: 429, headers: { get: () => '2' } };
+    }
+    return { ok: true, json: async () => ({ success: true, jobs: url.includes('tag=translation') ? [] : [
+      { id: 9810, jobTitle: 'Spanish Social Media Marketing Specialist', companyName: 'Example Studio',
+        url: 'https://jobicy.com/jobs/spanish-marketing-specialist', jobGeo: 'Worldwide',
+        jobIndustry: ['Marketing'], jobDescription: 'Spanish digital content and campaigns.', pubDate: now }
+    ] }) };
+  };
+  const { feed } = await buildFeed({ root, fetchImpl, now,
+    jobicyPause: async (ms) => { delays.push(ms); } });
+  const jobicyStatus = feed.sourceStatus.find((item) => item.source === 'Jobicy');
+  assert.equal(jobicyStatus.status, 'ok');
+  assert.equal(jobicyStatus.count, 1, 'filtered job IDs are deduplicated across searches');
+  assert.equal(calls.length, 5, 'one limited request is retried only once');
+  assert.deepEqual(delays, [1250, 1250, 2000, 1250, 1250],
+    'every request, including the first, is paced and Retry-After is respected');
+  assert.equal(feed.jobs.filter((job) => job.source === 'Jobicy').length, 1);
+});
+
+test('Jobicy long Retry-After, including an HTTP-date, defers all optional queries', async (t) => {
+  const root = await setup();
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await writeFile(join(root, 'config/profile.json'), JSON.stringify({
+    homeCountry: 'KR', collectors: { remotive: false, jobicy: true, remoteok: false,
+      arbeitnow: false, himalayas: false, remotejobs: false, koreaAts: false,
+      curatedResearch: false }
+  }));
+  for (const retryAfter of ['90', new Date(Date.now() + 90_000).toUTCString()]) {
+    const pauses = [];
+    let calls = 0;
+    const { feed } = await buildFeed({ root, now, jobicyPause: async (ms) => pauses.push(ms),
+      fetchImpl: async () => {
+        calls++;
+        return { ok: false, status: 429, headers: { get: () => retryAfter } };
+      } });
+    const status = feed.sourceStatus.find((source) => source.source === 'Jobicy');
+    assert.equal(status.status, 'error');
+    assert.equal(calls, 1, 'rate limit stops remaining optional searches, not retried early');
+    assert.deepEqual(pauses, [1250], 'only the pre-request interval is used');
+    assert.match(status.detail, /429/);
+  }
+});
 
 test('buildFeed merges online, Korean offline, manual and source statuses without Upwork fake listings', async (t) => {
   const root = await setup();

@@ -29,6 +29,8 @@ function getPay(parts) { return asText(parts.filter((p) => p !== undefined && p 
 function recordStatus(source, status, count, checkedAt, detail = '', extras = {}) {
   return { source, status, count, checkedAt, detail, ...extras };
 }
+const JOBICY_REQUEST_INTERVAL_MS = 1250;
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function commonJob({ source, providerId, url, title, company, description, location,
   restriction, postedAt, deadline, listingExpiresAt, pay, categories, now, homeCountry, languages, onExcluded }) {
@@ -230,12 +232,24 @@ async function fetchJson(url, { fetchImpl = fetch, timeoutMs = 12000 } = {}) {
       headers: { Accept: 'application/json', 'User-Agent': 'NicoleJobRadar/1.0 (+public research; attribution via links)' },
       signal: controller.signal,
     });
-    if (!response.ok) throw new Error(`HTTP ${response.status}${response.status === 429 ? ' (rate-limited)' : ''}`);
+    if (!response.ok) {
+      const error = new Error(`HTTP ${response.status}${response.status === 429 ? ' (rate-limited)' : ''}`);
+      error.status = response.status;
+      const retryAfter = response.headers?.get?.('Retry-After')?.trim();
+      if (retryAfter) {
+        // RFC 9110 permits either delta-seconds or an HTTP-date. Never
+        // shorten a server's requested wait to fit our local retry budget.
+        const retryMs = /^\d+(?:\.\d+)?$/.test(retryAfter)
+          ? Number(retryAfter) * 1000 : Date.parse(retryAfter) - Date.now();
+        if (Number.isFinite(retryMs) && retryMs >= 0) error.retryAfterMs = retryMs;
+      }
+      throw error;
+    }
     return await response.json();
   } finally { clearTimeout(timer); }
 }
 
-async function collectOne(source, { fetchImpl, timeoutMs, now, homeCountry, languages }) {
+async function collectOne(source, { fetchImpl, timeoutMs, now, homeCountry, languages, jobicyPause }) {
   const normalize = {
     remotive: normalizeRemotive, jobicy: normalizeJobicy,
     remoteok: normalizeRemoteOk, arbeitnow: normalizeArbeitnow,
@@ -253,11 +267,31 @@ async function collectOne(source, { fetchImpl, timeoutMs, now, homeCountry, lang
   let completed = 0;
   for (const url of requests) {
     try {
-      const data = await fetchJson(url, { fetchImpl, timeoutMs });
+      // Jobicy documents a shared, per-IP 1 request/second limit. The main
+      // collector may have just made the shared base request in the prior CI
+      // step, so also space the first Nicole-specific request.
+      if (source.key === 'jobicy') await jobicyPause?.(JOBICY_REQUEST_INTERVAL_MS);
+      let data;
+      try {
+        data = await fetchJson(url, { fetchImpl, timeoutMs });
+      } catch (error) {
+        // Respect a bounded Retry-After once; never loop indefinitely or
+        // retry a cached failure already shared by the main collector.
+        if (source.key !== 'jobicy' || error.status !== 429 || !jobicyPause) throw error;
+        const retryDelay = Math.max(JOBICY_REQUEST_INTERVAL_MS, error.retryAfterMs || 0);
+        if (retryDelay > 30000) throw error; // defer until a later refresh
+        await jobicyPause(retryDelay);
+        data = await fetchJson(url, { fetchImpl, timeoutMs });
+      }
       collected.push(...normalize(data, { now, homeCountry, languages,
         onExcluded: ({ url }) => excludedUrls.add(url) }));
       completed++;
-    } catch (err) { failures.push(asText(err?.message || err, 150)); }
+    } catch (err) {
+      failures.push(asText(err?.message || err, 150));
+      // HTTP 429 is per-IP, not per search term. Do not spend the remaining
+      // optional requests after a hard rate limit, including a shared 429.
+      if (source.key === 'jobicy' && (err?.status === 429 || /\b429\b/.test(String(err?.message)))) break;
+    }
   }
   const jobs = dedupeJobs(collected);
   const status = completed ? (failures.length ? 'partial' : 'ok') : 'error';
@@ -323,13 +357,15 @@ async function optionalManual({ root, filename, now, readFileImpl = readFile }) 
 }
 
 export async function buildFeed({ root = ROOT, fetchImpl = fetch, readFileImpl = readFile,
-  koreaCollector, koreaAtsCollector, koworkCollector, timeoutMs = 12000, now = new Date().toISOString() } = {}) {
+  koreaCollector, koreaAtsCollector, koworkCollector, timeoutMs = 12000,
+  jobicyPause = fetchImpl === fetch ? sleep : null, now = new Date().toISOString() } = {}) {
   const profile = await readProfile(root, readFileImpl);
   const collectors = profile.collectors || {};
   const sourceTasks = SOURCES.map((source) => (collectors[source.key] === false
     || (EXPANDED_REMOTE_FEEDS[source.key] && collectors[source.key] !== true))
     ? Promise.resolve({ jobs: [], successfulRequests: 0, sourceStatus: [recordStatus(source.name, 'disabled', 0, now, '사용자 프로필에서 비활성화', { url: source.url })] })
-    : collectOne(source, { fetchImpl, timeoutMs, now, homeCountry: profile.homeCountry, languages: profile.spokenLanguages }));
+    : collectOne(source, { fetchImpl, timeoutMs, now, homeCountry: profile.homeCountry,
+      languages: profile.spokenLanguages, jobicyPause }));
   // Work24 is outside this foreign-friendly board's normal collection scope.
   if (collectors.korea === true) sourceTasks.push(optionalKorea({ enabled: true, now, fetchImpl, koreaCollector }));
   sourceTasks.push(optionalKoreaAts({ enabled: collectors.koreaAts !== false, now, fetchImpl, koreaAtsCollector }));
@@ -410,6 +446,10 @@ export function mergeHistoricalFeed(incoming, previous, { retentionDays = 60, ma
   const maxHistorical = Math.max(0, Math.min(10000, Number(maxItems) || 2000));
   const priorList = Array.isArray(previous?.jobs) ? previous.jobs : [];
   const explicitlyExcludedUrls = new Set(excludedUrls.map((url) => safePublicUrl(url)).filter(Boolean));
+  // A collector or curated source withdrawing a URL must never silently
+  // delete a copy that the user deliberately saved as a manual lead.
+  const excludedByAutomaticSource = (job) => job.sourceKind !== 'manual'
+    && explicitlyExcludedUrls.has(safePublicUrl(job.url));
   // Only an explicit calendar deadline can establish that a posting expired;
   // absence from an API response does not establish closure.
   const pastDeadline = (job) => {
@@ -425,7 +465,7 @@ export function mergeHistoricalFeed(incoming, previous, { retentionDays = 60, ma
     return url ? [[url, job]] : [];
   }));
   const eligibleIncoming = incoming.jobs.filter((job) =>
-    !explicitlyExcludedUrls.has(safePublicUrl(job.url)) && !pastDeadline(job) &&
+    !excludedByAutomaticSource(job) && !pastDeadline(job) &&
     !isFutureOnlyProductivePlayhouse(job) &&
     !expandedSourceLanguageMismatch(job, knownLanguages) &&
     !(job.source === 'RemoteJobs.org' && unsupportedTargetLanguageReview(job.title)) &&
@@ -450,7 +490,7 @@ export function mergeHistoricalFeed(incoming, previous, { retentionDays = 60, ma
       (job.source === 'RemoteJobs.org' && unsupportedTargetLanguageReview(job.title)) ||
       isFutureOnlyProductivePlayhouse(job) ||
       expandedSourceLanguageMismatch(job, knownLanguages) ||
-      explicitlyExcludedUrls.has(safePublicUrl(job.url)) || pastDeadline(job)) return [];
+      excludedByAutomaticSource(job) || pastDeadline(job)) return [];
     if (job.sourceKind === 'curated_research' &&
         (!isoDate(job.researchReviewedAt) ||
         fetchedAt - Date.parse(isoDate(job.researchReviewedAt)) > 30 * 86400_000 ||

@@ -66,3 +66,34 @@ test('international official employer feeds record each publisher status and do 
   assert.equal(sourceStatus.find((s) => s.source === 'ShopBack').status, 'ok');
   assert.ok(called.every((url) => url.startsWith('https://api.lever.co/') || url.startsWith('https://api.ashbyhq.com/')));
 });
+
+test('Xsolla slow official Lever feed gets one bounded timeout retry without masking other source failures', async () => {
+  const calls = [];
+  const pauses = [];
+  const { jobs, sourceStatus, successfulRequests } = await collectInternationalAtsJobs({
+    now, timeoutMs: 12000, retryPause: async (ms) => pauses.push(ms),
+    fetchImpl: async (url, options) => {
+      calls.push({ url, signal: options.signal });
+      if (url.includes('/xsolla?')) {
+        const attempts = calls.filter((call) => call.url.includes('/xsolla?')).length;
+        return { ok: true, json: async () => {
+          if (attempts === 1) throw Object.assign(new Error('The operation was aborted due to timeout'), { name: 'TimeoutError' });
+          return [shopback({ id: 'xsolla-ok', hostedUrl: 'https://jobs.lever.co/xsolla/xsolla-ok' })];
+        } };
+      }
+      if (url.includes('/shopback-2?')) return { ok: true, json: async () => [] };
+      throw Object.assign(new Error('Server unavailable'), { name: 'NetworkError' });
+    },
+  });
+  const xsolla = sourceStatus.find((status) => status.source === 'Xsolla');
+  assert.equal(xsolla.status, 'ok');
+  assert.equal(xsolla.retryCount, 1);
+  assert.equal(xsolla.count, 1);
+  assert.equal(calls.filter((call) => call.url.includes('/xsolla?')).length, 2);
+  assert.equal(pauses.length, 1);
+  assert.equal(pauses[0], 1500);
+  assert.equal(successfulRequests, 2);
+  assert.equal(jobs.length, 1);
+  assert.equal(sourceStatus.find((status) => status.source === 'Channel Corp.').status, 'error');
+  assert.equal(sourceStatus.find((status) => status.source === 'Channel Corp.').retryCount, 0);
+});

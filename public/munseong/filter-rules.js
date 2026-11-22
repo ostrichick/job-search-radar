@@ -40,6 +40,14 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
     if (!skipped.has('archiveFilter') && value('archiveFilter') === 'review' && !isNicoleReviewCandidate(job, profileFit(job))) return false;
     if (!skipped.has('archiveFilter') && value('archiveFilter') === 'archived' && collection !== 'not_seen') return false;
     if (!skipped.has('archiveFilter') && value('archiveFilter') === 'unverified' && !['unverified', 'unknown'].includes(collection)) return false;
+    // 'Current' bypasses the soft relevance threshold, not verified hard
+    // disqualifiers (e.g. a Kinyarwanda-only language specialist). Never hide
+    // these records in explicit audit/advanced views or personal workflows.
+    const explicitReview = ['all', 'saved', 'hidden', 'planned', 'applied'].includes(status)
+      || value('includeAllFits') === 'true' || eligibility === 'restricted'
+      || ['archived', 'unverified'].includes(value('archiveFilter'));
+    if (!job.manual && !explicitReview
+      && profileFit(job).status === 'fail') return false;
     if (!includeAllFits && (job.languageFitStatus || 'unknown') === 'mismatch') return false;
     if (!skipped.has('commuteFilter') && market === 'domestic' && !['', 'all'].includes(value('commuteFilter')) && (region.commuteClass || 'unknown') !== value('commuteFilter')) return false;
     if (market === 'overseas_remote' && (job.category === 'interpreting' || /live\s*interpret|video\s*interpret|remote\s*interpreter|실시간\s*통역/i.test(`${job.title || ''} ${job.description || ''}`))) return false;

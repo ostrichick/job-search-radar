@@ -106,10 +106,17 @@ export function normalizeAshbyJob(row, board, options = {}) {
 }
 
 export async function collectInternationalAtsJobs({ fetchImpl = fetch, now = nowISO(),
-  languages = { es: 'native', en: 'unverified', ko: 'beginner' }, timeoutMs = 15000 } = {}) {
+  languages = { es: 'native', en: 'unverified', ko: 'beginner' }, timeoutMs = 15000,
+  retryPause = (ms) => new Promise((resolve) => setTimeout(resolve, ms)) } = {}) {
   const jobs = [], sourceStatus = [], excludedUrls = new Set();
   let successfulRequests = 0;
   for (const board of BOARDS) {
+    const startedAt = Date.now();
+    let retryCount = 0;
+    // Xsolla's public Lever response is several MB; a single CI timeout
+    // need not mean the employer board is permanently unavailable. Extend
+    // only this source's budget, never the rest of the ATS publishers.
+    const boardTimeoutMs = board.source === 'Xsolla' ? Math.max(timeoutMs, 20000) : timeoutMs;
     const url = board.kind === 'lever'
       ? 'https://api.lever.co/v0/postings/' + encodeURIComponent(board.slug) + '?mode=json'
       : 'https://api.ashbyhq.com/posting-api/job-board/' + encodeURIComponent(board.slug);
@@ -117,13 +124,27 @@ export async function collectInternationalAtsJobs({ fetchImpl = fetch, now = now
       ? 'https://jobs.lever.co/' + board.slug
       : 'https://jobs.ashbyhq.com/' + board.slug;
     try {
-      const response = await fetchImpl(url, {
-        headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(timeoutMs),
-      });
-      if (!response.ok) throw new Error('HTTP ' + response.status);
-      const payload = await response.json();
-      const rows = board.kind === 'lever' ? payload : payload?.jobs;
-      if (!Array.isArray(rows)) throw new Error('Missing public job list');
+      const requestRows = async () => {
+        const response = await fetchImpl(url, {
+          headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(boardTimeoutMs),
+        });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        // The abort deadline can also fire while parsing a large JSON body.
+        const payload = await response.json();
+        const rows = board.kind === 'lever' ? payload : payload?.jobs;
+        if (!Array.isArray(rows)) throw new Error('Missing public job list');
+        return rows;
+      };
+      let rows;
+      try { rows = await requestRows(); }
+      catch (error) {
+        // One bounded retry for timeout only. Never repeat 4xx errors or
+        // silently label a failed board as an empty successful collection.
+        if (board.source !== 'Xsolla' || !['TimeoutError', 'AbortError'].includes(error?.name)) throw error;
+        retryCount = 1;
+        await retryPause(1500);
+        rows = await requestRows();
+      }
       const normalizeOne = board.kind === 'lever' ? normalizeLeverJob : normalizeAshbyJob;
       const relevant = rows.map((row) => normalizeOne(row, board, {
         now, languages, onExcluded: (excluded) => excludedUrls.add(excluded),
@@ -131,12 +152,13 @@ export async function collectInternationalAtsJobs({ fetchImpl = fetch, now = now
       jobs.push(...relevant);
       successfulRequests++;
       sourceStatus.push({ source: board.source, status: 'ok', count: relevant.length,
-        checkedAt: now, url: browseUrl,
+        checkedAt: now, url: browseUrl, durationMs: Date.now() - startedAt, retryCount,
         detail: String(rows.length) + ' employer postings checked; ' + relevant.length +
           ' Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified.' });
     } catch (error) {
       sourceStatus.push({ source: board.source, status: 'error', count: 0, checkedAt: now,
-        url: browseUrl, detail: safeText(error?.message || error, 160) });
+        url: browseUrl, durationMs: Date.now() - startedAt, timeoutMs: boardTimeoutMs,
+        retryCount, detail: safeText(error?.message || error, 160) });
     }
   }
   return { jobs, sourceStatus, excludedUrls: [...excludedUrls], successfulRequests };

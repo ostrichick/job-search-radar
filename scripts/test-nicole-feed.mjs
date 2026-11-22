@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import { adaptNicoleFeed, adaptNicoleJob, isGermanLanguageJob, sourceForManual } from '../public/munseong/nicole-feed.js';
 import { validatePublicFeed } from '../public/munseong/backup-rules.js';
 import { getProfile } from '../public/munseong/profiles.js';
+import { sourceHealthBuckets } from '../public/munseong/source-health.js';
 
 const baseline = JSON.parse(fs.readFileSync('profiles/dubu/public/jobs.json', 'utf8'));
 const original = JSON.stringify(baseline);
@@ -34,4 +35,21 @@ assert.equal(getProfile('munseong').dbName, 'job-search-radar');
 assert.equal(adaptNicoleJob({ id: 'test', market: 'offline', url: 'https://example.org/j', title: 'Example', location: '' }).domesticRegion.commuteClass, 'unknown');
 assert.equal(sourceForManual('https://www.upwork.com/jobs/abc'), 'Upwork');
 assert.equal(sourceForManual('https://kowork.kr/en/jobs/abc'), 'KOWORK');
+const actualHealth = sourceHealthBuckets(adapted.sourceStatus);
+assert.equal(actualHealth.failed.some((s) => s.source === 'Xsolla'), true,
+  'an actual failed source must remain visible');
+assert.equal(actualHealth.partial.some((s) => s.source === 'Jobicy'), true,
+  'partial Jobicy requests must be visible in source health');
+assert.equal(actualHealth.failed.some((s) => s.status === 'not_configured'), false,
+  'optional manual inputs do not count as source outages');
+const fixtureHealth = sourceHealthBuckets([
+  { source: 'Jobicy', status: 'partial', ok: true, count: 2, failures: ['HTTP 429'] },
+  { source: 'Xsolla', status: 'error', ok: false, detail: 'timeout' },
+  { source: '사용자 저장 공고', status: 'not_configured', ok: false },
+  { source: 'ProZ', status: 'manual', ok: true },
+  { source: 'Optional API', status: 'disabled', ok: false },
+]);
+assert.deepEqual(fixtureHealth.failed.map((s) => s.source), ['Xsolla']);
+assert.deepEqual(fixtureHealth.partial.map((s) => s.source), ['Jobicy']);
+assert.equal(fixtureHealth.informational.length, 3);
 console.log(`Nicole feed conversion tests passed (${adapted.jobs.length} jobs)`);

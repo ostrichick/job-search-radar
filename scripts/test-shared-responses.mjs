@@ -49,8 +49,7 @@ try {
     assert.equal(status.Remotive.status, 'ok', 'shared Remotive response is used');
     assert.ok(!calls.includes(SHARED_SOURCE_URLS.remotive) && !calls.includes(SHARED_SOURCE_URLS.jobicy), 'shared URLs are not fetched again');
     assert.match(status.Jobicy.detail, /shared request failed: 429/, 'a shared failure is reported, not retried');
-    assert.ok(calls.every((url) => url.startsWith(`${SHARED_SOURCE_URLS.jobicy}&`)), 'only Dubu-specific Jobicy searches hit the network');
-    assert.equal(calls.length, 3);
+    assert.equal(calls.length, 0, 'a shared 429 stops all optional Jobicy queries to respect the per-IP limit');
   } finally { delete process.env.SHARED_RESPONSE_DIR; }
   console.log('shared source responses are reused across collectors');
 } finally {
