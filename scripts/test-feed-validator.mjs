@@ -27,6 +27,7 @@ function saraminFeed() {
   const feed = structuredClone(baseline);
   const row = feed.jobs[templateIndex];
   row.source = '사람인';
+  delete row.sourceListingState;
   row.platform = '사람인';
   row.sourcePostingId = '99999999';
   row.sourceKind = 'job_board';
@@ -34,6 +35,8 @@ function saraminFeed() {
   row.score = Math.max(20, row.score || 0);
   row.url = 'https://www.saramin.co.kr/zf_user/jobs/view?rec_idx=99999999';
   row.workAddressEvidence = 'detail_html';
+  row.workAddress = '전북특별자치도 전주시 완산구 전주객사1길 1';
+  row.location = row.workAddress;
   row.remote = false;
   row.workplaceMode = 'onsite';
   row.marketScopes = ['domestic'];
@@ -46,6 +49,7 @@ function incruitFeed() {
   const feed = structuredClone(baseline);
   const row = feed.jobs[templateIndex];
   row.source = '인크루트';
+  delete row.sourceListingState;
   row.platform = '인크루트';
   row.sourcePostingId = '2609110000252';
   row.sourceKind = 'job_board';
@@ -103,8 +107,8 @@ try {
   htmlJob.listingReason = '공식 출처 공개 목록에서 해당 공고의 게시를 확인함';
   assert.equal(runValidator(htmlFeed, 'html-public-list').status, 0);
   const recheckFeed = structuredClone(baseline);
-  const recheck = recheckFeed.jobs.find((job) => job.id === 'job:af580e25247149d9');
-  assert.equal(recheck.listingStatus, 'stale');
+  const recheck = recheckFeed.jobs.find((job) => job.listingStatus === 'stale' && /공공기관/.test(job.source));
+  assert.ok(recheck);
   assert.equal(runValidator(recheckFeed, 'government-deadline-recheck').status, 0);
   recheck.listingVerification = 'official_listed';
   const invalidRecheck = runValidator(recheckFeed, 'government-unjustified-stale');
