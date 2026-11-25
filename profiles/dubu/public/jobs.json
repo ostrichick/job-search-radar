@@ -1,23 +1,23 @@
 {
-  "updatedAt": "2026-11-25T08:36:00.660Z",
+  "updatedAt": "2026-11-25T21:43:17.748Z",
   "jobs": [
     {
-      "id": "arbeitnow-619b4c0e82172220246f",
-      "title": "SEO Manager (m/f/d)",
-      "company": "We Love X GmbH",
+      "id": "arbeitnow-f4e0e0bcbdf609bfc426",
+      "title": "Projektassistenz & Content-Management (m/w/d) - Fokus SEO",
+      "company": "Sumax",
       "source": "Arbeitnow",
-      "url": "https://www.arbeitnow.com/jobs/companies/we-love-x-gmbh/seo-manager-berlin-139019",
-      "description": "About the Job We're looking for an SEO Manager to get hands-on with our affiliate portfolio and grow it. You'll work directly with some of the biggest publishers in the world, and your work will show up in the numbers — fast. You'll work across two areas: driving more revenue out of affiliate sites that are already live, and helping take brand-new sites from a blank page to go-live — keyword clustering, content structure, stakeholder coordination, the whole build. Every Google update, every new market, every publisher conversation is something you'll get your hands on. At WLX, SEO isn't a support function — it's a driving force. We have the resources, the management backing, and the hands-on expertise to make things happen. And unlike an agency, everything we build is ours: our own projects, run in close collaboration with the world's biggest publishers. That means real ownership, real impact, and no client briefs. This is what you'll do Drive revenue growth on existing affiliate sites: Develop and implement long-term SEO strategies, and own the on-page and off-page work that moves the needle. Improve and maintain rankings on key money pages: Run content audits, apply intent mapping, and improve CTR and SERP feature capture on your highest-value pages. Lead backlink campaigns: Build and execute link-building strategies across multiple affiliate sites, working with agencies, forums, and outreach partners to strengthen domain authority. Help take new affiliate sites live: Own keyword clustering, topic mapping, and content structure based on market and competitor research, and coordinate with stakeholders to get new sites launched from scratch. React fast when the landscape shifts: Assess the impact of Google algorithm updates, figure out what happened and why, and put a clear plan in place to recover traffic — without getting stuck in the noise. This is what you’ve got Extensive SEO experience, with strong, hands-on expertise in both on-page and off-page work, and a track record of driving organic growth at scale. Fluent in German and English, confident in operating with stakeholders in both languages. Strong analytical thinking and prioritisation skills — you know what moves the needle and can back your decisions with data. Proactive and self-motivated, comfortable owning your workstream without needing to be told what's next. Comfortable working in a fast-paced, flat, startup-style environment. Experience in iGaming or other affiliate marketing industries is a plus. Find more English Speaking Jobs in Germany on Arbeitnow",
-      "location": "Berlin",
+      "url": "https://www.arbeitnow.com/jobs/companies/sumax/projektassistenz-content-management-fokus-seo-dortmund-287752",
+      "description": "Zur Unterstützung eines spannenden internationalen Projekts suchen wir ab sofort ein engagiertes Teammitglied, das nicht nur Texte liebt, sondern auch einen Blick für Details und Struktur hat. Wenn du Lust hast, aktiv an der Gestaltung und Optimierung digitaler Inhalte mitzuarbeiten und sicher im Umgang mit CMS-Systemen bist, dann suchen wir genau dich! Aufgaben Content-Pflege: Du pflegst Texte, Bilder und Medien präzise und fehlerfrei in unser Kunden-CMS ein. SEO-Support: Du unterstützt bei der On-Page-Optimierung (z. B. Pflege von Meta-Daten, Bild-Alt-Texten und interne Verlinkungen). Projektorganisation: Du behältst den Überblick über Content-Zeitpläne, koordinierst kleine Arbeitspakete und stellst sicher, dass Deadlines eingehalten werden. Qualitätskontrolle: Du prüfst eingepflegte Inhalte auf formale Richtigkeit und Konsistenz. Qualifikation SEO-Grundverständnis: Du weißt, was Keywords, Meta-Beschreibungen und eine gute Content-Struktur sind. CMS-Erfahrung: Idealerweise hast du bereits mit Systemen wie WordPress, TYPO3, Strapi oder ähnlichen gearbeitet. Sorgfalt: Du arbeitest akribisch und hast ein Auge für das Detail, auch wenn es mal schnell gehen muss. Organisationstalent: Du bist strukturiert, zuverlässig und kommunikationsstark. Sprachkenntnisse: Da es ein internationales Projekt ist, sind gute Deutsch- und Englischkenntnisse in Wort und Schrift für dich selbstverständlich. Benefits Spannendes Projekt: Du arbeitest an einer internationalen Herausforderung mit direktem Einfluss auf den Projekterfolg. Eigenverantwortung: Du übernimmst von Tag eins an Verantwortung für deine Aufgabenbereiche. Teamgeist: Ein motiviertes Umfeld, das sich auf deine Unterstützung freut. Flexibilität: Remote, Hybrid Find Jobs in Germany on Arbeitnow",
+      "location": "Dortmund",
       "workplaceMode": "remote",
       "market": "online",
       "category": "marketing",
-      "postedAt": "2026-11-25T06:31:17.000Z",
+      "postedAt": "2026-11-25T15:00:55.000Z",
       "deadline": null,
       "listingExpiresAt": null,
       "pay": null,
-      "languageRequirements": "English, German",
-      "eligibility": "사업장 위치 Berlin · 한국 원격근무 가능 여부 확인 필요",
+      "languageRequirements": "공고 원문 확인 필요",
+      "eligibility": "사업장 위치 Dortmund · 한국 원격근무 가능 여부 확인 필요",
       "eligibilityStatus": "unknown",
       "eligibilityDetail": {
         "status": "unknown",
@@ -25,15 +25,83 @@
         "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
         "requiresVerification": true
       },
-      "languageFitStatus": "mismatch",
-      "languageFitReason": "German: 현재 확인된 언어 역량으로는 직무 요구 수준을 충족한다고 판단하기 어렵습니다. 실제 능력과 요건 확인 필요.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "languageFitStatus": "unknown",
+      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Arbeitnow의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
-      "firstSeenAt": "2026-11-25T08:36:00.660Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "firstSeenAt": "2026-11-25T21:43:17.748Z",
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
+    },
+    {
+      "id": "jobicy-d300a41778e2164ee883",
+      "title": "Localization Quoting Specialist",
+      "company": "Welo Global",
+      "source": "Jobicy",
+      "url": "https://jobicy.com/jobs/164281-localization-quoting-specialist",
+      "description": "About Welo Life Sciences Welo Life Sciences, a Welo Global brand, is a specialized language and technology partner serving pharmaceutical, CRO, and medical device organizations operating in regulated global markets. We deliver regulator-ready translation, linguistic validation, and localization solutions that support clinical trials, pharmacovigilance, regulatory affairs, labeling, and global commercialization. Our approach combines subject matter expertise with ISO-certified quality processes and technology-enabled workflows designed to integrate seamlessly into life sciences operations. With extensive experience supporting global product development and post-market requirements, Welo Life Sciences helps organizations accelerate timelines, protect data integrity, and maintain compliance across languages and regions. All solutions are delivered within a secure, audit-ready framework supported by seven ISO certifications. welolifesciences.com Main Purpose of the Job The Localization Quoting Specialist is responsible for assessing the scope of each project and completing project quotes. They communicate as needed with the Project Management team to ensure client requests are met in a timely manner, while supporting the project completion process through the development and use of language tools and pilot processes Responsibilities Prepares quotes and calculates turnaround times for clients (administrative management). Responsible for conducting a follow-up of quotes in order to achieve the target acceptance rate. Monitors client satisfaction and any increases/decreases in their use of services. Provides feedback on perceived client satisfaction and service completion. Detects new sales opportunities bringing add-on business and retaining existing accounts. Discusses and plans sales strategies for existing clients with the Business Developers. Advises the client on how to best manage a project, not only in terms of product specifications but also with regard to expenses. Tries to reduce administrative tasks by implementing sales actions to improve workflows with existing clients and increase margins. Responsible for meeting targets in the following KPIs: the amount of money quoted, amount of money accepted and price-per-project of existing clients. Communicating project information to necessary parties in a clear, concise and professional manner. Conveying specific client requests effectively to Project managers. Finance governance: Responsible of registering the correct information from de clients when creating the projects in the system: Legal entities (from the client and Welocalize), PO if needed, billing schedule. Skills and Knowledge Essential: Fluent in English, excellent oral and written communication, and comfortable speaking to clients at all levels, via phone or video call. Desirable: Knowledge of other language Essential: Total Command of Microsoft Office. Desirable: Knowledge of XTM and/or Phrase, and FineReader. Education and Experience Education: Essential: Middle or higher-level vocational training in administration or university degree. Desirable: Master's Degree. Experience: 2-4 years of experience in customer-facing activities related to the localization/translation/project management fields. Compensation Additional Information Welocalize is committed to equal opportunities and in compliance with the General Law on the Rights of People with Disabilities, this vacancy is also available and we encourage to those candidates who have a disability certificate (equal to or greater than 33%) to apply.",
+      "location": "Argentina, Mexico",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "translation",
+      "postedAt": "2026-11-25T13:24:19.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": null,
+      "languageRequirements": "English",
+      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · Argentina, Mexico",
+      "eligibilityStatus": "unknown",
+      "eligibilityDetail": {
+        "status": "unknown",
+        "geoScope": "Argentina, Mexico",
+        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "match",
+      "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "seen",
+      "firstSeenAt": "2026-11-25T21:43:17.748Z",
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
+    },
+    {
+      "id": "jobicy-cb13d49fb8492778b3aa",
+      "title": "Localization Production Coordinator",
+      "company": "Welo Global",
+      "source": "Jobicy",
+      "url": "https://jobicy.com/jobs/164280-localization-production-coordinator",
+      "description": "About Welocalize Welocalize, a Welo Global brand, serves localization teams through AI-enabled multilingual content solutions that enable enterprises to operate and scale globally. Welocalize combines AI, automation, and human expertise to support enterprises in more than 300 languages, enabling accurate, culturally aligned, and compliant multilingual content at scale. Welocalize’s Opal Platform comprises patented technology designed to automate multilingual content and improve workflow performance for enterprises. Opal functions as an agentic system that orchestrates AI, automation, and human expertise to coordinate content workflows across the lifecycle, improving speed, scalability, and operational control for global enterprises. These solutions operate within a secure and compliant environment supported by seven ISO certifications. Welocalize is headquartered in New York with offices worldwide. welocalize.com Job Overview Want to help bring a world-class digital product to audiences around the globe? As a Production Coordinator on our client’s Localization team, you’ll support the localization of product features, marketing campaigns, editorial content, and web experiences across multiple markets. You’ll work alongside Senior Coordinators and Project Managers to deliver high-quality work on time, while building your expertise in localization operations and cross-functional collaboration. This role is built to grow. The localization function is shifting toward AI-first workflows, and over the next 12 months you’ll move from supported operational work toward independently running AI-assisted localization workflows. You’ll run traditional processes while building the skills to be the human judgment layer for AI output, and you’ll take on greater cross-functional ownership along the way. We’re hiring for today’s work and for where this role is heading. Main Responsibilities Facilitate the end-to-end localization workflow for product features, marketing campaigns, editorial, and web content, with guidance from Senior Coordinators or Project Managers Work with designers, product owners, engineers, marketers, and internal reviewers to gather localization requirements and track open action items Collaborate with external vendors on query management, file handoffs, and delivery timelines Monitor project status and flag risks or blockers to stakeholders early Manage day-to-day translation operations, including testing, bug triage, localizability reviews, and design audits Help prioritize and balance incoming work across shifting priorities Follow established translation workflows and contribute ideas to improve efficiency and reduce time to market Use AI tools and automation to streamline repetitive tasks, and look for new ways to apply them as your skills grow Assist with project retrospectives, internal reports, and presentations Support new team members by sharing knowledge and documenting processes Partner with Project Managers and Program Managers to make sure program operations align with business needs and localization best practices Job Requirements Clear, proactive communication: you’re comfortable asking questions and raising issues early Strong organizational skills and attention to detail, with a knack for keeping multiple workstreams on track Comfort with change and ambiguity: you’d rather figure it out than wait for perfect instructions Ownership of your work, and the discipline to follow through Enthusiasm for AI and automation. The mindset matters more than prior experience Skills & Experience Curiosity and self-drive: when you meet a new tool or process, you dig in rather than wait to be shown The ability to build strong working relationships through empathy, respect, and reliability Experience in project coordination, localization operations, or a similar role is helpful, but not required if you bring the right mindset A willingness to keep growing as your role expands Education Bachelor’s degree or equivalent practical experience Join us and help bring great digital experiences to every audience, in every language. You’ll learn quickly, take on more every month, and help shape how AI-first localization works. month, and help shape how AI-first localization works. Compensation Additional Information Job Reference: #LI-JC1",
+      "location": "Greece, Romania",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "translation",
+      "postedAt": "2026-11-25T13:24:18.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": null,
+      "languageRequirements": "공고 원문 확인 필요",
+      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · Greece, Romania",
+      "eligibilityStatus": "unknown",
+      "eligibilityDetail": {
+        "status": "unknown",
+        "geoScope": "Greece, Romania",
+        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "unknown",
+      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "seen",
+      "firstSeenAt": "2026-11-25T21:43:17.748Z",
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "jobicy-2064d645322d50c1cb6e",
@@ -61,13 +129,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-24T22:28:32.115Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-3c73e09208bc53531c1b",
@@ -95,13 +163,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-10T03:12:37.915Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "remote-ok-bcd83d21cf5bc4e13cf8",
@@ -109,7 +177,7 @@
       "company": "Augment",
       "source": "Remote OK",
       "url": "https://remoteok.com/remote-jobs/remote-revenue-operations-analyst-augment-1138081",
-      "description": "About Augment Logistics is broken. Let's fix it. We are a team of engineers, product designers, and customer champions building Augie, Augment's AI teammate for supply chain. Augie reasons and acts like a seasoned operator, automating the busywork of quoting, dispatch, tracking, billing, and more for freight brokers, 3PLs, for-hire carriers, private fleets, and distributors. Our team has scaled billion-dollar companies, built delightful products, and powered billions in commerce. If you thrive in fast-paced, high-impact environments and want to define how AI reshapes supply chain, apply today. Overview We're looking for a Revenue Operations Analyst to join our growing RevOps team. You'll own our deal desk, support territory planning, and run the reporting our sales leaders rely on every week as we grow from 12 AEs to more than 20. You'll also keep our data clean and handle the day-to-day work behind forecasting, quota administration, and commission calculations. This role reports to the Director of Revenue Operations. Our GTM Motion Our motion is outbound-led. SDRs prospect and qualify freight brokers, 3PLs, for-hire carriers, private fleets, and distributors before AEs run discovery and close. We sell across Mid-Market, Enterprise, and Strategic segments, with six-figure ARR deals and buying committees that span operations, IT, and finance. Your deal desk and reporting work needs to hold up to that complexity. What You'll Do Own the deal desk: review pricing, discounts, and non-standard terms, route approvals, and make sure every closed deal is booked correctly Partner with Sales, Finance, and Legal so quotes and contracts move fast without surprises Support territory planning: model coverage and capacity, manage account assignments, and keep regions and segments up to date as we roll them out, starting with Distribution Own sales reporting: run the weekly forecast and pipeline reports leadership uses to call the quarter, and build dashboards for pipeline, conversion, bookings, and AE and SDR performance Report contracted ARR and live, billing ARR side by side, and work with Finance so the numbers tie out Keep HubSpot clean and reliable: own data quality, required fields, account ownership, and deal hygiene Calculate commissions and support quota tracking, working with the Director and Finance Help onboard new hires to our sales tools and processes, and document how things work What We're Looking For 2 to 4 years in Revenue Operations, Sales Operations, or Deal Desk at a B2B SaaS company Hands-on experience running or supporting a deal desk, including pricing approvals and contract review Experience supporting territory planning or account assignment Hands-on CRM admin experience. We're on HubSpot, and experience there is a strong plus Strong Excel or Google Sheets skills, and comfort with SQL or a BI tool A detail person who cares when the numbers don't match and digs in until they do Clear communication with sales leaders and reps, including pushing back when the data says otherwise Bonus Points For Experience in logistics, freight, trucking, distribution, or supply chain tech Experience administering commission plans or quota models Familiarity with Gong, LinkedIn Sales Navigator, Seamless.ai , Clay, or BI platforms Why Join Us? Competitive Salary + Stock Options Comprehensive Health, Vision, and Dental Benefits Flexible PTO Monthly stipend About Augment At Augment, we set out to create a fully autonomous AI platform that streamlines operations and reclaims the human element in logistics. Our founders recognized a pattern: talented professionals were stuck handling manual data entry, phone calls, and repetitive tasks, instead of focusing on high-impact problem-solving and strategic decision-making. That insight became our missionâto free logistics professionals from busywork so they can focus on what truly drives business growth. Augment isnât just about efficiency; itâs about transforming an entire industry by empowering teams with AI-driven solutions that make logistics smarter, faster, and more adaptive. Join us on this journey! Augment is an Equal Opportunity Employer and values diversity at our company. We consider all qualified applicants without regard to race, color, religion, national origin, gender, gender identity or expression, sexual orientation, age, marital status, veteran status, disability, or any other legally protected status. Augment complies with federal, state, and local laws regarding equal employment opportunity and reasonable accommodation. If you need assistance or an accommodation during the application or interview process, please contact your recruiter. We also consider qualified applicants with arrest and conviction records in accordance with applicable federal, state and local fair-chance / ban-the-box laws (for example, but not limited to, the California Fair Chance Act). Our hiring process uses AI-powered tools to assist with screening and evaluating applications based on job-related criteria. All AI-assisted outputs are reviewed by human recruiters who make all decisions about which candidates advance in the process. Please mention the word **FLUENT** and tag RMy40Mi4xNTcuMTE5 when applying to show you read the job post completely (#RMy40Mi4xNTcuMTE5). This is a beta feature to avoid spam applicants. Companies can search these words to find applicants that read this and see they're human.",
+      "description": "About Augment Logistics is broken. Let's fix it. We are a team of engineers, product designers, and customer champions building Augie, Augment's AI teammate for supply chain. Augie reasons and acts like a seasoned operator, automating the busywork of quoting, dispatch, tracking, billing, and more for freight brokers, 3PLs, for-hire carriers, private fleets, and distributors. Our team has scaled billion-dollar companies, built delightful products, and powered billions in commerce. If you thrive in fast-paced, high-impact environments and want to define how AI reshapes supply chain, apply today. Overview We're looking for a Revenue Operations Analyst to join our growing RevOps team. You'll own our deal desk, support territory planning, and run the reporting our sales leaders rely on every week as we grow from 12 AEs to more than 20. You'll also keep our data clean and handle the day-to-day work behind forecasting, quota administration, and commission calculations. This role reports to the Director of Revenue Operations. Our GTM Motion Our motion is outbound-led. SDRs prospect and qualify freight brokers, 3PLs, for-hire carriers, private fleets, and distributors before AEs run discovery and close. We sell across Mid-Market, Enterprise, and Strategic segments, with six-figure ARR deals and buying committees that span operations, IT, and finance. Your deal desk and reporting work needs to hold up to that complexity. What You'll Do Own the deal desk: review pricing, discounts, and non-standard terms, route approvals, and make sure every closed deal is booked correctly Partner with Sales, Finance, and Legal so quotes and contracts move fast without surprises Support territory planning: model coverage and capacity, manage account assignments, and keep regions and segments up to date as we roll them out, starting with Distribution Own sales reporting: run the weekly forecast and pipeline reports leadership uses to call the quarter, and build dashboards for pipeline, conversion, bookings, and AE and SDR performance Report contracted ARR and live, billing ARR side by side, and work with Finance so the numbers tie out Keep HubSpot clean and reliable: own data quality, required fields, account ownership, and deal hygiene Calculate commissions and support quota tracking, working with the Director and Finance Help onboard new hires to our sales tools and processes, and document how things work What We're Looking For 2 to 4 years in Revenue Operations, Sales Operations, or Deal Desk at a B2B SaaS company Hands-on experience running or supporting a deal desk, including pricing approvals and contract review Experience supporting territory planning or account assignment Hands-on CRM admin experience. We're on HubSpot, and experience there is a strong plus Strong Excel or Google Sheets skills, and comfort with SQL or a BI tool A detail person who cares when the numbers don't match and digs in until they do Clear communication with sales leaders and reps, including pushing back when the data says otherwise Bonus Points For Experience in logistics, freight, trucking, distribution, or supply chain tech Experience administering commission plans or quota models Familiarity with Gong, LinkedIn Sales Navigator, Seamless.ai , Clay, or BI platforms Why Join Us? Competitive Salary + Stock Options Comprehensive Health, Vision, and Dental Benefits Flexible PTO Monthly stipend About Augment At Augment, we set out to create a fully autonomous AI platform that streamlines operations and reclaims the human element in logistics. Our founders recognized a pattern: talented professionals were stuck handling manual data entry, phone calls, and repetitive tasks, instead of focusing on high-impact problem-solving and strategic decision-making. That insight became our missionâto free logistics professionals from busywork so they can focus on what truly drives business growth. Augment isnât just about efficiency; itâs about transforming an entire industry by empowering teams with AI-driven solutions that make logistics smarter, faster, and more adaptive. Join us on this journey! Augment is an Equal Opportunity Employer and values diversity at our company. We consider all qualified applicants without regard to race, color, religion, national origin, gender, gender identity or expression, sexual orientation, age, marital status, veteran status, disability, or any other legally protected status. Augment complies with federal, state, and local laws regarding equal employment opportunity and reasonable accommodation. If you need assistance or an accommodation during the application or interview process, please contact your recruiter. We also consider qualified applicants with arrest and conviction records in accordance with applicable federal, state and local fair-chance / ban-the-box laws (for example, but not limited to, the California Fair Chance Act). Our hiring process uses AI-powered tools to assist with screening and evaluating applications based on job-related criteria. All AI-assisted outputs are reviewed by human recruiters who make all decisions about which candidates advance in the process. Please mention the word **FLUENT** and tag RMy40Mi4xNTcuMTYx when applying to show you read the job post completely (#RMy40Mi4xNTcuMTYx). This is a beta feature to avoid spam applicants. Companies can search these words to find applicants that read this and see they're human.",
       "location": "Remote",
       "workplaceMode": "remote",
       "market": "online",
@@ -129,13 +197,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Remote OK의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-25T08:36:00.660Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-e23f6212e01b71781eb4",
@@ -163,47 +231,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
-    },
-    {
-      "id": "jobicy-8cb6583eb33a6b0cd3e1",
-      "title": "Senior Customer Success Engineer",
-      "company": "Cribl",
-      "source": "Jobicy",
-      "url": "https://jobicy.com/jobs/163908-senior-customer-success-engineer-3",
-      "description": "Join the company that’s building the telemetry infrastructure for the AI era. At Cribl , we partner with IT and Security teams at many of the world’s biggest enterprises, including half of the Fortune 100, to bridge the gap between AI ambition and infrastructure reality. As the AI Platform for Telemetry, we give customers the choice, control, and flexibility to manage and analyze telemetry for both humans and agents, so they can build what’s next. We’re one of the fastest‑growing private companies and a leading player in a massive, fast‑moving market. With a global workforce, we’re remote‑first and grounded in a simple idea: software is a people business. Cribl is the place where curious, collaborative people can do their best work, grow fast, and bring their full selves to the herd. Why You’ll Love This Role We're looking for a technically skilled and customer-focused Scaled Customer Success Engineer (CSE) to join our team. In this role, you'll be instrumental in driving product adoption and ensuring the success of our customers through a combination of tailored 1:1 engagements and scalable 1:many initiatives. You'll leverage your technical expertise to guide customers through their journey, provide best practice guidance, and contribute to the evolution of our digital enablement programs. As An Active Member Of Our Team, You Will… Drive Customer Adoption & Enablement: Drive Customer Adoption & Enablement: Develop and deliver impactful enablement materials that boost product adoption and deliver quantifiable business results for our customers. Provide Technical Expertise & Guidance: Act as a trusted technical advisor, offering in-depth product knowledge and troubleshooting assistance to resolve complex customer issues. Contribute to 1:Many Initiatives: Collaborate with Customer Advocacy and CX Operations teams to contribute to and participate in 1:many content, including webinars, workshops, and educational materials, to drive broad customer understanding and adoption. Strategic Customer Engagement: Engage with customers on a strategic level, identifying their business needs and aligning them with our product capabilities to drive successful outcomes. Customer Advocacy & Feedback: Serve as a vital feedback loop, collaborating with internal teams (Product, Engineering, Sales, Marketing, CX Operations) to champion customer needs, influence product enhancements, and contribute to our digital program's content strategy. Data Analysis & Optimization: Utilize data to understand customer behavior, identify common pain points, and contribute insights to optimize both 1:1 and 1:many engagement strategies. Churn Mitigation & Growth: Proactively identify churn risks and develop strategies to retain and grow the customer base by demonstrating ongoing value. Process Improvement & Automation: Identify opportunities to leverage automation and other digital tools to enhance efficiency and personalize the scaled customer experience. Measure & Report: Track key metrics related to customer health, adoption, and engagement, reporting on the effectiveness of your efforts and continuously seeking improvements. We are a remote-first company and work happens across many time-zones – you may be required to occasionally perform duties outside your standard working hours If You’ve Got It - We Want It Deep Technical Acumen: Strong understanding of the data observability and security space, including technologies like SIEM, APM, logging, and metrics. You should be comfortable with enterprise software, distributed systems, and cloud environments. Customer Success Mindset: A passion for helping customers succeed, with excellent communication, interpersonal, and presentation skills. You can build rapport quickly and effectively address diverse customer needs. Problem-Solving & Analytical Skills: Exceptional ability to diagnose and resolve complex technical challenges, analyze data to identify trends, and make data-driven decisions. Strategic Thinking: Capability to understand customer business objectives and translate them into actionable product adoption strategies. Content Creation & Delivery: Experience in creating and delivering compelling technical content, including presentations, documentation, and live sessions (e.g., webinars). Collaboration: Proven ability to work cross-functionally with product, engineering, sales, marketing, and other customer-facing teams. Project Management: Strong organizational skills with the ability to manage multiple priorities and projects simultaneously in a fast-paced environment. Experience with Customer Success Tools: Familiarity with customer success platforms (e.g., Gainsight) and analytics tools is a plus. BONUS : Experience in a similar scaled customer success or technical account management role. Experience with various cloud providers (AWS, Azure, GCP). Willingness to learn Multi-lingual (French, Spanish, and/or German) #LI-KM1 #LI-Remote The salary for this role is dependent on country of employment and will be based on the individual candidate's job-related knowledge, skills, and experience. In addition to base salary, for sales and some sales-adjacent roles, employees are eligible to earn incentive compensation (commission). For all other roles, employees are eligible to participate in the Cribl Corporate Bonus Program. In addition to a competitive salary, Cribl offers a benefits package that may include retirement/pension support, paid holidays and paid time off, remote office setup support, equity, and other wellness and support programs. Benefits vary by country in accordance with local requirements and market practice. Base Salary Range £80,400—£95,000 GBP Bring Your Whole Self Diversity drives innovation, enables better decisions to support our customers, and inspires change for the better. We’re building a culture where differences are valued and welcomed, and we work together to bring out the best in each other. All qualified applicants will receive consideration for employment without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, or any other applicable legally protected characteristics in the location in which the candidate is applying. Interested in joining the Cribl herd? Learn more about the smartest, funniest, most passionate goats you’ll ever meet at cribl.io/about-us .",
-      "location": "UK",
-      "workplaceMode": "remote",
-      "market": "online",
-      "category": "support",
-      "postedAt": "2026-11-23T10:28:08.000Z",
-      "deadline": null,
-      "listingExpiresAt": null,
-      "pay": "80400–95000 GBP yearly",
-      "languageRequirements": "공고 원문 확인 필요",
-      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · UK",
-      "eligibilityStatus": "unknown",
-      "eligibilityDetail": {
-        "status": "unknown",
-        "geoScope": "UK",
-        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
-        "requiresVerification": true
-      },
-      "languageFitStatus": "unknown",
-      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
-      "sourceKind": "public_api",
-      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
-      "legacyIds": [],
-      "collectionState": "seen",
-      "firstSeenAt": "2026-11-24T04:02:18.158Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "jobicy-5849fdc0148381e2b141",
@@ -231,13 +265,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish, English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-24T04:02:18.158Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-bed3a8691dab45aa93c9",
@@ -265,13 +299,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-24T04:02:18.158Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-b166e15360e81825f323",
@@ -299,13 +333,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish, English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-b7877c1dd8f3191681b6",
@@ -333,47 +367,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T07:10:53.366Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
-    },
-    {
-      "id": "jobicy-e238730596488296675a",
-      "title": "Graduate Customer Success Manager",
-      "company": "Canonical",
-      "source": "Jobicy",
-      "url": "https://jobicy.com/jobs/153669-graduate-customer-success-manager",
-      "description": "The role of a Customer Success Manager at Canonical Customer success is a new and strategic department at Canonical, with the objective to reduce risk and churn, facilitate the adoption of new products or services and support expansion within existing accounts. Customer Success Managers (CSM) are responsible for developing trust with their assigned customers and providing them with the best possible experience navigating Canonical's vast offering. Through a clear understanding of their customer’s objectives, the CSM can activate a large range of internal and external capabilities to alleviate any pain point, align expectations, as well as help draw and deliver on an appropriate collaboration roadmap. We are growing our Customer Success team to continue offering thoughtful, smart, precise interactions across our product portfolio, from Ubuntu to open source infrastructure and applications. This role is a first step in the CSM organisation. Although you will primarily focus on the Tech segment, including the store customers, you will also have a portfolio assigned. Ubuntu is chosen by thousands of new users every month. Our responsibility is to ensure the best user experience for them through problem-solving, onboarding, enablement and value realisation all the way to success. Collaborating with other teams and participating in campaign efforts, you will connect with a diverse set of users of Canonical products and identify our future champions. Location: This role will be based remotely worldwide. What your day will look like A strong focus on supporting customers by finding solutions to ticket requests. Enrich documentation about problem solving, Q&A, onboarding materials. Drive campaigns targeting multiple customers through digital touch-points and activities. Identify high potential as well as high risk customers from newly onboarded users or customers Onboard new customers and introduce them to our products and support processes. Products include: Ubuntu Pro, MAAS, Landscape, Openstack, Ceph, Kubernetes, data applications and many more. Collaborate with Sales and Support in developing and delivering engagement plans that fulfill the customer's objectives. Engage with your portfolio of customers to ensure risk identification Collect feedback from customers and format them for review by the product team What we are looking for in you Customer-facing experience An empathetic individual with a natural drive to help others Passion for technology, infrastructure and Ubuntu in particular is a must Excellent presentation skills Strong organisational skills, ability to structure and constantly update documentation A team player capable of interacting with all departments internally Additional skills that you might also bring We at the Customer Success team strongly appreciate various languages! Therefore, if you possess proficiency (both written and spoken) in Japanese, Korean, Spanish, Portuguese, German, French, or Italian, alongside an excellent command of English, please inform us! What we offer you We consider geographical location, experience, and performance in shaping compensation worldwide. We revisit compensation annually (and more often for graduates and associates) to ensure we recognise outstanding performance. In addition to base pay, we offer a performance-driven annual bonus. We provide all team members with additional benefits, which reflect our values and ideals. We balance our programs to meet local needs and ensure fairness globally. Distributed work environment with twice-yearly team sprints in person - we’ve been working remotely since 2004! Personal learning and development budget of USD 2,000 per year Annual compensation review Recognition rewards Annual holiday leave Maternity and paternity leave Employee Assistance Programme Opportunity to travel to new locations to meet colleagues from your team and others Priority Pass for travel and travel upgrades for long haul company events About Canonical Canonical is a pioneering tech firm that is at the forefront of the global move to open source. As the company that publishes Ubuntu, one of the most important open source projects and the platform for AI, IoT and the cloud, we are changing the world on a daily basis. We recruit on a global basis and set a very high standard for people joining the company. We expect excellence - in order to succeed, we need to be the best at what we do. Canonical has been a remote-first company since its inception in 2004.​ Work at Canonical is a step into the future, and will challenge you to think differently, work smarter, learn new skills, and raise your game. Canonical provides a unique window into the world of 21st-century digital business. Canonical is an equal opportunity employer We are proud to foster a workplace free from discrimination. Diversity of experience, perspectives, and background create a better work environment and better products. Whatever your identity, we will give your application fair consideration. #LI-remote",
-      "location": "Anywhere",
-      "workplaceMode": "remote",
-      "market": "online",
-      "category": "support",
-      "postedAt": "2026-11-21T03:10:24.000Z",
-      "deadline": null,
-      "listingExpiresAt": null,
-      "pay": null,
-      "languageRequirements": "Spanish, Korean, German, French, Japanese, Portuguese, Italian",
-      "eligibility": "한국에서 지원 가능성 있음 · Anywhere (확인 필요)",
-      "eligibilityStatus": "possible",
-      "eligibilityDetail": {
-        "status": "possible",
-        "geoScope": "Anywhere",
-        "reason": "The stated region may include South Korea; employment, language and tax eligibility remain unverified.",
-        "requiresVerification": true
-      },
-      "languageFitStatus": "mismatch",
-      "languageFitReason": "German, French, Japanese, Portuguese, Italian: 현재 확인된 언어 역량으로는 직무 요구 수준을 충족한다고 판단하기 어렵습니다. 실제 능력과 요건 확인 필요.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
-      "sourceKind": "public_api",
-      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
-      "legacyIds": [],
-      "collectionState": "seen",
-      "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-03664e3fbfd9f6a2f29e",
@@ -401,13 +401,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-d24767c381920dee8e21",
@@ -435,13 +435,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-dac3d08c246b19060f44",
@@ -469,13 +469,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-5c78c06afbced59be206",
@@ -503,13 +503,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-dd36889236afc72fc2b1",
@@ -537,13 +537,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-b1260e97fe9391b9f601",
@@ -571,13 +571,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-18a1d3a498dd52fda9c6",
@@ -605,13 +605,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-06T04:01:39.890Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-f7e2f32314fd0c67b0a1",
@@ -639,13 +639,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-09T02:30:45.303Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-e7871b70a2e120e90021",
@@ -673,13 +673,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-09T02:30:45.303Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-77ec2b3705d918782d5b",
@@ -707,13 +707,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-13T04:00:38.642Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-d6be9b1deaf6079665dc",
@@ -741,13 +741,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-22d4c8fa9337b9adafb6",
@@ -775,13 +775,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-5243700bca9862b0a13d",
@@ -809,13 +809,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-1769bc9aa4742602217f",
@@ -843,13 +843,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-ac6e018893b701bce1aa",
@@ -877,13 +877,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-b8677f2cbd31db79a350",
@@ -911,13 +911,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-3826d3a0ae63a7e7d2bc",
@@ -945,13 +945,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-18T13:17:08.080Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "channel-corp--bb21291a044c643754cc",
@@ -981,12 +981,12 @@
       "eligibility": "Check language, hiring eligibility and job requirements at the employer site.",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "evidenceNote": "Channel Corp. official Lever job posting feed. Job description is abbreviated; check original posting.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-19T07:28:39.070Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-de20abea510704763404",
@@ -1014,13 +1014,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-6fa7329062b3060f9440",
@@ -1048,13 +1048,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-16T01:22:24.879Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-bb3706bde734b6c8de23",
@@ -1082,13 +1082,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-d303a78527b4c39a46e5",
@@ -1116,13 +1116,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-475fd9c7ed1920207757",
@@ -1150,13 +1150,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-d0f5225c6b551b4c37db",
@@ -1184,13 +1184,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-c2e68f444878b5667ff4",
@@ -1218,13 +1218,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-64c71a0eb9e12c977521",
@@ -1252,13 +1252,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-816910d6c1bedf7b42db",
@@ -1286,13 +1286,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-25T08:36:00.660Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-91c89c3cc1b60c9bbbc3",
@@ -1320,13 +1320,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "remotive-070943a3485895acf31b",
@@ -1354,13 +1354,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Remotive의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T01:38:30.324Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "himalayas-0ea73500ed565d02eab3",
@@ -1388,13 +1388,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-03T08:51:48.491Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "greenhouse:krafton:8921058002",
@@ -1415,14 +1415,14 @@
       "description": "<div class=&quot;content-intro&quot;><p><span style=&quot;font-size: 10pt;&quot;>우리는 게이머의 로망을 실현하기 위해, 누구도 가지 않는 길을 갑니다.</span><br><span style=&quot;font-size: 10pt;&quot;>예상을 뛰어넘는 과감한 상상력과 기술로, 전 세계 팬들이 잊지 못할 세상을 만들기 위해 </span><span style=&quot;font-size: 10pt;&quot;>담대하게 도전하고 개척합니다.&nbsp;&nbsp;</span></p> <p><span style=&quot;font-size: 10pt;&quot;>We pioneer the path to players&#39; dreams.</span><br><span style=&quot;font-size: 10pt;&quot;>With bold imagination and breakthrough technology, </span><span style=&quot;font-size: 10pt;&quot;>we create unforgettable worlds for fans across the globe.</span></p> <hr> <p>&nbsp;</p></div><h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀(프로젝트)을 소개합니다.&nbsp;</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>크래프톤은 2022년부터 사회 공헌 사업의 일환으로 ‘크래프톤 정글’을 출범하여 기술 산업의 미래 인재, SW 개발자를 양성해오고 있습니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>크래프톤 정글은 경기도 용인에 위치한 크래프톤 정글 캠퍼스에서, 자기 주도적 학습과 몰입 경험, 팀 기반의 프로젝트 수행을 바탕으로 기본기가 탄탄한 개발자로 성장하게 하는 교육 과정을 운영하고 있습니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>Jungle Operations &amp; Outreach Team은 정글의 사업을 관리하며, 정글 브랜드 관리, 교육생 모집을 위한 마케팅 캠페인 실행, 지원 및 선발 절차, 교육 과정의 주요 행사, 교육생 지원과 같은 크래프톤 정글의 전반적인 사업과 운영을 담당합니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>정글의 지속 성장을 위하여 더 효과적인 마케팅 운영안을 설계/실행하고, 팀과 협업하여 정글을 성장시키는 여정에 참여하고 싶은 분을 기다립니다.</span></li> </ul> <h4>&nbsp;</h4> <h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀과 함께할 미션을 소개합니다.</strong></span></h3> <p><span style=&quot;font-size: 10pt;&quot;>Jungle Operations &amp; Outreach Team은 동료를 존중하는 태도와 끈기 있고 성숙한 사고, 긍정적인 에너지를 바탕으로 팀의 방향성에 맞추어 적극적으로 협력하는 팀 플레이어를 찾고 있습니다.</span></p> <ul> <li><span style=&quot;font-size: 10pt;&quot;><strong>[주요 역할]</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>정글 교육 과정의 성과 극대화를 위하여 효과적인 캠페인 전략을 기획/실행하며, 타 사례와 정글의 캠페인 결과를 분석하고, 더 효과적인 실행 방안을 도출합니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>캠페인 정성/정량 데이터를 수집하고, 데이터 기반의 성과 분석 프로세스 및 대시보드 구축을 실행합니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>교육생 모집 선발, 학사운영 및 입소식, 수료식, 발표회 등 주요 교육 행사와 프로그램의 준비 및 실행, 운영을 지원합니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>교육과정이 원활하게 운영될 수 있도록 기타 운영 업무 전반을 지원합니다.</span></li> </ul> </li> <li><span style=&quot;font-size: 10pt;&quot;><strong>이 직무를 통해 이런 경험을 할 수 있습니다.</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>교육 사업 기반의 캠페인 설계 및 실행, 교육 사업 분야에 대한 전문적 인사이트와 업무 경력을 축적할 수 있습니다.</span></li> <l",
       "eligibility": "지원자격 확인 필요",
       "languageRequirements": "공고 원문 확인 필요",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "evidenceNote": "회사 공식 Greenhouse 채용목록 · Employment Type: Contractor · Sector: Chairman Projects · Corp./Studios: KRAFTON · Job Category - Art:  · Job Category - Business & Service:  · Job Category - Data:  · Job Category - Development Management:  · Job Category - Game Design:  · Job Category - Tech:  · Job Category - TA:  · Job Category - QA:  · Job Category - Sound:  · Job Category - U",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T22:37:03.341Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "greenhouse:krafton:8904989002",
@@ -1443,14 +1443,14 @@
       "description": "<div class=&quot;content-intro&quot;><p><span style=&quot;font-size: 10pt;&quot;>우리는 게이머의 로망을 실현하기 위해, 누구도 가지 않는 길을 갑니다.</span><br><span style=&quot;font-size: 10pt;&quot;>예상을 뛰어넘는 과감한 상상력과 기술로, 전 세계 팬들이 잊지 못할 세상을 만들기 위해 </span><span style=&quot;font-size: 10pt;&quot;>담대하게 도전하고 개척합니다.&nbsp;&nbsp;</span></p> <p><span style=&quot;font-size: 10pt;&quot;>We pioneer the path to players&#39; dreams.</span><br><span style=&quot;font-size: 10pt;&quot;>With bold imagination and breakthrough technology, </span><span style=&quot;font-size: 10pt;&quot;>we create unforgettable worlds for fans across the globe.</span></p> <hr> <p>&nbsp;</p></div><h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀(프로젝트)을 소개합니다.&nbsp;</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>배틀그라운드 모바일(PUBG Mobile)은 2018년 5월부터 한국 지역에서 서비스 되고 있는 PUBG의 모바일 버전 게임입니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>배틀그라운드 모바일 서비스 조직은 배틀그라운드 모바일의 전반적인 서비스 전략을 세우고, 실행하며, 게임 서비스를 위해 협업하는 많은 유관 부서의 커뮤니케이션 허브 역할을 수행 하고 있습니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>배틀그라운드 모바일 서비스 조직은 팬 분들께서 안정적으로 게임을 플레이 할 수 있는 환경을 마련하고, 즐거움을 느끼실 수 있는 콘텐츠를 기획하고 운영합니다.</span></li> </ul> <h4>&nbsp;</h4> <h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀과 함께할 미션을 소개합니다.</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;><strong>캠페인 운영</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>업데이트/시즌/콜라보/이스포츠 등 라이브 서비스 마케팅 캠페인 기획 참여 및 운영</span></li> <li><span style=&quot;font-size: 10pt;&quot;>디지털·SNS·인플루언서 등 멀티 채널 캠페인 운영 및 성과 측정</span></li> <li><span style=&quot;font-size: 10pt;&quot;>이스포츠 대회·리그 연계 마케팅 운영 지원 및 파트너(팀·선수·스트리머 등) 협업 실행</span></li> </ul> </li> <li><span style=&quot;font-size: 10pt;&quot;><strong>콘텐츠 &amp; 크리에이티브</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>YouTube·TikTok·Meta 등 주요 미디어 콘텐츠 제작 진행 및 운영</span></li> <li><span style=&quot;font-size: 10pt;&quot;>대행사·크리에이터 협업을 통한 콘텐츠 제작 및 일정 관리</span></li> </ul> </li> <li><span style=&quot;font-size: 10pt;&quot;><strong>데이터 분석 &amp; 리포팅</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>캠페인 성과 데이터 수집 및 정리</span></li> <li><span style=&quot;font-size: 10pt;&quot;>채널별(디지털·SNS·인플루언서) 성과 지표 트래킹 및 대시보드 업데이트</span></li> </ul> </li> </ul> <p>&nbsp;</p> <h3><span style=&quot;font-size: 12pt;&quot;><strong>이런 경험을 가진 분과 함께 성장하고 싶습니다! (필수요건)</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>마케팅 경력&nbsp;1년차 이상</span></li> <li><span style=&qu",
       "eligibility": "지원자격 확인 필요",
       "languageRequirements": "공고 원문 확인 필요",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "evidenceNote": "회사 공식 Greenhouse 채용목록 · Employment Type: Contractor · Sector: IP Franchise · Corp./Studios: KRAFTON · Job Category - Art:  · Job Category - Business & Service: Marketing · Job Category - Data:  · Job Category - Development Management:  · Job Category - Game Design:  · Job Category - Tech:  · Job Category - TA:  · Job Category - QA:  · Job Category - Sound:  · Job Category",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-26T13:05:13.850Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "curated-411ccb6a7a52c85f057d",
@@ -1490,7 +1490,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-11-17. NOT refreshed by the automated crawler. Recheck the original job for current availability. Public Saramin posting checked 2026-11-17. New path: Saramin general listing outside the existing remote-aggregator set. Closing date is listed as rolling/always open; confirm the posting remains active before applying.",
       "collectionState": "seen",
       "firstSeenAt": "2026-11-17T04:02:51.250Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "greenhouse:krafton:8798601002",
@@ -1511,14 +1511,14 @@
       "description": "<div class=&quot;content-intro&quot;><p><span style=&quot;font-size: 10pt;&quot;>우리는 게이머의 로망을 실현하기 위해, 누구도 가지 않는 길을 갑니다.</span><br><span style=&quot;font-size: 10pt;&quot;>예상을 뛰어넘는 과감한 상상력과 기술로, 전 세계 팬들이 잊지 못할 세상을 만들기 위해 </span><span style=&quot;font-size: 10pt;&quot;>담대하게 도전하고 개척합니다.&nbsp;&nbsp;</span></p> <p><span style=&quot;font-size: 10pt;&quot;>We pioneer the path to players&#39; dreams.</span><br><span style=&quot;font-size: 10pt;&quot;>With bold imagination and breakthrough technology, </span><span style=&quot;font-size: 10pt;&quot;>we create unforgettable worlds for fans across the globe.</span></p> <hr> <p>&nbsp;</p></div><h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀(프로젝트)을 소개합니다.&nbsp;</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>KRAFTON Localization Department는 다양한 장르의 독창적인 게임을 전 세계 플레이어가 각자의 언어와 문화 안에서 자연스럽게 경험할 수 있도록 지원하는 조직입니다. 단순히 언어를 번역하는 것을 넘어, 게임의 세계관과 캐릭터, 플레이 경험이 각 언어에서도 온전히 전달될 수 있도록 번역 품질과 로컬라이제이션 프로세스 전반을 담당합니다. 플레이어가 사용하는 언어로 KRAFTON의 경험을 새롭게 구현하고 전달하는 일에 큰 열정을 가지고 있습니다.</span></li> </ul> <h4>&nbsp;</h4> <h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀과 함께할 미션을 소개합니다.</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>사람 번역 및 AI 번역으로 제작되는 게임 콘텐츠의 번역, 편집 및 교정</span></li> <li><span style=&quot;font-size: 10pt;&quot;>한국어 로컬라이제이션의 최종 품질을 담당하며, 게임 전반의 언어적 품질, 일관성 및 톤 관리</span></li> <li><span style=&quot;font-size: 10pt;&quot;>용어집, 스타일 가이드 및 언어 품질 가이드라인을 작성하고, 외부 벤더와 협업하여 일관된 품질 기준 유지</span></li> <li><span style=&quot;font-size: 10pt;&quot;>정립된 지표와 평가 체계를 기반으로 번역 품질을 평가하고 언어 품질 보증 업무를 계획 및 수행</span></li> <li><span style=&quot;font-size: 10pt;&quot;>AI 번역 콘텐츠를 검토하고, 모델, 프롬프트 및 후처리 로직을 포함한 번역 품질 개선 프로세스에 언어적 피드백 제공</span></li> </ul> <p>&nbsp;</p> <h3><span style=&quot;font-size: 12pt;&quot;><strong>이런 경험을 가진 분과 함께 성장하고 싶습니다! (필수요건)</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>게임 로컬라이제이션 분야에서 번역, 편집 또는 언어 품질 검수 업무를 1년 이상 수행한 경험이 있으신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>게임 내 내러티브와 UI 등 다양한 맥락을 고려하여 자연스럽고 유려한 한국어를 작성할 수 있는 뛰어난 언어 감각과 문장력을 갖추신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>영어 원문의 의미와 뉘앙스를 정확하게 이해하고, 언어 및 문화적 맥락을 고려하여 자연스러운 한국어로 전달할 수 있으신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>게임 메커니즘과 게임 용어에 대한 폭넓은 지식과 이해를 갖추신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>다양한 게임 장르와 각 장르의 특성, 플레이어가 사용하는 언어와 문화에 대한 높은 이해도를 갖추신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>AI",
       "eligibility": "지원자격 확인 필요",
       "languageRequirements": "공고 원문 확인 필요",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "evidenceNote": "회사 공식 Greenhouse 채용목록 · Employment Type: Contractor · Sector: Corporate Support · Corp./Studios: KRAFTON · Job Category - Art:  · Job Category - Business & Service: Localization · Job Category - Data:  · Job Category - Development Management:  · Job Category - Game Design:  · Job Category - Tech:  · Job Category - TA:  · Job Category - QA:  · Job Category - Sound:  · Job ",
       "languageFitStatus": "mismatch",
       "languageFitReason": "Korean: 현재 확인된 언어 역량으로는 직무 요구 수준을 충족한다고 판단하기 어렵습니다. 실제 능력과 요건 확인 필요.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "channel-corp--f7c2cbad583f14a4a457",
@@ -1548,12 +1548,12 @@
       "eligibility": "Check language, hiring eligibility and job requirements at the employer site.",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "evidenceNote": "Channel Corp. official Lever job posting feed. Job description is abbreviated; check original posting.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "curated-eac3cce711b15d75ed1d",
@@ -1593,7 +1593,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-11-17. NOT refreshed by the automated crawler. Recheck the original job for current availability. New public path: Wanted startup job board. The posting was still listed on 2026-11-17; deadline is rolling. Korean level and visa support are not stated, so the lead is conditional.",
       "collectionState": "seen",
       "firstSeenAt": "2026-11-17T04:02:51.250Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "curated-f749096991d2dcbdc2dc",
@@ -1633,7 +1633,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-28. NOT refreshed by the automated crawler. Recheck the original job for current availability. Individual Wehome careers page checked 2026-10-28. No close date or pay shown. Office address listed in Mapo-gu, Seoul, so this is a relocation/commute lead rather than a Jeonju online job.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T04:47:49.197Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "kowork-4223cdc1640f059fc666",
@@ -1657,12 +1657,12 @@
       "languageFitReason": "Public metadata was checked; language requirements still need confirmation.",
       "eligibilityStatus": "unknown",
       "eligibility": "Preferred visas: Employment Visa (E-1 ~ E-7)",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "evidenceNote": "Minimal structured metadata and source link only. No description text or copyrighted images reproduced.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-20T01:24:28.908Z",
-      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "id": "kowork-87ed0fecdf5c9a6751c2",
@@ -1686,11 +1686,113 @@
       "languageFitReason": "Public metadata was checked; language requirements still need confirmation.",
       "eligibilityStatus": "possible",
       "eligibility": "Current residence: Korea residents only TOPIK TOPIK Level 2 or above; Required visas: Student Visa (D-2)",
-      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "verifiedAt": "2026-11-25T21:43:17.748Z",
       "evidenceNote": "Minimal structured metadata and source link only. No description text or copyrighted images reproduced.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-25T08:36:00.660Z",
+      "lastSeenAt": "2026-11-25T21:43:17.748Z"
+    },
+    {
+      "id": "arbeitnow-619b4c0e82172220246f",
+      "title": "SEO Manager (m/f/d)",
+      "company": "We Love X GmbH",
+      "source": "Arbeitnow",
+      "url": "https://www.arbeitnow.com/jobs/companies/we-love-x-gmbh/seo-manager-berlin-139019",
+      "description": "About the Job We're looking for an SEO Manager to get hands-on with our affiliate portfolio and grow it. You'll work directly with some of the biggest publishers in the world, and your work will show up in the numbers — fast. You'll work across two areas: driving more revenue out of affiliate sites that are already live, and helping take brand-new sites from a blank page to go-live — keyword clustering, content structure, stakeholder coordination, the whole build. Every Google update, every new market, every publisher conversation is something you'll get your hands on. At WLX, SEO isn't a support function — it's a driving force. We have the resources, the management backing, and the hands-on expertise to make things happen. And unlike an agency, everything we build is ours: our own projects, run in close collaboration with the world's biggest publishers. That means real ownership, real impact, and no client briefs. This is what you'll do Drive revenue growth on existing affiliate sites: Develop and implement long-term SEO strategies, and own the on-page and off-page work that moves the needle. Improve and maintain rankings on key money pages: Run content audits, apply intent mapping, and improve CTR and SERP feature capture on your highest-value pages. Lead backlink campaigns: Build and execute link-building strategies across multiple affiliate sites, working with agencies, forums, and outreach partners to strengthen domain authority. Help take new affiliate sites live: Own keyword clustering, topic mapping, and content structure based on market and competitor research, and coordinate with stakeholders to get new sites launched from scratch. React fast when the landscape shifts: Assess the impact of Google algorithm updates, figure out what happened and why, and put a clear plan in place to recover traffic — without getting stuck in the noise. This is what you’ve got Extensive SEO experience, with strong, hands-on expertise in both on-page and off-page work, and a track record of driving organic growth at scale. Fluent in German and English, confident in operating with stakeholders in both languages. Strong analytical thinking and prioritisation skills — you know what moves the needle and can back your decisions with data. Proactive and self-motivated, comfortable owning your workstream without needing to be told what's next. Comfortable working in a fast-paced, flat, startup-style environment. Experience in iGaming or other affiliate marketing industries is a plus. Find more English Speaking Jobs in Germany on Arbeitnow",
+      "location": "Berlin",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "marketing",
+      "postedAt": "2026-11-25T06:31:17.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": null,
+      "languageRequirements": "English, German",
+      "eligibility": "사업장 위치 Berlin · 한국 원격근무 가능 여부 확인 필요",
+      "eligibilityStatus": "unknown",
+      "eligibilityDetail": {
+        "status": "unknown",
+        "geoScope": "Unspecified",
+        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "mismatch",
+      "languageFitReason": "German: 현재 확인된 언어 역량으로는 직무 요구 수준을 충족한다고 판단하기 어렵습니다. 실제 능력과 요건 확인 필요.",
+      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Arbeitnow의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "not_seen",
+      "firstSeenAt": "2026-11-25T08:36:00.660Z",
+      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+    },
+    {
+      "id": "jobicy-8cb6583eb33a6b0cd3e1",
+      "title": "Senior Customer Success Engineer",
+      "company": "Cribl",
+      "source": "Jobicy",
+      "url": "https://jobicy.com/jobs/163908-senior-customer-success-engineer-3",
+      "description": "Join the company that’s building the telemetry infrastructure for the AI era. At Cribl , we partner with IT and Security teams at many of the world’s biggest enterprises, including half of the Fortune 100, to bridge the gap between AI ambition and infrastructure reality. As the AI Platform for Telemetry, we give customers the choice, control, and flexibility to manage and analyze telemetry for both humans and agents, so they can build what’s next. We’re one of the fastest‑growing private companies and a leading player in a massive, fast‑moving market. With a global workforce, we’re remote‑first and grounded in a simple idea: software is a people business. Cribl is the place where curious, collaborative people can do their best work, grow fast, and bring their full selves to the herd. Why You’ll Love This Role We're looking for a technically skilled and customer-focused Scaled Customer Success Engineer (CSE) to join our team. In this role, you'll be instrumental in driving product adoption and ensuring the success of our customers through a combination of tailored 1:1 engagements and scalable 1:many initiatives. You'll leverage your technical expertise to guide customers through their journey, provide best practice guidance, and contribute to the evolution of our digital enablement programs. As An Active Member Of Our Team, You Will… Drive Customer Adoption & Enablement: Drive Customer Adoption & Enablement: Develop and deliver impactful enablement materials that boost product adoption and deliver quantifiable business results for our customers. Provide Technical Expertise & Guidance: Act as a trusted technical advisor, offering in-depth product knowledge and troubleshooting assistance to resolve complex customer issues. Contribute to 1:Many Initiatives: Collaborate with Customer Advocacy and CX Operations teams to contribute to and participate in 1:many content, including webinars, workshops, and educational materials, to drive broad customer understanding and adoption. Strategic Customer Engagement: Engage with customers on a strategic level, identifying their business needs and aligning them with our product capabilities to drive successful outcomes. Customer Advocacy & Feedback: Serve as a vital feedback loop, collaborating with internal teams (Product, Engineering, Sales, Marketing, CX Operations) to champion customer needs, influence product enhancements, and contribute to our digital program's content strategy. Data Analysis & Optimization: Utilize data to understand customer behavior, identify common pain points, and contribute insights to optimize both 1:1 and 1:many engagement strategies. Churn Mitigation & Growth: Proactively identify churn risks and develop strategies to retain and grow the customer base by demonstrating ongoing value. Process Improvement & Automation: Identify opportunities to leverage automation and other digital tools to enhance efficiency and personalize the scaled customer experience. Measure & Report: Track key metrics related to customer health, adoption, and engagement, reporting on the effectiveness of your efforts and continuously seeking improvements. We are a remote-first company and work happens across many time-zones – you may be required to occasionally perform duties outside your standard working hours If You’ve Got It - We Want It Deep Technical Acumen: Strong understanding of the data observability and security space, including technologies like SIEM, APM, logging, and metrics. You should be comfortable with enterprise software, distributed systems, and cloud environments. Customer Success Mindset: A passion for helping customers succeed, with excellent communication, interpersonal, and presentation skills. You can build rapport quickly and effectively address diverse customer needs. Problem-Solving & Analytical Skills: Exceptional ability to diagnose and resolve complex technical challenges, analyze data to identify trends, and make data-driven decisions. Strategic Thinking: Capability to understand customer business objectives and translate them into actionable product adoption strategies. Content Creation & Delivery: Experience in creating and delivering compelling technical content, including presentations, documentation, and live sessions (e.g., webinars). Collaboration: Proven ability to work cross-functionally with product, engineering, sales, marketing, and other customer-facing teams. Project Management: Strong organizational skills with the ability to manage multiple priorities and projects simultaneously in a fast-paced environment. Experience with Customer Success Tools: Familiarity with customer success platforms (e.g., Gainsight) and analytics tools is a plus. BONUS : Experience in a similar scaled customer success or technical account management role. Experience with various cloud providers (AWS, Azure, GCP). Willingness to learn Multi-lingual (French, Spanish, and/or German) #LI-KM1 #LI-Remote The salary for this role is dependent on country of employment and will be based on the individual candidate's job-related knowledge, skills, and experience. In addition to base salary, for sales and some sales-adjacent roles, employees are eligible to earn incentive compensation (commission). For all other roles, employees are eligible to participate in the Cribl Corporate Bonus Program. In addition to a competitive salary, Cribl offers a benefits package that may include retirement/pension support, paid holidays and paid time off, remote office setup support, equity, and other wellness and support programs. Benefits vary by country in accordance with local requirements and market practice. Base Salary Range £80,400—£95,000 GBP Bring Your Whole Self Diversity drives innovation, enables better decisions to support our customers, and inspires change for the better. We’re building a culture where differences are valued and welcomed, and we work together to bring out the best in each other. All qualified applicants will receive consideration for employment without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, or any other applicable legally protected characteristics in the location in which the candidate is applying. Interested in joining the Cribl herd? Learn more about the smartest, funniest, most passionate goats you’ll ever meet at cribl.io/about-us .",
+      "location": "UK",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "support",
+      "postedAt": "2026-11-23T10:28:08.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": "80400–95000 GBP yearly",
+      "languageRequirements": "공고 원문 확인 필요",
+      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · UK",
+      "eligibilityStatus": "unknown",
+      "eligibilityDetail": {
+        "status": "unknown",
+        "geoScope": "UK",
+        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "unknown",
+      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
+      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "not_seen",
+      "firstSeenAt": "2026-11-24T04:02:18.158Z",
+      "lastSeenAt": "2026-11-25T08:36:00.660Z"
+    },
+    {
+      "id": "jobicy-e238730596488296675a",
+      "title": "Graduate Customer Success Manager",
+      "company": "Canonical",
+      "source": "Jobicy",
+      "url": "https://jobicy.com/jobs/153669-graduate-customer-success-manager",
+      "description": "The role of a Customer Success Manager at Canonical Customer success is a new and strategic department at Canonical, with the objective to reduce risk and churn, facilitate the adoption of new products or services and support expansion within existing accounts. Customer Success Managers (CSM) are responsible for developing trust with their assigned customers and providing them with the best possible experience navigating Canonical's vast offering. Through a clear understanding of their customer’s objectives, the CSM can activate a large range of internal and external capabilities to alleviate any pain point, align expectations, as well as help draw and deliver on an appropriate collaboration roadmap. We are growing our Customer Success team to continue offering thoughtful, smart, precise interactions across our product portfolio, from Ubuntu to open source infrastructure and applications. This role is a first step in the CSM organisation. Although you will primarily focus on the Tech segment, including the store customers, you will also have a portfolio assigned. Ubuntu is chosen by thousands of new users every month. Our responsibility is to ensure the best user experience for them through problem-solving, onboarding, enablement and value realisation all the way to success. Collaborating with other teams and participating in campaign efforts, you will connect with a diverse set of users of Canonical products and identify our future champions. Location: This role will be based remotely worldwide. What your day will look like A strong focus on supporting customers by finding solutions to ticket requests. Enrich documentation about problem solving, Q&A, onboarding materials. Drive campaigns targeting multiple customers through digital touch-points and activities. Identify high potential as well as high risk customers from newly onboarded users or customers Onboard new customers and introduce them to our products and support processes. Products include: Ubuntu Pro, MAAS, Landscape, Openstack, Ceph, Kubernetes, data applications and many more. Collaborate with Sales and Support in developing and delivering engagement plans that fulfill the customer's objectives. Engage with your portfolio of customers to ensure risk identification Collect feedback from customers and format them for review by the product team What we are looking for in you Customer-facing experience An empathetic individual with a natural drive to help others Passion for technology, infrastructure and Ubuntu in particular is a must Excellent presentation skills Strong organisational skills, ability to structure and constantly update documentation A team player capable of interacting with all departments internally Additional skills that you might also bring We at the Customer Success team strongly appreciate various languages! Therefore, if you possess proficiency (both written and spoken) in Japanese, Korean, Spanish, Portuguese, German, French, or Italian, alongside an excellent command of English, please inform us! What we offer you We consider geographical location, experience, and performance in shaping compensation worldwide. We revisit compensation annually (and more often for graduates and associates) to ensure we recognise outstanding performance. In addition to base pay, we offer a performance-driven annual bonus. We provide all team members with additional benefits, which reflect our values and ideals. We balance our programs to meet local needs and ensure fairness globally. Distributed work environment with twice-yearly team sprints in person - we’ve been working remotely since 2004! Personal learning and development budget of USD 2,000 per year Annual compensation review Recognition rewards Annual holiday leave Maternity and paternity leave Employee Assistance Programme Opportunity to travel to new locations to meet colleagues from your team and others Priority Pass for travel and travel upgrades for long haul company events About Canonical Canonical is a pioneering tech firm that is at the forefront of the global move to open source. As the company that publishes Ubuntu, one of the most important open source projects and the platform for AI, IoT and the cloud, we are changing the world on a daily basis. We recruit on a global basis and set a very high standard for people joining the company. We expect excellence - in order to succeed, we need to be the best at what we do. Canonical has been a remote-first company since its inception in 2004.​ Work at Canonical is a step into the future, and will challenge you to think differently, work smarter, learn new skills, and raise your game. Canonical provides a unique window into the world of 21st-century digital business. Canonical is an equal opportunity employer We are proud to foster a workplace free from discrimination. Diversity of experience, perspectives, and background create a better work environment and better products. Whatever your identity, we will give your application fair consideration. #LI-remote",
+      "location": "Anywhere",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "support",
+      "postedAt": "2026-11-21T03:10:24.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": null,
+      "languageRequirements": "Spanish, Korean, German, French, Japanese, Portuguese, Italian",
+      "eligibility": "한국에서 지원 가능성 있음 · Anywhere (확인 필요)",
+      "eligibilityStatus": "possible",
+      "eligibilityDetail": {
+        "status": "possible",
+        "geoScope": "Anywhere",
+        "reason": "The stated region may include South Korea; employment, language and tax eligibility remain unverified.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "mismatch",
+      "languageFitReason": "German, French, Japanese, Portuguese, Italian: 현재 확인된 언어 역량으로는 직무 요구 수준을 충족한다고 판단하기 어렵습니다. 실제 능력과 요건 확인 필요.",
+      "verifiedAt": "2026-11-25T08:36:00.660Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "not_seen",
+      "firstSeenAt": "2026-11-21T23:41:09.467Z",
       "lastSeenAt": "2026-11-25T08:36:00.660Z"
     },
     {
@@ -1718,7 +1820,7 @@
       "verifiedAt": "2026-11-25T08:36:00.660Z",
       "evidenceNote": "Minimal structured metadata and source link only. No description text or copyrighted images reproduced.",
       "legacyIds": [],
-      "collectionState": "seen",
+      "collectionState": "not_seen",
       "firstSeenAt": "2026-10-23T00:44:14.150Z",
       "lastSeenAt": "2026-11-25T08:36:00.660Z"
     },
@@ -1747,7 +1849,7 @@
       "verifiedAt": "2026-11-25T08:36:00.660Z",
       "evidenceNote": "Minimal structured metadata and source link only. No description text or copyrighted images reproduced.",
       "legacyIds": [],
-      "collectionState": "seen",
+      "collectionState": "not_seen",
       "firstSeenAt": "2026-11-19T20:40:16.587Z",
       "lastSeenAt": "2026-11-25T08:36:00.660Z"
     },
@@ -7562,7 +7664,7 @@
       "source": "Remotive",
       "status": "ok",
       "count": 1,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "detail": "1/1 요청 완료. 1개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://remotive.com/api/remote-jobs?limit=500"
     },
@@ -7570,7 +7672,7 @@
       "source": "Jobicy",
       "status": "ok",
       "count": 4,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "detail": "4/4 요청 완료. 4개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://jobicy.com/api/v2/remote-jobs?count=200"
     },
@@ -7578,7 +7680,7 @@
       "source": "Remote OK",
       "status": "ok",
       "count": 1,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "detail": "1/1 요청 완료. 1개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://remoteok.com/api"
     },
@@ -7586,7 +7688,7 @@
       "source": "Arbeitnow",
       "status": "ok",
       "count": 1,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "detail": "1/1 요청 완료. 1개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://www.arbeitnow.com/api/job-board-api?page=1"
     },
@@ -7594,7 +7696,7 @@
       "source": "Himalayas",
       "status": "ok",
       "count": 33,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "detail": "9/9 요청 완료. 33개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://himalayas.app/jobs/api/search?q=korean&country=KR&sort=recent&page=1"
     },
@@ -7602,7 +7704,7 @@
       "source": "RemoteJobs.org",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "detail": "5/5 요청 완료. 0개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://remotejobs.org/api/v1/jobs?q=korean&country=KR&eligibility=known&limit=50"
     },
@@ -7611,22 +7713,22 @@
       "status": "ok",
       "count": 3,
       "detail": "회사 공식 Greenhouse 목록 66건 확인, 한국 근무지·관련 직무·최근 90일 기준 3건 보존",
-      "checkedAt": "2026-11-25T08:36:00.660Z"
+      "checkedAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "source": "Appier",
       "status": "ok",
       "count": 0,
-      "detail": "회사 공식 Greenhouse 목록 58건 확인, 한국 근무지·관련 직무·최근 90일 기준 0건 보존",
-      "checkedAt": "2026-11-25T08:36:00.660Z"
+      "detail": "회사 공식 Greenhouse 목록 59건 확인, 한국 근무지·관련 직무·최근 90일 기준 0건 보존",
+      "checkedAt": "2026-11-25T21:43:17.748Z"
     },
     {
       "source": "ShopBack",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "url": "https://jobs.lever.co/shopback-2",
-      "durationMs": 340,
+      "durationMs": 332,
       "retryCount": 0,
       "detail": "69 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7634,19 +7736,19 @@
       "source": "Xsolla",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "url": "https://jobs.lever.co/xsolla",
-      "durationMs": 12600,
+      "durationMs": 126,
       "retryCount": 0,
-      "detail": "188 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
+      "detail": "186 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
     {
       "source": "Channel Corp.",
       "status": "ok",
       "count": 2,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "url": "https://jobs.lever.co/zoyi",
-      "durationMs": 47,
+      "durationMs": 7082,
       "retryCount": 0,
       "detail": "75 employer postings checked; 2 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7654,19 +7756,19 @@
       "source": "Match Group",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "url": "https://jobs.lever.co/matchgroup",
-      "durationMs": 29,
+      "durationMs": 48,
       "retryCount": 0,
-      "detail": "73 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
+      "detail": "72 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
     {
       "source": "Sahara AI",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "url": "https://jobs.ashbyhq.com/Sahara",
-      "durationMs": 152,
+      "durationMs": 126,
       "retryCount": 0,
       "detail": "3 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7674,39 +7776,39 @@
       "source": "Plaud",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "url": "https://jobs.ashbyhq.com/Plaud",
-      "durationMs": 111,
+      "durationMs": 39,
       "retryCount": 0,
       "detail": "53 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
     {
       "source": "KOWORK",
       "status": "ok",
-      "count": 5,
+      "count": 3,
       "url": "https://kowork.kr/en",
-      "checkedAt": "2026-11-25T08:36:00.660Z",
-      "detail": "One public list with 15 cards, 6 limited detail checks. 5 profile-relevant leads. No full description copied; current opening status must be verified."
+      "checkedAt": "2026-11-25T21:43:17.748Z",
+      "detail": "One public list with 15 cards, 6 limited detail checks. 3 profile-relevant leads. No full description copied; current opening status must be verified."
     },
     {
       "source": "ChatGPT Research",
       "status": "manual",
       "count": 3,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "detail": "3 individually researched leads; 13 excluded or expired; 20 manually withdrawn from the radar. Not live-checked at each scheduled refresh."
     },
     {
       "source": "사용자 저장 공고",
       "status": "not_configured",
       "count": 0,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "detail": "config/manual-jobs.json 미생성. 선택 기능"
     },
     {
       "source": "Upwork",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "detail": "Upwork 공개 RSS 자동 수집 기능이 중단되어 검색 결과를 생성하지 않습니다. 계정 로그인 후 수동 검색 링크를 이용하세요.",
       "url": "https://www.upwork.com/nx/search/jobs/",
       "manualSearches": [
@@ -7736,7 +7838,7 @@
       "source": "K-WORK",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "detail": "Korean government SME/foreign talent job platform. Each listing needs language and visa verification. Original-site browsing only.",
       "url": "https://k-work.or.kr/empmnInfo/empmn/list.do"
     },
@@ -7744,7 +7846,7 @@
       "source": "Hanultari",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "detail": "Seoul multicultural-family job portal. Automatic republication restricted; verify jobs at original source.",
       "url": "https://mcfamily.or.kr/en/jobs/opening"
     },
@@ -7752,7 +7854,7 @@
       "source": "JOBPLOY",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "detail": "Foreigner-focused Korea jobs. Terms restrict unlicensed copying; use original-site search.",
       "url": "https://www.jobploy.kr/en"
     },
@@ -7760,7 +7862,7 @@
       "source": "Wanted",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "detail": "Additional Korean employer listings for Spanish-language content and marketing. Search on the original site; individual postings can already be closed.",
       "url": "https://www.wanted.co.kr/"
     },
@@ -7768,7 +7870,7 @@
       "source": "ProZ",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-25T08:36:00.660Z",
+      "checkedAt": "2026-11-25T21:43:17.748Z",
       "detail": "Specialist translation and localization jobs; verify deadlines, professional experience and ability to work from Korea on each original posting.",
       "url": "https://www.proz.com/translation-jobs"
     }
