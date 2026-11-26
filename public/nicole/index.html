@@ -36,19 +36,22 @@
       <p class="eyebrow">NICOLE'S JOB RADAR</p>
       <h1>Find your next opportunity in one place</h1>
       <p class="lede">Explore jobs from multiple platforms, save opportunities, and track applications.</p>
-    </div>
-    <div class="actions">
-      <button id="exportStateBtn" class="button secondary">Back up data</button>
-      <button id="importStateBtn" class="button secondary">Import data / alerts</button>
-      <input id="importStateFile" type="file" accept="application/json,.json" hidden>
-      <button id="addJobBtn" class="button secondary">Add a job</button>
-      <button id="refreshBtn" class="button primary">Refresh jobs</button>
-    </div>
-    <div class="hero-aside">
+        <div class="actions">
+          <button id="exportStateBtn" class="button secondary">Back up data</button>
+          <button id="importStateBtn" class="button secondary">Import data / alerts</button>
+          <input id="importStateFile" type="file" accept="application/json,.json" hidden>
+          <button id="addJobBtn" class="button secondary">Add a job</button>
+          <button id="refreshBtn" class="button primary">Refresh jobs</button>
+        </div>
+
+</div>
+    <div class="hero-aside" data-locale="en">
       <span class="pulse"></span>
-      <span>Last checked</span>
+      <span class="freshness-label">Last checked</span>
       <strong id="feedUpdatedAt">-</strong>
-      <small>May change after this date · verify original</small>
+      <span class="freshness-kind"></span>
+      <span class="freshness-chip"></span>
+      <small>Per-item check dates are on cards · verify original</small>
     </div>
   </header>
 

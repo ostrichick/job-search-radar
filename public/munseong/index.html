@@ -35,19 +35,22 @@
       <p class="eyebrow">DIGITAL NOMAD JOB RADAR</p>
       <h1>내가 지원할 만한 공고만 한곳에서</h1>
       <p class="lede">여러 플랫폼의 공고를 모아 검색하고, 관심·지원 상태까지 한곳에서 관리합니다.</p>
-    </div>
-    <div class="actions">
-      <button id="exportStateBtn" class="button secondary">상태 백업</button>
-      <button id="importStateBtn" class="button secondary">상태/알림 가져오기</button>
-      <input id="importStateFile" type="file" accept="application/json,.json" hidden>
-      <button id="addJobBtn" class="button secondary">공고 추가</button>
-      <button id="refreshBtn" class="button primary">목록 새로고침</button>
-    </div>
-    <div class="hero-aside">
+        <div class="actions">
+          <button id="exportStateBtn" class="button secondary">상태 백업</button>
+          <button id="importStateBtn" class="button secondary">상태/알림 가져오기</button>
+          <input id="importStateFile" type="file" accept="application/json,.json" hidden>
+          <button id="addJobBtn" class="button secondary">공고 추가</button>
+          <button id="refreshBtn" class="button primary">목록 새로고침</button>
+        </div>
+
+</div>
+    <div class="hero-aside" data-locale="ko">
       <span class="pulse"></span>
-      <span>최종 확인일</span>
+      <span class="freshness-label">최종 확인일</span>
       <strong id="feedUpdatedAt">-</strong>
-      <small>확인일 이후 변동 가능 · 원문 재확인</small>
+      <span class="freshness-kind"></span>
+      <span class="freshness-chip"></span>
+      <small>항목별 확인일은 카드에서 확인 · 원문 재확인</small>
     </div>
   </header>
 

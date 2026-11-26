@@ -27,6 +27,7 @@ export function formatDate(value) {
 
 export function formatDateTime(value) {
   if (!value) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) return formatDate(value);
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return formatDate(value);
   return partsToDateTime(dateTimeFormatter.formatToParts(date));

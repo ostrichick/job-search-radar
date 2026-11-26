@@ -1387,7 +1387,7 @@ test('1440px 실제 브라우저에서 overflow·console 오류·이름 없는 �
   expect(audit.unnamed).toEqual([]);
   // The separate work-kind classifier adds one small module; the pre-change
   // audit observed 21 resources and this run observed 22.
-  expect(audit.resourceCount).toBeLessThan(24);
+  expect(audit.resourceCount).toBeLessThan(25);
   expect(audit.domContentLoaded).toBeGreaterThan(0);
   const unexpectedResponses = failedResponses.filter(({ url, status }) => !(status === 404 && /\/api\/jobs(?:$|\?)/.test(url)));
   const hasExpectedStaticApiFallback = failedResponses.some(({ url, status }) => status === 404 && /\/api\/jobs(?:$|\?)/.test(url));

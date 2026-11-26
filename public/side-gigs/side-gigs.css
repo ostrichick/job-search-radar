@@ -15,7 +15,7 @@
 .result-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
 
 .gig-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-.gig-card { display: flex; flex-direction: column; min-width: 0; padding: 18px; border: 1px solid var(--border-base); border-radius: var(--radius-xl); background: var(--surface-card); transition: transform var(--transition-fast), box-shadow var(--transition-fast); }
+.gig-card { display: flex; flex-direction: column; min-width: 0; padding: var(--space-5); border: 1px solid var(--border-base); border-radius: var(--radius-xl); background: var(--surface-card); transition: transform var(--transition-fast), box-shadow var(--transition-fast); }
 .gig-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 .gig-badges { display: flex; flex-wrap: wrap; gap: 6px; }
 .gig-badge { display: inline-flex; align-items: center; min-height: 26px; padding: 4px 8px; border-radius: var(--radius-pill); background: var(--surface-muted); color: var(--text-muted); font-size: 11px; font-weight: 800; }

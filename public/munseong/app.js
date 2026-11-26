@@ -1,4 +1,5 @@
 import { createCardRenderer } from './render-cards.js';
+import { renderFreshness } from '../shared/freshness.js';
 import { formatDate as formatDisplayDate, formatDateTime as formatDisplayDateTime } from '../shared/date-format.js';
 import { feedHealth } from './feed-health.js';
 import { sourceHealthBuckets } from './source-health.js';
@@ -1884,11 +1885,12 @@ function applyFeedData(data, detectNew = true) {
   $('updatedAt').textContent = data.updatedAt
     ? `${updatedLabel} ${formatDisplayDateTime(data.updatedAt)}`
     : (isNicole ? 'Collection time unavailable' : '수집 시각 이상');
-  if ($('feedUpdatedAt')) {
-    $('feedUpdatedAt').textContent = data.updatedAt
-      ? formatDisplayDate(data.updatedAt)
-      : (isNicole ? 'Unavailable' : '확인 불가');
-  }
+  renderFreshness($('feedUpdatedAt')?.closest('.hero-aside'), {
+    value: data.updatedAt,
+    source: 'auto',
+    unchecked: null,
+    locale: isNicole ? 'en' : 'ko'
+  });
   const failedSources = sourceHealthBuckets(data.sourceStatus || []).failed;
   if (failedSources.length) {
     const labels = failedSources.map((source) => `${source.source}${source.preserved ? `(${source.preserved}개 유지)` : ''}`).join(', ');

@@ -1,6 +1,7 @@
 const REGION_ORDER = ['전주', '완주', '군산', '익산', '정읍', '남원', '김제', '진안', '무주', '장수', '임실', '순창', '고창', '부안'];
 
 import { formatDate, formatDateTime } from '../shared/date-format.js';
+import { renderFreshness } from '../shared/freshness.js';
 import { tourPriceStatus } from './price-status.js';
 
 const todayIso = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' });
@@ -241,11 +242,17 @@ export function createToursView({ $ }) {
     if (!list) return;
     const items = filteredItems();
     if (count) count.textContent = `${items.length}개`;
-    if (updatedAt) {
-      updatedAt.textContent = state.feed?.updatedAt
-        ? formatDateTime(state.feed.updatedAt)
-        : '';
-    }
+    const feed = state.feed;
+    const kstDay = (value) => (value ? formatDateTime(value).slice(0, 10).replaceAll('.', '-') : '');
+    const batchDay = kstDay(feed?.updatedAt);
+    const failedSources = (feed?.sourceStatus || []).filter((source) => ['failed', 'partial'].includes(source.status));
+    const errorItems = (feed?.items || []).filter((item) => item.sourceVerificationState === 'source_error');
+    const staleItems = (feed?.items || []).filter((item) => item.sourceVerificationState !== 'source_error' && kstDay(item.checkedAt || item.lastCheckedAt) < batchDay).length;
+    renderFreshness(updatedAt?.closest('.hero-aside'), {
+      value: feed?.updatedAt,
+      source: 'auto',
+      unchecked: !batchDay || failedSources.length || errorItems.length ? null : staleItems
+    });
     if (sourceStatus) {
       const problems = (state.feed?.sourceStatus || []).filter((source) => source.status !== 'ok');
       sourceStatus.hidden = !problems.length;

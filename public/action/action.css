@@ -33,13 +33,13 @@ main { display: grid; gap: var(--space-5); }
   align-content: start;
   gap: 9px;
   min-width: 0;
-  padding: 18px;
+  padding: var(--space-5);
   border: 1px solid var(--border-base);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   background: var(--surface-card);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
-.action-card:hover { border-color: var(--border-accent-strong); box-shadow: var(--shadow-md); }
+.action-card:hover { border-color: var(--border-accent-strong); box-shadow: var(--shadow-md); transform: translateY(-2px); }
 .action-card.is-unreviewed { border-color: var(--status-danger-border); box-shadow: inset 0 0 0 2px var(--status-danger-soft); }
 .action-card.is-unreviewed:hover { border-color: var(--status-danger-border); box-shadow: var(--shadow-md), inset 0 0 0 2px var(--status-danger-border); }
 .action-card.is-closed { background: var(--state-muted-bg); border-color: var(--state-muted-border); }

@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('한국어 강의 탭은 온라인·전주 오프라인 강의와 공식 링크를 보여준다', async ({ page }) => {
   await page.goto('/classes/');
   await expect(page.getByRole('heading', { name: /한국어·스페인어/ })).toBeVisible();
-  await expect(page.locator('#sourceDate')).toHaveText('2026.11.23');
+  await expect(page.locator('#sourceDate')).toHaveText('2026.11.26 09:20');
   await expect(page.locator('#totalCount')).toHaveText('6');
   await expect(page.locator('.class-card')).toHaveCount(6);
   await expect(page.locator('#courses')).toContainText('온라인 세종학당');

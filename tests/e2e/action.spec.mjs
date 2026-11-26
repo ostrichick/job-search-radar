@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { formatDateTime } from '../../public/shared/date-format.js';
 
 test('실행 탭은 긴급 항목과 Munseong·Nicole 실행 링크를 분리해 보여준다', async ({ page }) => {
   await page.goto('/munseong/');
@@ -43,23 +44,29 @@ test('모든 탭의 최종 확인일 안내와 날짜 형식이 일치한다', a
   }));
   const koreanCaveat = '최종 확인일 · 카드의 확인일 이후 모집·마감·자격이 바뀔 수 있으니 지원 전 공식 원문을 다시 확인하세요.';
   const englishCaveat = 'Last checked · Deadlines, eligibility, and pay may change after the check date; confirm the official source before applying.';
-  const datePattern = /^\d{4}\.\d{2}\.\d{2}( \d{2}:\d{2})?$/;
+  const datePattern = /^\d{4}\.\d{2}\.\d{2} \d{2}:\d{2}$/;
   const pages = [
     ['/munseong/', '최종 확인일', '#feedUpdatedAt'],
     ['/household/', '최종 확인일', '#sourceDate'],
     ['/classes/', '최종 확인일', '#sourceDate'],
-    ['/tours/', '목록 갱신 시각', '#tourUpdatedAt'],
-    ['/action/', '최종 확인일', '#actionUpdatedAt']
+    ['/tours/', '최종 확인일', '#tourUpdatedAt'],
+    ['/action/', '최종 확인일', '#actionUpdatedAt'],
+    ['/side-gigs/', '최종 확인일', '#gigUpdatedAt']
   ];
   for (const [path, label, dateSelector] of pages) {
     await page.goto(path);
     await expect(page.locator('.data-caveat')).toHaveCount(1);
     await expect(page.locator('main > .data-caveat:first-child')).toHaveCount(1);
-    await expect(page.locator('.data-caveat')).toHaveText(path === '/tours/'
+    const caveat = path === '/tours/'
       ? '가격·일정·참가 자격·촬영 허용 여부는 변동될 수 있습니다. 출처 확인일과 현재 예약 가능 여부는 별개이므로 기관에 재확인하세요.'
-      : koreanCaveat);
+      : path === '/side-gigs/'
+        ? '최종 확인일 · 카드의 확인일 이후 보수·자격·모집 상태가 바뀔 수 있으니 신청 전 공식 원문을 다시 확인하세요.'
+        : koreanCaveat;
+    await expect(page.locator('.data-caveat')).toHaveText(caveat);
     await expect(page.locator('.hero-aside')).toContainText(label);
     await expect(page.locator(dateSelector)).toHaveText(datePattern);
+    await expect(page.locator('.hero-aside .freshness-kind')).not.toBeEmpty();
+    await expect(page.locator('.hero-aside .freshness-chip')).not.toBeEmpty();
   }
   await page.route('**/feeds/dubu.json?*', (route) => route.fulfill({
     json: { updatedAt: new Date().toISOString(), jobs: [], sourceStatus: [] }
@@ -70,6 +77,8 @@ test('모든 탭의 최종 확인일 안내와 날짜 형식이 일치한다', a
   await expect(page.locator('.data-caveat')).toHaveText(englishCaveat);
   await expect(page.locator('.hero-aside')).toContainText('Last checked');
   await expect(page.locator('#feedUpdatedAt')).toHaveText(datePattern);
+  await expect(page.locator('.hero-aside .freshness-kind')).not.toBeEmpty();
+  await expect(page.locator('.hero-aside .freshness-chip')).not.toBeEmpty();
 });
 
 test('실행 카드의 확인 표시와 체크리스트는 브라우저에 저장된다', async ({ page }) => {
@@ -129,4 +138,56 @@ test('상단 nav와 eyebrow 간격이 데스크톱과 모바일에서 같다', a
   expect(Math.abs(mobileTopbar.gap - mobileHero.gap)).toBeLessThanOrEqual(1);
   expect(mobileTopbar.h1Width).toBeGreaterThan(1);
   expect(mobileHero.h1Width).toBeGreaterThan(1);
+});
+
+test('일곱 탭의 상단 높이가 데스크톱과 모바일에서 같다', async ({ page }) => {
+  const paths = ['/munseong/', '/nicole/', '/household/', '/classes/', '/tours/', '/action/', '/side-gigs/'];
+  for (const [width, height] of [[1440, 900], [390, 844]]) {
+    await page.setViewportSize({ width, height });
+    const heights = [];
+    for (const path of paths) {
+      await page.goto(path);
+      await page.waitForLoadState('networkidle');
+      heights.push(await page.evaluate(() => Math.round(document.querySelector('header').getBoundingClientRect().height)));
+      expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
+    }
+    expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(2);
+  }
+});
+
+
+test('freshness status reflects provenance, partial checks, failures and timezone', async ({ page }) => {
+  const feed = { updatedAt: new Date().toISOString(), jobs: [], sourceStatus: [] };
+  await page.route('**/api/jobs', (route) => route.fulfill({ json: feed }));
+  await page.route('**/jobs.json*', (route) => route.fulfill({ json: feed }));
+  await page.goto('/action/');
+  await expect(page.locator('.freshness-kind')).toHaveText('수동 확인');
+  await expect(page.locator('.freshness-chip')).toHaveText('일부 확인 · 6건 미확인');
+  await page.goto('/tours/');
+  await expect(page.locator('.freshness-kind')).toHaveText('자동 수집');
+  await expect(page.locator('.freshness-chip')).toHaveText('전체 확인');
+  await page.goto('/munseong/');
+  await expect(page.locator('.freshness-chip')).toHaveText('확인 상태 미확인');
+  await page.route('**/actions.json*', (route) => route.fulfill({ status: 500, body: '{}' }));
+  await page.goto('/action/');
+  await expect(page.locator('.freshness-chip')).toHaveText('확인 상태 미확인');
+  expect(formatDateTime('2026-11-24')).toBe('2026.11.24');
+  expect(formatDateTime('2026-11-25T15:30:00Z')).toBe('2026.11.26 00:30');
+});
+
+test('freshness reports unknown when tour collection fails or language switch fails', async ({ page }) => {
+  const failedTourFeed = {
+    updatedAt: new Date().toISOString(),
+    items: [{ id: 'tour-failed', checkedAt: new Date().toISOString(), sourceVerificationState: 'source_error' }],
+    sourceStatus: [{ source: 'tour-source', status: 'failed', message: 'offline' }]
+  };
+  await page.route('**/tours.json*', (route) => route.fulfill({ json: failedTourFeed }));
+  await page.goto('/tours/');
+  await expect(page.locator('.freshness-chip')).toHaveText('확인 상태 미확인');
+
+  await page.goto('/classes/');
+  await expect(page.locator('.freshness-chip')).not.toBeEmpty();
+  await page.route('**/spanish-classes.json*', (route) => route.fulfill({ status: 500, body: '{}' }));
+  await page.locator('[data-language="es"]').click();
+  await expect(page.locator('.freshness-chip')).toHaveText('확인 상태 미확인');
 });

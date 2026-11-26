@@ -1,4 +1,5 @@
 import { formatDate as formatDisplayDate } from '../shared/date-format.js';
+import { renderFreshness } from '../shared/freshness.js';
 
 // Independent household state. Never import the person-specific job radar storage module.
 const DB_NAME = 'jeonju-household-support-v1';
@@ -393,7 +394,11 @@ async function init() {
     if (!Array.isArray(data.programs)) throw new Error('지원사업 목록 형식 오류');
     allPrograms = data.programs;
     programs = data.programs.filter((program) => HOUSEHOLD_PROGRAM_IDS.has(program.id) && applyLinkLabel(program.applyUrl) && isOpenProgram(program));
-    $('sourceDate').textContent = formatDate(data.researchedAt);
+    renderFreshness($('sourceDate').closest('.hero-aside'), {
+      value: data.researchedAt,
+      source: 'manual',
+      unchecked: data.programs.filter((p) => String(p.verifiedAt || '') < String(data.researchedAt || '').slice(0, 10)).length
+    });
   } catch (error) { notice(`공식 사업 목록을 읽을 수 없습니다: ${error.message}`); return; }
   try {
     storage = await openDatabase();

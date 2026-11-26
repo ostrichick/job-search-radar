@@ -1,3 +1,4 @@
+import { renderFreshness } from '../shared/freshness.js';
 const $ = (id) => document.getElementById(id);
 
 const CATEGORY_LABELS = {
@@ -196,14 +197,18 @@ async function load() {
     if (!Array.isArray(data.items)) throw new Error('목록 형식이 올바르지 않습니다.');
     state.items = data.items;
     state.updatedAt = data.updatedAt || '';
-    $('gigUpdatedAt').textContent = state.updatedAt || '-';
+    renderFreshness($('gigUpdatedAt').closest('.hero-aside'), {
+      value: state.updatedAt,
+      source: 'manual',
+      unchecked: state.items.filter((i) => String(i.checkedAt || '') < String(state.updatedAt || '').slice(0, 10)).length
+    });
     $('gigUpdatedAtInline').textContent = state.updatedAt ? `업데이트 ${state.updatedAt}` : '';
     if (data.disclaimer) $('gigDisclaimer').textContent = data.disclaimer;
     renderMetrics();
     render();
   } catch (error) {
     state.items = [];
-    $('gigUpdatedAt').textContent = '-';
+    renderFreshness($('gigUpdatedAt').closest('.hero-aside'), { value: null, source: 'manual' });
     $('gigCount').textContent = '0개';
     $('gigsEmptyMessage').textContent = `목록을 불러오지 못했습니다: ${error.message}`;
     $('gigsEmpty').hidden = false;

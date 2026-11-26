@@ -1,4 +1,5 @@
 import { formatDate, formatDateTime } from '../shared/date-format.js';
+import { renderFreshness } from '../shared/freshness.js';
 
 const $ = (id) => document.getElementById(id);
 const OWNER_LABELS = { munseong: 'Munseong', nicole: 'Nicole', shared: '공동' };
@@ -317,13 +318,15 @@ async function load() {
     actions = Array.isArray(data.items) ? data.items : [];
     checklist = Array.isArray(data.checklist) ? data.checklist : [];
     notice = String(data.notice || '');
-    $('actionUpdatedAt').textContent = data.updatedAt
-      ? (String(data.updatedAt).includes('T') ? formatDateTime(data.updatedAt) : formatDate(data.updatedAt))
-      : '갱신일 미상';
+    renderFreshness($('actionUpdatedAt').closest('.hero-aside'), {
+      value: data.updatedAt,
+      source: 'manual',
+      unchecked: actions.filter((a) => String(a.verifiedAt || '') < String(data.updatedAt || '').slice(0, 10)).length
+    });
     renderChecklist();
     render();
   } catch (error) {
-    $('actionUpdatedAt').textContent = '불러오기 실패';
+    renderFreshness($('actionUpdatedAt').closest('.hero-aside'), { value: null, source: 'manual' });
     $('actionNotice').textContent = `실행 데이터를 불러오지 못했습니다. (${error.message})`;
     $('actionResultCount').textContent = '0개 실행 항목';
     $('actionEmpty').hidden = false;

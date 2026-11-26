@@ -1,4 +1,5 @@
 import { formatDate } from '../shared/date-format.js';
+import { renderFreshness } from '../shared/freshness.js';
 
 const $ = (id) => document.getElementById(id);
 const MODE_LABELS = { online: '온라인', offline: '오프라인', hybrid: '온·오프라인' };
@@ -203,11 +204,16 @@ async function loadLanguage(nextLanguage) {
     const data = await response.json();
     courses = Array.isArray(data.courses) ? data.courses : [];
     selfStudy = Array.isArray(data.selfStudy) ? data.selfStudy : [];
-    $('sourceDate').textContent = formatDate(data.researchedAt) || '확인일 미상';
+    renderFreshness($('sourceDate').closest('.hero-aside'), {
+      value: data.researchedAt,
+      source: 'manual',
+      unchecked: [...courses, ...selfStudy].filter((c) => String(c.verifiedAt || '') < String(data.researchedAt || '').slice(0, 10)).length
+    });
     renderStats();
     render();
     renderSelfStudy();
   } catch (error) {
+    renderFreshness($('sourceDate').closest('.hero-aside'), { value: null, source: 'manual' });
     courses = [];
     selfStudy = [];
     renderStats();
