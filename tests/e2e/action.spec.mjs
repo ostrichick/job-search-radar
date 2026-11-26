@@ -140,9 +140,9 @@ test('상단 nav와 eyebrow 간격이 데스크톱과 모바일에서 같다', a
   expect(mobileHero.h1Width).toBeGreaterThan(1);
 });
 
-test('일곱 탭의 상단 높이가 데스크톱과 모바일에서 같다', async ({ page }) => {
+test('일곱 탭의 상단 높이와 탭 버튼 위치가 같다', async ({ page }) => {
   const paths = ['/munseong/', '/nicole/', '/household/', '/classes/', '/tours/', '/action/', '/side-gigs/'];
-  for (const [width, height] of [[1440, 900], [760, 900], [390, 844]]) {
+  for (const [width, height, padding] of [[1440, 900, 24], [761, 900, 24], [760, 900, 18], [390, 844, 18]]) {
     await page.setViewportSize({ width, height });
     const heights = [];
     for (const path of paths) {
@@ -150,23 +150,30 @@ test('일곱 탭의 상단 높이가 데스크톱과 모바일에서 같다', as
       await page.waitForLoadState('networkidle');
       const layout = await page.evaluate(() => {
         const header = document.querySelector('header').getBoundingClientRect();
-        const contains = (el) => {
-          if (!el) return true;
-          const r = el.getBoundingClientRect();
-          return r.top >= header.top - 1 && r.bottom <= header.bottom + 1;
-        };
+        const firstLink = document.querySelector('.profile-switch a, .sites a');
+        const aside = document.querySelector('.hero-aside');
+        const links = [...document.querySelectorAll('.profile-switch a, .sites a')];
+        const actions = [...document.querySelectorAll('.topbar .actions button')].filter((el) => el.getClientRects().length);
+        const inside = (r) => r.top >= header.top - 1 && r.bottom <= header.bottom + 1 && r.left >= header.left - 1 && r.right <= header.right + 1;
+        const rectsInside = (els) => els.length > 0 && els.every((el) => inside(el.getBoundingClientRect()));
         return {
           height: Math.round(header.height),
-          navVisible: contains(document.querySelector('.profile-switch, .sites')),
-          asideVisible: contains(document.querySelector('.hero-aside')),
-          actionsVisible: contains(document.querySelector('.topbar .actions')),
+          navExists: Boolean(firstLink),
+          navTop: firstLink ? Math.round(firstLink.getBoundingClientRect().top - header.top) : -1,
+          asideExists: Boolean(aside),
+          asideInside: aside ? inside(aside.getBoundingClientRect()) : false,
+          linksInside: rectsInside(links),
+          actionsInside: actions.length ? rectsInside(actions) : true,
           overflow: document.documentElement.scrollWidth > window.innerWidth
         };
       });
       heights.push(layout.height);
-      expect(layout.navVisible).toBe(true);
-      expect(layout.asideVisible).toBe(true);
-      expect(layout.actionsVisible).toBe(true);
+      expect(layout.navExists).toBe(true);
+      expect(Math.abs(layout.navTop - padding)).toBeLessThanOrEqual(2);
+      expect(layout.asideExists).toBe(true);
+      expect(layout.asideInside).toBe(true);
+      expect(layout.linksInside).toBe(true);
+      expect(layout.actionsInside).toBe(true);
       expect(layout.overflow).toBe(false);
     }
     expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(2);
