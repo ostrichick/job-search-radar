@@ -1,6 +1,210 @@
 {
-  "updatedAt": "2026-11-26T06:21:40.091Z",
+  "updatedAt": "2026-11-26T08:19:43.444Z",
   "jobs": [
+    {
+      "id": "jobicy-c993e2e1dd0aad652a10",
+      "title": "Principal Technical Marketing Engineer | UK | Remote",
+      "company": "Grafana Labs",
+      "source": "Jobicy",
+      "url": "https://jobicy.com/jobs/157135-principal-technical-marketing-engineer-uk-remote",
+      "description": "Grafana Labs is the company behind Grafana Cloud, the fully managed observability platform trusted by more than 10,000 organizations to ensure reliability, resolve incidents faster, and optimize telemetry at scale. Built on open source and open standards and designed for interoperability across any stack, Grafana Cloud brings AI to observability and observability to AI, giving teams (and their agents) unified visibility so they can see, understand, and act on all their disparate data, wherever it lives, and move at the speed of their ambitions. Customers, including Anthropic, Bloomberg, NVIDIA, Microsoft, and Salesforce, rely on Grafana Labs. We are a 100% remote company with team members across 40+ countries, backed by leading investors including Lightspeed Venture Partners, Sequoia Capital, GIC, Coatue, J.P. Morgan, CapitalG, and Lead Edge Capital. Learn more at grafana.com and follow us on LinkedIn and X . We’re scaling fast and staying true to what makes us different: an open-source legacy, a global collaborative culture, and a passion for meaningful work. Our team thrives in an innovation-driven environment where transparency, autonomy, and trust fuel everything we do. You may not meet every requirement, and that’s okay. If this role excites you, we’d love you to raise your hand for what could be a truly career-defining opportunity. The Opportunity: Grafana Labs is looking for a technically fluent engineer who loves building powerful demos, explaining complex systems clearly, and helping SRE and platform engineering leaders understand the value of our open approach to observability. As Grafana’s offering shifts from dashboards to industry-leading agentic observability, our Product Marketing team is responsible for closing the gap between what our products can do and how customers understand that value. That means building clear, consistent positioning, enabling sellers with trustworthy technical narratives, and creating content that helps Platform Engineering teams quickly grasp why Grafana Cloud is the right choice for them. As a Technical Product Marketer you will play a critical part in that transformation. You’ll be the hands-on engineer who brings our technical story to life for buyers, not just practitioners. You’ll build core demos, run technical workshops and webinars, and act as the technical bridge between our Product and Sales orgs. Your work will help SRE and platform engineering leaders evaluate Grafana with confidence, equip sales engineers with better tools and talk tracks, and ensure our technical value shows up clearly and consistently across the entire customer journey. This is a unique chance to shape how Grafana tells its story as we evolve our positioning in the AI era, strengthen seller enablement, and build a repeatable system for communicating product value. What You'll Be Doing: Build strategic, buyer-focused demos, videos, workshops, and webinars Create and maintain polished, narrative-driven demos that highlight Grafana’s value for SRE and platform engineering leaders. Record high-quality technical demo videos and walkthroughs in partnership with our video and content teams. Lead webinars, workshops, and technical sessions designed for evaluators. Teach customers not just how Grafana works, but why our approach is differentiated and valuable. Use AI tools to generate variations, summaries, and reusable assets that scale technical content across channels. Enable Solutions (Sales) Engineers with clear, consistent technical storytelling Serve as PMM’s technical liaison to the SE org, ensuring consistent messaging and demo guidance. Produce technical enablement assets, value-driven talk tracks, competitive narratives, and demo best practices. Help SEs and sellers communicate Grafana’s story with clarity, confidence, and differentiation. Collaborate with PMMs to drive technical buyer engagement across high-impact channels Partner with PMMs to identify the most important buyer personas, problems, and technical messages, and help shape the content strategy needed to reach them. Extend technical narratives into impactful buyer-facing channels including analyst briefings (Gartner, Forrester), industry forums, podcasts, conferences, and online technical communities. Bring a technical perspective to PMM planning—helping ensure our content, campaigns, and enablement reflect the real challenges and priorities of SREs and engineering leaders. Use automation & AI to scale technical content Partner with software engineers to streamline demo setup, content workflows, and asset updates through workflows, agents, scripts, and AI-driven tools. Use automation to make technical content more repeatable, discoverable, and scalable across teams. What Makes You a Great Fit: 5+ years in a technical role (solutions engineering, SRE, DevOps, backend engineering, technical PMM, or similar). Interest and ability to travel to training and customer events 10-12 weeks per year. Strong understanding of observability concepts and the needs of SRE/platform teams. Ability to translate deep technical concepts into clear, value-focused stories. Experience presenting technical content through demos, workshops, or webinars. Excellent written and verbal communication, with a crisp, structured, persuasive style. Strong cross-functional collaboration; comfort working with PMM, Product, SEs, DevRel, and Field Engineering. High ownership mindset with the ability to drive projects from concept to completion. Comfort with light scripting or workflow automation. Bonus Points For: Hands-on experience with Grafana, Prometheus, Loki, Mimir, Tempo, or similar observability tools, or a background in Observability or Platform Engineering. Prior experience in Sales Engineering, DevRel, or technical product marketing. Familiarity with demo environment automation or infrastructure-as-code tools. Exceptional live presentation or workshop facilitation skills. Compensation & Rewards: In the UK, the base compensation range for this role is GBP 103,958- GBP 124,750. Actual compensation may vary based on level, experience, and skillset as assessed throughout the interview process. All of our roles include Restricted Stock Units (RSUs), giving every team member ownership in Grafana Labs' success. We believe in shared outcomes—RSUs help us stay aligned and invested as we scale globally. *Compensation ranges are country specific. If you are applying for this role from a different location than listed above, your recruiter will discuss your specific market’s defined pay range & benefits at the beginning of the process. Why You’ll Thrive at Grafana Labs: 100% Remote, Global Culture - As a remote-only company, we bring together talent from around the world, united by a culture of collaboration and shared purpose. Scaling Organization – Tackle meaningful work in a high-growth, ever-evolving environment. Transparent Communication – Expect open decision-making and regular company-wide updates. Innovation-Driv",
+      "location": "UK",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "marketing",
+      "postedAt": "2026-11-26T04:30:31.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": "103958–124750 GBP yearly",
+      "languageRequirements": "공고 원문 확인 필요",
+      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · UK",
+      "eligibilityStatus": "unknown",
+      "eligibilityDetail": {
+        "status": "unknown",
+        "geoScope": "UK",
+        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "unknown",
+      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "seen",
+      "firstSeenAt": "2026-10-26T22:42:39.128Z",
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
+    },
+    {
+      "id": "jobicy-4064ba60bc7190f34122",
+      "title": "Principal Technical Marketing Engineer | Sweden | Remote",
+      "company": "Grafana Labs",
+      "source": "Jobicy",
+      "url": "https://jobicy.com/jobs/157134-principal-technical-marketing-engineer-sweden-remote",
+      "description": "Grafana Labs is the company behind Grafana Cloud, the fully managed observability platform trusted by more than 10,000 organizations to ensure reliability, resolve incidents faster, and optimize telemetry at scale. Built on open source and open standards and designed for interoperability across any stack, Grafana Cloud brings AI to observability and observability to AI, giving teams (and their agents) unified visibility so they can see, understand, and act on all their disparate data, wherever it lives, and move at the speed of their ambitions. Customers, including Anthropic, Bloomberg, NVIDIA, Microsoft, and Salesforce, rely on Grafana Labs. We are a 100% remote company with team members across 40+ countries, backed by leading investors including Lightspeed Venture Partners, Sequoia Capital, GIC, Coatue, J.P. Morgan, CapitalG, and Lead Edge Capital. Learn more at grafana.com and follow us on LinkedIn and X . We’re scaling fast and staying true to what makes us different: an open-source legacy, a global collaborative culture, and a passion for meaningful work. Our team thrives in an innovation-driven environment where transparency, autonomy, and trust fuel everything we do. You may not meet every requirement, and that’s okay. If this role excites you, we’d love you to raise your hand for what could be a truly career-defining opportunity. The Opportunity: Grafana Labs is looking for a technically fluent engineer who loves building powerful demos, explaining complex systems clearly, and helping SRE and platform engineering leaders understand the value of our open approach to observability. As Grafana’s offering shifts from dashboards to industry-leading agentic observability, our Product Marketing team is responsible for closing the gap between what our products can do and how customers understand that value. That means building clear, consistent positioning, enabling sellers with trustworthy technical narratives, and creating content that helps Platform Engineering teams quickly grasp why Grafana Cloud is the right choice for them. As a Technical Product Marketer you will play a critical part in that transformation. You’ll be the hands-on engineer who brings our technical story to life for buyers, not just practitioners. You’ll build core demos, run technical workshops and webinars, and act as the technical bridge between our Product and Sales orgs. Your work will help SRE and platform engineering leaders evaluate Grafana with confidence, equip sales engineers with better tools and talk tracks, and ensure our technical value shows up clearly and consistently across the entire customer journey. This is a unique chance to shape how Grafana tells its story as we evolve our positioning in the AI era, strengthen seller enablement, and build a repeatable system for communicating product value. What You'll Be Doing: Build strategic, buyer-focused demos, videos, workshops, and webinars Create and maintain polished, narrative-driven demos that highlight Grafana’s value for SRE and platform engineering leaders. Record high-quality technical demo videos and walkthroughs in partnership with our video and content teams. Lead webinars, workshops, and technical sessions designed for evaluators. Teach customers not just how Grafana works, but why our approach is differentiated and valuable. Use AI tools to generate variations, summaries, and reusable assets that scale technical content across channels. Enable Solutions (Sales) Engineers with clear, consistent technical storytelling Serve as PMM’s technical liaison to the SE org, ensuring consistent messaging and demo guidance. Produce technical enablement assets, value-driven talk tracks, competitive narratives, and demo best practices. Help SEs and sellers communicate Grafana’s story with clarity, confidence, and differentiation. Collaborate with PMMs to drive technical buyer engagement across high-impact channels Partner with PMMs to identify the most important buyer personas, problems, and technical messages, and help shape the content strategy needed to reach them. Extend technical narratives into impactful buyer-facing channels including analyst briefings (Gartner, Forrester), industry forums, podcasts, conferences, and online technical communities. Bring a technical perspective to PMM planning—helping ensure our content, campaigns, and enablement reflect the real challenges and priorities of SREs and engineering leaders. Use automation & AI to scale technical content Partner with software engineers to streamline demo setup, content workflows, and asset updates through workflows, agents, scripts, and AI-driven tools. Use automation to make technical content more repeatable, discoverable, and scalable across teams. What Makes You a Great Fit: 5+ years in a technical role (solutions engineering, SRE, DevOps, backend engineering, technical PMM, or similar). Interest and ability to travel to training and customer events 10-12 weeks per year. Strong understanding of observability concepts and the needs of SRE/platform teams. Ability to translate deep technical concepts into clear, value-focused stories. Experience presenting technical content through demos, workshops, or webinars. Excellent written and verbal communication, with a crisp, structured, persuasive style. Strong cross-functional collaboration; comfort working with PMM, Product, SEs, DevRel, and Field Engineering. High ownership mindset with the ability to drive projects from concept to completion. Comfort with light scripting or workflow automation. Bonus Points For: Hands-on experience with Grafana, Prometheus, Loki, Mimir, Tempo, or similar observability tools, or a background in Observability or Platform Engineering. Prior experience in Sales Engineering, DevRel, or technical product marketing. Familiarity with demo environment automation or infrastructure-as-code tools. Exceptional live presentation or workshop facilitation skills. Compensation & Rewards: In Sweden, the base compensation range for this role is SEK 878,578 - SEK 1,054,294. Actual compensation may vary based on level, experience, and skillset as assessed throughout the interview process. All of our roles include Restricted Stock Units (RSUs), giving every team member ownership in Grafana Labs' success. We believe in shared outcomes—RSUs help us stay aligned and invested as we scale globally. *Compensation ranges are country specific. If you are applying for this role from a different location than listed above, your recruiter will discuss your specific market’s defined pay range & benefits at the beginning of the process. Why You’ll Thrive at Grafana Labs: 100% Remote, Global Culture - As a remote-only company, we bring together talent from around the world, united by a culture of collaboration and shared purpose. Scaling Organization – Tackle meaningful work in a high-growth, ever-evolving environment. Transparent Communication – Expect open decision-making and regular company-wide updates. Innovation-D",
+      "location": "Sweden",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "marketing",
+      "postedAt": "2026-11-26T04:30:29.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": "878578–1054294 SEK yearly",
+      "languageRequirements": "공고 원문 확인 필요",
+      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · Sweden",
+      "eligibilityStatus": "unknown",
+      "eligibilityDetail": {
+        "status": "unknown",
+        "geoScope": "Sweden",
+        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "unknown",
+      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "seen",
+      "firstSeenAt": "2026-10-26T22:42:39.128Z",
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
+    },
+    {
+      "id": "jobicy-a9ccff302334332785d4",
+      "title": "Principal Technical Marketing Engineer | Ireland | Remote",
+      "company": "Grafana Labs",
+      "source": "Jobicy",
+      "url": "https://jobicy.com/jobs/157132-principal-technical-marketing-engineer-ireland-remote",
+      "description": "Grafana Labs is the company behind Grafana Cloud, the fully managed observability platform trusted by more than 10,000 organizations to ensure reliability, resolve incidents faster, and optimize telemetry at scale. Built on open source and open standards and designed for interoperability across any stack, Grafana Cloud brings AI to observability and observability to AI, giving teams (and their agents) unified visibility so they can see, understand, and act on all their disparate data, wherever it lives, and move at the speed of their ambitions. Customers, including Anthropic, Bloomberg, NVIDIA, Microsoft, and Salesforce, rely on Grafana Labs. We are a 100% remote company with team members across 40+ countries, backed by leading investors including Lightspeed Venture Partners, Sequoia Capital, GIC, Coatue, J.P. Morgan, CapitalG, and Lead Edge Capital. Learn more at grafana.com and follow us on LinkedIn and X . We’re scaling fast and staying true to what makes us different: an open-source legacy, a global collaborative culture, and a passion for meaningful work. Our team thrives in an innovation-driven environment where transparency, autonomy, and trust fuel everything we do. You may not meet every requirement, and that’s okay. If this role excites you, we’d love you to raise your hand for what could be a truly career-defining opportunity. The Opportunity: Grafana Labs is looking for a technically fluent engineer who loves building powerful demos, explaining complex systems clearly, and helping SRE and platform engineering leaders understand the value of our open approach to observability. As Grafana’s offering shifts from dashboards to industry-leading agentic observability, our Product Marketing team is responsible for closing the gap between what our products can do and how customers understand that value. That means building clear, consistent positioning, enabling sellers with trustworthy technical narratives, and creating content that helps Platform Engineering teams quickly grasp why Grafana Cloud is the right choice for them. As a Technical Product Marketer you will play a critical part in that transformation. You’ll be the hands-on engineer who brings our technical story to life for buyers, not just practitioners. You’ll build core demos, run technical workshops and webinars, and act as the technical bridge between our Product and Sales orgs. Your work will help SRE and platform engineering leaders evaluate Grafana with confidence, equip sales engineers with better tools and talk tracks, and ensure our technical value shows up clearly and consistently across the entire customer journey. This is a unique chance to shape how Grafana tells its story as we evolve our positioning in the AI era, strengthen seller enablement, and build a repeatable system for communicating product value. What You'll Be Doing: Build strategic, buyer-focused demos, videos, workshops, and webinars Create and maintain polished, narrative-driven demos that highlight Grafana’s value for SRE and platform engineering leaders. Record high-quality technical demo videos and walkthroughs in partnership with our video and content teams. Lead webinars, workshops, and technical sessions designed for evaluators. Teach customers not just how Grafana works, but why our approach is differentiated and valuable. Use AI tools to generate variations, summaries, and reusable assets that scale technical content across channels. Enable Solutions (Sales) Engineers with clear, consistent technical storytelling Serve as PMM’s technical liaison to the SE org, ensuring consistent messaging and demo guidance. Produce technical enablement assets, value-driven talk tracks, competitive narratives, and demo best practices. Help SEs and sellers communicate Grafana’s story with clarity, confidence, and differentiation. Collaborate with PMMs to drive technical buyer engagement across high-impact channels Partner with PMMs to identify the most important buyer personas, problems, and technical messages, and help shape the content strategy needed to reach them. Extend technical narratives into impactful buyer-facing channels including analyst briefings (Gartner, Forrester), industry forums, podcasts, conferences, and online technical communities. Bring a technical perspective to PMM planning—helping ensure our content, campaigns, and enablement reflect the real challenges and priorities of SREs and engineering leaders. Use automation & AI to scale technical content Partner with software engineers to streamline demo setup, content workflows, and asset updates through workflows, agents, scripts, and AI-driven tools. Use automation to make technical content more repeatable, discoverable, and scalable across teams. What Makes You a Great Fit: 5+ years in a technical role (solutions engineering, SRE, DevOps, backend engineering, technical PMM, or similar). Interest and ability to travel to training and customer events 10-12 weeks per year. Strong understanding of observability concepts and the needs of SRE/platform teams. Ability to translate deep technical concepts into clear, value-focused stories. Experience presenting technical content through demos, workshops, or webinars. Excellent written and verbal communication, with a crisp, structured, persuasive style. Strong cross-functional collaboration; comfort working with PMM, Product, SEs, DevRel, and Field Engineering. High ownership mindset with the ability to drive projects from concept to completion. Comfort with light scripting or workflow automation. Bonus Points For: Hands-on experience with Grafana, Prometheus, Loki, Mimir, Tempo, or similar observability tools, or a background in Observability or Platform Engineering. Prior experience in Sales Engineering, DevRel, or technical product marketing. Familiarity with demo environment automation or infrastructure-as-code tools. Exceptional live presentation or workshop facilitation skills. Compensation & Rewards: In Ireland, the base compensation range for this role is EUR 117,600 - EUR 141,120. Actual compensation may vary based on level, experience, and skillset as assessed throughout the interview process. All of our roles include Restricted Stock Units (RSUs), giving every team member ownership in Grafana Labs' success. We believe in shared outcomes—RSUs help us stay aligned and invested as we scale globally. *Compensation ranges are country specific. If you are applying for this role from a different location than listed above, your recruiter will discuss your specific market’s defined pay range & benefits at the beginning of the process. Why You’ll Thrive at Grafana Labs: 100% Remote, Global Culture - As a remote-only company, we bring together talent from around the world, united by a culture of collaboration and shared purpose. Scaling Organization – Tackle meaningful work in a high-growth, ever-evolving environment. Transparent Communication – Expect open decision-making and regular company-wide updates. Innovation-Dr",
+      "location": "Ireland",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "marketing",
+      "postedAt": "2026-11-26T04:30:25.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": "117600–141120 EUR yearly",
+      "languageRequirements": "공고 원문 확인 필요",
+      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · Ireland",
+      "eligibilityStatus": "unknown",
+      "eligibilityDetail": {
+        "status": "unknown",
+        "geoScope": "Ireland",
+        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "unknown",
+      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "seen",
+      "firstSeenAt": "2026-10-26T22:42:39.128Z",
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
+    },
+    {
+      "id": "jobicy-6c12347d524d27c942b5",
+      "title": "Team Lead, Customer Support",
+      "company": "Keyfactor, Inc.",
+      "source": "Jobicy",
+      "url": "https://jobicy.com/jobs/157128-team-lead-customer-support-2",
+      "description": "About Keyfactor Our mission is to securely connect the world: humans, machines, and AI. Keyfactor is the leader in trust infrastructure for AI and machines, helping the world's largest enterprises and government agencies take control of the cryptographic identities that safeguard every digital interaction. Behind the platform is a global team of people who care deeply about the work and each other. We move fast, think big, and show up for one another every day. If you're looking for work that matters and a team that brings out your best, we hope you'll trust your future with Keyfactor! Title: Team Lead, Customer Support Location: Remote, UK Experience: M1 Job Function: Support Employment Type: Permanent, Full Time Industry: Computer & Network Security About the position Customer Support Team Lead oversees regional leadership of a specific support tier (Tier 1, 2, or 3) within [EMEA/APAC/US], managing engineers, handling escalations, and ensuring exceptional customer service and operational efficiency. Responsibilities Leads, mentors, and develops a team of customer support engineers ensuring they have the necessary tools, training, and knowledge to excel in their roles. Ensure timely closures of tickets and SLAs are met within the team. Promotes knowledge sharing within the team to enhance overall support capability and efficiency. Promotes customer communication via live channels, not email. Handles enterprise customers requiring a higher level of expertise. Provides constructive feedback, and creates personalized development and improvement plans to foster career growth. Fosters a positive and collaborative team environment that encourages continuous improvement and high performance. Ensures the delivery of high-quality support services, focusing on timely and effective issue resolution and maintaining high levels of customer satisfaction. Manages customer escalations, providing timely and accurate solutions while maintaining effective communication with customers. Addresses dissatisfied customer feedback with the regional manager to improve customer loyalty and reduce churn risk related to support engagements. Collaborates closely with product development and engineering teams to ensure prompt and effective resolution of customer issues. Works with professional services and customer success teams to align support activities with business objectives and customer expectations when required. Communicates customer feedback and insights to internal stakeholders to drive continuous improvement of products and services. Serves as the primary point of contact for escalated customer issues within the team, ensuring timely and satisfactory resolution. Coordinates with global support teams to manage cross-regional escalations and ensure a unified approach to issue resolution with the regional manager. Ensures documentation of solutions, best practices, and common issues in the knowledge base to support the team and customers. Monitors daily case trends, identifies areas for improvement in operational metrics, and provides actionable insights to the team and management. Oversees case assignments to ensure balanced workloads and efficient issue resolution. Assists in escalating cases across team, ensuring allocation of appropriate resources for prompt resolution. Skills and Qualifications Bachelor’s degree in Computer Science, Information Technology, or a related field; or equivalent experience. Strong experience in customer support, with leadership roles in senior technical teams and junior support leaders. Strong knowledge of cryptography and PKI solutions. Proven ability to manage complex projects and multiple priorities. Strong analytical skills and experience with support metrics and data analysis. Ability to lead and mentor teams effectively. Strong communication and interpersonal skills. Ability to handle escalations and resolve conflicts. Understanding of ITIL or NIST framework and support processes. Professional or Technical certification in support such as Certified Support Professional CSP, Customer Service Manager CSM, ITIL foundation or Security+ are desirable. #LI-NA1 Compensation Salary will be commensurate with experience. Culture, Career Opportunities and Benefits We build teams that continually strive to get better than the day before. You will be challenged daily and given opportunities to grow personally and professionally. We balance autonomy and structure to create an entrepreneurial environment to spur creativity and new ideas. Here are just some of the initiatives that make our culture special: Second Fridays (a company-wide day off on the second Friday of every month minus November and December due to the Holiday schedule). Please note that this benefit is subject to change. Comprehensive benefit coverage globally. Paid Parental Leave is available to new parents. Structure varies based on regional/government requirements. In regions where government-paid leave doesn’t exist, like in the U.S., the company offers generous paid parental leave, along with comprehensive adoption and fertility support. Competitive time off globally. Dedicated employee-focused ambassadors via Key Contributors & Culture Committees. DIVERSE Commitment, a call to action for a more inclusive and diverse future in business, society, and technology. The Keyfactor Alliance Program to support DEIB efforts. Wellbeing resources, wellness allowance, mindfulness app free membership, Wellness Wednesdays. Global Volunteer Day, company non-profit matching, and 3 volunteer days off. Monthly Talent development and Cross Functional meetings to support professional development. Regular All Hands meetings – followed by group gatherings. Our Core Values Our core values are extremely important to how we run our business and what we look for in every team member: Trust is paramount. We deliver security software and solutions where trust and openness are of the highest importance for our customers. We are honest and a trusted partner in every aspect of business. Customers are core. We strategize, operate, and execute through a customer-centric view. We prioritize the security interests of our customers, and we act as if their data were our own. Innovation never stops, it only accelerates. The speed of change is accelerating. We are committed, through investment and focus, to stay ahead of the innovation curve. We deliver with agility . We thrive in high-paced and continually changing environments. We navigate through newly added variables, adjust accordingly, while driving towards our strategic goals. United by respect . Respect for all is what unites us. We promote diversity, inclusivity, equity, and acting with empathy and openness, both in our business and in our communities. Teams make “it” happen. Vision and goals are not individually achievable – they require teamwork. We pride ourselves in operating as a cohesive team, creating promoters and partners, and winning as one. Keyfactor is a proud e",
+      "location": "UK",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "support",
+      "postedAt": "2026-11-26T04:30:22.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": null,
+      "languageRequirements": "공고 원문 확인 필요",
+      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · UK",
+      "eligibilityStatus": "unknown",
+      "eligibilityDetail": {
+        "status": "unknown",
+        "geoScope": "UK",
+        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "unknown",
+      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "seen",
+      "firstSeenAt": "2026-11-26T08:19:43.444Z",
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
+    },
+    {
+      "id": "jobicy-2d353cbf322fbb387b47",
+      "title": "Senior Customer Success Engineer, Japan",
+      "company": "GitLab",
+      "source": "Jobicy",
+      "url": "https://jobicy.com/jobs/157095-senior-customer-success-engineer-japan",
+      "description": "GitLab is the intelligent orchestration platform for DevSecOps. GitLab enables organizations to increase developer productivity, improve operational efficiency, reduce security and compliance risk, and accelerate digital transformation. More than 50 million registered users and more than 50% of the Fortune 100* trust GitLab to ship better, more secure software faster. The same principles built into our products are reflected in how our team works: we embrace AI as a core productivity multiplier, with all team members expected to incorporate AI into their daily workflows to drive efficiency, innovation, and impact. GitLab is where careers accelerate, innovation flourishes, and every voice is valued. Our high-performance culture is driven by our values and continuous knowledge exchange, enabling our team members to reach their full potential while collaborating with industry leaders to solve complex problems. Co-create the future with us as we build technology that transforms how the world develops software. * Fortune 500® is a registered trademark of Fortune Media IP Limited, used under license. Claim based on GitLab data. Fortune 100 refers to the top 20% ranked companies in the 2025 Fortune 500 list, published in June 2025. Fortune and Fortune Media IP Limited are not affiliated with, and do not endorse products or services of GitLab. An overview of this role As a Customer Success Engineer, you'll expand your impact by partnering with customers in GitLab's group across APJ to help them get measurable value from GitLab through hands-on technical guidance and proactive enablement. You'll serve as a trusted technical advisor, partnering with customers over Zoom and email to improve adoption, unblock implementations, and apply DevSecOps best practices across the software delivery lifecycle. Working closely with Account Executives and Renewals Managers, you'll align technical recommendations to customer goals and help support renewals and expansion by demonstrating outcomes. You'll also contribute back to the broader GitLab team by sharing learnings through documentation and enablement content, while mentoring team members and customers through complex technical challenges. This role is a strong fit for someone who enjoys solving complex technical problems, communicates clearly, and thrives in a remote, asynchronous environment. You're eager to grow into customer-facing technical leadership with strong mentorship and support from a collaborative team. What you’ll do Provide on-demand technical consultancy and solution guidance through Zoom and written channels, helping customers solve day-to-day issues and design and implement GitLab solutions for their DevSecOps workflows. Drive product adoption and measurable customer value across APJ accounts to support renewals and expansion. Deliver technical and architectural guidance across source code management, CI/CD, DevSecOps, and Agile planning to unblock implementations and improve adoption. Partner with Account Executives and Renewals Managers to align technical recommendations to customer objectives and account plans that support retention and growth. Plan and lead customer workshops, demos, and enablement sessions that help teams adopt GitLab confidently and drive measurable adoption and value, supporting renewals and expansion across APJ. Maintain and grow your specialty competency in GitLab capabilities and relevant DevSecOps tooling, staying current on new product features and patterns. Contribute to scalable enablement by improving documentation, sharing knowledge through internal and external channels (for example, tutorials or technical content), and mentoring team members and customers to build technical competency and adoption. Manage multiple customer engagements in parallel, prioritizing effectively and communicating status, risks, and next steps to keep implementations on track. What you’ll bring Experience providing technical consultancy and solution guidance through video calls and written channels, helping users or customers adopt technical solutions successfully. Familiarity with DevSecOps workflows and related practices across areas such as source code management, CI/CD, security, and Agile planning, with the ability to grow breadth over time. Hands-on technical background in software development, systems engineering, or similar technical environments, or equivalent practical experience. Strong communication and collaboration skills, including the ability to explain complex technical topics clearly and work effectively with customers, account teams, and cross-functional partners. Ability to lead or support workshops, demos, and enablement sessions that build confidence and drive adoption. Ability to manage multiple priorities in a remote, asynchronous environment while communicating status, risks, and next steps clearly. Interest in supporting customers across APJ and adapting to different cultures, working styles, and technical maturity levels. Must be based in Japan, with full working rights in Japan Must be fluent in Japanese and English About the team In this role, you'll support our customers across APJ, delivering workshops, demos, and best-practice guidance while contributing back to our shared documentation and enablement resources. For more on how we work, see Customer Success Engineering team handbook page . How GitLab Supports Full-Time Employees Benefits to support your health, finances, and well-being Flexible Paid Time Off Team Member Resource Groups Equity Compensation & Employee Stock Purchase Plan Growth and Development Fund Parental Leave Please note that we welcome interest from candidates with varying levels of experience; many successful candidates do not meet every single requirement. Additionally, studies have shown that people from underrepresented groups are less likely to apply to a job unless they meet every single qualification. If you're excited about this role, please apply and allow our recruiters to assess your application. Country Hiring Guidelines: GitLab hires new team members in countries around the world. All of our roles are remote, however some roles may carry specific location-based eligibility requirements. Our Talent Acquisition team can help answer any questions about location after starting the recruiting process. Privacy Policy: Please review our Recruitment Privacy Policy. Your privacy is important to us. GitLab is proud to be an equal opportunity workplace and is an affirmative action employer. GitLab’s policies and practices relating to recruitment, employment, career development and advancement, promotion, and retirement are based solely on merit, regardless of race, color, religion, ancestry, sex (including pregnancy, lactation, sexual orientation, gender identity, or gender expression), national origin, age, citizenship, marital status, mental or physical disability, genetic information (including family medical history), discharge status from the military",
+      "location": "Japan",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "support",
+      "postedAt": "2026-11-26T04:25:42.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": null,
+      "languageRequirements": "공고 원문 확인 필요",
+      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · Japan",
+      "eligibilityStatus": "unknown",
+      "eligibilityDetail": {
+        "status": "unknown",
+        "geoScope": "Japan",
+        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "mismatch",
+      "languageFitReason": "Japanese: 현재 확인된 언어 역량으로는 직무 요구 수준을 충족한다고 판단하기 어렵습니다. 실제 능력과 요건 확인 필요.",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "seen",
+      "firstSeenAt": "2026-11-26T08:19:43.444Z",
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
+    },
+    {
+      "id": "jobicy-46def0a351bba677daca",
+      "title": "Lead Customer Advocacy Manager, APJ",
+      "company": "GitLab",
+      "source": "Jobicy",
+      "url": "https://jobicy.com/jobs/157094-lead-customer-advocacy-manager-apj",
+      "description": "GitLab is the intelligent orchestration platform for DevSecOps. GitLab enables organizations to increase developer productivity, improve operational efficiency, reduce security and compliance risk, and accelerate digital transformation. More than 50 million registered users and more than 50% of the Fortune 100* trust GitLab to ship better, more secure software faster. The same principles built into our products are reflected in how our team works: we embrace AI as a core productivity multiplier, with all team members expected to incorporate AI into their daily workflows to drive efficiency, innovation, and impact. GitLab is where careers accelerate, innovation flourishes, and every voice is valued. Our high-performance culture is driven by our values and continuous knowledge exchange, enabling our team members to reach their full potential while collaborating with industry leaders to solve complex problems. Co-create the future with us as we build technology that transforms how the world develops software. * Fortune 500® is a registered trademark of Fortune Media IP Limited, used under license. Claim based on GitLab data. Fortune 100 refers to the top 20% ranked companies in the 2025 Fortune 500 list, published in June 2025. Fortune and Fortune Media IP Limited are not affiliated with, and do not endorse products or services of GitLab. An Overview of the Role As the Customer Advocacy Lead for APJ, you will celebrate our customers and spotlight their achievements, turning GitLab's most successful customers into visible, influential champions. You will identify and activate advocates and their stories that showcase customer outcomes, support pipeline and revenue goals, and deepen trust in GitLab across Asia Pacific and Japan. Reporting into the growth marketing organization, you will own the day-to-day development and delivery of customer advocacy initiatives in close partnership with APJ sales, marketing, and global teams. You will build trusted customer relationships, identify stories and advocates, and connect the right customers to references, campaigns, events, and executive engagements. Because APJ spans diverse markets, cultures, and time zones, you will tailor engagement to local context while creating programs that scale and align with global priorities. In your first year, you will establish clear, measurable advocacy goals for the region, strengthen collaboration with regional stakeholders, and increase the visibility of customer outcomes across go-to-market motions. This is an opportunity to bring the voice of APJ customers forward and demonstrate GitLab’s impact on their business. Some Examples of Our Projects Partnering with sales, pre-sales, and marketing to turn complex customer solutions into compelling narratives for campaigns, events, and executive engagements Creating and executing customer references, case studies, speaking opportunities, and other advocacy activities and programs across APJ markets What You’ll Do Own the APJ customer story, reference and proof library, and associated pipeline. Build and nurture relationships with customer advocates, including senior stakeholders, and identify opportunities for references, case studies, events, and thought leadership. Manage the customer advocacy lifecycle: identify and recruit advocates, understand their goals, coordinate participation, and maintain mutually valuable relationships over time. Bring the voice of the customer into GitLab’s narratives, campaigns, and go-to-market plans by working with internal stakeholders to develop and amplify customer stories. Partner with regional and global sales, marketing, customer success, and product teams to align advocacy initiatives with pipeline, expansion, and retention priorities. Define and track program measures, such as advocacy participation, reference fulfillment, pipeline influence, and customer-story impact. Prioritize and coordinate advocacy requests that support strategic global and regional initiatives, using clear intake, fulfillment, and reporting processes. Adapt engagement and storytelling approaches to APJ’s varied markets and customer contexts, working effectively across cultures and time zones. Continuously improve programs, content formats, and engagement models using customer feedback, program data, and evolving business needs. What You’ll Bring Experience building or delivering customer advocacy, customer marketing, customer reference, or related customer story programs in enterprise technology or SaaS. Strong history of creating impactful customer stories and proof, and an advanced understanding of the customer reference lifecycle. A track record coordinating across multiple markets, with an understanding of the considerations involved in serving APJ customers. Strong cross-functional collaboration skills and the ability to influence sales, marketing, customer success, and other stakeholders without relying on direct authority. Excellent communication and relationship-building skills, including the ability to engage confidently with executive stakeholders on business and technical topics. Strong program management skills: you can prioritize competing requests, coordinate details across teams, and deliver reliably in a changing environment. Ability to work autonomously and asynchronously in a fully remote environment while staying aligned to shared goals and processes. Comfort defining and reporting on program performance, including customer participation, reference support, pipeline influence, and other measures tied to regional objectives. About the Team The Customer Advocacy team at GitLab helps turn our most successful customers into visible, influential advocates who drive awareness, trust, and revenue. This team builds and manages strategic relationships with customers to surface their stories, amplify their impact, and bring the voice of the customer into everything we do. How GitLab Supports Full-Time Employees Benefits to support your health, finances, and well-being Flexible Paid Time Off Team Member Resource Groups Equity Compensation & Employee Stock Purchase Plan Growth and Development Fund Parental Leave Please note that we welcome interest from candidates with varying levels of experience; many successful candidates do not meet every single requirement. Additionally, studies have shown that people from underrepresented groups are less likely to apply to a job unless they meet every single qualification. If you're excited about this role, please apply and allow our recruiters to assess your application. Country Hiring Guidelines: GitLab hires new team members in countries around the world. All of our roles are remote, however some roles may carry specific location-based eligibility requirements. Our Talent Acquisition team can help answer any questions about location after starting the recruiting process. Privacy Policy: Please review our Recruitment Privacy Policy. Your privacy is important to us. GitLab is proud to be ",
+      "location": "APAC, Japan",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "marketing",
+      "postedAt": "2026-11-26T04:25:40.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": null,
+      "languageRequirements": "공고 원문 확인 필요",
+      "eligibility": "한국에서 지원 가능성 있음 · APAC, Japan (확인 필요)",
+      "eligibilityStatus": "possible",
+      "eligibilityDetail": {
+        "status": "possible",
+        "geoScope": "APAC, Japan",
+        "reason": "The stated region may include South Korea; employment, language and tax eligibility remain unverified.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "unknown",
+      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "seen",
+      "firstSeenAt": "2026-10-26T13:05:13.850Z",
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
+    },
     {
       "id": "himalayas-a4d1706b23795ed4cca5",
       "title": "Ecommerce SEO Specialist (Remote)",
@@ -27,13 +231,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-26T00:36:58.445Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-3d689416f76b32a8a194",
@@ -61,13 +265,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-26T00:36:58.445Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "jobicy-d300a41778e2164ee883",
@@ -95,81 +299,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-25T21:43:17.748Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
-    },
-    {
-      "id": "jobicy-cb13d49fb8492778b3aa",
-      "title": "Localization Production Coordinator",
-      "company": "Welo Global",
-      "source": "Jobicy",
-      "url": "https://jobicy.com/jobs/164280-localization-production-coordinator",
-      "description": "About Welocalize Welocalize, a Welo Global brand, serves localization teams through AI-enabled multilingual content solutions that enable enterprises to operate and scale globally. Welocalize combines AI, automation, and human expertise to support enterprises in more than 300 languages, enabling accurate, culturally aligned, and compliant multilingual content at scale. Welocalize’s Opal Platform comprises patented technology designed to automate multilingual content and improve workflow performance for enterprises. Opal functions as an agentic system that orchestrates AI, automation, and human expertise to coordinate content workflows across the lifecycle, improving speed, scalability, and operational control for global enterprises. These solutions operate within a secure and compliant environment supported by seven ISO certifications. Welocalize is headquartered in New York with offices worldwide. welocalize.com Job Overview Want to help bring a world-class digital product to audiences around the globe? As a Production Coordinator on our client’s Localization team, you’ll support the localization of product features, marketing campaigns, editorial content, and web experiences across multiple markets. You’ll work alongside Senior Coordinators and Project Managers to deliver high-quality work on time, while building your expertise in localization operations and cross-functional collaboration. This role is built to grow. The localization function is shifting toward AI-first workflows, and over the next 12 months you’ll move from supported operational work toward independently running AI-assisted localization workflows. You’ll run traditional processes while building the skills to be the human judgment layer for AI output, and you’ll take on greater cross-functional ownership along the way. We’re hiring for today’s work and for where this role is heading. Main Responsibilities Facilitate the end-to-end localization workflow for product features, marketing campaigns, editorial, and web content, with guidance from Senior Coordinators or Project Managers Work with designers, product owners, engineers, marketers, and internal reviewers to gather localization requirements and track open action items Collaborate with external vendors on query management, file handoffs, and delivery timelines Monitor project status and flag risks or blockers to stakeholders early Manage day-to-day translation operations, including testing, bug triage, localizability reviews, and design audits Help prioritize and balance incoming work across shifting priorities Follow established translation workflows and contribute ideas to improve efficiency and reduce time to market Use AI tools and automation to streamline repetitive tasks, and look for new ways to apply them as your skills grow Assist with project retrospectives, internal reports, and presentations Support new team members by sharing knowledge and documenting processes Partner with Project Managers and Program Managers to make sure program operations align with business needs and localization best practices Job Requirements Clear, proactive communication: you’re comfortable asking questions and raising issues early Strong organizational skills and attention to detail, with a knack for keeping multiple workstreams on track Comfort with change and ambiguity: you’d rather figure it out than wait for perfect instructions Ownership of your work, and the discipline to follow through Enthusiasm for AI and automation. The mindset matters more than prior experience Skills & Experience Curiosity and self-drive: when you meet a new tool or process, you dig in rather than wait to be shown The ability to build strong working relationships through empathy, respect, and reliability Experience in project coordination, localization operations, or a similar role is helpful, but not required if you bring the right mindset A willingness to keep growing as your role expands Education Bachelor’s degree or equivalent practical experience Join us and help bring great digital experiences to every audience, in every language. You’ll learn quickly, take on more every month, and help shape how AI-first localization works. month, and help shape how AI-first localization works. Compensation Additional Information Job Reference: #LI-JC1",
-      "location": "Greece, Romania",
-      "workplaceMode": "remote",
-      "market": "online",
-      "category": "translation",
-      "postedAt": "2026-11-25T13:24:18.000Z",
-      "deadline": null,
-      "listingExpiresAt": null,
-      "pay": null,
-      "languageRequirements": "공고 원문 확인 필요",
-      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · Greece, Romania",
-      "eligibilityStatus": "unknown",
-      "eligibilityDetail": {
-        "status": "unknown",
-        "geoScope": "Greece, Romania",
-        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
-        "requiresVerification": true
-      },
-      "languageFitStatus": "unknown",
-      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
-      "sourceKind": "public_api",
-      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
-      "legacyIds": [],
-      "collectionState": "seen",
-      "firstSeenAt": "2026-11-25T21:43:17.748Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
-    },
-    {
-      "id": "jobicy-2064d645322d50c1cb6e",
-      "title": "Paid Media Specialist",
-      "company": "Kinsta",
-      "source": "Jobicy",
-      "url": "https://jobicy.com/jobs/164160-paid-media-specialist",
-      "description": "Kinsta is one of the top providers of managed hosting for WordPress, with a growing club of 230,000+ businesses including startups, universities, and Fortune 500 firms. We're motivated by excellent quality and proud to have received a 97% satisfaction rating from our customers. That's because, to us, each day is a chance to grow. As a team, we continuously inspire each other to learn new and better ways to make an impact. We own our jobs proudly - our leaders don't hold our hands, but they're in our corner whenever we ask for help - and our environment is flexible and remote-first. As our new Paid Media Specialist, you'll plan, run, and optimize paid social advertising campaigns for Kinsta. You'll join our Performance Marketing team, report to the Paid Media Team Lead, and work closely with Demand Generation, Design, and RevOps to deliver a consistent volume of sign-ups and revenue that supports Kinsta's growth goals. It's a hands-on role for someone who is comfortable with data and enjoys testing new ideas. Your focus is Kinsta's paid social presence across LinkedIn, Meta, Reddit, X, and other relevant platforms. You'll reach the businesses, agencies, and enterprises that run their sites on WordPress, through campaigns that cover the full funnel from awareness to customer acquisition. You'll own campaigns from build to optimization, keep conversion tracking reliable, and turn performance data into clear recommendations. We work with teams across the globe, so you should be used to collaborating asynchronously and flexible enough to join the occasional early or late call. The ideal Kinsta Paid Media Specialist is analytical, detail-oriented, curious, proactive, and collaborative. What You Will Do: Plan, build, launch, and manage paid social campaigns across LinkedIn, Meta, Reddit, X, and other relevant platforms, covering the full funnel from awareness and demand generation to lead generation and customer acquisition. Monitor performance and continuously optimize targeting, bidding strategies, budgets, ad creatives, and landing pages, scaling what works while keeping acquisition costs efficient. Run audience research and competitive analysis to find new opportunities for growth. Develop and run A/B tests across ad messaging, creative assets, audiences, and landing pages. Own conversion tracking: implement, maintain, and troubleshoot it through Google Tag Manager, Google Analytics 4 (GA4), and platform-specific pixels and tags, and work with marketing and technical teams to keep conversion events and attribution accurate. Analyze campaign performance using ad platform data, web analytics, and CRM reporting, and build reports and dashboards that share results and actionable insights. Collaborate with content, design, product marketing, and sales on ad copy, creative concepts, and campaign assets that match our messaging and business priorities. Support our paid media strategy: follow advertising trends and platform updates, and recommend ways to improve campaign efficiency, lead quality, and overall marketing ROI. Use AI tools to streamline research, reporting, ad copy, and creative ideation, automate repetitive tasks, and apply critical thinking to AI-generated recommendations so decisions stay grounded in accurate data and business objectives. What You Bring To The Role: 2-4 years of hands-on experience independently building, launching, managing, and optimizing paid social campaigns, including on Meta, LinkedIn, and Reddit, ideally in hosting, B2B technology, or a related industry. Practical experience setting up and troubleshooting conversion tracking with Google Tag Manager, GA4, and advertising platform pixels or conversion tags. A strong understanding of core paid media metrics, including CPC, CPM, CTR, conversion rate, CPA, and ROAS, and experience analyzing campaign data and turning findings into actionable optimizations. Familiarity with audience targeting, retargeting, and campaign testing methodologies, and an understanding of marketing funnels, attribution, and how paid media contributes to lead generation and customer acquisition. Attention to detail, a proactive approach to problem-solving, and excellent organizational and communication skills, with the ability to manage multiple campaigns and priorities at once. Bonus if you have: Experience running paid media campaigns for B2B SaaS, hosting, PaaS, or other technical products, and familiarity with WordPress or cloud platforms. Experience with CRM, marketing automation, and attribution or reporting tools such as HubSpot, Salesforce, Looker Studio, Dreamdata, or HockeyStack. Knowledge of advanced conversion tracking, including enhanced conversions, offline conversion imports, and server-side tracking, plus a basic understanding of HTML, JavaScript, cookies, and how tracking tags work on websites. Experience optimizing landing pages and collaborating on conversion rate optimization (CRO) initiatives. Proficiency in other languages and experience managing non-English paid media campaigns Experience using AI tools such as ChatGPT or Claude to improve campaign workflows, analysis, and creative development. Our Benefits: Annual remote expense budget. Flexible PTO. Paid parental leave. Annual professional development budget: available after one year with Kinsta. Sabbatical: available after three years with Kinsta (and every three years thereafter). Location-specific healthcare benefits (includes vision and dental) for employees hired in the USA, UK, Canada, and Hungary. Pension plan for employees hired in the UK, and 401k contributions for employees hired in the USA. Compensation Additional Information Kinsta is proud to be an equal opportunity employer. We will not discriminate and we will take actions to ensure against discrimination in employment, recruitment, advertisements for employment, compensation, termination, promotions, and other conditions of employment against any employee or job applicant on the basis of race, color, gender, national origin, citizenship, age, religion, creed, disability, marital status, veteran’s status, sexual orientation, gender identity, gender expression, or any other status protected by the laws or regulations in the locations where we operate. By applying to one of our positions, you agree to the processing of the submitted personal data in accordance with Kinsta's Privacy Policy , including the transfer of your data to the United States. #LI-Remote, #IHSRemote",
-      "location": "UK",
-      "workplaceMode": "remote",
-      "market": "online",
-      "category": "advertising",
-      "postedAt": "2026-11-24T15:23:24.000Z",
-      "deadline": null,
-      "listingExpiresAt": null,
-      "pay": null,
-      "languageRequirements": "공고 원문 확인 필요",
-      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · UK",
-      "eligibilityStatus": "unknown",
-      "eligibilityDetail": {
-        "status": "unknown",
-        "geoScope": "UK",
-        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
-        "requiresVerification": true
-      },
-      "languageFitStatus": "match",
-      "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
-      "sourceKind": "public_api",
-      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
-      "legacyIds": [],
-      "collectionState": "seen",
-      "firstSeenAt": "2026-11-24T22:28:32.115Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-3c73e09208bc53531c1b",
@@ -197,13 +333,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-10T03:12:37.915Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "remote-ok-bcd83d21cf5bc4e13cf8",
@@ -211,7 +347,7 @@
       "company": "Augment",
       "source": "Remote OK",
       "url": "https://remoteok.com/remote-jobs/remote-revenue-operations-analyst-augment-1138081",
-      "description": "About Augment Logistics is broken. Let's fix it. We are a team of engineers, product designers, and customer champions building Augie, Augment's AI teammate for supply chain. Augie reasons and acts like a seasoned operator, automating the busywork of quoting, dispatch, tracking, billing, and more for freight brokers, 3PLs, for-hire carriers, private fleets, and distributors. Our team has scaled billion-dollar companies, built delightful products, and powered billions in commerce. If you thrive in fast-paced, high-impact environments and want to define how AI reshapes supply chain, apply today. Overview We're looking for a Revenue Operations Analyst to join our growing RevOps team. You'll own our deal desk, support territory planning, and run the reporting our sales leaders rely on every week as we grow from 12 AEs to more than 20. You'll also keep our data clean and handle the day-to-day work behind forecasting, quota administration, and commission calculations. This role reports to the Director of Revenue Operations. Our GTM Motion Our motion is outbound-led. SDRs prospect and qualify freight brokers, 3PLs, for-hire carriers, private fleets, and distributors before AEs run discovery and close. We sell across Mid-Market, Enterprise, and Strategic segments, with six-figure ARR deals and buying committees that span operations, IT, and finance. Your deal desk and reporting work needs to hold up to that complexity. What You'll Do Own the deal desk: review pricing, discounts, and non-standard terms, route approvals, and make sure every closed deal is booked correctly Partner with Sales, Finance, and Legal so quotes and contracts move fast without surprises Support territory planning: model coverage and capacity, manage account assignments, and keep regions and segments up to date as we roll them out, starting with Distribution Own sales reporting: run the weekly forecast and pipeline reports leadership uses to call the quarter, and build dashboards for pipeline, conversion, bookings, and AE and SDR performance Report contracted ARR and live, billing ARR side by side, and work with Finance so the numbers tie out Keep HubSpot clean and reliable: own data quality, required fields, account ownership, and deal hygiene Calculate commissions and support quota tracking, working with the Director and Finance Help onboard new hires to our sales tools and processes, and document how things work What We're Looking For 2 to 4 years in Revenue Operations, Sales Operations, or Deal Desk at a B2B SaaS company Hands-on experience running or supporting a deal desk, including pricing approvals and contract review Experience supporting territory planning or account assignment Hands-on CRM admin experience. We're on HubSpot, and experience there is a strong plus Strong Excel or Google Sheets skills, and comfort with SQL or a BI tool A detail person who cares when the numbers don't match and digs in until they do Clear communication with sales leaders and reps, including pushing back when the data says otherwise Bonus Points For Experience in logistics, freight, trucking, distribution, or supply chain tech Experience administering commission plans or quota models Familiarity with Gong, LinkedIn Sales Navigator, Seamless.ai , Clay, or BI platforms Why Join Us? Competitive Salary + Stock Options Comprehensive Health, Vision, and Dental Benefits Flexible PTO Monthly stipend About Augment At Augment, we set out to create a fully autonomous AI platform that streamlines operations and reclaims the human element in logistics. Our founders recognized a pattern: talented professionals were stuck handling manual data entry, phone calls, and repetitive tasks, instead of focusing on high-impact problem-solving and strategic decision-making. That insight became our missionâto free logistics professionals from busywork so they can focus on what truly drives business growth. Augment isnât just about efficiency; itâs about transforming an entire industry by empowering teams with AI-driven solutions that make logistics smarter, faster, and more adaptive. Join us on this journey! Augment is an Equal Opportunity Employer and values diversity at our company. We consider all qualified applicants without regard to race, color, religion, national origin, gender, gender identity or expression, sexual orientation, age, marital status, veteran status, disability, or any other legally protected status. Augment complies with federal, state, and local laws regarding equal employment opportunity and reasonable accommodation. If you need assistance or an accommodation during the application or interview process, please contact your recruiter. We also consider qualified applicants with arrest and conviction records in accordance with applicable federal, state and local fair-chance / ban-the-box laws (for example, but not limited to, the California Fair Chance Act). Our hiring process uses AI-powered tools to assist with screening and evaluating applications based on job-related criteria. All AI-assisted outputs are reviewed by human recruiters who make all decisions about which candidates advance in the process. Please mention the word **FLUENT** and tag ROS4yMzQuMTg4LjE2MQ== when applying to show you read the job post completely (#ROS4yMzQuMTg4LjE2MQ==). This is a beta feature to avoid spam applicants. Companies can search these words to find applicants that read this and see they're human.",
+      "description": "About Augment Logistics is broken. Let's fix it. We are a team of engineers, product designers, and customer champions building Augie, Augment's AI teammate for supply chain. Augie reasons and acts like a seasoned operator, automating the busywork of quoting, dispatch, tracking, billing, and more for freight brokers, 3PLs, for-hire carriers, private fleets, and distributors. Our team has scaled billion-dollar companies, built delightful products, and powered billions in commerce. If you thrive in fast-paced, high-impact environments and want to define how AI reshapes supply chain, apply today. Overview We're looking for a Revenue Operations Analyst to join our growing RevOps team. You'll own our deal desk, support territory planning, and run the reporting our sales leaders rely on every week as we grow from 12 AEs to more than 20. You'll also keep our data clean and handle the day-to-day work behind forecasting, quota administration, and commission calculations. This role reports to the Director of Revenue Operations. Our GTM Motion Our motion is outbound-led. SDRs prospect and qualify freight brokers, 3PLs, for-hire carriers, private fleets, and distributors before AEs run discovery and close. We sell across Mid-Market, Enterprise, and Strategic segments, with six-figure ARR deals and buying committees that span operations, IT, and finance. Your deal desk and reporting work needs to hold up to that complexity. What You'll Do Own the deal desk: review pricing, discounts, and non-standard terms, route approvals, and make sure every closed deal is booked correctly Partner with Sales, Finance, and Legal so quotes and contracts move fast without surprises Support territory planning: model coverage and capacity, manage account assignments, and keep regions and segments up to date as we roll them out, starting with Distribution Own sales reporting: run the weekly forecast and pipeline reports leadership uses to call the quarter, and build dashboards for pipeline, conversion, bookings, and AE and SDR performance Report contracted ARR and live, billing ARR side by side, and work with Finance so the numbers tie out Keep HubSpot clean and reliable: own data quality, required fields, account ownership, and deal hygiene Calculate commissions and support quota tracking, working with the Director and Finance Help onboard new hires to our sales tools and processes, and document how things work What We're Looking For 2 to 4 years in Revenue Operations, Sales Operations, or Deal Desk at a B2B SaaS company Hands-on experience running or supporting a deal desk, including pricing approvals and contract review Experience supporting territory planning or account assignment Hands-on CRM admin experience. We're on HubSpot, and experience there is a strong plus Strong Excel or Google Sheets skills, and comfort with SQL or a BI tool A detail person who cares when the numbers don't match and digs in until they do Clear communication with sales leaders and reps, including pushing back when the data says otherwise Bonus Points For Experience in logistics, freight, trucking, distribution, or supply chain tech Experience administering commission plans or quota models Familiarity with Gong, LinkedIn Sales Navigator, Seamless.ai , Clay, or BI platforms Why Join Us? Competitive Salary + Stock Options Comprehensive Health, Vision, and Dental Benefits Flexible PTO Monthly stipend About Augment At Augment, we set out to create a fully autonomous AI platform that streamlines operations and reclaims the human element in logistics. Our founders recognized a pattern: talented professionals were stuck handling manual data entry, phone calls, and repetitive tasks, instead of focusing on high-impact problem-solving and strategic decision-making. That insight became our missionâto free logistics professionals from busywork so they can focus on what truly drives business growth. Augment isnât just about efficiency; itâs about transforming an entire industry by empowering teams with AI-driven solutions that make logistics smarter, faster, and more adaptive. Join us on this journey! Augment is an Equal Opportunity Employer and values diversity at our company. We consider all qualified applicants without regard to race, color, religion, national origin, gender, gender identity or expression, sexual orientation, age, marital status, veteran status, disability, or any other legally protected status. Augment complies with federal, state, and local laws regarding equal employment opportunity and reasonable accommodation. If you need assistance or an accommodation during the application or interview process, please contact your recruiter. We also consider qualified applicants with arrest and conviction records in accordance with applicable federal, state and local fair-chance / ban-the-box laws (for example, but not limited to, the California Fair Chance Act). Our hiring process uses AI-powered tools to assist with screening and evaluating applications based on job-related criteria. All AI-assisted outputs are reviewed by human recruiters who make all decisions about which candidates advance in the process. Please mention the word **FLUENT** and tag RMy40Mi4xNTcuMTcz when applying to show you read the job post completely (#RMy40Mi4xNTcuMTcz). This is a beta feature to avoid spam applicants. Companies can search these words to find applicants that read this and see they're human.",
       "location": "Remote",
       "workplaceMode": "remote",
       "market": "online",
@@ -231,13 +367,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Remote OK의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-25T08:36:00.660Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-e23f6212e01b71781eb4",
@@ -265,13 +401,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "jobicy-5849fdc0148381e2b141",
@@ -299,13 +435,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish, English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-24T04:02:18.158Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-bed3a8691dab45aa93c9",
@@ -333,13 +469,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-24T04:02:18.158Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-b166e15360e81825f323",
@@ -367,13 +503,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish, English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-b7877c1dd8f3191681b6",
@@ -401,13 +537,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T07:10:53.366Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-03664e3fbfd9f6a2f29e",
@@ -435,13 +571,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-d24767c381920dee8e21",
@@ -469,13 +605,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-dac3d08c246b19060f44",
@@ -503,13 +639,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-5c78c06afbced59be206",
@@ -537,13 +673,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-dd36889236afc72fc2b1",
@@ -571,13 +707,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-b1260e97fe9391b9f601",
@@ -605,13 +741,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-18a1d3a498dd52fda9c6",
@@ -639,13 +775,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-06T04:01:39.890Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-f7e2f32314fd0c67b0a1",
@@ -673,13 +809,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-09T02:30:45.303Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-e7871b70a2e120e90021",
@@ -707,13 +843,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-09T02:30:45.303Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-77ec2b3705d918782d5b",
@@ -741,13 +877,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-13T04:00:38.642Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-d6be9b1deaf6079665dc",
@@ -775,13 +911,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-22d4c8fa9337b9adafb6",
@@ -809,13 +945,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-5243700bca9862b0a13d",
@@ -843,13 +979,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-1769bc9aa4742602217f",
@@ -877,13 +1013,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-ac6e018893b701bce1aa",
@@ -911,13 +1047,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-b8677f2cbd31db79a350",
@@ -945,13 +1081,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "channel-corp--bb21291a044c643754cc",
@@ -981,12 +1117,12 @@
       "eligibility": "Check language, hiring eligibility and job requirements at the employer site.",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "evidenceNote": "Channel Corp. official Lever job posting feed. Job description is abbreviated; check original posting.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-19T07:28:39.070Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-de20abea510704763404",
@@ -1014,13 +1150,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-6fa7329062b3060f9440",
@@ -1048,13 +1184,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-16T01:22:24.879Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-bb3706bde734b6c8de23",
@@ -1082,13 +1218,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-d303a78527b4c39a46e5",
@@ -1116,13 +1252,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-475fd9c7ed1920207757",
@@ -1150,13 +1286,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-d0f5225c6b551b4c37db",
@@ -1184,13 +1320,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-c2e68f444878b5667ff4",
@@ -1218,13 +1354,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-64c71a0eb9e12c977521",
@@ -1252,13 +1388,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-816910d6c1bedf7b42db",
@@ -1286,13 +1422,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-25T08:36:00.660Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-91c89c3cc1b60c9bbbc3",
@@ -1320,13 +1456,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "remotive-070943a3485895acf31b",
@@ -1354,13 +1490,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Remotive의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T01:38:30.324Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "himalayas-0ea73500ed565d02eab3",
@@ -1388,13 +1524,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-03T08:51:48.491Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "greenhouse:krafton:8921058002",
@@ -1415,14 +1551,14 @@
       "description": "<div class=&quot;content-intro&quot;><p><span style=&quot;font-size: 10pt;&quot;>우리는 게이머의 로망을 실현하기 위해, 누구도 가지 않는 길을 갑니다.</span><br><span style=&quot;font-size: 10pt;&quot;>예상을 뛰어넘는 과감한 상상력과 기술로, 전 세계 팬들이 잊지 못할 세상을 만들기 위해 </span><span style=&quot;font-size: 10pt;&quot;>담대하게 도전하고 개척합니다.&nbsp;&nbsp;</span></p> <p><span style=&quot;font-size: 10pt;&quot;>We pioneer the path to players&#39; dreams.</span><br><span style=&quot;font-size: 10pt;&quot;>With bold imagination and breakthrough technology, </span><span style=&quot;font-size: 10pt;&quot;>we create unforgettable worlds for fans across the globe.</span></p> <hr> <p>&nbsp;</p></div><h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀(프로젝트)을 소개합니다.&nbsp;</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>크래프톤은 2022년부터 사회 공헌 사업의 일환으로 ‘크래프톤 정글’을 출범하여 기술 산업의 미래 인재, SW 개발자를 양성해오고 있습니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>크래프톤 정글은 경기도 용인에 위치한 크래프톤 정글 캠퍼스에서, 자기 주도적 학습과 몰입 경험, 팀 기반의 프로젝트 수행을 바탕으로 기본기가 탄탄한 개발자로 성장하게 하는 교육 과정을 운영하고 있습니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>Jungle Operations &amp; Outreach Team은 정글의 사업을 관리하며, 정글 브랜드 관리, 교육생 모집을 위한 마케팅 캠페인 실행, 지원 및 선발 절차, 교육 과정의 주요 행사, 교육생 지원과 같은 크래프톤 정글의 전반적인 사업과 운영을 담당합니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>정글의 지속 성장을 위하여 더 효과적인 마케팅 운영안을 설계/실행하고, 팀과 협업하여 정글을 성장시키는 여정에 참여하고 싶은 분을 기다립니다.</span></li> </ul> <h4>&nbsp;</h4> <h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀과 함께할 미션을 소개합니다.</strong></span></h3> <p><span style=&quot;font-size: 10pt;&quot;>Jungle Operations &amp; Outreach Team은 동료를 존중하는 태도와 끈기 있고 성숙한 사고, 긍정적인 에너지를 바탕으로 팀의 방향성에 맞추어 적극적으로 협력하는 팀 플레이어를 찾고 있습니다.</span></p> <ul> <li><span style=&quot;font-size: 10pt;&quot;><strong>[주요 역할]</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>정글 교육 과정의 성과 극대화를 위하여 효과적인 캠페인 전략을 기획/실행하며, 타 사례와 정글의 캠페인 결과를 분석하고, 더 효과적인 실행 방안을 도출합니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>캠페인 정성/정량 데이터를 수집하고, 데이터 기반의 성과 분석 프로세스 및 대시보드 구축을 실행합니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>교육생 모집 선발, 학사운영 및 입소식, 수료식, 발표회 등 주요 교육 행사와 프로그램의 준비 및 실행, 운영을 지원합니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>교육과정이 원활하게 운영될 수 있도록 기타 운영 업무 전반을 지원합니다.</span></li> </ul> </li> <li><span style=&quot;font-size: 10pt;&quot;><strong>이 직무를 통해 이런 경험을 할 수 있습니다.</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>교육 사업 기반의 캠페인 설계 및 실행, 교육 사업 분야에 대한 전문적 인사이트와 업무 경력을 축적할 수 있습니다.</span></li> <l",
       "eligibility": "지원자격 확인 필요",
       "languageRequirements": "공고 원문 확인 필요",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "evidenceNote": "회사 공식 Greenhouse 채용목록 · Employment Type: Contractor · Sector: Chairman Projects · Corp./Studios: KRAFTON · Job Category - Art:  · Job Category - Business & Service:  · Job Category - Data:  · Job Category - Development Management:  · Job Category - Game Design:  · Job Category - Tech:  · Job Category - TA:  · Job Category - QA:  · Job Category - Sound:  · Job Category - U",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T22:37:03.341Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "greenhouse:krafton:8904989002",
@@ -1443,14 +1579,14 @@
       "description": "<div class=&quot;content-intro&quot;><p><span style=&quot;font-size: 10pt;&quot;>우리는 게이머의 로망을 실현하기 위해, 누구도 가지 않는 길을 갑니다.</span><br><span style=&quot;font-size: 10pt;&quot;>예상을 뛰어넘는 과감한 상상력과 기술로, 전 세계 팬들이 잊지 못할 세상을 만들기 위해 </span><span style=&quot;font-size: 10pt;&quot;>담대하게 도전하고 개척합니다.&nbsp;&nbsp;</span></p> <p><span style=&quot;font-size: 10pt;&quot;>We pioneer the path to players&#39; dreams.</span><br><span style=&quot;font-size: 10pt;&quot;>With bold imagination and breakthrough technology, </span><span style=&quot;font-size: 10pt;&quot;>we create unforgettable worlds for fans across the globe.</span></p> <hr> <p>&nbsp;</p></div><h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀(프로젝트)을 소개합니다.&nbsp;</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>배틀그라운드 모바일(PUBG Mobile)은 2018년 5월부터 한국 지역에서 서비스 되고 있는 PUBG의 모바일 버전 게임입니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>배틀그라운드 모바일 서비스 조직은 배틀그라운드 모바일의 전반적인 서비스 전략을 세우고, 실행하며, 게임 서비스를 위해 협업하는 많은 유관 부서의 커뮤니케이션 허브 역할을 수행 하고 있습니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>배틀그라운드 모바일 서비스 조직은 팬 분들께서 안정적으로 게임을 플레이 할 수 있는 환경을 마련하고, 즐거움을 느끼실 수 있는 콘텐츠를 기획하고 운영합니다.</span></li> </ul> <h4>&nbsp;</h4> <h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀과 함께할 미션을 소개합니다.</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;><strong>캠페인 운영</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>업데이트/시즌/콜라보/이스포츠 등 라이브 서비스 마케팅 캠페인 기획 참여 및 운영</span></li> <li><span style=&quot;font-size: 10pt;&quot;>디지털·SNS·인플루언서 등 멀티 채널 캠페인 운영 및 성과 측정</span></li> <li><span style=&quot;font-size: 10pt;&quot;>이스포츠 대회·리그 연계 마케팅 운영 지원 및 파트너(팀·선수·스트리머 등) 협업 실행</span></li> </ul> </li> <li><span style=&quot;font-size: 10pt;&quot;><strong>콘텐츠 &amp; 크리에이티브</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>YouTube·TikTok·Meta 등 주요 미디어 콘텐츠 제작 진행 및 운영</span></li> <li><span style=&quot;font-size: 10pt;&quot;>대행사·크리에이터 협업을 통한 콘텐츠 제작 및 일정 관리</span></li> </ul> </li> <li><span style=&quot;font-size: 10pt;&quot;><strong>데이터 분석 &amp; 리포팅</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>캠페인 성과 데이터 수집 및 정리</span></li> <li><span style=&quot;font-size: 10pt;&quot;>채널별(디지털·SNS·인플루언서) 성과 지표 트래킹 및 대시보드 업데이트</span></li> </ul> </li> </ul> <p>&nbsp;</p> <h3><span style=&quot;font-size: 12pt;&quot;><strong>이런 경험을 가진 분과 함께 성장하고 싶습니다! (필수요건)</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>마케팅 경력&nbsp;1년차 이상</span></li> <li><span style=&qu",
       "eligibility": "지원자격 확인 필요",
       "languageRequirements": "공고 원문 확인 필요",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "evidenceNote": "회사 공식 Greenhouse 채용목록 · Employment Type: Contractor · Sector: IP Franchise · Corp./Studios: KRAFTON · Job Category - Art:  · Job Category - Business & Service: Marketing · Job Category - Data:  · Job Category - Development Management:  · Job Category - Game Design:  · Job Category - Tech:  · Job Category - TA:  · Job Category - QA:  · Job Category - Sound:  · Job Category",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-26T13:05:13.850Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "curated-411ccb6a7a52c85f057d",
@@ -1490,7 +1626,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-11-17. NOT refreshed by the automated crawler. Recheck the original job for current availability. Public Saramin posting checked 2026-11-17. New path: Saramin general listing outside the existing remote-aggregator set. Closing date is listed as rolling/always open; confirm the posting remains active before applying.",
       "collectionState": "seen",
       "firstSeenAt": "2026-11-17T04:02:51.250Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "greenhouse:krafton:8798601002",
@@ -1511,14 +1647,14 @@
       "description": "<div class=&quot;content-intro&quot;><p><span style=&quot;font-size: 10pt;&quot;>우리는 게이머의 로망을 실현하기 위해, 누구도 가지 않는 길을 갑니다.</span><br><span style=&quot;font-size: 10pt;&quot;>예상을 뛰어넘는 과감한 상상력과 기술로, 전 세계 팬들이 잊지 못할 세상을 만들기 위해 </span><span style=&quot;font-size: 10pt;&quot;>담대하게 도전하고 개척합니다.&nbsp;&nbsp;</span></p> <p><span style=&quot;font-size: 10pt;&quot;>We pioneer the path to players&#39; dreams.</span><br><span style=&quot;font-size: 10pt;&quot;>With bold imagination and breakthrough technology, </span><span style=&quot;font-size: 10pt;&quot;>we create unforgettable worlds for fans across the globe.</span></p> <hr> <p>&nbsp;</p></div><h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀(프로젝트)을 소개합니다.&nbsp;</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>KRAFTON Localization Department는 다양한 장르의 독창적인 게임을 전 세계 플레이어가 각자의 언어와 문화 안에서 자연스럽게 경험할 수 있도록 지원하는 조직입니다. 단순히 언어를 번역하는 것을 넘어, 게임의 세계관과 캐릭터, 플레이 경험이 각 언어에서도 온전히 전달될 수 있도록 번역 품질과 로컬라이제이션 프로세스 전반을 담당합니다. 플레이어가 사용하는 언어로 KRAFTON의 경험을 새롭게 구현하고 전달하는 일에 큰 열정을 가지고 있습니다.</span></li> </ul> <h4>&nbsp;</h4> <h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀과 함께할 미션을 소개합니다.</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>사람 번역 및 AI 번역으로 제작되는 게임 콘텐츠의 번역, 편집 및 교정</span></li> <li><span style=&quot;font-size: 10pt;&quot;>한국어 로컬라이제이션의 최종 품질을 담당하며, 게임 전반의 언어적 품질, 일관성 및 톤 관리</span></li> <li><span style=&quot;font-size: 10pt;&quot;>용어집, 스타일 가이드 및 언어 품질 가이드라인을 작성하고, 외부 벤더와 협업하여 일관된 품질 기준 유지</span></li> <li><span style=&quot;font-size: 10pt;&quot;>정립된 지표와 평가 체계를 기반으로 번역 품질을 평가하고 언어 품질 보증 업무를 계획 및 수행</span></li> <li><span style=&quot;font-size: 10pt;&quot;>AI 번역 콘텐츠를 검토하고, 모델, 프롬프트 및 후처리 로직을 포함한 번역 품질 개선 프로세스에 언어적 피드백 제공</span></li> </ul> <p>&nbsp;</p> <h3><span style=&quot;font-size: 12pt;&quot;><strong>이런 경험을 가진 분과 함께 성장하고 싶습니다! (필수요건)</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>게임 로컬라이제이션 분야에서 번역, 편집 또는 언어 품질 검수 업무를 1년 이상 수행한 경험이 있으신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>게임 내 내러티브와 UI 등 다양한 맥락을 고려하여 자연스럽고 유려한 한국어를 작성할 수 있는 뛰어난 언어 감각과 문장력을 갖추신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>영어 원문의 의미와 뉘앙스를 정확하게 이해하고, 언어 및 문화적 맥락을 고려하여 자연스러운 한국어로 전달할 수 있으신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>게임 메커니즘과 게임 용어에 대한 폭넓은 지식과 이해를 갖추신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>다양한 게임 장르와 각 장르의 특성, 플레이어가 사용하는 언어와 문화에 대한 높은 이해도를 갖추신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>AI",
       "eligibility": "지원자격 확인 필요",
       "languageRequirements": "공고 원문 확인 필요",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "evidenceNote": "회사 공식 Greenhouse 채용목록 · Employment Type: Contractor · Sector: Corporate Support · Corp./Studios: KRAFTON · Job Category - Art:  · Job Category - Business & Service: Localization · Job Category - Data:  · Job Category - Development Management:  · Job Category - Game Design:  · Job Category - Tech:  · Job Category - TA:  · Job Category - QA:  · Job Category - Sound:  · Job ",
       "languageFitStatus": "mismatch",
       "languageFitReason": "Korean: 현재 확인된 언어 역량으로는 직무 요구 수준을 충족한다고 판단하기 어렵습니다. 실제 능력과 요건 확인 필요.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "channel-corp--f7c2cbad583f14a4a457",
@@ -1548,12 +1684,12 @@
       "eligibility": "Check language, hiring eligibility and job requirements at the employer site.",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "evidenceNote": "Channel Corp. official Lever job posting feed. Job description is abbreviated; check original posting.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "curated-eac3cce711b15d75ed1d",
@@ -1593,7 +1729,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-11-17. NOT refreshed by the automated crawler. Recheck the original job for current availability. New public path: Wanted startup job board. The posting was still listed on 2026-11-17; deadline is rolling. Korean level and visa support are not stated, so the lead is conditional.",
       "collectionState": "seen",
       "firstSeenAt": "2026-11-17T04:02:51.250Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "curated-f749096991d2dcbdc2dc",
@@ -1633,7 +1769,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-28. NOT refreshed by the automated crawler. Recheck the original job for current availability. Individual Wehome careers page checked 2026-10-28. No close date or pay shown. Office address listed in Mapo-gu, Seoul, so this is a relocation/commute lead rather than a Jeonju online job.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T04:47:49.197Z",
-      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "id": "kowork-6e8d04284512b74b7c62",
@@ -1657,11 +1793,79 @@
       "languageFitReason": "Public metadata was checked; language requirements still need confirmation.",
       "eligibilityStatus": "possible",
       "eligibility": "Current residence: Korea residents only TOPIK TOPIK Level 4 or above; Preferred visas: Student Visa (D-2) Job Seeking Visa (D-10) Employment Visa (E-1 ~ E-7) Residence (F-2) Overseas Korean (F-4) Permanent Residence (F-5) International Marriage (F-6)",
-      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "verifiedAt": "2026-11-26T08:19:43.444Z",
       "evidenceNote": "Minimal structured metadata and source link only. No description text or copyrighted images reproduced.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-26T06:21:40.091Z",
+      "lastSeenAt": "2026-11-26T08:19:43.444Z"
+    },
+    {
+      "id": "jobicy-2064d645322d50c1cb6e",
+      "title": "Paid Media Specialist",
+      "company": "Kinsta",
+      "source": "Jobicy",
+      "url": "https://jobicy.com/jobs/164160-paid-media-specialist",
+      "description": "Kinsta is one of the top providers of managed hosting for WordPress, with a growing club of 230,000+ businesses including startups, universities, and Fortune 500 firms. We're motivated by excellent quality and proud to have received a 97% satisfaction rating from our customers. That's because, to us, each day is a chance to grow. As a team, we continuously inspire each other to learn new and better ways to make an impact. We own our jobs proudly - our leaders don't hold our hands, but they're in our corner whenever we ask for help - and our environment is flexible and remote-first. As our new Paid Media Specialist, you'll plan, run, and optimize paid social advertising campaigns for Kinsta. You'll join our Performance Marketing team, report to the Paid Media Team Lead, and work closely with Demand Generation, Design, and RevOps to deliver a consistent volume of sign-ups and revenue that supports Kinsta's growth goals. It's a hands-on role for someone who is comfortable with data and enjoys testing new ideas. Your focus is Kinsta's paid social presence across LinkedIn, Meta, Reddit, X, and other relevant platforms. You'll reach the businesses, agencies, and enterprises that run their sites on WordPress, through campaigns that cover the full funnel from awareness to customer acquisition. You'll own campaigns from build to optimization, keep conversion tracking reliable, and turn performance data into clear recommendations. We work with teams across the globe, so you should be used to collaborating asynchronously and flexible enough to join the occasional early or late call. The ideal Kinsta Paid Media Specialist is analytical, detail-oriented, curious, proactive, and collaborative. What You Will Do: Plan, build, launch, and manage paid social campaigns across LinkedIn, Meta, Reddit, X, and other relevant platforms, covering the full funnel from awareness and demand generation to lead generation and customer acquisition. Monitor performance and continuously optimize targeting, bidding strategies, budgets, ad creatives, and landing pages, scaling what works while keeping acquisition costs efficient. Run audience research and competitive analysis to find new opportunities for growth. Develop and run A/B tests across ad messaging, creative assets, audiences, and landing pages. Own conversion tracking: implement, maintain, and troubleshoot it through Google Tag Manager, Google Analytics 4 (GA4), and platform-specific pixels and tags, and work with marketing and technical teams to keep conversion events and attribution accurate. Analyze campaign performance using ad platform data, web analytics, and CRM reporting, and build reports and dashboards that share results and actionable insights. Collaborate with content, design, product marketing, and sales on ad copy, creative concepts, and campaign assets that match our messaging and business priorities. Support our paid media strategy: follow advertising trends and platform updates, and recommend ways to improve campaign efficiency, lead quality, and overall marketing ROI. Use AI tools to streamline research, reporting, ad copy, and creative ideation, automate repetitive tasks, and apply critical thinking to AI-generated recommendations so decisions stay grounded in accurate data and business objectives. What You Bring To The Role: 2-4 years of hands-on experience independently building, launching, managing, and optimizing paid social campaigns, including on Meta, LinkedIn, and Reddit, ideally in hosting, B2B technology, or a related industry. Practical experience setting up and troubleshooting conversion tracking with Google Tag Manager, GA4, and advertising platform pixels or conversion tags. A strong understanding of core paid media metrics, including CPC, CPM, CTR, conversion rate, CPA, and ROAS, and experience analyzing campaign data and turning findings into actionable optimizations. Familiarity with audience targeting, retargeting, and campaign testing methodologies, and an understanding of marketing funnels, attribution, and how paid media contributes to lead generation and customer acquisition. Attention to detail, a proactive approach to problem-solving, and excellent organizational and communication skills, with the ability to manage multiple campaigns and priorities at once. Bonus if you have: Experience running paid media campaigns for B2B SaaS, hosting, PaaS, or other technical products, and familiarity with WordPress or cloud platforms. Experience with CRM, marketing automation, and attribution or reporting tools such as HubSpot, Salesforce, Looker Studio, Dreamdata, or HockeyStack. Knowledge of advanced conversion tracking, including enhanced conversions, offline conversion imports, and server-side tracking, plus a basic understanding of HTML, JavaScript, cookies, and how tracking tags work on websites. Experience optimizing landing pages and collaborating on conversion rate optimization (CRO) initiatives. Proficiency in other languages and experience managing non-English paid media campaigns Experience using AI tools such as ChatGPT or Claude to improve campaign workflows, analysis, and creative development. Our Benefits: Annual remote expense budget. Flexible PTO. Paid parental leave. Annual professional development budget: available after one year with Kinsta. Sabbatical: available after three years with Kinsta (and every three years thereafter). Location-specific healthcare benefits (includes vision and dental) for employees hired in the USA, UK, Canada, and Hungary. Pension plan for employees hired in the UK, and 401k contributions for employees hired in the USA. Compensation Additional Information Kinsta is proud to be an equal opportunity employer. We will not discriminate and we will take actions to ensure against discrimination in employment, recruitment, advertisements for employment, compensation, termination, promotions, and other conditions of employment against any employee or job applicant on the basis of race, color, gender, national origin, citizenship, age, religion, creed, disability, marital status, veteran’s status, sexual orientation, gender identity, gender expression, or any other status protected by the laws or regulations in the locations where we operate. By applying to one of our positions, you agree to the processing of the submitted personal data in accordance with Kinsta's Privacy Policy , including the transfer of your data to the United States. #LI-Remote, #IHSRemote",
+      "location": "UK",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "advertising",
+      "postedAt": "2026-11-24T15:23:24.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": null,
+      "languageRequirements": "공고 원문 확인 필요",
+      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · UK",
+      "eligibilityStatus": "unknown",
+      "eligibilityDetail": {
+        "status": "unknown",
+        "geoScope": "UK",
+        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "match",
+      "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "not_seen",
+      "firstSeenAt": "2026-11-24T22:28:32.115Z",
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+    },
+    {
+      "id": "jobicy-cb13d49fb8492778b3aa",
+      "title": "Localization Production Coordinator",
+      "company": "Welo Global",
+      "source": "Jobicy",
+      "url": "https://jobicy.com/jobs/164280-localization-production-coordinator",
+      "description": "About Welocalize Welocalize, a Welo Global brand, serves localization teams through AI-enabled multilingual content solutions that enable enterprises to operate and scale globally. Welocalize combines AI, automation, and human expertise to support enterprises in more than 300 languages, enabling accurate, culturally aligned, and compliant multilingual content at scale. Welocalize’s Opal Platform comprises patented technology designed to automate multilingual content and improve workflow performance for enterprises. Opal functions as an agentic system that orchestrates AI, automation, and human expertise to coordinate content workflows across the lifecycle, improving speed, scalability, and operational control for global enterprises. These solutions operate within a secure and compliant environment supported by seven ISO certifications. Welocalize is headquartered in New York with offices worldwide. welocalize.com Job Overview Want to help bring a world-class digital product to audiences around the globe? As a Production Coordinator on our client’s Localization team, you’ll support the localization of product features, marketing campaigns, editorial content, and web experiences across multiple markets. You’ll work alongside Senior Coordinators and Project Managers to deliver high-quality work on time, while building your expertise in localization operations and cross-functional collaboration. This role is built to grow. The localization function is shifting toward AI-first workflows, and over the next 12 months you’ll move from supported operational work toward independently running AI-assisted localization workflows. You’ll run traditional processes while building the skills to be the human judgment layer for AI output, and you’ll take on greater cross-functional ownership along the way. We’re hiring for today’s work and for where this role is heading. Main Responsibilities Facilitate the end-to-end localization workflow for product features, marketing campaigns, editorial, and web content, with guidance from Senior Coordinators or Project Managers Work with designers, product owners, engineers, marketers, and internal reviewers to gather localization requirements and track open action items Collaborate with external vendors on query management, file handoffs, and delivery timelines Monitor project status and flag risks or blockers to stakeholders early Manage day-to-day translation operations, including testing, bug triage, localizability reviews, and design audits Help prioritize and balance incoming work across shifting priorities Follow established translation workflows and contribute ideas to improve efficiency and reduce time to market Use AI tools and automation to streamline repetitive tasks, and look for new ways to apply them as your skills grow Assist with project retrospectives, internal reports, and presentations Support new team members by sharing knowledge and documenting processes Partner with Project Managers and Program Managers to make sure program operations align with business needs and localization best practices Job Requirements Clear, proactive communication: you’re comfortable asking questions and raising issues early Strong organizational skills and attention to detail, with a knack for keeping multiple workstreams on track Comfort with change and ambiguity: you’d rather figure it out than wait for perfect instructions Ownership of your work, and the discipline to follow through Enthusiasm for AI and automation. The mindset matters more than prior experience Skills & Experience Curiosity and self-drive: when you meet a new tool or process, you dig in rather than wait to be shown The ability to build strong working relationships through empathy, respect, and reliability Experience in project coordination, localization operations, or a similar role is helpful, but not required if you bring the right mindset A willingness to keep growing as your role expands Education Bachelor’s degree or equivalent practical experience Join us and help bring great digital experiences to every audience, in every language. You’ll learn quickly, take on more every month, and help shape how AI-first localization works. month, and help shape how AI-first localization works. Compensation Additional Information Job Reference: #LI-JC1",
+      "location": "Greece, Romania",
+      "workplaceMode": "remote",
+      "market": "online",
+      "category": "translation",
+      "postedAt": "2026-11-25T13:24:18.000Z",
+      "deadline": null,
+      "listingExpiresAt": null,
+      "pay": null,
+      "languageRequirements": "공고 원문 확인 필요",
+      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · Greece, Romania",
+      "eligibilityStatus": "unknown",
+      "eligibilityDetail": {
+        "status": "unknown",
+        "geoScope": "Greece, Romania",
+        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
+        "requiresVerification": true
+      },
+      "languageFitStatus": "unknown",
+      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "sourceKind": "public_api",
+      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
+      "legacyIds": [],
+      "collectionState": "not_seen",
+      "firstSeenAt": "2026-11-25T21:43:17.748Z",
       "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
@@ -6024,40 +6228,6 @@
       "lastSeenAt": "2026-10-29T05:49:52.826Z"
     },
     {
-      "id": "jobicy-4064ba60bc7190f34122",
-      "title": "Principal Technical Marketing Engineer | Sweden | Remote",
-      "company": "Grafana Labs",
-      "source": "Jobicy",
-      "url": "https://jobicy.com/jobs/157134-principal-technical-marketing-engineer-sweden-remote",
-      "description": "Grafana Labs is the company behind Grafana Cloud, the fully managed observability platform trusted by more than 10,000 organizations to ensure reliability, resolve incidents faster, and optimize telemetry at scale. Built on open source and open standards and designed for interoperability across any stack, Grafana Cloud brings AI to observability and observability to AI, giving teams (and their agents) unified visibility so they can see, understand, and act on all their disparate data, wherever it lives, and move at the speed of their ambitions. Customers, including Anthropic, Bloomberg, NVIDIA, Microsoft, and Salesforce, rely on Grafana Labs. We are a 100% remote company with team members across 40+ countries, backed by leading investors including Lightspeed Venture Partners, Sequoia Capital, GIC, Coatue, J.P. Morgan, CapitalG, and Lead Edge Capital. Learn more at grafana.com and follow us on LinkedIn and X . We’re scaling fast and staying true to what makes us different: an open-source legacy, a global collaborative culture, and a passion for meaningful work. Our team thrives in an innovation-driven environment where transparency, autonomy, and trust fuel everything we do. You may not meet every requirement, and that’s okay. If this role excites you, we’d love you to raise your hand for what could be a truly career-defining opportunity. The Opportunity: Grafana Labs is looking for a technically fluent engineer who loves building powerful demos, explaining complex systems clearly, and helping SRE and platform engineering leaders understand the value of our open approach to observability. As Grafana’s offering shifts from dashboards to industry-leading agentic observability, our Product Marketing team is responsible for closing the gap between what our products can do and how customers understand that value. That means building clear, consistent positioning, enabling sellers with trustworthy technical narratives, and creating content that helps Platform Engineering teams quickly grasp why Grafana Cloud is the right choice for them. As a Technical Product Marketer you will play a critical part in that transformation. You’ll be the hands-on engineer who brings our technical story to life for buyers, not just practitioners. You’ll build core demos, run technical workshops and webinars, and act as the technical bridge between our Product and Sales orgs. Your work will help SRE and platform engineering leaders evaluate Grafana with confidence, equip sales engineers with better tools and talk tracks, and ensure our technical value shows up clearly and consistently across the entire customer journey. This is a unique chance to shape how Grafana tells its story as we evolve our positioning in the AI era, strengthen seller enablement, and build a repeatable system for communicating product value. What You'll Be Doing: Build strategic, buyer-focused demos, videos, workshops, and webinars Create and maintain polished, narrative-driven demos that highlight Grafana’s value for SRE and platform engineering leaders. Record high-quality technical demo videos and walkthroughs in partnership with our video and content teams. Lead webinars, workshops, and technical sessions designed for evaluators. Teach customers not just how Grafana works, but why our approach is differentiated and valuable. Use AI tools to generate variations, summaries, and reusable assets that scale technical content across channels. Enable Solutions (Sales) Engineers with clear, consistent technical storytelling Serve as PMM’s technical liaison to the SE org, ensuring consistent messaging and demo guidance. Produce technical enablement assets, value-driven talk tracks, competitive narratives, and demo best practices. Help SEs and sellers communicate Grafana’s story with clarity, confidence, and differentiation. Collaborate with PMMs to drive technical buyer engagement across high-impact channels Partner with PMMs to identify the most important buyer personas, problems, and technical messages, and help shape the content strategy needed to reach them. Extend technical narratives into impactful buyer-facing channels including analyst briefings (Gartner, Forrester), industry forums, podcasts, conferences, and online technical communities. Bring a technical perspective to PMM planning—helping ensure our content, campaigns, and enablement reflect the real challenges and priorities of SREs and engineering leaders. Use automation & AI to scale technical content Partner with software engineers to streamline demo setup, content workflows, and asset updates through workflows, agents, scripts, and AI-driven tools. Use automation to make technical content more repeatable, discoverable, and scalable across teams. What Makes You a Great Fit: 5+ years in a technical role (solutions engineering, SRE, DevOps, backend engineering, technical PMM, or similar). Interest and ability to travel to training and customer events 10-12 weeks per year. Strong understanding of observability concepts and the needs of SRE/platform teams. Ability to translate deep technical concepts into clear, value-focused stories. Experience presenting technical content through demos, workshops, or webinars. Excellent written and verbal communication, with a crisp, structured, persuasive style. Strong cross-functional collaboration; comfort working with PMM, Product, SEs, DevRel, and Field Engineering. High ownership mindset with the ability to drive projects from concept to completion. Comfort with light scripting or workflow automation. Bonus Points For: Hands-on experience with Grafana, Prometheus, Loki, Mimir, Tempo, or similar observability tools, or a background in Observability or Platform Engineering. Prior experience in Sales Engineering, DevRel, or technical product marketing. Familiarity with demo environment automation or infrastructure-as-code tools. Exceptional live presentation or workshop facilitation skills. Compensation & Rewards: In Sweden, the base compensation range for this role is SEK 878,578 - SEK 1,054,294. Actual compensation may vary based on level, experience, and skillset as assessed throughout the interview process. All of our roles include Restricted Stock Units (RSUs), giving every team member ownership in Grafana Labs' success. We believe in shared outcomes—RSUs help us stay aligned and invested as we scale globally. *Compensation ranges are country specific. If you are applying for this role from a different location than listed above, your recruiter will discuss your specific market’s defined pay range & benefits at the beginning of the process. Why You’ll Thrive at Grafana Labs: 100% Remote, Global Culture - As a remote-only company, we bring together talent from around the world, united by a culture of collaboration and shared purpose. Scaling Organization – Tackle meaningful work in a high-growth, ever-evolving environment. Transparent Communication – Expect open decision-making and regular company-wide updates. Innovation-D",
-      "location": "Sweden",
-      "workplaceMode": "remote",
-      "market": "online",
-      "category": "marketing",
-      "postedAt": "2026-10-26T10:53:07.000Z",
-      "deadline": null,
-      "listingExpiresAt": null,
-      "pay": "878578–1054294 SEK yearly",
-      "languageRequirements": "공고 원문 확인 필요",
-      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · Sweden",
-      "eligibilityStatus": "unknown",
-      "eligibilityDetail": {
-        "status": "unknown",
-        "geoScope": "Sweden",
-        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
-        "requiresVerification": true
-      },
-      "languageFitStatus": "unknown",
-      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-29T05:49:52.826Z",
-      "sourceKind": "public_api",
-      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
-      "legacyIds": [],
-      "collectionState": "not_seen",
-      "firstSeenAt": "2026-10-26T22:42:39.128Z",
-      "lastSeenAt": "2026-10-29T05:49:52.826Z"
-    },
-    {
       "id": "jobicy-8300213c282c0b46ee94",
       "title": "Senior Performance Marketer (Full Remote - Lithuania)",
       "company": "EverAI",
@@ -6160,40 +6330,6 @@
       "lastSeenAt": "2026-10-29T05:49:52.826Z"
     },
     {
-      "id": "jobicy-a9ccff302334332785d4",
-      "title": "Principal Technical Marketing Engineer | Ireland | Remote",
-      "company": "Grafana Labs",
-      "source": "Jobicy",
-      "url": "https://jobicy.com/jobs/157132-principal-technical-marketing-engineer-ireland-remote",
-      "description": "Grafana Labs is the company behind Grafana Cloud, the fully managed observability platform trusted by more than 10,000 organizations to ensure reliability, resolve incidents faster, and optimize telemetry at scale. Built on open source and open standards and designed for interoperability across any stack, Grafana Cloud brings AI to observability and observability to AI, giving teams (and their agents) unified visibility so they can see, understand, and act on all their disparate data, wherever it lives, and move at the speed of their ambitions. Customers, including Anthropic, Bloomberg, NVIDIA, Microsoft, and Salesforce, rely on Grafana Labs. We are a 100% remote company with team members across 40+ countries, backed by leading investors including Lightspeed Venture Partners, Sequoia Capital, GIC, Coatue, J.P. Morgan, CapitalG, and Lead Edge Capital. Learn more at grafana.com and follow us on LinkedIn and X . We’re scaling fast and staying true to what makes us different: an open-source legacy, a global collaborative culture, and a passion for meaningful work. Our team thrives in an innovation-driven environment where transparency, autonomy, and trust fuel everything we do. You may not meet every requirement, and that’s okay. If this role excites you, we’d love you to raise your hand for what could be a truly career-defining opportunity. The Opportunity: Grafana Labs is looking for a technically fluent engineer who loves building powerful demos, explaining complex systems clearly, and helping SRE and platform engineering leaders understand the value of our open approach to observability. As Grafana’s offering shifts from dashboards to industry-leading agentic observability, our Product Marketing team is responsible for closing the gap between what our products can do and how customers understand that value. That means building clear, consistent positioning, enabling sellers with trustworthy technical narratives, and creating content that helps Platform Engineering teams quickly grasp why Grafana Cloud is the right choice for them. As a Technical Product Marketer you will play a critical part in that transformation. You’ll be the hands-on engineer who brings our technical story to life for buyers, not just practitioners. You’ll build core demos, run technical workshops and webinars, and act as the technical bridge between our Product and Sales orgs. Your work will help SRE and platform engineering leaders evaluate Grafana with confidence, equip sales engineers with better tools and talk tracks, and ensure our technical value shows up clearly and consistently across the entire customer journey. This is a unique chance to shape how Grafana tells its story as we evolve our positioning in the AI era, strengthen seller enablement, and build a repeatable system for communicating product value. What You'll Be Doing: Build strategic, buyer-focused demos, videos, workshops, and webinars Create and maintain polished, narrative-driven demos that highlight Grafana’s value for SRE and platform engineering leaders. Record high-quality technical demo videos and walkthroughs in partnership with our video and content teams. Lead webinars, workshops, and technical sessions designed for evaluators. Teach customers not just how Grafana works, but why our approach is differentiated and valuable. Use AI tools to generate variations, summaries, and reusable assets that scale technical content across channels. Enable Solutions (Sales) Engineers with clear, consistent technical storytelling Serve as PMM’s technical liaison to the SE org, ensuring consistent messaging and demo guidance. Produce technical enablement assets, value-driven talk tracks, competitive narratives, and demo best practices. Help SEs and sellers communicate Grafana’s story with clarity, confidence, and differentiation. Collaborate with PMMs to drive technical buyer engagement across high-impact channels Partner with PMMs to identify the most important buyer personas, problems, and technical messages, and help shape the content strategy needed to reach them. Extend technical narratives into impactful buyer-facing channels including analyst briefings (Gartner, Forrester), industry forums, podcasts, conferences, and online technical communities. Bring a technical perspective to PMM planning—helping ensure our content, campaigns, and enablement reflect the real challenges and priorities of SREs and engineering leaders. Use automation & AI to scale technical content Partner with software engineers to streamline demo setup, content workflows, and asset updates through workflows, agents, scripts, and AI-driven tools. Use automation to make technical content more repeatable, discoverable, and scalable across teams. What Makes You a Great Fit: 5+ years in a technical role (solutions engineering, SRE, DevOps, backend engineering, technical PMM, or similar). Interest and ability to travel to training and customer events 10-12 weeks per year. Strong understanding of observability concepts and the needs of SRE/platform teams. Ability to translate deep technical concepts into clear, value-focused stories. Experience presenting technical content through demos, workshops, or webinars. Excellent written and verbal communication, with a crisp, structured, persuasive style. Strong cross-functional collaboration; comfort working with PMM, Product, SEs, DevRel, and Field Engineering. High ownership mindset with the ability to drive projects from concept to completion. Comfort with light scripting or workflow automation. Bonus Points For: Hands-on experience with Grafana, Prometheus, Loki, Mimir, Tempo, or similar observability tools, or a background in Observability or Platform Engineering. Prior experience in Sales Engineering, DevRel, or technical product marketing. Familiarity with demo environment automation or infrastructure-as-code tools. Exceptional live presentation or workshop facilitation skills. Compensation & Rewards: In Ireland, the base compensation range for this role is EUR 117,600 - EUR 141,120. Actual compensation may vary based on level, experience, and skillset as assessed throughout the interview process. All of our roles include Restricted Stock Units (RSUs), giving every team member ownership in Grafana Labs' success. We believe in shared outcomes—RSUs help us stay aligned and invested as we scale globally. *Compensation ranges are country specific. If you are applying for this role from a different location than listed above, your recruiter will discuss your specific market’s defined pay range & benefits at the beginning of the process. Why You’ll Thrive at Grafana Labs: 100% Remote, Global Culture - As a remote-only company, we bring together talent from around the world, united by a culture of collaboration and shared purpose. Scaling Organization – Tackle meaningful work in a high-growth, ever-evolving environment. Transparent Communication – Expect open decision-making and regular company-wide updates. Innovation-Dr",
-      "location": "Ireland",
-      "workplaceMode": "remote",
-      "market": "online",
-      "category": "marketing",
-      "postedAt": "2026-10-26T10:53:08.000Z",
-      "deadline": null,
-      "listingExpiresAt": null,
-      "pay": "117600–141120 EUR yearly",
-      "languageRequirements": "공고 원문 확인 필요",
-      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · Ireland",
-      "eligibilityStatus": "unknown",
-      "eligibilityDetail": {
-        "status": "unknown",
-        "geoScope": "Ireland",
-        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
-        "requiresVerification": true
-      },
-      "languageFitStatus": "unknown",
-      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-29T05:49:52.826Z",
-      "sourceKind": "public_api",
-      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
-      "legacyIds": [],
-      "collectionState": "not_seen",
-      "firstSeenAt": "2026-10-26T22:42:39.128Z",
-      "lastSeenAt": "2026-10-29T05:49:52.826Z"
-    },
-    {
       "id": "jobicy-af3f2020d26904b7a1ac",
       "title": "Senior Product Marketing Manager | Ireland | Remote",
       "company": "Grafana Labs",
@@ -6225,40 +6361,6 @@
       "legacyIds": [],
       "collectionState": "not_seen",
       "firstSeenAt": "2026-10-28T22:37:03.341Z",
-      "lastSeenAt": "2026-10-29T05:49:52.826Z"
-    },
-    {
-      "id": "jobicy-c993e2e1dd0aad652a10",
-      "title": "Principal Technical Marketing Engineer | UK | Remote",
-      "company": "Grafana Labs",
-      "source": "Jobicy",
-      "url": "https://jobicy.com/jobs/157135-principal-technical-marketing-engineer-uk-remote",
-      "description": "Grafana Labs is the company behind Grafana Cloud, the fully managed observability platform trusted by more than 10,000 organizations to ensure reliability, resolve incidents faster, and optimize telemetry at scale. Built on open source and open standards and designed for interoperability across any stack, Grafana Cloud brings AI to observability and observability to AI, giving teams (and their agents) unified visibility so they can see, understand, and act on all their disparate data, wherever it lives, and move at the speed of their ambitions. Customers, including Anthropic, Bloomberg, NVIDIA, Microsoft, and Salesforce, rely on Grafana Labs. We are a 100% remote company with team members across 40+ countries, backed by leading investors including Lightspeed Venture Partners, Sequoia Capital, GIC, Coatue, J.P. Morgan, CapitalG, and Lead Edge Capital. Learn more at grafana.com and follow us on LinkedIn and X . We’re scaling fast and staying true to what makes us different: an open-source legacy, a global collaborative culture, and a passion for meaningful work. Our team thrives in an innovation-driven environment where transparency, autonomy, and trust fuel everything we do. You may not meet every requirement, and that’s okay. If this role excites you, we’d love you to raise your hand for what could be a truly career-defining opportunity. The Opportunity: Grafana Labs is looking for a technically fluent engineer who loves building powerful demos, explaining complex systems clearly, and helping SRE and platform engineering leaders understand the value of our open approach to observability. As Grafana’s offering shifts from dashboards to industry-leading agentic observability, our Product Marketing team is responsible for closing the gap between what our products can do and how customers understand that value. That means building clear, consistent positioning, enabling sellers with trustworthy technical narratives, and creating content that helps Platform Engineering teams quickly grasp why Grafana Cloud is the right choice for them. As a Technical Product Marketer you will play a critical part in that transformation. You’ll be the hands-on engineer who brings our technical story to life for buyers, not just practitioners. You’ll build core demos, run technical workshops and webinars, and act as the technical bridge between our Product and Sales orgs. Your work will help SRE and platform engineering leaders evaluate Grafana with confidence, equip sales engineers with better tools and talk tracks, and ensure our technical value shows up clearly and consistently across the entire customer journey. This is a unique chance to shape how Grafana tells its story as we evolve our positioning in the AI era, strengthen seller enablement, and build a repeatable system for communicating product value. What You'll Be Doing: Build strategic, buyer-focused demos, videos, workshops, and webinars Create and maintain polished, narrative-driven demos that highlight Grafana’s value for SRE and platform engineering leaders. Record high-quality technical demo videos and walkthroughs in partnership with our video and content teams. Lead webinars, workshops, and technical sessions designed for evaluators. Teach customers not just how Grafana works, but why our approach is differentiated and valuable. Use AI tools to generate variations, summaries, and reusable assets that scale technical content across channels. Enable Solutions (Sales) Engineers with clear, consistent technical storytelling Serve as PMM’s technical liaison to the SE org, ensuring consistent messaging and demo guidance. Produce technical enablement assets, value-driven talk tracks, competitive narratives, and demo best practices. Help SEs and sellers communicate Grafana’s story with clarity, confidence, and differentiation. Collaborate with PMMs to drive technical buyer engagement across high-impact channels Partner with PMMs to identify the most important buyer personas, problems, and technical messages, and help shape the content strategy needed to reach them. Extend technical narratives into impactful buyer-facing channels including analyst briefings (Gartner, Forrester), industry forums, podcasts, conferences, and online technical communities. Bring a technical perspective to PMM planning—helping ensure our content, campaigns, and enablement reflect the real challenges and priorities of SREs and engineering leaders. Use automation & AI to scale technical content Partner with software engineers to streamline demo setup, content workflows, and asset updates through workflows, agents, scripts, and AI-driven tools. Use automation to make technical content more repeatable, discoverable, and scalable across teams. What Makes You a Great Fit: 5+ years in a technical role (solutions engineering, SRE, DevOps, backend engineering, technical PMM, or similar). Interest and ability to travel to training and customer events 10-12 weeks per year. Strong understanding of observability concepts and the needs of SRE/platform teams. Ability to translate deep technical concepts into clear, value-focused stories. Experience presenting technical content through demos, workshops, or webinars. Excellent written and verbal communication, with a crisp, structured, persuasive style. Strong cross-functional collaboration; comfort working with PMM, Product, SEs, DevRel, and Field Engineering. High ownership mindset with the ability to drive projects from concept to completion. Comfort with light scripting or workflow automation. Bonus Points For: Hands-on experience with Grafana, Prometheus, Loki, Mimir, Tempo, or similar observability tools, or a background in Observability or Platform Engineering. Prior experience in Sales Engineering, DevRel, or technical product marketing. Familiarity with demo environment automation or infrastructure-as-code tools. Exceptional live presentation or workshop facilitation skills. Compensation & Rewards: In the UK, the base compensation range for this role is GBP 103,958- GBP 124,750. Actual compensation may vary based on level, experience, and skillset as assessed throughout the interview process. All of our roles include Restricted Stock Units (RSUs), giving every team member ownership in Grafana Labs' success. We believe in shared outcomes—RSUs help us stay aligned and invested as we scale globally. *Compensation ranges are country specific. If you are applying for this role from a different location than listed above, your recruiter will discuss your specific market’s defined pay range & benefits at the beginning of the process. Why You’ll Thrive at Grafana Labs: 100% Remote, Global Culture - As a remote-only company, we bring together talent from around the world, united by a culture of collaboration and shared purpose. Scaling Organization – Tackle meaningful work in a high-growth, ever-evolving environment. Transparent Communication – Expect open decision-making and regular company-wide updates. Innovation-Driv",
-      "location": "UK",
-      "workplaceMode": "remote",
-      "market": "online",
-      "category": "marketing",
-      "postedAt": "2026-10-26T10:53:09.000Z",
-      "deadline": null,
-      "listingExpiresAt": null,
-      "pay": "103958–124750 GBP yearly",
-      "languageRequirements": "공고 원문 확인 필요",
-      "eligibility": "한국 거주자 지원 가능 여부 확인 필요 · UK",
-      "eligibilityStatus": "unknown",
-      "eligibilityDetail": {
-        "status": "unknown",
-        "geoScope": "UK",
-        "reason": "Remote work is advertised, but working from South Korea has not been confirmed.",
-        "requiresVerification": true
-      },
-      "languageFitStatus": "unknown",
-      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-29T05:49:52.826Z",
-      "sourceKind": "public_api",
-      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
-      "legacyIds": [],
-      "collectionState": "not_seen",
-      "firstSeenAt": "2026-10-26T22:42:39.128Z",
       "lastSeenAt": "2026-10-29T05:49:52.826Z"
     },
     {
@@ -6555,40 +6657,6 @@
       "legacyIds": [],
       "collectionState": "not_seen",
       "firstSeenAt": "2026-10-28T12:57:05.723Z",
-      "lastSeenAt": "2026-10-28T12:57:05.723Z"
-    },
-    {
-      "id": "jobicy-46def0a351bba677daca",
-      "title": "Lead Customer Advocacy Manager, APJ",
-      "company": "GitLab",
-      "source": "Jobicy",
-      "url": "https://jobicy.com/jobs/157094-lead-customer-advocacy-manager-apj",
-      "description": "GitLab is the intelligent orchestration platform for DevSecOps. GitLab enables organizations to increase developer productivity, improve operational efficiency, reduce security and compliance risk, and accelerate digital transformation. More than 50 million registered users and more than 50% of the Fortune 100* trust GitLab to ship better, more secure software faster. The same principles built into our products are reflected in how our team works: we embrace AI as a core productivity multiplier, with all team members expected to incorporate AI into their daily workflows to drive efficiency, innovation, and impact. GitLab is where careers accelerate, innovation flourishes, and every voice is valued. Our high-performance culture is driven by our values and continuous knowledge exchange, enabling our team members to reach their full potential while collaborating with industry leaders to solve complex problems. Co-create the future with us as we build technology that transforms how the world develops software. * Fortune 500® is a registered trademark of Fortune Media IP Limited, used under license. Claim based on GitLab data. Fortune 100 refers to the top 20% ranked companies in the 2025 Fortune 500 list, published in June 2025. Fortune and Fortune Media IP Limited are not affiliated with, and do not endorse products or services of GitLab. An Overview of the Role As the Customer Advocacy Lead for APJ, you will celebrate our customers and spotlight their achievements, turning GitLab's most successful customers into visible, influential champions. You will identify and activate advocates and their stories that showcase customer outcomes, support pipeline and revenue goals, and deepen trust in GitLab across Asia Pacific and Japan. Reporting into the growth marketing organization, you will own the day-to-day development and delivery of customer advocacy initiatives in close partnership with APJ sales, marketing, and global teams. You will build trusted customer relationships, identify stories and advocates, and connect the right customers to references, campaigns, events, and executive engagements. Because APJ spans diverse markets, cultures, and time zones, you will tailor engagement to local context while creating programs that scale and align with global priorities. In your first year, you will establish clear, measurable advocacy goals for the region, strengthen collaboration with regional stakeholders, and increase the visibility of customer outcomes across go-to-market motions. This is an opportunity to bring the voice of APJ customers forward and demonstrate GitLab’s impact on their business. Some Examples of Our Projects Partnering with sales, pre-sales, and marketing to turn complex customer solutions into compelling narratives for campaigns, events, and executive engagements Creating and executing customer references, case studies, speaking opportunities, and other advocacy activities and programs across APJ markets What You’ll Do Own the APJ customer story, reference and proof library, and associated pipeline. Build and nurture relationships with customer advocates, including senior stakeholders, and identify opportunities for references, case studies, events, and thought leadership. Manage the customer advocacy lifecycle: identify and recruit advocates, understand their goals, coordinate participation, and maintain mutually valuable relationships over time. Bring the voice of the customer into GitLab’s narratives, campaigns, and go-to-market plans by working with internal stakeholders to develop and amplify customer stories. Partner with regional and global sales, marketing, customer success, and product teams to align advocacy initiatives with pipeline, expansion, and retention priorities. Define and track program measures, such as advocacy participation, reference fulfillment, pipeline influence, and customer-story impact. Prioritize and coordinate advocacy requests that support strategic global and regional initiatives, using clear intake, fulfillment, and reporting processes. Adapt engagement and storytelling approaches to APJ’s varied markets and customer contexts, working effectively across cultures and time zones. Continuously improve programs, content formats, and engagement models using customer feedback, program data, and evolving business needs. What You’ll Bring Experience building or delivering customer advocacy, customer marketing, customer reference, or related customer story programs in enterprise technology or SaaS. Strong history of creating impactful customer stories and proof, and an advanced understanding of the customer reference lifecycle. A track record coordinating across multiple markets, with an understanding of the considerations involved in serving APJ customers. Strong cross-functional collaboration skills and the ability to influence sales, marketing, customer success, and other stakeholders without relying on direct authority. Excellent communication and relationship-building skills, including the ability to engage confidently with executive stakeholders on business and technical topics. Strong program management skills: you can prioritize competing requests, coordinate details across teams, and deliver reliably in a changing environment. Ability to work autonomously and asynchronously in a fully remote environment while staying aligned to shared goals and processes. Comfort defining and reporting on program performance, including customer participation, reference support, pipeline influence, and other measures tied to regional objectives. About the Team The Customer Advocacy team at GitLab helps turn our most successful customers into visible, influential advocates who drive awareness, trust, and revenue. This team builds and manages strategic relationships with customers to surface their stories, amplify their impact, and bring the voice of the customer into everything we do. How GitLab Supports Full-Time Employees Benefits to support your health, finances, and well-being Flexible Paid Time Off Team Member Resource Groups Equity Compensation & Employee Stock Purchase Plan Growth and Development Fund Parental Leave Please note that we welcome interest from candidates with varying levels of experience; many successful candidates do not meet every single requirement. Additionally, studies have shown that people from underrepresented groups are less likely to apply to a job unless they meet every single qualification. If you're excited about this role, please apply and allow our recruiters to assess your application. Country Hiring Guidelines: GitLab hires new team members in countries around the world. All of our roles are remote, however some roles may carry specific location-based eligibility requirements. Our Talent Acquisition team can help answer any questions about location after starting the recruiting process. Privacy Policy: Please review our Recruitment Privacy Policy. Your privacy is important to us. GitLab is proud to be ",
-      "location": "APAC, Japan",
-      "workplaceMode": "remote",
-      "market": "online",
-      "category": "marketing",
-      "postedAt": "2026-10-26T07:30:33.000Z",
-      "deadline": null,
-      "listingExpiresAt": null,
-      "pay": null,
-      "languageRequirements": "공고 원문 확인 필요",
-      "eligibility": "한국에서 지원 가능성 있음 · APAC, Japan (확인 필요)",
-      "eligibilityStatus": "possible",
-      "eligibilityDetail": {
-        "status": "possible",
-        "geoScope": "APAC, Japan",
-        "reason": "The stated region may include South Korea; employment, language and tax eligibility remain unverified.",
-        "requiresVerification": true
-      },
-      "languageFitStatus": "unknown",
-      "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-10-28T12:57:05.723Z",
-      "sourceKind": "public_api",
-      "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
-      "legacyIds": [],
-      "collectionState": "not_seen",
-      "firstSeenAt": "2026-10-26T13:05:13.850Z",
       "lastSeenAt": "2026-10-28T12:57:05.723Z"
     },
     {
@@ -7761,23 +7829,23 @@
       "source": "Remotive",
       "status": "ok",
       "count": 1,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "detail": "1/1 요청 완료. 1개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://remotive.com/api/remote-jobs?limit=500"
     },
     {
       "source": "Jobicy",
       "status": "ok",
-      "count": 4,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
-      "detail": "4/4 요청 완료. 4개 관련 공고. 출처 공고 URL 원문 확인 필요",
+      "count": 8,
+      "checkedAt": "2026-11-26T08:19:43.444Z",
+      "detail": "4/4 요청 완료. 8개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://jobicy.com/api/v2/remote-jobs?count=200"
     },
     {
       "source": "Remote OK",
       "status": "ok",
       "count": 1,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "detail": "1/1 요청 완료. 1개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://remoteok.com/api"
     },
@@ -7785,7 +7853,7 @@
       "source": "Arbeitnow",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "detail": "1/1 요청 완료. 0개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://www.arbeitnow.com/api/job-board-api?page=1"
     },
@@ -7793,7 +7861,7 @@
       "source": "Himalayas",
       "status": "ok",
       "count": 34,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "detail": "9/9 요청 완료. 34개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://himalayas.app/jobs/api/search?q=korean&country=KR&sort=recent&page=1"
     },
@@ -7801,7 +7869,7 @@
       "source": "RemoteJobs.org",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "detail": "5/5 요청 완료. 0개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://remotejobs.org/api/v1/jobs?q=korean&country=KR&eligibility=known&limit=50"
     },
@@ -7810,32 +7878,32 @@
       "status": "ok",
       "count": 3,
       "detail": "회사 공식 Greenhouse 목록 67건 확인, 한국 근무지·관련 직무·최근 90일 기준 3건 보존",
-      "checkedAt": "2026-11-26T06:21:40.091Z"
+      "checkedAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "source": "Appier",
       "status": "ok",
       "count": 0,
-      "detail": "회사 공식 Greenhouse 목록 60건 확인, 한국 근무지·관련 직무·최근 90일 기준 0건 보존",
-      "checkedAt": "2026-11-26T06:21:40.091Z"
+      "detail": "회사 공식 Greenhouse 목록 59건 확인, 한국 근무지·관련 직무·최근 90일 기준 0건 보존",
+      "checkedAt": "2026-11-26T08:19:43.444Z"
     },
     {
       "source": "ShopBack",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "url": "https://jobs.lever.co/shopback-2",
-      "durationMs": 660,
+      "durationMs": 332,
       "retryCount": 0,
-      "detail": "66 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
+      "detail": "64 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
     {
       "source": "Xsolla",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "url": "https://jobs.lever.co/xsolla",
-      "durationMs": 330,
+      "durationMs": 155,
       "retryCount": 0,
       "detail": "187 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7843,9 +7911,9 @@
       "source": "Channel Corp.",
       "status": "ok",
       "count": 2,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "url": "https://jobs.lever.co/zoyi",
-      "durationMs": 130,
+      "durationMs": 90,
       "retryCount": 0,
       "detail": "75 employer postings checked; 2 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7853,9 +7921,9 @@
       "source": "Match Group",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "url": "https://jobs.lever.co/matchgroup",
-      "durationMs": 128,
+      "durationMs": 33,
       "retryCount": 0,
       "detail": "72 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7863,9 +7931,9 @@
       "source": "Sahara AI",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "url": "https://jobs.ashbyhq.com/Sahara",
-      "durationMs": 125,
+      "durationMs": 163,
       "retryCount": 0,
       "detail": "3 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7873,9 +7941,9 @@
       "source": "Plaud",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "url": "https://jobs.ashbyhq.com/Plaud",
-      "durationMs": 44,
+      "durationMs": 118,
       "retryCount": 0,
       "detail": "53 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7884,28 +7952,28 @@
       "status": "ok",
       "count": 1,
       "url": "https://kowork.kr/en",
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "detail": "One public list with 15 cards, 6 limited detail checks. 1 profile-relevant leads. No full description copied; current opening status must be verified."
     },
     {
       "source": "ChatGPT Research",
       "status": "manual",
       "count": 3,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "detail": "3 individually researched leads; 13 excluded or expired; 20 manually withdrawn from the radar. Not live-checked at each scheduled refresh."
     },
     {
       "source": "사용자 저장 공고",
       "status": "not_configured",
       "count": 0,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "detail": "config/manual-jobs.json 미생성. 선택 기능"
     },
     {
       "source": "Upwork",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "detail": "Upwork 공개 RSS 자동 수집 기능이 중단되어 검색 결과를 생성하지 않습니다. 계정 로그인 후 수동 검색 링크를 이용하세요.",
       "url": "https://www.upwork.com/nx/search/jobs/",
       "manualSearches": [
@@ -7935,7 +8003,7 @@
       "source": "K-WORK",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "detail": "Korean government SME/foreign talent job platform. Each listing needs language and visa verification. Original-site browsing only.",
       "url": "https://k-work.or.kr/empmnInfo/empmn/list.do"
     },
@@ -7943,7 +8011,7 @@
       "source": "Hanultari",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "detail": "Seoul multicultural-family job portal. Automatic republication restricted; verify jobs at original source.",
       "url": "https://mcfamily.or.kr/en/jobs/opening"
     },
@@ -7951,7 +8019,7 @@
       "source": "JOBPLOY",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "detail": "Foreigner-focused Korea jobs. Terms restrict unlicensed copying; use original-site search.",
       "url": "https://www.jobploy.kr/en"
     },
@@ -7959,7 +8027,7 @@
       "source": "Wanted",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "detail": "Additional Korean employer listings for Spanish-language content and marketing. Search on the original site; individual postings can already be closed.",
       "url": "https://www.wanted.co.kr/"
     },
@@ -7967,7 +8035,7 @@
       "source": "ProZ",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "checkedAt": "2026-11-26T08:19:43.444Z",
       "detail": "Specialist translation and localization jobs; verify deadlines, professional experience and ability to work from Korea on each original posting.",
       "url": "https://www.proz.com/translation-jobs"
     }
