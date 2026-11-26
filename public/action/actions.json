@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-11-23T04:52:00.000Z",
-  "notice": "2026-11-23 확인: 쿠팡 CS는 접수마감, 셀리맥스는 11월 30일 마감, 세종학당 해외 파견은 다음 공고 대기 상태입니다. 원문에서 최신 상태를 다시 확인하세요.",
+  "updatedAt": "2026-11-26T00:00:00.000Z",
+  "notice": "2026-11-26 확인: 쿠팡 CS·세종학당 파견은 마감, 한국어교원 채용 링크를 신규 주소로 교체. 확인 실패 항목은 기존 확인일을 유지.",
   "items": [
     {
       "id": "coupang-cs-2026-11",
@@ -18,7 +18,7 @@
       "nextAction": "마감됨 · 동일 유형 후속 공고 확인",
       "statusNote": "공고 접수마감 확인(2026-11-19 19:00)",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-20",
+      "verifiedAt": "2026-11-26",
       "links": [
         {
           "label": "지원 페이지",
@@ -47,7 +47,7 @@
       "nextAction": "기존 계정 재활성 또는 신규 지원",
       "statusNote": "채용 피드에도 등록된 플랫폼 · 실제 배정 확인 필요",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-23",
+      "verifiedAt": "2026-11-26",
       "links": [
         {
           "label": "지원",
@@ -80,7 +80,7 @@
       "nextAction": "지원 후 온보딩 일정 확인",
       "statusNote": "대화 시점 모집 중 · 지원 전 원문 재확인",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-23",
+      "verifiedAt": "2026-11-26",
       "links": [
         {
           "label": "지원",
@@ -109,7 +109,7 @@
       "nextAction": "프로필 등록 후 한국어 프로젝트 지원",
       "statusNote": "대화 시점 모집 중 · 지원 전 원문 재확인",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-23",
+      "verifiedAt": "2026-11-26",
       "links": [
         {
           "label": "지원",
@@ -138,7 +138,7 @@
       "nextAction": "사전 평가 가능 여부 확인",
       "statusNote": "대화 시점 모집 중 · 지원 전 원문 재확인",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-23",
+      "verifiedAt": "2026-11-26",
       "links": [
         {
           "label": "지원",
@@ -167,7 +167,7 @@
       "nextAction": "가이드 시험·샘플 제출",
       "statusNote": "대화 시점 모집 중 · 지원 전 원문 재확인",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-23",
+      "verifiedAt": "2026-11-26",
       "links": [
         {
           "label": "지원",
@@ -196,7 +196,7 @@
       "nextAction": "프로필·소개 영상 등록",
       "statusNote": "채용 피드에도 등록된 플랫폼 · 상시 지원",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-23",
+      "verifiedAt": "2026-11-26",
       "links": [
         {
           "label": "튜터 지원",
@@ -229,7 +229,7 @@
       "nextAction": "Preply 접속 후 튜터 등록 경로 확인",
       "statusNote": "채용 피드에도 등록된 플랫폼 · 상시 지원",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-23",
+      "verifiedAt": "2026-11-26",
       "links": [
         {
           "label": "Preply 열기",
@@ -295,7 +295,7 @@
       "nextAction": "한국어 요건 확인 후 지원 여부 결정",
       "statusNote": "2026-11-30 마감 확인",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-23",
+      "verifiedAt": "2026-11-26",
       "links": [
         {
           "label": "공고 열기",
@@ -388,13 +388,13 @@
       "eligibility": "한국어교원 2급 · 강의 경력",
       "caveat": "한국어교원 채용·ALIO·고용24를 각각 확인해야 함.",
       "nextAction": "주 1회 새 공고 3건 확인",
-      "statusNote": "검색 링크 · 공고는 사이트에서 직접 확인",
+      "statusNote": "검색 링크 · 공고는 사이트에서 직접 확인 · 2026-11-26 신규 주소 https://klp.korean.go.kr/certif/jobsearch/list 확인(당일 게시글 존재)",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-20",
+      "verifiedAt": "2026-11-26",
       "links": [
         {
           "label": "한국어교원 채용",
-          "url": "https://kteacher.korean.go.kr/jobsearch"
+          "url": "https://klp.korean.go.kr/certif/jobsearch/list"
         },
         {
           "label": "ALIO",
@@ -505,7 +505,7 @@
       "nextAction": "ALIO 알림 설정 후 새 공고 확인",
       "statusNote": "2026 하반기 3차 접수마감(11-05), 다음 공고 확인",
       "linkStatus": "ok",
-      "verifiedAt": "2026-11-20",
+      "verifiedAt": "2026-11-26",
       "links": [
         {
           "label": "ALIO",
