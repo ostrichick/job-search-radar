@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-26T04:59:53.678Z",
+  "updatedAt": "2026-11-26T06:21:40.091Z",
   "jobs": [
     {
       "id": "himalayas-a4d1706b23795ed4cca5",
@@ -27,13 +27,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-26T00:36:58.445Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-3d689416f76b32a8a194",
@@ -61,13 +61,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-26T00:36:58.445Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "jobicy-d300a41778e2164ee883",
@@ -95,13 +95,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-25T21:43:17.748Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "jobicy-cb13d49fb8492778b3aa",
@@ -129,13 +129,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-25T21:43:17.748Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "jobicy-2064d645322d50c1cb6e",
@@ -163,13 +163,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-24T22:28:32.115Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-3c73e09208bc53531c1b",
@@ -197,13 +197,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-10T03:12:37.915Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "remote-ok-bcd83d21cf5bc4e13cf8",
@@ -211,7 +211,7 @@
       "company": "Augment",
       "source": "Remote OK",
       "url": "https://remoteok.com/remote-jobs/remote-revenue-operations-analyst-augment-1138081",
-      "description": "About Augment Logistics is broken. Let's fix it. We are a team of engineers, product designers, and customer champions building Augie, Augment's AI teammate for supply chain. Augie reasons and acts like a seasoned operator, automating the busywork of quoting, dispatch, tracking, billing, and more for freight brokers, 3PLs, for-hire carriers, private fleets, and distributors. Our team has scaled billion-dollar companies, built delightful products, and powered billions in commerce. If you thrive in fast-paced, high-impact environments and want to define how AI reshapes supply chain, apply today. Overview We're looking for a Revenue Operations Analyst to join our growing RevOps team. You'll own our deal desk, support territory planning, and run the reporting our sales leaders rely on every week as we grow from 12 AEs to more than 20. You'll also keep our data clean and handle the day-to-day work behind forecasting, quota administration, and commission calculations. This role reports to the Director of Revenue Operations. Our GTM Motion Our motion is outbound-led. SDRs prospect and qualify freight brokers, 3PLs, for-hire carriers, private fleets, and distributors before AEs run discovery and close. We sell across Mid-Market, Enterprise, and Strategic segments, with six-figure ARR deals and buying committees that span operations, IT, and finance. Your deal desk and reporting work needs to hold up to that complexity. What You'll Do Own the deal desk: review pricing, discounts, and non-standard terms, route approvals, and make sure every closed deal is booked correctly Partner with Sales, Finance, and Legal so quotes and contracts move fast without surprises Support territory planning: model coverage and capacity, manage account assignments, and keep regions and segments up to date as we roll them out, starting with Distribution Own sales reporting: run the weekly forecast and pipeline reports leadership uses to call the quarter, and build dashboards for pipeline, conversion, bookings, and AE and SDR performance Report contracted ARR and live, billing ARR side by side, and work with Finance so the numbers tie out Keep HubSpot clean and reliable: own data quality, required fields, account ownership, and deal hygiene Calculate commissions and support quota tracking, working with the Director and Finance Help onboard new hires to our sales tools and processes, and document how things work What We're Looking For 2 to 4 years in Revenue Operations, Sales Operations, or Deal Desk at a B2B SaaS company Hands-on experience running or supporting a deal desk, including pricing approvals and contract review Experience supporting territory planning or account assignment Hands-on CRM admin experience. We're on HubSpot, and experience there is a strong plus Strong Excel or Google Sheets skills, and comfort with SQL or a BI tool A detail person who cares when the numbers don't match and digs in until they do Clear communication with sales leaders and reps, including pushing back when the data says otherwise Bonus Points For Experience in logistics, freight, trucking, distribution, or supply chain tech Experience administering commission plans or quota models Familiarity with Gong, LinkedIn Sales Navigator, Seamless.ai , Clay, or BI platforms Why Join Us? Competitive Salary + Stock Options Comprehensive Health, Vision, and Dental Benefits Flexible PTO Monthly stipend About Augment At Augment, we set out to create a fully autonomous AI platform that streamlines operations and reclaims the human element in logistics. Our founders recognized a pattern: talented professionals were stuck handling manual data entry, phone calls, and repetitive tasks, instead of focusing on high-impact problem-solving and strategic decision-making. That insight became our missionâto free logistics professionals from busywork so they can focus on what truly drives business growth. Augment isnât just about efficiency; itâs about transforming an entire industry by empowering teams with AI-driven solutions that make logistics smarter, faster, and more adaptive. Join us on this journey! Augment is an Equal Opportunity Employer and values diversity at our company. We consider all qualified applicants without regard to race, color, religion, national origin, gender, gender identity or expression, sexual orientation, age, marital status, veteran status, disability, or any other legally protected status. Augment complies with federal, state, and local laws regarding equal employment opportunity and reasonable accommodation. If you need assistance or an accommodation during the application or interview process, please contact your recruiter. We also consider qualified applicants with arrest and conviction records in accordance with applicable federal, state and local fair-chance / ban-the-box laws (for example, but not limited to, the California Fair Chance Act). Our hiring process uses AI-powered tools to assist with screening and evaluating applications based on job-related criteria. All AI-assisted outputs are reviewed by human recruiters who make all decisions about which candidates advance in the process. Please mention the word **FLUENT** and tag RMjcuMTE2LjEyNi4xNTc= when applying to show you read the job post completely (#RMjcuMTE2LjEyNi4xNTc=). This is a beta feature to avoid spam applicants. Companies can search these words to find applicants that read this and see they're human.",
+      "description": "About Augment Logistics is broken. Let's fix it. We are a team of engineers, product designers, and customer champions building Augie, Augment's AI teammate for supply chain. Augie reasons and acts like a seasoned operator, automating the busywork of quoting, dispatch, tracking, billing, and more for freight brokers, 3PLs, for-hire carriers, private fleets, and distributors. Our team has scaled billion-dollar companies, built delightful products, and powered billions in commerce. If you thrive in fast-paced, high-impact environments and want to define how AI reshapes supply chain, apply today. Overview We're looking for a Revenue Operations Analyst to join our growing RevOps team. You'll own our deal desk, support territory planning, and run the reporting our sales leaders rely on every week as we grow from 12 AEs to more than 20. You'll also keep our data clean and handle the day-to-day work behind forecasting, quota administration, and commission calculations. This role reports to the Director of Revenue Operations. Our GTM Motion Our motion is outbound-led. SDRs prospect and qualify freight brokers, 3PLs, for-hire carriers, private fleets, and distributors before AEs run discovery and close. We sell across Mid-Market, Enterprise, and Strategic segments, with six-figure ARR deals and buying committees that span operations, IT, and finance. Your deal desk and reporting work needs to hold up to that complexity. What You'll Do Own the deal desk: review pricing, discounts, and non-standard terms, route approvals, and make sure every closed deal is booked correctly Partner with Sales, Finance, and Legal so quotes and contracts move fast without surprises Support territory planning: model coverage and capacity, manage account assignments, and keep regions and segments up to date as we roll them out, starting with Distribution Own sales reporting: run the weekly forecast and pipeline reports leadership uses to call the quarter, and build dashboards for pipeline, conversion, bookings, and AE and SDR performance Report contracted ARR and live, billing ARR side by side, and work with Finance so the numbers tie out Keep HubSpot clean and reliable: own data quality, required fields, account ownership, and deal hygiene Calculate commissions and support quota tracking, working with the Director and Finance Help onboard new hires to our sales tools and processes, and document how things work What We're Looking For 2 to 4 years in Revenue Operations, Sales Operations, or Deal Desk at a B2B SaaS company Hands-on experience running or supporting a deal desk, including pricing approvals and contract review Experience supporting territory planning or account assignment Hands-on CRM admin experience. We're on HubSpot, and experience there is a strong plus Strong Excel or Google Sheets skills, and comfort with SQL or a BI tool A detail person who cares when the numbers don't match and digs in until they do Clear communication with sales leaders and reps, including pushing back when the data says otherwise Bonus Points For Experience in logistics, freight, trucking, distribution, or supply chain tech Experience administering commission plans or quota models Familiarity with Gong, LinkedIn Sales Navigator, Seamless.ai , Clay, or BI platforms Why Join Us? Competitive Salary + Stock Options Comprehensive Health, Vision, and Dental Benefits Flexible PTO Monthly stipend About Augment At Augment, we set out to create a fully autonomous AI platform that streamlines operations and reclaims the human element in logistics. Our founders recognized a pattern: talented professionals were stuck handling manual data entry, phone calls, and repetitive tasks, instead of focusing on high-impact problem-solving and strategic decision-making. That insight became our missionâto free logistics professionals from busywork so they can focus on what truly drives business growth. Augment isnât just about efficiency; itâs about transforming an entire industry by empowering teams with AI-driven solutions that make logistics smarter, faster, and more adaptive. Join us on this journey! Augment is an Equal Opportunity Employer and values diversity at our company. We consider all qualified applicants without regard to race, color, religion, national origin, gender, gender identity or expression, sexual orientation, age, marital status, veteran status, disability, or any other legally protected status. Augment complies with federal, state, and local laws regarding equal employment opportunity and reasonable accommodation. If you need assistance or an accommodation during the application or interview process, please contact your recruiter. We also consider qualified applicants with arrest and conviction records in accordance with applicable federal, state and local fair-chance / ban-the-box laws (for example, but not limited to, the California Fair Chance Act). Our hiring process uses AI-powered tools to assist with screening and evaluating applications based on job-related criteria. All AI-assisted outputs are reviewed by human recruiters who make all decisions about which candidates advance in the process. Please mention the word **FLUENT** and tag ROS4yMzQuMTg4LjE2MQ== when applying to show you read the job post completely (#ROS4yMzQuMTg4LjE2MQ==). This is a beta feature to avoid spam applicants. Companies can search these words to find applicants that read this and see they're human.",
       "location": "Remote",
       "workplaceMode": "remote",
       "market": "online",
@@ -231,13 +231,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Remote OK의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-25T08:36:00.660Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-e23f6212e01b71781eb4",
@@ -265,13 +265,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "jobicy-5849fdc0148381e2b141",
@@ -299,13 +299,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish, English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Jobicy의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-24T04:02:18.158Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-bed3a8691dab45aa93c9",
@@ -333,13 +333,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-24T04:02:18.158Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-b166e15360e81825f323",
@@ -367,13 +367,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish, English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-b7877c1dd8f3191681b6",
@@ -401,13 +401,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T07:10:53.366Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-03664e3fbfd9f6a2f29e",
@@ -435,13 +435,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-d24767c381920dee8e21",
@@ -469,13 +469,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-dac3d08c246b19060f44",
@@ -503,13 +503,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-5c78c06afbced59be206",
@@ -537,13 +537,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "Spanish: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-dd36889236afc72fc2b1",
@@ -571,13 +571,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-b1260e97fe9391b9f601",
@@ -605,13 +605,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-18a1d3a498dd52fda9c6",
@@ -639,13 +639,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-06T04:01:39.890Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-f7e2f32314fd0c67b0a1",
@@ -673,13 +673,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-09T02:30:45.303Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-e7871b70a2e120e90021",
@@ -707,13 +707,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-09T02:30:45.303Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-77ec2b3705d918782d5b",
@@ -741,13 +741,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-13T04:00:38.642Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-d6be9b1deaf6079665dc",
@@ -775,13 +775,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-22d4c8fa9337b9adafb6",
@@ -809,13 +809,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-5243700bca9862b0a13d",
@@ -843,13 +843,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-1769bc9aa4742602217f",
@@ -877,13 +877,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-ac6e018893b701bce1aa",
@@ -911,13 +911,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-b8677f2cbd31db79a350",
@@ -945,13 +945,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "channel-corp--bb21291a044c643754cc",
@@ -981,12 +981,12 @@
       "eligibility": "Check language, hiring eligibility and job requirements at the employer site.",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "evidenceNote": "Channel Corp. official Lever job posting feed. Job description is abbreviated; check original posting.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-19T07:28:39.070Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-de20abea510704763404",
@@ -1014,13 +1014,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-6fa7329062b3060f9440",
@@ -1048,13 +1048,13 @@
       },
       "languageFitStatus": "match",
       "languageFitReason": "English: 등록된 언어 정보와 공고의 확인된 언어 단서가 일치합니다. 세부 지원 자격은 확인 필요.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-16T01:22:24.879Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-bb3706bde734b6c8de23",
@@ -1082,13 +1082,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-d303a78527b4c39a46e5",
@@ -1116,13 +1116,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-475fd9c7ed1920207757",
@@ -1150,13 +1150,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-d0f5225c6b551b4c37db",
@@ -1184,13 +1184,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-c2e68f444878b5667ff4",
@@ -1218,13 +1218,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-64c71a0eb9e12c977521",
@@ -1252,13 +1252,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-816910d6c1bedf7b42db",
@@ -1286,13 +1286,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-25T08:36:00.660Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-91c89c3cc1b60c9bbbc3",
@@ -1320,13 +1320,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "Korean 능력 또는 직무에 필요한 숙련도가 확인되지 않았습니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "remotive-070943a3485895acf31b",
@@ -1339,7 +1339,7 @@
       "workplaceMode": "remote",
       "market": "online",
       "category": "content",
-      "postedAt": "2026-11-02T11:01:00.000Z",
+      "postedAt": "2026-11-02T20:01:00.000Z",
       "deadline": null,
       "listingExpiresAt": null,
       "pay": "$20k -$35k",
@@ -1354,13 +1354,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Remotive의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-19T01:38:30.324Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "himalayas-0ea73500ed565d02eab3",
@@ -1388,13 +1388,13 @@
       },
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "sourceKind": "public_api",
       "evidenceNote": "Himalayas의 공개 API 수집 기록. 지원 요건 및 현재 모집 여부는 연결된 원문에서 재확인 필요",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-03T08:51:48.491Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "greenhouse:krafton:8921058002",
@@ -1415,14 +1415,14 @@
       "description": "<div class=&quot;content-intro&quot;><p><span style=&quot;font-size: 10pt;&quot;>우리는 게이머의 로망을 실현하기 위해, 누구도 가지 않는 길을 갑니다.</span><br><span style=&quot;font-size: 10pt;&quot;>예상을 뛰어넘는 과감한 상상력과 기술로, 전 세계 팬들이 잊지 못할 세상을 만들기 위해 </span><span style=&quot;font-size: 10pt;&quot;>담대하게 도전하고 개척합니다.&nbsp;&nbsp;</span></p> <p><span style=&quot;font-size: 10pt;&quot;>We pioneer the path to players&#39; dreams.</span><br><span style=&quot;font-size: 10pt;&quot;>With bold imagination and breakthrough technology, </span><span style=&quot;font-size: 10pt;&quot;>we create unforgettable worlds for fans across the globe.</span></p> <hr> <p>&nbsp;</p></div><h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀(프로젝트)을 소개합니다.&nbsp;</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>크래프톤은 2022년부터 사회 공헌 사업의 일환으로 ‘크래프톤 정글’을 출범하여 기술 산업의 미래 인재, SW 개발자를 양성해오고 있습니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>크래프톤 정글은 경기도 용인에 위치한 크래프톤 정글 캠퍼스에서, 자기 주도적 학습과 몰입 경험, 팀 기반의 프로젝트 수행을 바탕으로 기본기가 탄탄한 개발자로 성장하게 하는 교육 과정을 운영하고 있습니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>Jungle Operations &amp; Outreach Team은 정글의 사업을 관리하며, 정글 브랜드 관리, 교육생 모집을 위한 마케팅 캠페인 실행, 지원 및 선발 절차, 교육 과정의 주요 행사, 교육생 지원과 같은 크래프톤 정글의 전반적인 사업과 운영을 담당합니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>정글의 지속 성장을 위하여 더 효과적인 마케팅 운영안을 설계/실행하고, 팀과 협업하여 정글을 성장시키는 여정에 참여하고 싶은 분을 기다립니다.</span></li> </ul> <h4>&nbsp;</h4> <h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀과 함께할 미션을 소개합니다.</strong></span></h3> <p><span style=&quot;font-size: 10pt;&quot;>Jungle Operations &amp; Outreach Team은 동료를 존중하는 태도와 끈기 있고 성숙한 사고, 긍정적인 에너지를 바탕으로 팀의 방향성에 맞추어 적극적으로 협력하는 팀 플레이어를 찾고 있습니다.</span></p> <ul> <li><span style=&quot;font-size: 10pt;&quot;><strong>[주요 역할]</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>정글 교육 과정의 성과 극대화를 위하여 효과적인 캠페인 전략을 기획/실행하며, 타 사례와 정글의 캠페인 결과를 분석하고, 더 효과적인 실행 방안을 도출합니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>캠페인 정성/정량 데이터를 수집하고, 데이터 기반의 성과 분석 프로세스 및 대시보드 구축을 실행합니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>교육생 모집 선발, 학사운영 및 입소식, 수료식, 발표회 등 주요 교육 행사와 프로그램의 준비 및 실행, 운영을 지원합니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>교육과정이 원활하게 운영될 수 있도록 기타 운영 업무 전반을 지원합니다.</span></li> </ul> </li> <li><span style=&quot;font-size: 10pt;&quot;><strong>이 직무를 통해 이런 경험을 할 수 있습니다.</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>교육 사업 기반의 캠페인 설계 및 실행, 교육 사업 분야에 대한 전문적 인사이트와 업무 경력을 축적할 수 있습니다.</span></li> <l",
       "eligibility": "지원자격 확인 필요",
       "languageRequirements": "공고 원문 확인 필요",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "evidenceNote": "회사 공식 Greenhouse 채용목록 · Employment Type: Contractor · Sector: Chairman Projects · Corp./Studios: KRAFTON · Job Category - Art:  · Job Category - Business & Service:  · Job Category - Data:  · Job Category - Development Management:  · Job Category - Game Design:  · Job Category - Tech:  · Job Category - TA:  · Job Category - QA:  · Job Category - Sound:  · Job Category - U",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T22:37:03.341Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "greenhouse:krafton:8904989002",
@@ -1443,14 +1443,14 @@
       "description": "<div class=&quot;content-intro&quot;><p><span style=&quot;font-size: 10pt;&quot;>우리는 게이머의 로망을 실현하기 위해, 누구도 가지 않는 길을 갑니다.</span><br><span style=&quot;font-size: 10pt;&quot;>예상을 뛰어넘는 과감한 상상력과 기술로, 전 세계 팬들이 잊지 못할 세상을 만들기 위해 </span><span style=&quot;font-size: 10pt;&quot;>담대하게 도전하고 개척합니다.&nbsp;&nbsp;</span></p> <p><span style=&quot;font-size: 10pt;&quot;>We pioneer the path to players&#39; dreams.</span><br><span style=&quot;font-size: 10pt;&quot;>With bold imagination and breakthrough technology, </span><span style=&quot;font-size: 10pt;&quot;>we create unforgettable worlds for fans across the globe.</span></p> <hr> <p>&nbsp;</p></div><h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀(프로젝트)을 소개합니다.&nbsp;</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>배틀그라운드 모바일(PUBG Mobile)은 2018년 5월부터 한국 지역에서 서비스 되고 있는 PUBG의 모바일 버전 게임입니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>배틀그라운드 모바일 서비스 조직은 배틀그라운드 모바일의 전반적인 서비스 전략을 세우고, 실행하며, 게임 서비스를 위해 협업하는 많은 유관 부서의 커뮤니케이션 허브 역할을 수행 하고 있습니다.</span></li> <li><span style=&quot;font-size: 10pt;&quot;>배틀그라운드 모바일 서비스 조직은 팬 분들께서 안정적으로 게임을 플레이 할 수 있는 환경을 마련하고, 즐거움을 느끼실 수 있는 콘텐츠를 기획하고 운영합니다.</span></li> </ul> <h4>&nbsp;</h4> <h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀과 함께할 미션을 소개합니다.</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;><strong>캠페인 운영</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>업데이트/시즌/콜라보/이스포츠 등 라이브 서비스 마케팅 캠페인 기획 참여 및 운영</span></li> <li><span style=&quot;font-size: 10pt;&quot;>디지털·SNS·인플루언서 등 멀티 채널 캠페인 운영 및 성과 측정</span></li> <li><span style=&quot;font-size: 10pt;&quot;>이스포츠 대회·리그 연계 마케팅 운영 지원 및 파트너(팀·선수·스트리머 등) 협업 실행</span></li> </ul> </li> <li><span style=&quot;font-size: 10pt;&quot;><strong>콘텐츠 &amp; 크리에이티브</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>YouTube·TikTok·Meta 등 주요 미디어 콘텐츠 제작 진행 및 운영</span></li> <li><span style=&quot;font-size: 10pt;&quot;>대행사·크리에이터 협업을 통한 콘텐츠 제작 및 일정 관리</span></li> </ul> </li> <li><span style=&quot;font-size: 10pt;&quot;><strong>데이터 분석 &amp; 리포팅</strong></span> <ul> <li><span style=&quot;font-size: 10pt;&quot;>캠페인 성과 데이터 수집 및 정리</span></li> <li><span style=&quot;font-size: 10pt;&quot;>채널별(디지털·SNS·인플루언서) 성과 지표 트래킹 및 대시보드 업데이트</span></li> </ul> </li> </ul> <p>&nbsp;</p> <h3><span style=&quot;font-size: 12pt;&quot;><strong>이런 경험을 가진 분과 함께 성장하고 싶습니다! (필수요건)</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>마케팅 경력&nbsp;1년차 이상</span></li> <li><span style=&qu",
       "eligibility": "지원자격 확인 필요",
       "languageRequirements": "공고 원문 확인 필요",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "evidenceNote": "회사 공식 Greenhouse 채용목록 · Employment Type: Contractor · Sector: IP Franchise · Corp./Studios: KRAFTON · Job Category - Art:  · Job Category - Business & Service: Marketing · Job Category - Data:  · Job Category - Development Management:  · Job Category - Game Design:  · Job Category - Tech:  · Job Category - TA:  · Job Category - QA:  · Job Category - Sound:  · Job Category",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-10-26T13:05:13.850Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "curated-411ccb6a7a52c85f057d",
@@ -1490,7 +1490,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-11-17. NOT refreshed by the automated crawler. Recheck the original job for current availability. Public Saramin posting checked 2026-11-17. New path: Saramin general listing outside the existing remote-aggregator set. Closing date is listed as rolling/always open; confirm the posting remains active before applying.",
       "collectionState": "seen",
       "firstSeenAt": "2026-11-17T04:02:51.250Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "greenhouse:krafton:8798601002",
@@ -1511,14 +1511,14 @@
       "description": "<div class=&quot;content-intro&quot;><p><span style=&quot;font-size: 10pt;&quot;>우리는 게이머의 로망을 실현하기 위해, 누구도 가지 않는 길을 갑니다.</span><br><span style=&quot;font-size: 10pt;&quot;>예상을 뛰어넘는 과감한 상상력과 기술로, 전 세계 팬들이 잊지 못할 세상을 만들기 위해 </span><span style=&quot;font-size: 10pt;&quot;>담대하게 도전하고 개척합니다.&nbsp;&nbsp;</span></p> <p><span style=&quot;font-size: 10pt;&quot;>We pioneer the path to players&#39; dreams.</span><br><span style=&quot;font-size: 10pt;&quot;>With bold imagination and breakthrough technology, </span><span style=&quot;font-size: 10pt;&quot;>we create unforgettable worlds for fans across the globe.</span></p> <hr> <p>&nbsp;</p></div><h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀(프로젝트)을 소개합니다.&nbsp;</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>KRAFTON Localization Department는 다양한 장르의 독창적인 게임을 전 세계 플레이어가 각자의 언어와 문화 안에서 자연스럽게 경험할 수 있도록 지원하는 조직입니다. 단순히 언어를 번역하는 것을 넘어, 게임의 세계관과 캐릭터, 플레이 경험이 각 언어에서도 온전히 전달될 수 있도록 번역 품질과 로컬라이제이션 프로세스 전반을 담당합니다. 플레이어가 사용하는 언어로 KRAFTON의 경험을 새롭게 구현하고 전달하는 일에 큰 열정을 가지고 있습니다.</span></li> </ul> <h4>&nbsp;</h4> <h3><span style=&quot;font-size: 12pt;&quot;><strong>우리 팀과 함께할 미션을 소개합니다.</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>사람 번역 및 AI 번역으로 제작되는 게임 콘텐츠의 번역, 편집 및 교정</span></li> <li><span style=&quot;font-size: 10pt;&quot;>한국어 로컬라이제이션의 최종 품질을 담당하며, 게임 전반의 언어적 품질, 일관성 및 톤 관리</span></li> <li><span style=&quot;font-size: 10pt;&quot;>용어집, 스타일 가이드 및 언어 품질 가이드라인을 작성하고, 외부 벤더와 협업하여 일관된 품질 기준 유지</span></li> <li><span style=&quot;font-size: 10pt;&quot;>정립된 지표와 평가 체계를 기반으로 번역 품질을 평가하고 언어 품질 보증 업무를 계획 및 수행</span></li> <li><span style=&quot;font-size: 10pt;&quot;>AI 번역 콘텐츠를 검토하고, 모델, 프롬프트 및 후처리 로직을 포함한 번역 품질 개선 프로세스에 언어적 피드백 제공</span></li> </ul> <p>&nbsp;</p> <h3><span style=&quot;font-size: 12pt;&quot;><strong>이런 경험을 가진 분과 함께 성장하고 싶습니다! (필수요건)</strong></span></h3> <ul> <li><span style=&quot;font-size: 10pt;&quot;>게임 로컬라이제이션 분야에서 번역, 편집 또는 언어 품질 검수 업무를 1년 이상 수행한 경험이 있으신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>게임 내 내러티브와 UI 등 다양한 맥락을 고려하여 자연스럽고 유려한 한국어를 작성할 수 있는 뛰어난 언어 감각과 문장력을 갖추신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>영어 원문의 의미와 뉘앙스를 정확하게 이해하고, 언어 및 문화적 맥락을 고려하여 자연스러운 한국어로 전달할 수 있으신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>게임 메커니즘과 게임 용어에 대한 폭넓은 지식과 이해를 갖추신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>다양한 게임 장르와 각 장르의 특성, 플레이어가 사용하는 언어와 문화에 대한 높은 이해도를 갖추신 분</span></li> <li><span style=&quot;font-size: 10pt;&quot;>AI",
       "eligibility": "지원자격 확인 필요",
       "languageRequirements": "공고 원문 확인 필요",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "evidenceNote": "회사 공식 Greenhouse 채용목록 · Employment Type: Contractor · Sector: Corporate Support · Corp./Studios: KRAFTON · Job Category - Art:  · Job Category - Business & Service: Localization · Job Category - Data:  · Job Category - Development Management:  · Job Category - Game Design:  · Job Category - Tech:  · Job Category - TA:  · Job Category - QA:  · Job Category - Sound:  · Job ",
       "languageFitStatus": "mismatch",
       "languageFitReason": "Korean: 현재 확인된 언어 역량으로는 직무 요구 수준을 충족한다고 판단하기 어렵습니다. 실제 능력과 요건 확인 필요.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "channel-corp--f7c2cbad583f14a4a457",
@@ -1548,12 +1548,12 @@
       "eligibility": "Check language, hiring eligibility and job requirements at the employer site.",
       "languageFitStatus": "unknown",
       "languageFitReason": "공고에서 요구 언어를 확정할 근거가 부족합니다.",
-      "verifiedAt": "2026-11-26T04:59:53.678Z",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
       "evidenceNote": "Channel Corp. official Lever job posting feed. Job description is abbreviated; check original posting.",
       "legacyIds": [],
       "collectionState": "seen",
       "firstSeenAt": "2026-11-21T23:41:09.467Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "curated-eac3cce711b15d75ed1d",
@@ -1593,7 +1593,7 @@
       "evidenceNote": "Manually reviewed the source page on 2026-11-17. NOT refreshed by the automated crawler. Recheck the original job for current availability. New public path: Wanted startup job board. The posting was still listed on 2026-11-17; deadline is rolling. Korean level and visa support are not stated, so the lead is conditional.",
       "collectionState": "seen",
       "firstSeenAt": "2026-11-17T04:02:51.250Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "curated-f749096991d2dcbdc2dc",
@@ -1633,7 +1633,36 @@
       "evidenceNote": "Manually reviewed the source page on 2026-10-28. NOT refreshed by the automated crawler. Recheck the original job for current availability. Individual Wehome careers page checked 2026-10-28. No close date or pay shown. Office address listed in Mapo-gu, Seoul, so this is a relocation/commute lead rather than a Jeonju online job.",
       "collectionState": "seen",
       "firstSeenAt": "2026-10-28T04:47:49.197Z",
-      "lastSeenAt": "2026-11-26T04:59:53.678Z"
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
+    },
+    {
+      "id": "kowork-6e8d04284512b74b7c62",
+      "title": "[Bontae Museum] Global Marketer or Planner (Jeju Island Resident)",
+      "company": "본태박물관",
+      "source": "KOWORK",
+      "url": "https://kowork.kr/en/post/8981",
+      "sourceKind": "public_listing_index",
+      "market": "offline",
+      "workplaceMode": "onsite",
+      "category": "marketing",
+      "location": "본태박물관, 69 Sallongnam-ro 762beon-gil, Andeok-myeon, Seogwipo-si, Jeju-do, Republic of Korea",
+      "province": "제주특별자치도",
+      "commuteClass": "relocation",
+      "postedAt": null,
+      "deadline": null,
+      "pay": "Pay Follows Company Inner Rule",
+      "description": "KOWORK public metadata. Employment: Temporary. Work model: On-site. Category: Marketing/Ads. Pay: Pay Follows Company Inner Rule. Location: 본태박물관, 69 Sallongnam-ro 762beon-gil, Andeok-myeon, Seogwipo-si, Jeju-do, Republic of Korea. Current residence: Korea residents only TOPIK TOPIK Level 4 or above. Preferred visas: Student Visa (D-2) Job Seeking Visa (D-10) Employment Visa (E-1 ~ E-7) Residence (F-2) Overseas Korean (F-4) Permanent Residence (F-5) International Marriage (F-6). Open the original page for the full description and current status.",
+      "languageRequirements": "Required: English Native",
+      "languageFitStatus": "unknown",
+      "languageFitReason": "Public metadata was checked; language requirements still need confirmation.",
+      "eligibilityStatus": "possible",
+      "eligibility": "Current residence: Korea residents only TOPIK TOPIK Level 4 or above; Preferred visas: Student Visa (D-2) Job Seeking Visa (D-10) Employment Visa (E-1 ~ E-7) Residence (F-2) Overseas Korean (F-4) Permanent Residence (F-5) International Marriage (F-6)",
+      "verifiedAt": "2026-11-26T06:21:40.091Z",
+      "evidenceNote": "Minimal structured metadata and source link only. No description text or copyrighted images reproduced.",
+      "legacyIds": [],
+      "collectionState": "seen",
+      "firstSeenAt": "2026-11-26T06:21:40.091Z",
+      "lastSeenAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "id": "kowork-87ed0fecdf5c9a6751c2",
@@ -1660,7 +1689,7 @@
       "verifiedAt": "2026-11-26T04:59:53.678Z",
       "evidenceNote": "Minimal structured metadata and source link only. No description text or copyrighted images reproduced.",
       "legacyIds": [],
-      "collectionState": "seen",
+      "collectionState": "not_seen",
       "firstSeenAt": "2026-11-25T08:36:00.660Z",
       "lastSeenAt": "2026-11-26T04:59:53.678Z"
     },
@@ -7732,7 +7761,7 @@
       "source": "Remotive",
       "status": "ok",
       "count": 1,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "detail": "1/1 요청 완료. 1개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://remotive.com/api/remote-jobs?limit=500"
     },
@@ -7740,7 +7769,7 @@
       "source": "Jobicy",
       "status": "ok",
       "count": 4,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "detail": "4/4 요청 완료. 4개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://jobicy.com/api/v2/remote-jobs?count=200"
     },
@@ -7748,7 +7777,7 @@
       "source": "Remote OK",
       "status": "ok",
       "count": 1,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "detail": "1/1 요청 완료. 1개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://remoteok.com/api"
     },
@@ -7756,7 +7785,7 @@
       "source": "Arbeitnow",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "detail": "1/1 요청 완료. 0개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://www.arbeitnow.com/api/job-board-api?page=1"
     },
@@ -7764,7 +7793,7 @@
       "source": "Himalayas",
       "status": "ok",
       "count": 34,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "detail": "9/9 요청 완료. 34개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://himalayas.app/jobs/api/search?q=korean&country=KR&sort=recent&page=1"
     },
@@ -7772,7 +7801,7 @@
       "source": "RemoteJobs.org",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "detail": "5/5 요청 완료. 0개 관련 공고. 출처 공고 URL 원문 확인 필요",
       "url": "https://remotejobs.org/api/v1/jobs?q=korean&country=KR&eligibility=known&limit=50"
     },
@@ -7781,22 +7810,22 @@
       "status": "ok",
       "count": 3,
       "detail": "회사 공식 Greenhouse 목록 67건 확인, 한국 근무지·관련 직무·최근 90일 기준 3건 보존",
-      "checkedAt": "2026-11-26T04:59:53.678Z"
+      "checkedAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "source": "Appier",
       "status": "ok",
       "count": 0,
-      "detail": "회사 공식 Greenhouse 목록 61건 확인, 한국 근무지·관련 직무·최근 90일 기준 0건 보존",
-      "checkedAt": "2026-11-26T04:59:53.678Z"
+      "detail": "회사 공식 Greenhouse 목록 60건 확인, 한국 근무지·관련 직무·최근 90일 기준 0건 보존",
+      "checkedAt": "2026-11-26T06:21:40.091Z"
     },
     {
       "source": "ShopBack",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "url": "https://jobs.lever.co/shopback-2",
-      "durationMs": 1825,
+      "durationMs": 660,
       "retryCount": 0,
       "detail": "66 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7804,9 +7833,9 @@
       "source": "Xsolla",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "url": "https://jobs.lever.co/xsolla",
-      "durationMs": 488,
+      "durationMs": 330,
       "retryCount": 0,
       "detail": "187 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7814,9 +7843,9 @@
       "source": "Channel Corp.",
       "status": "ok",
       "count": 2,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "url": "https://jobs.lever.co/zoyi",
-      "durationMs": 178,
+      "durationMs": 130,
       "retryCount": 0,
       "detail": "75 employer postings checked; 2 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7824,9 +7853,9 @@
       "source": "Match Group",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "url": "https://jobs.lever.co/matchgroup",
-      "durationMs": 834,
+      "durationMs": 128,
       "retryCount": 0,
       "detail": "72 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7834,9 +7863,9 @@
       "source": "Sahara AI",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "url": "https://jobs.ashbyhq.com/Sahara",
-      "durationMs": 267,
+      "durationMs": 125,
       "retryCount": 0,
       "detail": "3 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
@@ -7844,39 +7873,39 @@
       "source": "Plaud",
       "status": "ok",
       "count": 0,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "url": "https://jobs.ashbyhq.com/Plaud",
-      "durationMs": 241,
+      "durationMs": 44,
       "retryCount": 0,
       "detail": "53 employer postings checked; 0 Korea-based, role-relevant leads under the 90-day age policy. All eligibility unverified."
     },
     {
       "source": "KOWORK",
       "status": "ok",
-      "count": 2,
+      "count": 1,
       "url": "https://kowork.kr/en",
-      "checkedAt": "2026-11-26T04:59:53.678Z",
-      "detail": "One public list with 15 cards, 6 limited detail checks. 2 profile-relevant leads. No full description copied; current opening status must be verified."
+      "checkedAt": "2026-11-26T06:21:40.091Z",
+      "detail": "One public list with 15 cards, 6 limited detail checks. 1 profile-relevant leads. No full description copied; current opening status must be verified."
     },
     {
       "source": "ChatGPT Research",
       "status": "manual",
       "count": 3,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "detail": "3 individually researched leads; 13 excluded or expired; 20 manually withdrawn from the radar. Not live-checked at each scheduled refresh."
     },
     {
       "source": "사용자 저장 공고",
       "status": "not_configured",
       "count": 0,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "detail": "config/manual-jobs.json 미생성. 선택 기능"
     },
     {
       "source": "Upwork",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "detail": "Upwork 공개 RSS 자동 수집 기능이 중단되어 검색 결과를 생성하지 않습니다. 계정 로그인 후 수동 검색 링크를 이용하세요.",
       "url": "https://www.upwork.com/nx/search/jobs/",
       "manualSearches": [
@@ -7906,7 +7935,7 @@
       "source": "K-WORK",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "detail": "Korean government SME/foreign talent job platform. Each listing needs language and visa verification. Original-site browsing only.",
       "url": "https://k-work.or.kr/empmnInfo/empmn/list.do"
     },
@@ -7914,7 +7943,7 @@
       "source": "Hanultari",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "detail": "Seoul multicultural-family job portal. Automatic republication restricted; verify jobs at original source.",
       "url": "https://mcfamily.or.kr/en/jobs/opening"
     },
@@ -7922,7 +7951,7 @@
       "source": "JOBPLOY",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "detail": "Foreigner-focused Korea jobs. Terms restrict unlicensed copying; use original-site search.",
       "url": "https://www.jobploy.kr/en"
     },
@@ -7930,7 +7959,7 @@
       "source": "Wanted",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "detail": "Additional Korean employer listings for Spanish-language content and marketing. Search on the original site; individual postings can already be closed.",
       "url": "https://www.wanted.co.kr/"
     },
@@ -7938,7 +7967,7 @@
       "source": "ProZ",
       "status": "manual",
       "count": 0,
-      "checkedAt": "2026-11-26T04:59:53.678Z",
+      "checkedAt": "2026-11-26T06:21:40.091Z",
       "detail": "Specialist translation and localization jobs; verify deadlines, professional experience and ability to work from Korea on each original posting.",
       "url": "https://www.proz.com/translation-jobs"
     }
