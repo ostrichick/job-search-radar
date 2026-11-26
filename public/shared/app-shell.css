@@ -39,7 +39,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .topbar, .hero {
   position: relative;
   overflow: hidden;
-  min-height: 360px;
+  min-height: 390px;
   padding: 24px var(--page-pad-x) 28px;
   background: var(--chrome-bg);
   color: var(--chrome-text);
@@ -131,7 +131,7 @@ h1 em { color: var(--accent); font-style: normal; }
 }
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 .hero-aside {
-  flex: 0 0 260px;
+  flex: 0 0 280px;
   align-self: flex-end;
   display: flex;
   flex-wrap: wrap;
@@ -146,8 +146,8 @@ h1 em { color: var(--accent); font-style: normal; }
 .hero-aside .freshness-label { font-weight: 800; }
 .hero-aside strong { flex-basis: 100%; font-size: 22px; line-height: 1.2; font-weight: 800; }
 .hero-aside small { flex-basis: 100%; color: var(--chrome-text-muted); }
-.freshness-kind { color: var(--chrome-text-muted); }
-.freshness-chip { padding: 2px 8px; border-radius: var(--radius-pill); background: var(--surface-muted); font-weight: 700; }
+.freshness-kind { color: var(--chrome-text-muted); white-space: nowrap; }
+.freshness-chip { white-space: nowrap; padding: 2px 8px; border-radius: var(--radius-pill); background: var(--surface-muted); font-weight: 700; }
 .freshness-chip[data-state="partial"] { background: var(--status-warn-soft); color: var(--status-warn-text); }
 .freshness-chip[data-state="unknown"] { background: var(--surface-muted); color: var(--text-muted); }
 .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: var(--shadow-accent-ring); }
@@ -529,7 +529,7 @@ footer { margin-top: var(--space-8); color: var(--text-faint); font-size: var(--
 @media (max-width: 760px) {
   .results-jump { display: inline-flex; }
 }.topbar > div:first-child .profile-switch { margin-bottom: var(--space-6); }
-.topbar h1 { font-size: clamp(28px, 3vw, 42px); }
+.topbar h1, .hero h1 { font-size: clamp(28px, 3vw, 40px); }
 .topbar .lede { margin-top: 10px; }
 .topbar .actions { margin-top: 12px; }
-@media (max-width: 720px) { .topbar, .hero { min-height: 460px; } }
+@media (max-width: 760px) { .topbar, .hero { min-height: 490px; } }

@@ -142,14 +142,32 @@ test('상단 nav와 eyebrow 간격이 데스크톱과 모바일에서 같다', a
 
 test('일곱 탭의 상단 높이가 데스크톱과 모바일에서 같다', async ({ page }) => {
   const paths = ['/munseong/', '/nicole/', '/household/', '/classes/', '/tours/', '/action/', '/side-gigs/'];
-  for (const [width, height] of [[1440, 900], [390, 844]]) {
+  for (const [width, height] of [[1440, 900], [760, 900], [390, 844]]) {
     await page.setViewportSize({ width, height });
     const heights = [];
     for (const path of paths) {
       await page.goto(path);
       await page.waitForLoadState('networkidle');
-      heights.push(await page.evaluate(() => Math.round(document.querySelector('header').getBoundingClientRect().height)));
-      expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
+      const layout = await page.evaluate(() => {
+        const header = document.querySelector('header').getBoundingClientRect();
+        const contains = (el) => {
+          if (!el) return true;
+          const r = el.getBoundingClientRect();
+          return r.top >= header.top - 1 && r.bottom <= header.bottom + 1;
+        };
+        return {
+          height: Math.round(header.height),
+          navVisible: contains(document.querySelector('.profile-switch, .sites')),
+          asideVisible: contains(document.querySelector('.hero-aside')),
+          actionsVisible: contains(document.querySelector('.topbar .actions')),
+          overflow: document.documentElement.scrollWidth > window.innerWidth
+        };
+      });
+      heights.push(layout.height);
+      expect(layout.navVisible).toBe(true);
+      expect(layout.asideVisible).toBe(true);
+      expect(layout.actionsVisible).toBe(true);
+      expect(layout.overflow).toBe(false);
     }
     expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(2);
   }
@@ -163,6 +181,8 @@ test('freshness status reflects provenance, partial checks, failures and timezon
   await page.goto('/action/');
   await expect(page.locator('.freshness-kind')).toHaveText('수동 확인');
   await expect(page.locator('.freshness-chip')).toHaveText('일부 확인 · 6건 미확인');
+  const cleanTourFeed = { updatedAt: new Date().toISOString(), items: [{ id: 'tour', checkedAt: new Date().toISOString() }], sourceStatus: [] };
+  await page.route('**/tours.json*', (route) => route.fulfill({ json: cleanTourFeed }));
   await page.goto('/tours/');
   await expect(page.locator('.freshness-kind')).toHaveText('자동 수집');
   await expect(page.locator('.freshness-chip')).toHaveText('전체 확인');
