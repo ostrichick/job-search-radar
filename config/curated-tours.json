@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-26T09:20:00+09:00",
+  "updatedAt": "2026-11-27T20:05:21+09:00",
   "items": [
     {
       "id": "curated-jeonju-hanok-walking-tour",
@@ -22,7 +22,7 @@
       "sourceUrl": "https://hanok.jeonju.go.kr/contents/tour",
       "applyUrl": "https://hanok.jeonju.go.kr/contents/tour",
       "description": "문화관광해설사와 함께 경기전, 전라감영, 한옥마을 골목길 등을 걷는 무료 도보해설 투어입니다. 20인 미만 개인은 예약 없이 시간표에 맞춰 출발 장소로 가면 되고, 일부 코스는 영어 해설도 진행합니다.",
-      "checkedAt": "2026-11-26T09:20:00+09:00"
+      "checkedAt": "2026-11-27"
     },
     {
       "id": "curated-jeonju-museum-jeonbak-bingo",
@@ -45,7 +45,7 @@
       "sourceUrl": "https://jeonju.museum.go.kr/education.es?act=view&edu_seq=242&mid=a50301010100",
       "applyUrl": "https://jeonju.museum.go.kr/education.es?act=view&edu_seq=242&mid=a50301010100",
       "description": "상설전시실을 관람하며 스마트폰으로 QR코드를 스캔해 문제를 풀고 빙고를 완성하는 자율 참여형 전시 연계 체험입니다. 별도 예약 없이 무료로 참여할 수 있습니다.",
-      "checkedAt": "2026-11-26T09:20:00+09:00"
+      "checkedAt": "2026-11-27"
     },
     {
       "id": "curated-jeonju-museum-nahan",
@@ -67,8 +67,8 @@
       "sourceName": "국립전주박물관",
       "sourceUrl": "https://www.jb0479.or.kr/board/view.php?bbsId=program&nttId=9325&pageId=sub0503",
       "applyUrl": "https://jeonju.museum.go.kr/education.es?mid=a10302000000",
-      "description": "Ends 2026-11-29 (3 days left as of 11-26). Free self-guided activities in the special-exhibition gallery: wish writing, arhat-expression making, attribute matching, paper-toy arhat. Photo booth ran only 09-15~10-15 and is over.",
-      "checkedAt": "2026-11-26T09:20:00+09:00"
+      "description": "Ends 2026-11-29 (2 days left as of 11-27). Free self-guided activities in the special-exhibition gallery: wish writing, arhat-expression making, attribute matching, paper-toy arhat. Photo booth ran only 09-15~10-15 and is over.",
+      "checkedAt": "2026-11-27"
     },
     {
       "id": "curated-jeonju-hanji-center",
@@ -91,7 +91,7 @@
       "sourceUrl": "https://www.ktcc.or.kr/main?menu=112&mode=view&no=107",
       "applyUrl": "https://www.jmhm.kr/main/?menu=86",
       "description": "전주천년한지관에서 전통한지 제조 과정을 직접 체험하는 무료 프로그램입니다. 초등학생 이상이면 참여할 수 있어 성인 부부도 함께 신청할 수 있습니다.",
-      "checkedAt": "2026-11-26T09:20:00+09:00"
+      "checkedAt": "2026-11-27"
     },
     {
       "id": "curated-ktcc-on-studio",
@@ -114,7 +114,7 @@
       "sourceUrl": "https://www.ktcc.or.kr/main?menu=112&mode=view&no=104",
       "applyUrl": "https://www.ktcc.or.kr/main?menu=112&mode=view&no=104",
       "description": "한국전통문화전당 2층의 무료 셀프 사진 스튜디오입니다. 한 타임에 한 팀만 이용할 수 있고 소품이 준비되어 있어, 두 사람이 편하게 사진을 남기기 좋습니다.",
-      "checkedAt": "2026-11-26T09:20:00+09:00"
+      "checkedAt": "2026-11-27"
     },
     {
       "id": "curated-jeonju-gamyeong-observer",
@@ -137,7 +137,7 @@
       "sourceUrl": "https://www.jbct.or.kr/portal/site/menu/MENU_000000000000376?id=4026",
       "applyUrl": "https://www.jbct.or.kr/portal/site/menu/MENU_000000000000376?id=4026",
       "description": "전라감영에서 열리는 무료 역사행사. 연극과 조선 직업 체험, 전통놀이, 역사 이야기, 추리 게임을 매주 금·토·일에 진행한다.",
-      "checkedAt": "2026-11-26T09:20:00+09:00"
+      "checkedAt": "2026-11-27"
     },
     {
       "id": "curated-jeonju-ten-ways-jeonbuk",
@@ -160,7 +160,7 @@
       "sourceUrl": "https://www.jbct.or.kr/portal/site/menu/MENU_000000000000376?id=4068",
       "applyUrl": "https://www.jbct.or.kr/portal/site/menu/MENU_000000000000376?id=4068",
       "description": "2025·2026 선정 전북 로컬 체험관광 10선을 소개하는 무료 전시. 공예·미식·자연 힐링 체험상품을 한옥마을 하얀양옥집에서 만난다.",
-      "checkedAt": "2026-11-26T09:20:00+09:00"
+      "checkedAt": "2026-11-27"
     },
     {
       "id": "curated-jeonju-museum-seogosa-exhibit",
@@ -183,7 +183,7 @@
       "sourceUrl": "https://www.jbct.or.kr/portal/site/menu/MENU_000000000000376?id=2785",
       "applyUrl": "https://jeonju.museum.go.kr/education.es?mid=a10302000000",
       "description": "전주 서고사 나한상의 학술·역사적 가치와 과학조사 연구성과를 소개하는 무료 특별전. 기존 '나한전 즐기기' 체험의 모(母) 전시로, 둘을 함께 관람하기 좋다.",
-      "checkedAt": "2026-11-26T09:20:00+09:00"
+      "checkedAt": "2026-11-27"
     },
     {
       "id": "curated-jeonju-craft-experience-paid",
@@ -213,7 +213,7 @@
       "transitNote": "전주한옥마을 일대 · 대중교통 도착 지점과 도보 이동은 확인 필요",
       "filmingNote": "촬영 가능 여부를 방문 전에 기관에 확인하세요.",
       "availabilityStatus": "unverified",
-      "checkedAt": "2026-11-26T09:20:00+09:00"
+      "checkedAt": "2026-11-27"
     },
     {
       "id": "curated-jeonju-traddy-damso-paid",
@@ -242,7 +242,7 @@
       "transitNote": "전주 시내 · 프로그램 실제 장소와 대중교통 연결 확인 필요",
       "filmingNote": "촬영·촬영물 공개 가능 여부는 별도 허가가 필요할 수 있습니다.",
       "availabilityStatus": "unverified",
-      "checkedAt": "2026-11-26T09:20:00+09:00"
+      "checkedAt": "2026-11-27"
     }
   ]
 }
