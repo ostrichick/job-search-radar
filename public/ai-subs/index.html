@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="../shared/icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../shared/icons/apple-touch-icon.png">
+  <link rel="manifest" href="../shared/site.webmanifest">
+  <meta name="theme-color" content="#161c1a">
+  <meta name="description" content="ChatGPT, Claude, Gemini, Cursor, OpenCode 구독 요금과 할인·캐시백을 공식 확인 여부와 함께 비교합니다.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="AI 구독 요금·할인 비교 | Digital Nomad">
+  <meta property="og:description" content="주요 AI 구독의 정가·실질 월 비용·할인·자격 조건을 확인일과 함께 정리했습니다.">
+  <meta property="og:image" content="https://ostrichick.github.io/job-search-radar/shared/icons/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>AI 구독 요금·할인 비교 | Digital Nomad</title>
+  <link rel="stylesheet" href="../shared/tokens.css">
+  <link rel="stylesheet" href="./ai-subs.css">
+  <link rel="stylesheet" href="../shared/app-shell.css">
+  <script type="module" src="./ai-subs.js"></script>
+</head>
+<body>
+  <header class="hero">
+    <nav class="sites" aria-label="페이지 이동">
+      <a href="../nicole/">Nicole</a>
+      <a href="../munseong/">Munseong</a>
+      <a href="../household/">우리 집 복지</a>
+      <a href="../classes/">언어 강의</a>
+      <a href="../tours/">투어·체험</a>
+      <a href="../action/">실행</a>
+      <a href="../side-gigs/">사이드 기그</a>
+      <a href="./" aria-current="page">AI 구독</a>
+    </nav>
+    <div class="hero-content">
+      <div>
+        <p class="eyebrow">AI SUBSCRIPTIONS · MUNSEONG &amp; NICOLE</p>
+        <h1>AI 구독, <em>실질 월 비용</em>을 비교하세요</h1>
+        <p class="subtitle">정가와 할인, 현지 결제 금액, 자격 조건을 공식 확인 여부와 함께 모았습니다. 환산 금액은 추정으로 표시하고, 결제 전에는 공식 페이지에서 다시 확인하세요.</p>
+      </div>
+      <div class="hero-aside" data-locale="ko">
+        <span class="pulse"></span>
+        <span class="freshness-label">최종 확인일</span>
+        <strong id="aiSubsUpdatedAt">-</strong>
+        <span class="freshness-kind"></span>
+        <span class="freshness-chip"></span>
+        <small>항목별 확인일은 카드에서 확인 · 결제 전 원문 재확인</small>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <p class="data-caveat">최종 확인일 · 요금·할인·캐시백은 수시로 바뀌므로 결제 전 공식 페이지에서 다시 확인하세요.</p>
+    <section class="overview" aria-label="AI 구독 현황">
+      <div class="metric"><small>총 항목</small><strong id="totalCount">-</strong><span>정리한 구독</span></div>
+      <div class="metric"><small>공식 확인</small><strong id="officialCount">-</strong><span>공식 요금 근거</span></div>
+      <div class="metric"><small>확인 필요</small><strong id="checkCount">-</strong><span>조건·금액 재확인</span></div>
+      <div class="metric"><small>만료</small><strong id="expiredCount">-</strong><span>혜택 종료</span></div>
+    </section>
+
+    <section class="panel subs-filters" aria-label="AI 구독 필터">
+      <div class="field search-field">
+        <label for="subsQuery">검색</label>
+        <input id="subsQuery" type="search" placeholder="서비스, 플랜, 조건 검색">
+      </div>
+      <div class="field">
+        <label for="subsService">서비스</label>
+        <select id="subsService">
+          <option value="">전체</option>
+          <option value="chatgpt">ChatGPT</option>
+          <option value="claude">Claude</option>
+          <option value="gemini">Gemini</option>
+          <option value="cursor">Cursor</option>
+          <option value="opencode">OpenCode</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="subsKind">플랜 유형</label>
+        <select id="subsKind">
+          <option value="">전체</option>
+          <option value="billing">정기 결제</option>
+          <option value="promo">프로모션</option>
+          <option value="student">학생</option>
+          <option value="credits">크레딧</option>
+          <option value="cashback">캐시백</option>
+          <option value="payment">결제 수단</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="subsRegion">지역</label>
+        <select id="subsRegion">
+          <option value="">전체</option>
+          <option value="korea">한국</option>
+          <option value="peru">페루</option>
+          <option value="global">전세계</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="subsBilling">결제 주기</label>
+        <select id="subsBilling">
+          <option value="">전체</option>
+          <option value="monthly">월 결제</option>
+          <option value="annual">연 결제</option>
+          <option value="one-time">일회성</option>
+          <option value="none">해당 없음</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="subsStatus">상태</label>
+        <select id="subsStatus">
+          <option value="">전체</option>
+          <option value="official">공식 확인</option>
+          <option value="check">확인 필요</option>
+          <option value="expired">만료</option>
+          <option value="hidden">숨김</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="result-head">
+      <div>
+        <strong id="subsResultCount" tabindex="-1">0개</strong>
+      </div>
+      <div class="result-actions">
+        <button id="subsReset" class="button secondary compact" type="button">필터 초기화</button>
+      </div>
+    </section>
+
+    <div id="subsCards" class="cards subs-grid"></div>
+    <section id="subsEmpty" class="empty" hidden>
+      <p id="subsEmptyMessage">표시할 항목이 없습니다.</p>
+    </section>
+    <section id="subsNotes" class="subs-notes" aria-label="확인하지 못한 영역" hidden>
+      <h2>확인하지 못한 영역</h2>
+      <ul id="subsNoteList"></ul>
+    </section>
+    <p id="subsDisclaimer" class="subs-disclaimer"></p>
+    <p id="subsFxNote" class="subs-fx" hidden></p>
+  </main>
+</body>
+</html>

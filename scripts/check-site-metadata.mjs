@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const publicDir = path.join(root, 'public');
 const siteBase = 'https://ostrichick.github.io/job-search-radar';
-const tabs = ['nicole', 'munseong', 'household', 'classes', 'tours', 'action', 'side-gigs'];
+const tabs = ['nicole', 'munseong', 'household', 'classes', 'tours', 'action', 'side-gigs', 'ai-subs'];
 
 async function walk(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -67,6 +67,18 @@ for (const file of htmlFiles) {
   const title = /<title>([\s\S]*?)<\/title>/i.exec(html);
   assert.ok(title && title[1].trim(), `${relative} needs a non-empty title`);
 
+  // GitHub Pages는 /job-search-radar/ 하위에 배포되므로 로컬 자산은 상대 경로여야 하고,
+  // 실제 파일이 있어야 한다. 선행 "/" 경로는 배포 후 404가 된다.
+  for (const tag of html.matchAll(/<(?:link|script|img|source)\b[^>]*>/gi)) {
+    const raw = tag[0];
+    const href = /\bhref\s*=\s*["']([^"']*)["']/i.exec(raw)?.[1]
+      ?? /\bsrc\s*=\s*["']([^"']*)["']/i.exec(raw)?.[1];
+    if (!href) continue;
+    if (/^(?:https?:)?\/\//i.test(href) || /^(?:data|mailto|tel):/i.test(href) || href.startsWith('#')) continue;
+    assert.ok(!href.startsWith('/'), `${relative} must not use a root-absolute asset URL: ${href}`);
+    await assertAsset(file, href, 'local asset');
+  }
+
   const self = path.basename(path.dirname(file));
   if (!tabs.includes(self)) continue;
 
@@ -114,6 +126,13 @@ for (const file of htmlFiles) {
   const others = anchors.filter((tag) => tag !== current[0]).map((tag) => attribute(tag, 'href')).sort();
   const expected = tabs.filter((tab) => tab !== self).map((tab) => `../${tab}/`).sort();
   assert.deepEqual(others, expected, `${relative} tab destinations are incomplete or unexpected`);
+
+  if (self === 'ai-subs') {
+    const scriptSources = [...html.matchAll(/<script\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/gi)].map((match) => match[1]);
+    assert.ok(scriptSources.includes('./ai-subs.js'), `${relative} must load ./ai-subs.js`);
+    const source = await fs.readFile(path.join(publicDir, 'ai-subs/ai-subs.js'), 'utf8');
+    assert.match(source, /fetch\(\s*['"]\.\/deals\.json['"]/, 'ai-subs.js must fetch ./deals.json with a relative URL');
+  }
 }
 
 console.log(`site metadata checks passed (${htmlFiles.length} pages)`);

@@ -3,7 +3,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const checkedFiles = [];
-for (const directory of ['public/munseong', 'public/nicole', 'public/household', 'public/classes', 'public/tours', 'public/side-gigs', 'scripts', 'profiles/dubu/scripts']) {
+for (const directory of ['public/munseong', 'public/nicole', 'public/household', 'public/classes', 'public/tours', 'public/side-gigs', 'public/ai-subs', 'scripts', 'profiles/dubu/scripts']) {
   for (const entry of await fs.readdir(directory, { withFileTypes: true })) {
     if (!entry.isFile() || !/\.(?:mjs|js)$/.test(entry.name)) continue;
     const file = `${directory}/${entry.name}`;

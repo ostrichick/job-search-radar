@@ -28,11 +28,11 @@ test('사이드 기그 페이지는 큐레이션 목록과 필터를 보여준�
   await expect(page.locator('.gig-card')).toHaveCount(5);
 });
 
-test('모든 페이지의 상단 메뉴는 7개 탭을 서로 연결한다', async ({ page }) => {
-  for (const tab of ['nicole', 'munseong', 'household', 'classes', 'tours', 'action', 'side-gigs']) {
+test('모든 페이지의 상단 메뉴는 8개 탭을 서로 연결한다', async ({ page }) => {
+  for (const tab of ['nicole', 'munseong', 'household', 'classes', 'tours', 'action', 'side-gigs', 'ai-subs']) {
     await page.goto(`/${tab}/`);
     const nav = page.locator('nav.profile-switch, nav.sites').first();
-    await expect(nav.locator('a')).toHaveCount(7);
+    await expect(nav.locator('a')).toHaveCount(8);
     await expect(nav.locator('a[aria-current="page"]')).toHaveCount(1);
   }
 });

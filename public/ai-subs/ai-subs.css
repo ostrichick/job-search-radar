@@ -1,0 +1,66 @@
+/* AI 구독 비교 페이지 전용 규칙 — 색상은 tokens.css 변수만 사용 */
+.hero-content > div { min-width: 0; }
+
+/* 필터: app-shell의 .filters 그리드와 충돌하지 않도록 페이지 전용 클래스 사용 */
+.subs-filters { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--space-3); align-items: end; }
+.subs-filters .search-field { grid-column: span 2; }
+.subs-filters label { display: grid; gap: 6px; min-width: 0; color: var(--text-subtle); font-size: var(--text-caption); font-weight: 800; }
+
+.result-head { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 18px 2px 10px; color: var(--text-muted); font-size: 13px; }
+.result-head strong { color: var(--text-strong); font-size: 17px; }
+.result-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+
+.subs-grid { align-items: stretch; }
+.subs-card { display: flex; flex-direction: column; min-width: 0; }
+.card.subs-card h3 { margin: var(--space-3) 0 6px; font-size: var(--text-heading); line-height: 1.3; }
+.subs-card h3 a { color: var(--text-strong); text-decoration: none; }
+.subs-card h3 a:hover { text-decoration: underline; }
+.subs-service { margin: 0 0 var(--space-3); color: var(--text-body); font-size: var(--text-caption); font-weight: 800; overflow-wrap: anywhere; }
+
+.subs-status.official { background: var(--status-ok-soft); color: var(--status-ok-text); }
+.subs-status.check { background: var(--status-warn-soft); color: var(--status-warn-text); }
+.subs-status.expired { background: var(--state-muted-bg); color: var(--state-muted-text); }
+.tag.subs-kind { background: var(--accent-soft-strong); color: var(--text-accent); }
+.tag.subs-region { background: var(--status-info-soft); color: var(--status-info-text); }
+
+.subs-price { display: grid; gap: 4px; min-width: 0; margin: 0 0 var(--space-3); padding: 10px 12px; border: 1px solid var(--border-base); border-radius: var(--radius-sm); background: var(--surface-subtle); }
+.subs-price-label { color: var(--text-subtle); font-size: var(--text-caption); font-weight: 800; }
+.subs-amount { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; }
+.subs-amount strong { color: var(--text-strong); font-size: 19px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.chip.subs-estimate { background: var(--status-info-soft); color: var(--status-info-text); }
+.subs-price small { color: var(--text-faint); font-size: var(--text-caption); line-height: 1.5; overflow-wrap: anywhere; }
+
+.subs-facts { display: grid; gap: 6px; min-width: 0; margin: 0 0 var(--space-3); }
+.subs-facts > div { display: grid; grid-template-columns: 62px minmax(0, 1fr); gap: 8px; align-items: baseline; min-width: 0; }
+.subs-facts dt { color: var(--text-subtle); font-size: var(--text-caption); font-weight: 800; }
+.subs-facts dd { min-width: 0; margin: 0; color: var(--text-body); font-size: var(--text-caption); line-height: 1.5; overflow-wrap: anywhere; }
+
+.subs-caveat { min-width: 0; margin: 0 0 var(--space-3); padding: 8px 10px; border-radius: var(--radius-sm); background: var(--status-warn-soft); color: var(--status-warn-text); font-size: var(--text-caption); line-height: 1.55; overflow-wrap: anywhere; }
+.subs-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border-subtle); }
+.subs-actions .button { text-decoration: none; }
+.subs-checked { margin-left: auto; color: var(--text-faint); font-size: var(--text-caption); }
+.subs-disclaimer { margin: var(--space-4) 2px 0; color: var(--text-faint); font-size: var(--text-caption); line-height: 1.6; }
+.subs-disclaimer:empty { display: none; }
+.subs-approx { color: var(--text-muted); font-size: var(--text-caption); font-variant-numeric: tabular-nums; }
+.subs-fx { margin: 6px 2px 0; color: var(--text-faint); font-size: var(--text-caption); line-height: 1.6; overflow-wrap: anywhere; }
+.subs-fx a { color: var(--text-accent); }
+.subs-fx[hidden] { display: none; }
+.subs-notes { margin: var(--space-4) 2px 0; padding: 14px 16px; border: 1px solid var(--border-base); border-radius: var(--radius-sm); background: var(--surface-subtle); color: var(--text-body); font-size: var(--text-caption); line-height: 1.6; }
+.subs-notes h2 { margin: 0 0 8px; color: var(--text-strong); font-size: var(--text-caption); letter-spacing: .04em; text-transform: uppercase; }
+.subs-notes ul { display: grid; gap: 6px; margin: 0; padding-left: 18px; }
+.subs-notes strong { color: var(--text-strong); }
+.subs-notes[hidden] { display: none; }
+
+/* app-shell.css가 마지막에 로드되므로 브레이크포인트를 동일하게 맞춘다 */
+@media (max-width: 1100px) {
+  .subs-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .subs-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .subs-filters .search-field { grid-column: 1 / -1; }
+  .result-head { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .result-actions { justify-content: flex-start; }
+}
+@media (max-width: 520px) {
+  .subs-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

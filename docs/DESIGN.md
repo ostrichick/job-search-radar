@@ -59,7 +59,7 @@ npm run build:icons
 
 이 명령은 로컬 Playwright Chromium으로 `apple-touch-icon.png`(180×180), `icon-192.png`, `icon-512.png`, `maskable-512.png`, `og-image.png`(1200×630)를 만든다. 예약 CI에는 Chromium이 없으므로 `npm run check`에서 실행하지 않는다.
 
-운영 탭 6개(`action`, `classes`, `household`, `munseong`, `nicole`, `tours`)의 head 블록 예시:
+운영 탭 8개(`action`, `ai-subs`, `classes`, `household`, `munseong`, `nicole`, `side-gigs`, `tours`)의 head 블록 예시:
 
 ```html
 <link rel="icon" href="../shared/icons/favicon.svg" type="image/svg+xml">
@@ -84,8 +84,8 @@ npm run build:icons
 - GitHub Pages가 `/job-search-radar/` 하위에 배포되므로 `/shared/...` 같은 도메인 루트 경로를 쓰지 않는다.
 - `theme-color`와 manifest의 `theme_color`는 `tokens.css`의 `--chrome-bg`와 같은 값을 쓴다.
 - `og:image`는 배포 도메인이 바뀌면 함께 갱신한다.
-- 운영 탭 6개는 서로를 모두 링크하고 현재 탭에만 `aria-current="page"`를 둔다.
-- `node scripts/check-site-metadata.mjs`가 위 규칙, 자산 존재, PNG 크기, manifest 아이콘을 HTML 10개 전수 검사하며, `npm run check`에 포함된다.
+- 운영 탭 8개는 서로를 모두 링크하고 현재 탭에만 `aria-current="page"`를 둔다.
+- `node scripts/check-site-metadata.mjs`가 위 규칙, 자산 상대 경로·존재, PNG 크기, manifest 아이콘을 `public/`의 모든 HTML에 대해 전수 검사하며, `npm run check`에 포함된다.
 
 `favicon.ico`는 이번 범위에 포함하지 않는다.
 

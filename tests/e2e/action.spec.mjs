@@ -51,7 +51,8 @@ test('모든 탭의 최종 확인일 안내와 날짜 형식이 일치한다', a
     ['/classes/', '최종 확인일', '#sourceDate'],
     ['/tours/', '최종 확인일', '#tourUpdatedAt'],
     ['/action/', '최종 확인일', '#actionUpdatedAt'],
-    ['/side-gigs/', '최종 확인일', '#gigUpdatedAt']
+    ['/side-gigs/', '최종 확인일', '#gigUpdatedAt'],
+    ['/ai-subs/', '최종 확인일', '#aiSubsUpdatedAt']
   ];
   for (const [path, label, dateSelector] of pages) {
     await page.goto(path);
@@ -61,7 +62,9 @@ test('모든 탭의 최종 확인일 안내와 날짜 형식이 일치한다', a
       ? '가격·일정·참가 자격·촬영 허용 여부는 변동될 수 있습니다. 출처 확인일과 현재 예약 가능 여부는 별개이므로 기관에 재확인하세요.'
       : path === '/side-gigs/'
         ? '최종 확인일 · 카드의 확인일 이후 보수·자격·모집 상태가 바뀔 수 있으니 신청 전 공식 원문을 다시 확인하세요.'
-        : koreanCaveat;
+        : path === '/ai-subs/'
+          ? '최종 확인일 · 요금·할인·캐시백은 수시로 바뀌므로 결제 전 공식 페이지에서 다시 확인하세요.'
+          : koreanCaveat;
     await expect(page.locator('.data-caveat')).toHaveText(caveat);
     await expect(page.locator('.hero-aside')).toContainText(label);
     await expect(page.locator(dateSelector)).toHaveText(datePattern);
@@ -140,8 +143,8 @@ test('상단 nav와 eyebrow 간격이 데스크톱과 모바일에서 같다', a
   expect(mobileHero.h1Width).toBeGreaterThan(1);
 });
 
-test('일곱 탭의 상단 높이와 탭 버튼 위치가 같다', async ({ page }) => {
-  const paths = ['/munseong/', '/nicole/', '/household/', '/classes/', '/tours/', '/action/', '/side-gigs/'];
+test('여덟 탭의 상단 높이와 탭 버튼 위치가 같다', async ({ page }) => {
+  const paths = ['/munseong/', '/nicole/', '/household/', '/classes/', '/tours/', '/action/', '/side-gigs/', '/ai-subs/'];
   for (const [width, height, padding] of [[1440, 900, 24], [761, 900, 24], [760, 900, 18], [390, 844, 18]]) {
     await page.setViewportSize({ width, height });
     const heights = [];
