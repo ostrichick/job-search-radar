@@ -1,4 +1,5 @@
 import { mergeStorageChanges, validateJob } from './backup-rules.js';
+import { fingerprintHidden } from './sync-link.js';
 
 const arrayKeys = ['jobDismissed', 'jobHidden', 'jobHiddenCompanies', 'jobHiddenSources', 'jobFavorites', 'jobNewIds', 'reviewedJobIds', 'knownJobIds', 'manualJobs'];
 const mapKeys = ['jobStates', 'trackedJobs', 'jobHiddenReasons', 'jobFilters', 'jobFiltersByMarket'];
@@ -77,16 +78,30 @@ export async function createStateStorage({ dbName = 'job-search-radar', initiali
     snapshot: () => structuredClone(values),
     discard() { values = structuredClone(base); },
     subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
-    commit(mode = 'edit') {
+    commit(mode = 'edit', options = {}) {
       if (failure) return Promise.reject(failure);
+      const replacing = mode === 'replace-hidden' && options.replace;
       const before = base, after = structuredClone(values);
-      if (JSON.stringify(before) === JSON.stringify(after)) return pending;
+      // Comparison with this tab's memory cannot prove a replace is unnecessary,
+      // because another tab may have written a different document meanwhile.
+      if (!replacing && JSON.stringify(before) === JSON.stringify(after)) return pending;
       base = after; queued++;
       const run = pending.then(async () => {
         if (failure) throw failure;
         const tx = db.transaction('state', 'readwrite'), done = finished(tx);
         const store = tx.objectStore('state'), latest = await request(store.get('current'));
-        const merged = mergeStorageChanges(latest.values, before, after, mode);
+        if (!latest) return { aborted: 'no-document' };
+        if (replacing && options.expectBaseline !== undefined
+          && fingerprintHidden(latest.values.jobHidden ? JSON.parse(latest.values.jobHidden) : [],
+            latest.values.jobHiddenReasons ? JSON.parse(latest.values.jobHiddenReasons) : {}) !== options.expectBaseline) {
+          // Normal conflict, not a storage error: write nothing and let the
+          // transaction finish. The caller re-previews against the winner.
+          await done;
+          revision = latest.revision;
+          if (queued === 1) { values = latest.values; base = structuredClone(values); }
+          return { aborted: 'baseline-changed', latestHiddenIds: latest.values.jobHidden ? JSON.parse(latest.values.jobHidden) : [], latestHiddenReasons: latest.values.jobHiddenReasons ? JSON.parse(latest.values.jobHiddenReasons) : {} };
+        }
+        const merged = mergeStorageChanges(latest.values, before, after, mode, replacing ? options.replace : undefined);
         const next = { ...latest, values: merged, revision: latest.revision + 1 };
         try { store.put(next, 'current'); }
         catch (error) { try { tx.abort(); } catch {} await done.catch(() => {}); throw error; }
@@ -94,6 +109,7 @@ export async function createStateStorage({ dbName = 'job-search-radar', initiali
         if (queued === 1) { values = merged; base = structuredClone(merged); }
         channel?.postMessage(revision);
         try { globalThis.localStorage.setItem(`${dbName}:revision`, String(revision)); } catch { /* IndexedDB remains authoritative */ }
+        return { applied: true };
       }).catch(async (error) => {
         failure = error;
         try {

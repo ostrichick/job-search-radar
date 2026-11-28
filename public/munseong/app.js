@@ -11,6 +11,7 @@ import { createManualJobRules } from './manual-job.js';
 import { createStateStorage } from './state-storage.js';
 import { createFeedClient } from './feed-client.js';
 import { validateBackup, validatePublicFeed, httpUrl } from './backup-rules.js';
+import { buildHiddenPayload, encodeHiddenPayload, decodeHiddenPayload, syncUrlFor, readSyncFragment, fingerprintHidden, MAX_URL_LENGTH } from './sync-link.js';
 import { getProfile } from './profiles.js';
 import { classifyWorkplace, evaluateProfileFit } from './profile-fit.js';
 const profile = getProfile(document.documentElement.dataset.profile);
@@ -1534,6 +1535,252 @@ function mergeArraySet(target, values) {
   for (const value of values) if (typeof value === 'string') target.add(value);
 }
 
+// --- Hidden-state sync link -------------------------------------------------
+// A link transfer carries only the hidden list, never filters, saved searches
+// or manual jobs, and applying it is an explicit, previewed replacement.
+
+const syncState = { pending: null, applying: false };
+
+function syncPayloadFromState() {
+  return buildHiddenPayload({
+    profile: profile.id,
+    hiddenIds: [...state.hiddenIds],
+    hiddenReasons: state.hiddenReasons
+  });
+}
+
+async function createSyncLink() {
+  const button = $('createSyncLinkBtn');
+  const idleLabel = button.textContent;
+  const field = $('syncLinkField');
+  button.disabled = true;
+  button.textContent = '만드는 중…';
+  // Hide the field while generating so an empty or stale value is never shown.
+  field.hidden = true;
+  field.value = '';
+  try {
+    const url = syncUrlFor(location.href.split('#')[0], await encodeHiddenPayload(syncPayloadFromState()));
+    if (url.length > MAX_URL_LENGTH) {
+      showToast(`링크가 너무 깁니다(${url.length}자). 상태 백업 파일을 사용해 주세요.`, { timeout: 5000 });
+      return;
+    }
+    field.value = url;
+    field.hidden = false;
+    field.focus();
+    field.select();
+    try { await navigator.clipboard.writeText(url); showToast('동기화 링크를 복사했습니다. 다른 기기에서 여세요.', { timeout: 5000 }); }
+    catch { showToast('링크를 만들었습니다. 입력란에서 복사해 주세요.', { timeout: 5000 }); }
+  } catch (error) {
+    const tooMany = /too many hidden ids/.test(error.message);
+    showToast(tooMany
+      ? '숨긴 공고가 너무 많아 링크로 옮길 수 없습니다. 상태 백업 파일을 사용해 주세요.'
+      : `링크를 만들지 못했습니다: ${error.message}`, { timeout: 6000 });
+  } finally {
+    button.disabled = false;
+    button.textContent = idleLabel;
+  }
+}
+
+function previewHiddenDiff(payload, localIds, localReasons) {
+  const remoteIds = new Set(payload.hiddenIds);
+  const hidden = new Set(localIds);
+  let toHide = 0, toShow = 0, reasonChanges = 0;
+  for (const id of remoteIds) {
+    if (!hidden.has(id)) toHide++;
+    const remoteReason = payload.hiddenReasons[id] || '';
+    if (hidden.has(id) && (localReasons[id] || '') !== remoteReason) reasonChanges++;
+  }
+  for (const id of hidden) if (!remoteIds.has(id)) toShow++;
+  return { toHide, toShow, reasonChanges, total: remoteIds.size };
+}
+
+function renderSyncPanel(payload, baseline, note = '') {
+  const panel = $('syncPanel');
+  const ids = baseline?.hiddenIds ?? [...state.hiddenIds];
+  const reasons = baseline?.hiddenReasons ?? state.hiddenReasons;
+  const diff = previewHiddenDiff(payload, ids, reasons);
+  const unchanged = diff.toHide === 0 && diff.toShow === 0 && diff.reasonChanges === 0;
+  $('syncPanelTitle').textContent = unchanged ? '이미 이 기기와 같은 상태입니다' : '숨김 목록을 링크 기준으로 바꿀까요?';
+  $('syncPanelDetail').textContent = (note ? `${note} ` : '')
+    + `새로 숨김 ${diff.toHide}개 · 다시 표시 ${diff.toShow}개 · 사유 변경 ${diff.reasonChanges}개 · 적용 후 ${diff.total}개`;
+  // A commit already in flight blocks this button too; a click would be
+  // ignored by the entry guard, so do not offer it as enabled.
+  $('syncPanelApply').disabled = unchanged || syncState.applying;
+  $('syncPanelApply').dataset.baseline = fingerprintHidden(ids, reasons);
+  panel.hidden = false;
+  panel.scrollIntoView({ block: 'nearest' });
+}
+
+async function applyPendingHiddenSync() {
+  const pending = syncState.pending;
+  if (!pending || syncState.applying) return;
+  const button = $('syncPanelApply');
+  // Bind the payload and baseline to the click itself, so a link opened in the
+  // same tab while this commit is in flight cannot change what gets stored.
+  const payload = pending.payload;
+  const expectBaseline = button.dataset.baseline;
+  syncState.applying = true;
+  button.disabled = true;
+  let committed = false;
+  let panelRendered = false;
+  // A branch that wants to show the panel with a note records it here and lets
+  // `finally` draw it after `applying` is cleared, so the button is not left
+  // disabled by the in-flight guard.
+  let pendingRepaint = null;
+  try {
+    if (storage.readOnly) { showStorageStatus(); return; }
+    const result = await storage.commit('replace-hidden', {
+      replace: {
+        jobHidden: JSON.stringify(payload.hiddenIds),
+        jobHiddenReasons: JSON.stringify(payload.hiddenReasons)
+      },
+      expectBaseline
+    });
+    if (result?.aborted === 'baseline-changed') {
+      // Another tab changed the hidden list between preview and click. Show the
+      // winner and require a fresh confirmation; nothing was written.
+      await settleAndSync();
+      render();
+      // Only the current preview may be repainted; a newer link stays untouched.
+      if (syncState.pending === pending) pendingRepaint = { payload, baseline: {
+        hiddenIds: [...state.hiddenIds], hiddenReasons: state.hiddenReasons
+      }, note: '다른 탭에서 숨김 목록이 바뀌었습니다. 내용을 다시 확인해 주세요.' };
+      return;
+    }
+    if (result?.aborted === 'no-document') {
+      await settleAndSync().catch(() => {});
+      render();
+      if (syncState.pending === pending) pendingRepaint = { payload, baseline: {
+        hiddenIds: [...state.hiddenIds], hiddenReasons: state.hiddenReasons
+      }, note: '저장된 상태를 찾지 못했습니다. 페이지를 새로고침해 주세요.' };
+      return;
+    }
+    if (result?.applied !== true) {
+      await settleAndSync().catch(() => {});
+      render();
+      showToast('숨김 목록을 바꾸지 못했습니다.', { timeout: 6000 });
+      return;
+    }
+    committed = true;
+    await settleAndSync();
+    render();
+    if (syncState.pending === pending) {
+      syncState.pending = null;
+      $('syncPanel').hidden = true;
+      // Nothing else to repaint; `finally` must not touch the hidden panel.
+      panelRendered = true;
+    }
+    showToast(`숨김 목록을 링크 기준으로 바꿨습니다 (${payload.hiddenIds.length}개).`, { timeout: 5000 });
+  } catch (error) {
+    await settleAndSync().catch(() => {});
+    render();
+    showToast(committed
+      ? '숨김 목록은 바뀌었지만, 이후 변경을 저장하지 못했습니다.'
+      : '숨김 목록을 바꾸지 못했습니다. 저장된 목록을 다시 불러왔습니다.', { timeout: 6000 });
+  } finally {
+    // Clear the in-flight guard BEFORE drawing, so a repaint computed while the
+    // commit was running does not leave the confirm button disabled.
+    syncState.applying = false;
+    if (pendingRepaint && syncState.pending) {
+      renderSyncPanel(pendingRepaint.payload, pendingRepaint.baseline, pendingRepaint.note);
+    } else if (!panelRendered) {
+      // Re-preview any link opened mid-commit against the list just stored.
+      if (syncState.pending) renderSyncPanel(syncState.pending.payload);
+      else button.disabled = false;
+    }
+  }
+}
+
+// Drain the write queue and refresh app memory in the same continuation, so a
+// commit queued mid-flight cannot leave `state` reading a stale document.
+async function settleAndSync() {
+  for (;;) {
+    await storage.flush();
+    if (storage.pending) continue;
+    syncStoredState();
+    return;
+  }
+}
+
+function cancelPendingHiddenSync() {
+  syncState.pending = null;
+  $('syncPanel').hidden = true;
+}
+
+async function decodePendingHiddenSync(encoded, requestId = ++syncRequestSeq) {
+  let payload;
+  try { payload = await decodeHiddenPayload(encoded); }
+  catch (error) {
+    if (requestId === syncRequestSeq) showToast(`동기화 링크를 읽을 수 없습니다: ${error.message}`, { timeout: 5000 });
+    return;
+  }
+  // A newer link superseded this one while decoding; drop the stale result.
+  if (requestId !== syncRequestSeq) return;
+  if (payload.profile !== profile.id) {
+    showToast('다른 프로필의 링크입니다. 이 화면에서는 적용할 수 없습니다.', { timeout: 5000 });
+    return;
+  }
+  syncState.pending = { payload };
+}
+
+// Called after the feed has loaded, so the preview compares against jobs the
+// user can actually see rather than an empty list.
+function offerPendingHiddenSync() {
+  if (!syncState.pending) return;
+  renderSyncPanel(syncState.pending.payload);
+}
+
+// Strip the fragment immediately so a refresh cannot replay the transfer. The
+// payload is decoded once and held in memory until the feed is ready.
+function captureSyncFragment() {
+  const hrefLength = location.href.length;
+  const encoded = readSyncFragment(location.hash);
+  if (!encoded) return null;
+  history.replaceState(history.state, '', location.pathname + location.search);
+  return { encoded, hrefLength };
+}
+
+// Monotonic request id so a slow decode cannot overwrite a newer link opened in
+// the same tab while the first decode was still running.
+let syncRequestSeq = 0;
+
+async function handleSyncFragment(fragment, requestId = ++syncRequestSeq) {
+  // The whole URL must respect the same cap as link creation, not just the
+  // encoded body: path + query + "#sync=" count toward browser limits too.
+  if (fragment.hrefLength > MAX_URL_LENGTH) {
+    if (requestId === syncRequestSeq) showToast('동기화 링크가 너무 깁니다. 보낸 기기에서 다시 만들어 주세요.', { timeout: 5000 });
+    return;
+  }
+  await decodePendingHiddenSync(fragment.encoded, requestId);
+}
+
+const SYNC_HASH_SUFFIX = captureSyncFragment();
+const syncDecodeRequestId = SYNC_HASH_SUFFIX ? ++syncRequestSeq : 0;
+const syncDecodePromise = SYNC_HASH_SUFFIX
+  ? handleSyncFragment(SYNC_HASH_SUFFIX, syncDecodeRequestId)
+  : Promise.resolve();
+
+// A same-document fragment navigation does not reload the page, so a link
+// pasted into the address bar of an already-open tab must be handled here.
+globalThis.addEventListener?.('hashchange', async () => {
+  const fragment = captureSyncFragment();
+  if (!fragment) return;
+  const requestId = ++syncRequestSeq;
+  await handleSyncFragment(fragment, requestId);
+  // Only the newest request may repaint, so a slow older decode cannot erase a
+  // newer preview's explanatory note.
+  if (requestId === syncRequestSeq) offerPendingHiddenSync();
+});
+
+async function offerPendingHiddenSyncAfterLoad() {
+  await syncDecodePromise;
+  // A newer link may have superseded whatever this document started with (or a
+  // link opened while the feed was loading, when syncDecodeRequestId is still
+  // 0). Its own hashchange handler owns the panel, so do not repaint over it.
+  if (syncDecodeRequestId !== syncRequestSeq) return;
+  offerPendingHiddenSync();
+}
+
 function mergeManualJobs(jobs) {
   const current = new Map(state.manualJobs.map((job) => [job.id || job.url, job]));
   for (const job of jobs || []) {
@@ -1950,6 +2197,16 @@ $('addJobBtn').addEventListener('click', () => dialog.showModal());
 $('closeDialog').addEventListener('click', () => dialog.close());
 $('cancelDialog').addEventListener('click', () => dialog.close());
 $('exportStateBtn').addEventListener('click', exportState);
+$('toggleSyncShare').addEventListener('click', () => {
+  const panel = $('syncSharePanel');
+  const expanded = panel.hidden;
+  panel.hidden = !expanded;
+  $('toggleSyncShare').setAttribute('aria-expanded', String(expanded));
+  if (expanded) $('createSyncLinkBtn').focus();
+});
+$('createSyncLinkBtn').addEventListener('click', createSyncLink);
+$('syncPanelApply').addEventListener('click', applyPendingHiddenSync);
+$('syncPanelCancel').addEventListener('click', cancelPendingHiddenSync);
 $('importStateBtn').addEventListener('click', () => $('importStateFile').click());
 $('importStateFile').addEventListener('change', async (event) => {
   const file = event.target.files?.[0];
@@ -2004,7 +2261,8 @@ $('marketPulseToggle').addEventListener('click', () => {
 });
 $('retryLoad').addEventListener('click', async () => {
   $('retryLoad').disabled = true;
-  try { await load(); } catch (error) { state.loadError = error.message; $('emptyMessage').textContent = `공고를 불러오지 못했습니다: ${error.message}`; $('empty').hidden = false; }
+  try { await load(); await offerPendingHiddenSyncAfterLoad(); }
+  catch (error) { state.loadError = error.message; $('emptyMessage').textContent = `데이터를 다시 불러오지 못했습니다: ${error.message}`; $('empty').hidden = false; }
   finally { $('retryLoad').disabled = false; }
 });
 $('selectVisible').addEventListener('change', () => {
@@ -2101,6 +2359,7 @@ showStorageStatus();
 await commitState();
 try {
   await load();
+  await offerPendingHiddenSyncAfterLoad();
 } catch (error) {
   state.loadError = error.message;
   $('empty').hidden = false;

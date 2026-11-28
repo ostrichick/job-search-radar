@@ -60,6 +60,15 @@
     <a class="results-jump" href="#jobs">Skip to results</a>
     <section id="storageStatus" role="alert" class="panel" hidden><p id="storageStatusText"></p><button id="retryStorage" class="button secondary">Retry storage</button></section>
     <section id="recoveryNotice" role="status" class="panel" hidden><p id="recoveryNoticeText"></p><button id="downloadRecovery" class="button secondary">Download recovery data</button></section>
+    <section id="syncPanel" role="region" aria-labelledby="syncPanelTitle" class="panel sync-panel" hidden>
+      <h2 id="syncPanelTitle">Replace this device's hidden list with the link?</h2>
+      <p id="syncPanelDetail" class="sync-panel-detail"></p>
+      <p class="source-note">The link carries only this profile's hidden jobs and hidden reasons. Applying it <strong>replaces</strong> this device's hidden list, so jobs hidden only here become visible. Saved jobs, filters and searches are not changed.</p>
+      <div class="sync-panel-actions">
+        <button id="syncPanelApply" class="button primary" type="button">Use the link's list</button>
+        <button id="syncPanelCancel" class="button secondary" type="button">Cancel</button>
+      </div>
+    </section>
     <nav class="market-tabs" aria-label="Job location and work type">
       <button id="marketOverseas" class="market-tab" type="button" aria-pressed="true" data-market="overseas_remote">Online / Remote</button>
       <button id="marketDomestic" class="market-tab" type="button" aria-pressed="false" data-market="domestic">In-person / Korea</button>
@@ -266,8 +275,15 @@
       </div>
       <div class="result-actions">
         <button id="showAllActive" class="button compact secondary-light" type="button" hidden>Show active jobs excluding hidden</button>
+        <button id="toggleSyncShare" class="button compact secondary-light" type="button" aria-expanded="false" aria-controls="syncSharePanel">Hidden-list sync</button>
         <p class="source-note">Hovering a card briefly, opening details, or visiting the source marks it seen.</p>
       </div>
+    </section>
+    <section id="syncSharePanel" role="region" aria-labelledby="syncShareTitle" class="panel sync-panel" hidden>
+      <h2 id="syncShareTitle">Hidden-list sync link</h2>
+      <p class="source-note">Open this link on another device to transfer the hidden list. It contains <strong>hidden job ids and reasons</strong>, so do not post it publicly. Re-create the link to capture the latest state.</p>
+      <button id="createSyncLinkBtn" class="button secondary" type="button">Create link</button>
+      <input id="syncLinkField" type="text" readonly aria-label="Sync link">
     </section>
     <section id="sourceHealth" class="source-health" hidden aria-live="polite"></section>
     <details id="collectionCoverage" class="collection-coverage" hidden>

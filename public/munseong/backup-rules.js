@@ -92,11 +92,18 @@ export function validateBackup(payload, normalizeManual = (job) => job) {
 
 // Apply only the changes made by this tab to the latest committed document.
 // Missing map/set members are explicit removals, rather than an additive union.
-export function mergeStorageChanges(latest, before, after, mode = 'edit') {
+//
+// `mode === 'replace-hidden'` writes the two hidden-state keys as given in
+// `replace` instead of diffing them, so a sync link applied by two tabs in any
+// order ends with the last confirmed link's exact contents. The keys are
+// excluded from the generic loop below so it cannot re-diff them.
+export function mergeStorageChanges(latest, before, after, mode = 'edit', replace) {
   const result = { ...latest };
+  const replaced = mode === 'replace-hidden' ? new Set(['jobHidden', 'jobHiddenReasons']) : null;
   const sets = new Set(['jobFavorites', 'jobHidden', 'jobHiddenCompanies', 'jobHiddenSources', 'reviewedJobIds', 'jobNewIds', 'knownJobIds', 'jobDismissed']);
   const maps = new Set(['jobStates', 'jobHiddenReasons', 'trackedJobs', 'jobFiltersByMarket', 'reviewedJobFingerprints']);
   for (const key of new Set([...Object.keys(before), ...Object.keys(after)])) {
+    if (replaced?.has(key)) continue;
     if (before[key] === after[key]) continue;
     if (sets.has(key)) {
       const a = new Set(JSON.parse(before[key] || '[]')), b = new Set(JSON.parse(after[key] || '[]'));
@@ -115,6 +122,10 @@ export function mergeStorageChanges(latest, before, after, mode = 'edit') {
       result[key] = JSON.stringify(key === 'manualJobs' ? Object.values(current) : current);
     } else if (after[key] === undefined) delete result[key];
     else result[key] = after[key];
+  }
+  if (replaced && replace) {
+    result.jobHidden = replace.jobHidden;
+    result.jobHiddenReasons = replace.jobHiddenReasons;
   }
   if (result.jobNewIds && result.reviewedJobIds) {
     const reviewed = new Set(JSON.parse(result.reviewedJobIds));
