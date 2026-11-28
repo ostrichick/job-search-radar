@@ -139,6 +139,7 @@ export async function collectJeonbukPublic({ fetchText, normalizeJob, sourceColl
       source: '전북 공공기관',
       type: (detail.employment || '공공기관 채용').replace(/계약지/g, '계약직'),
       location,
+      ...(/전주시|전북/.test(detail.location) ? { workAddress: detail.location, workAddressEvidence: 'detail_html' } : {}),
       countryCode: 'KR',
       workplaceMode: 'onsite',
       remote: false,

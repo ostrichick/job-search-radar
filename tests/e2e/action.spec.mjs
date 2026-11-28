@@ -157,6 +157,7 @@ test('여덟 탭의 상단 높이와 탭 버튼 위치가 어긋나지 않는다
         const aside = document.querySelector('.hero-aside');
         const links = [...document.querySelectorAll('.profile-switch a, .sites a')];
         const actions = [...document.querySelectorAll('.topbar .actions button')].filter((el) => el.getClientRects().length);
+        const titles = [...document.querySelectorAll('header h1, header .lede, header .subtitle')].filter((el) => el.getClientRects().length);
         const inside = (r) => r.top >= header.top - 1 && r.bottom <= header.bottom + 1 && r.left >= header.left - 1 && r.right <= header.right + 1;
         const rectsInside = (els) => els.length > 0 && els.every((el) => inside(el.getBoundingClientRect()));
         return {
@@ -167,6 +168,7 @@ test('여덟 탭의 상단 높이와 탭 버튼 위치가 어긋나지 않는다
           asideInside: aside ? inside(aside.getBoundingClientRect()) : false,
           linksInside: rectsInside(links),
           actionsInside: actions.length ? rectsInside(actions) : true,
+          titlesInside: rectsInside(titles),
           overflow: document.documentElement.scrollWidth > window.innerWidth
         };
       });
@@ -177,6 +179,7 @@ test('여덟 탭의 상단 높이와 탭 버튼 위치가 어긋나지 않는다
       expect(layout.asideInside).toBe(true);
       expect(layout.linksInside).toBe(true);
       expect(layout.actionsInside).toBe(true);
+      expect(layout.titlesInside).toBe(true);
       expect(layout.overflow).toBe(false);
     }
     // 761~900px는 topbar 페이지가 액션 버튼과 탭 내비 폭을 나눠 쓰기 때문에

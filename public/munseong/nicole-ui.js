@@ -41,8 +41,11 @@ export function createNicoleUI({ state, storage, persist, mergeJobs, rerender })
     if (pay && ['금액 미공개', '보수 미공개', '급여 미공개'].includes(pay.textContent.trim())) pay.textContent = 'Pay not listed';
     const eligibility = node.querySelector('.eligibility-badge');
     if (eligibility) {
-      eligibility.textContent = job.eligibilityStatus === 'possible' ? 'Korea eligibility possible · verify'
-        : job.eligibilityCode === 'restricted' ? 'Location restrictions apply' : 'Work eligibility unverified';
+      const restricted = job.eligibilityCode === 'restricted';
+      const possible = job.eligibilityStatus === 'possible' && !restricted;
+      eligibility.textContent = restricted ? 'Location restrictions apply'
+        : possible ? 'Korea eligibility possible · verify' : 'Work eligibility unverified';
+      eligibility.className = `eligibility-badge ${restricted ? 'restricted' : possible ? 'eligible' : 'unknown'}`;
     }
     const dates = node.querySelector('.collection-dates');
     if (dates) {

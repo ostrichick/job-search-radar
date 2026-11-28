@@ -116,6 +116,7 @@ function render() {
     modeChip.textContent = MODE_LABELS[course.mode] || course.mode;
     const costChip = chips.querySelector('.cost');
     costChip.textContent = course.costLabel || COST_LABELS[course.costType] || course.costType;
+    costChip.title = costChip.textContent;
     costChip.classList.add(course.costType);
     chips.querySelector('.level').textContent = course.level;
     node.querySelector('.class-title').textContent = course.title;
@@ -124,8 +125,11 @@ function render() {
     node.querySelector('.schedule').textContent = course.schedule || '공식 공지 확인';
     node.querySelector('.location').textContent = course.location || '온라인';
     node.querySelector('.audience').textContent = course.audience || '공식 안내 확인';
-    node.querySelector('.source-note').textContent = course.sourceNote || '';
-    node.querySelector('.verify-note').textContent = `공식 원문 확인일 ${formatDate(course.verifiedAt)}`;
+    const sourceNote = node.querySelector('.source-note');
+    sourceNote.textContent = course.sourceNote || '';
+    sourceNote.hidden = !course.sourceNote;
+    node.querySelector('.verify-note').textContent = course.verifiedAt ? `공식 원문 확인일 ${formatDate(course.verifiedAt)}` : '';
+    node.querySelector('.class-details').style.display = !course.sourceNote && !course.verifiedAt ? 'none' : '';
     const official = node.querySelector('.official');
     official.href = course.url;
     const apply = node.querySelector('.apply');

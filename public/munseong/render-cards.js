@@ -133,7 +133,9 @@ function render() {
       (collectedAgo !== null ? ` · ${collectedAgo <= 3 ? '최근 추가' : '등록 후 ' + collectedAgo + '일'}` : '') +
       (sourceReviewed ? ` · 원문 수동 검토 ${sourceReviewed} (정기 재검증 아님)` : '');
     const valueLine = node.querySelector('.decision-value');
-    valueLine.textContent = `지금 볼 이유 · ${(job.applyValueReasons || []).slice(0, 3).map(friendlyUiText).join(' · ') || '추가 근거 확인 필요'}`;
+    const hasValueReasons = (job.applyValueReasons || []).length > 0;
+    valueLine.hidden = !hasValueReasons;
+    valueLine.textContent = `지금 볼 이유 · ${(job.applyValueReasons || []).slice(0, 3).map(friendlyUiText).join(' · ')}`;
     const unknownLine = node.querySelector('.decision-unknown');
     unknownLine.textContent = `미확인 · ${(job.decisionUnknowns || []).slice(0, 3).map(friendlyUiText).join(' · ') || '주요 미확인 항목 없음'}`;
     node.querySelector('.title').textContent = job.title;

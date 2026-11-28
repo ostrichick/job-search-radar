@@ -1,5 +1,6 @@
 import { renderFreshness } from '../shared/freshness.js';
 const $ = (id) => document.getElementById(id);
+import { formatDateTime } from '../shared/date-format.js';
 
 const CATEGORY_LABELS = {
   'ai-data': 'AI 데이터',
@@ -202,7 +203,7 @@ async function load() {
       source: 'manual',
       unchecked: state.items.filter((i) => String(i.checkedAt || '') < String(state.updatedAt || '').slice(0, 10)).length
     });
-    $('gigUpdatedAtInline').textContent = state.updatedAt ? `업데이트 ${state.updatedAt}` : '';
+    $('gigUpdatedAtInline').textContent = state.updatedAt ? `업데이트 ${formatDateTime(state.updatedAt)}` : '';
     if (data.disclaimer) $('gigDisclaimer').textContent = data.disclaimer;
     renderMetrics();
     render();

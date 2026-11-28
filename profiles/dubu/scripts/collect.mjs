@@ -64,7 +64,7 @@ function commonJob({ source, providerId, url, title, company, description, locat
       ? `한국에서 지원 가능성 있음 · ${eligibilityDetail.geoScope} (확인 필요)`
       : `한국 거주자 지원 가능 여부 확인 필요 · ${eligibilityDetail.geoScope}`;
   const languageRequirements = extractLanguages({ title: cleanTitle, description }).join(', ') || '공고 원문 확인 필요';
-  const languageFit = assessLanguageFit({ title: cleanTitle, description, category, languageRequirements }, languages);
+  const languageFit = assessLanguageFit({ title: cleanTitle, description, category, languageRequirements: '' }, languages);
   return {
     id: stableId(source, providerId, safeUrl),
     // Himalayas requires its API applicationLink to be used unchanged, including
@@ -159,7 +159,7 @@ function unsupportedTargetLanguageReview(title) {
 
 const expandedSourceLanguageMismatch = (job, knownLanguages) =>
   ['Himalayas', 'RemoteJobs.org'].includes(job.source)
-  && (job.languageFitStatus || assessLanguageFit(job, knownLanguages).languageFitStatus) === 'mismatch';
+  && (job.languageFitStatus || assessLanguageFit({ ...job, languageRequirements: '' }, knownLanguages).languageFitStatus) === 'mismatch';
 
 export function normalizeExpandedRemote(key, payload, options = {}) {
   const requestedNow = Date.parse(options.now);
@@ -397,8 +397,9 @@ export async function buildFeed({ root = ROOT, fetchImpl = fetch, readFileImpl =
       homeCountry: profile.homeCountry, knownLanguages: profile.spokenLanguages,
     }))).map((job) => ({
     ...job,
-    ...(job.languageFitStatus ? {} : assessLanguageFit(job, profile.spokenLanguages)),
-  }));
+    ...(job.languageFitStatus ? {} : assessLanguageFit({ ...job, languageRequirements: '' }, profile.spokenLanguages)),
+  })).map((job) => (job.languageFitStatus === 'unknown' && !job.manual && !['curated_research', 'manual'].includes(job.sourceKind)
+    ? { ...job, ...assessLanguageFit({ ...job, languageRequirements: '' }, profile.spokenLanguages) } : job));
   jobs.sort((a, b) => (b.postedAt || '').localeCompare(a.postedAt || '') || a.id.localeCompare(b.id));
   const sourceStatus = results.flatMap((x) => x.sourceStatus);
   const upworkSearches = (Array.isArray(profile.upworkSearches) ? profile.upworkSearches : [])
@@ -476,7 +477,8 @@ export function mergeHistoricalFeed(incoming, previous, { retentionDays = 60, ma
     return {
       ...job,
       legacyIds: [...new Set([...(job.legacyIds || []), ...(earlier?.legacyIds || []), earlier?.id].filter((id) => id && id !== job.id))],
-      ...(job.languageFitStatus ? {} : assessLanguageFit(job, knownLanguages)),
+      ...((!job.languageFitStatus || job.languageFitStatus === 'unknown') && !job.manual && !['curated_research', 'manual'].includes(job.sourceKind)
+        ? assessLanguageFit({ ...job, languageRequirements: '' }, knownLanguages) : {}),
       collectionState: 'seen', firstSeenAt: earlier ? (earlier.firstSeenAt || null) : collectedAt,
       lastSeenAt: collectedAt,
     };
@@ -511,7 +513,8 @@ export function mergeHistoricalFeed(incoming, previous, { retentionDays = 60, ma
       : job.collectionState === 'not_seen' ? 'not_seen' : 'unverified';
     return [{
       ...job, collectionState,
-      ...(job.languageFitStatus ? {} : assessLanguageFit(job, knownLanguages)),
+      ...((!job.languageFitStatus || job.languageFitStatus === 'unknown') && !job.manual && !['curated_research', 'manual'].includes(job.sourceKind)
+        ? assessLanguageFit({ ...job, languageRequirements: '' }, knownLanguages) : {}),
       firstSeenAt: job.firstSeenAt || null,
       lastSeenAt: previousSeen,
       evidenceNote: job.evidenceNote || '이전 수집 기록: 공개 목록에서 현재 모집 여부를 재확인하세요',

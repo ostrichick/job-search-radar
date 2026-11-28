@@ -133,6 +133,10 @@ const regionCentroids = {
     lat: 35.8122, lon: 127.1197, precision: 'district', label: '전북특별자치도 전주시 완산구',
     coordinateSource: 'OpenStreetMap Nominatim', coordinateCheckedAt: '2026-10-05'
   },
+  '전북특별자치도|전주시': {
+    lat: 35.8237631, lon: 127.1472805, precision: 'city', label: '전북특별자치도 전주시',
+    coordinateSource: 'OpenStreetMap Nominatim', coordinateCheckedAt: '2026-11-10'
+  },
   '전북특별자치도|완주군': {
     lat: 35.9039, lon: 127.1622, precision: 'city', label: '전북특별자치도 완주군',
     coordinateSource: 'OpenStreetMap Nominatim', coordinateCheckedAt: '2026-10-05'

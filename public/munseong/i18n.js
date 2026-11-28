@@ -116,6 +116,7 @@ const UI = new Map(Object.entries({
   '5년 이상·시니어 요건': '5+ years or senior requirement',
   '석사 학위 필수': "Master's degree required",
   '일본어·중국어 필수': 'Japanese or Chinese required',
+  '프로필에 없는 언어 요구': 'Language outside profile required',
   '한국어 중급 이상 필수': 'Intermediate+ Korean required',
   '한국어 요구 수준 확인': 'Korean level needs checking',
   '세일즈·매니저 직무': 'Sales / manager role',

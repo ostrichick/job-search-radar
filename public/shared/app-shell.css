@@ -149,6 +149,7 @@ h1 em { color: var(--accent); font-style: normal; }
 .freshness-kind { color: var(--chrome-text-muted); white-space: nowrap; }
 .freshness-chip { white-space: nowrap; padding: 2px 8px; border-radius: var(--radius-pill); background: var(--surface-muted); font-weight: 700; }
 .freshness-chip[data-state="partial"] { background: var(--status-warn-soft); color: var(--status-warn-text); }
+.freshness-chip[data-state="full"] { color: var(--text-strong); }
 .freshness-chip[data-state="unknown"] { background: var(--surface-muted); color: var(--text-muted); }
 .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: var(--shadow-accent-ring); }
 
@@ -242,16 +243,16 @@ main {
 .card.is-unreviewed,
 .tour-card.is-unreviewed,
 .gig-card.is-unreviewed {
-  border-color: var(--status-danger-border);
-  box-shadow: inset 0 0 0 2px var(--status-danger-soft);
+  border-color: var(--border-strong);
+  box-shadow: inset 0 0 0 2px var(--surface-muted);
 }
 .job-card.is-unreviewed:hover,
 .class-card.is-unreviewed:hover,
 .card.is-unreviewed:hover,
 .tour-card.is-unreviewed:hover,
 .gig-card.is-unreviewed:hover {
-  border-color: var(--status-danger-border);
-  box-shadow: var(--shadow-md), inset 0 0 0 2px var(--status-danger-border);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md), inset 0 0 0 2px var(--surface-muted);
 }
 .seen-status {
   display: inline-flex;
@@ -529,8 +530,9 @@ footer { margin-top: var(--space-8); color: var(--text-faint); font-size: var(--
 @media (max-width: 760px) {
   .results-jump { display: inline-flex; }
 }.topbar > div:first-child .profile-switch { margin-bottom: var(--space-6); }
-.topbar h1, .hero h1 { font-size: clamp(28px, 3vw, 40px); }
+.topbar h1, .hero h1 { font-size: clamp(28px, 3vw, 40px); text-wrap: balance; }
 .topbar .lede { margin-top: 10px; }
 .topbar .actions { margin-top: 12px; }
 @media (min-width: 761px) and (max-width: 900px) { .topbar, .hero { min-height: 430px; } }
-@media (max-width: 760px) { .topbar, .hero { min-height: 490px; } }
+@media (max-width: 760px) { .topbar, .hero { min-height: 420px; } }
+@media (max-width: 560px) { .topbar, .hero { min-height: 464px; } }

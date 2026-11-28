@@ -1,3 +1,4 @@
+import { assessLanguageFit, languageNamesIn } from '../shared/language-fit.js';
 const JEONBUK_CITIES = new Set([
   '전주', '완주', '군산', '익산', '정읍', '남원', '김제', '진안', '무주', '장수', '임실', '순창', '고창', '부안'
 ]);
@@ -33,7 +34,6 @@ function hasFiveYearRequirement(value) {
   return false;
 }
 const KOREAN_HIGH = /(?:topik\s*(?:level\s*)?[3-6]|한국어.{0,20}(?:중급|고급|능통|유창|비즈니스|원어민)|(?:fluent|native|business|advanced|professional|intermediate).{0,25}korean|korean.{0,25}(?:fluent|native|business|advanced|intermediate|c1|c2))/i;
-const OTHER_LANGUAGE_REQUIRED = /(?:japanese|chinese|taiwanese|일본어|중국어|대만어).{0,30}(?:required|mandatory|fluent|native|business|능통|필수)|(?:required|mandatory|fluent|native|business|능통|필수).{0,30}(?:japanese|chinese|taiwanese|일본어|중국어|대만어)/i;
 const WORKER_REMOTE_REGION_LIMIT = /\b(?:fully\s+remote|remote(?:ly)?|work\s+remotely)\s+(?:in|within|from)\s+(?:the\s+)?(?:latam|latin\s+america|north\s+america|south\s+america|united\s+states|u\.?s\.?a?\.?|canada|europe|emea|uk|united\s+kingdom)\b/i;
 const US_WORK_AUTH_REQUIRED = /\b(?:authorized|eligible|authorization\s+required|legally\s+permitted)\s+to\s+work\s+in\s+(?:the\s+)?(?:united\s+states|u\.?s\.?a?\.?)\b/i;
 function requiresUsWorkAuthorization(value) {
@@ -46,11 +46,6 @@ function requiresUsWorkAuthorization(value) {
       || /^\s*(?:is\s+)?(?:not\s+(?:required|needed|necessary|mandatory)|optional)\b/i.test(after));
   });
 }
-const UNSUPPORTED_MULTILINGUAL_TITLE = /\b(?:bi[- ]?lingual|tri[- ]?lingual|multi[- ]?lingual)\b.{0,110}\b(?:japanese|chinese)\b|(?:일본어|중국어).{0,100}(?:2개국어|3개국어|다국어\s*필수)/i;
-// An explicitly language-specific specialist role is not equivalent to a
-// general AI/data job just because its title contains "AI Trainer". Only
-// languages outside either profile, with no OR alternative, trigger this gate.
-const UNSUPPORTED_LANGUAGE_SPECIALIST = /\b(?:kinyarwanda|swahili|amharic|yoruba|igbo|arabic|hebrew|burmese|danish|french|german|portuguese|russian|japanese|chinese|turkish|dutch|thai|vietnamese|indonesian|hindi|urdu|punjabi)\s+(?:language\s+)?(?:specialist|expert|trainer|translator|linguist|teacher|tutor|interpreter|annotator|evaluator|transcriber|speaker|speaking|translation|transcription)\b/i;
 const SPANISH_HIGH = /(?:native|fluent|advanced|business|professional).{0,25}spanish|spanish.{0,25}(?:native|fluent|advanced|business|required)/i;
 const ENGLISH_HIGH = /english.{0,25}(?:c1|c2|fluent|native|business|professional)|(?:c1|c2).{0,25}english/i;
 const TEACHING = /korean\s+(?:language\s+)?(?:teacher|instructor|tutor|teaching)|한국어\s*(?:강사|교원|선생님|튜터|교육)|세종학당|korean language (?:education|teaching)/i;
@@ -151,12 +146,16 @@ export function evaluateProfileFit(job, { isNicole = false, age = null, now = Da
   if (job.listingStatus === 'expired') fail('마감 경과');
   if (hasFiveYearRequirement(combined) || SENIOR.test(title)) check('5년 이상·시니어 요건 확인');
   if (requiredIn(combined, MASTER) && !MASTER_ALTERNATIVE.test(combined)) fail('석사 학위 필수');
-  if (requiredIn(combined, OTHER_LANGUAGE_REQUIRED)) fail('프로필 밖 언어 필수');
-  if (UNSUPPORTED_MULTILINGUAL_TITLE.test(title) && !/\b(?:or|oder|또는)\b/i.test(title)) {
+  const knownLanguages = isNicole
+    ? { es: 'native', ko: 'beginner', en: 'unverified' }
+    : { ko: 'native', en: 'unverified' };
+  const languageRequirements = job.manual || ['curated_research', 'manual'].includes(job.sourceKind)
+    ? job.languageRequirements || '' : '';
+  const languageFit = assessLanguageFit({ title, description: text(job.description), category: job.category || '', languageRequirements },
+    knownLanguages);
+  if (languageFit.languageFitStatus === 'mismatch') fail('프로필에 없는 언어 요구');
+  if (/\b(?:bi|tri|multi)[- ]?lingual\b/i.test(title) && languageNamesIn(title).length > 1 && !/\b(?:or|oder|또는)\b/i.test(title)) {
     check('제목에 다국어가 언급되나 필수 수준 확인 필요');
-  }
-  if (UNSUPPORTED_LANGUAGE_SPECIALIST.test(title) && !/\b(?:or|oder|또는)\b/i.test(title)) {
-    fail('프로필에 없는 언어 전문직 명시');
   }
 
   if (isNicole) {

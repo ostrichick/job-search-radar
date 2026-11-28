@@ -7,7 +7,8 @@
 .class-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
 .class-card { display: flex; flex-direction: column; gap: 10px; min-width: 0; padding: 18px; border: 1px solid var(--border-base); border-radius: var(--radius-lg); background: var(--surface-card); }
 .class-card:hover { box-shadow: 0 10px 26px rgba(22,28,26,.08); transform: translateY(-2px); transition: .15s ease; }
-.class-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.class-chips { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 5px; min-height: 60px; }
+.class-chips .chip.cost { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .class-chips .chip { display: inline-flex; align-items: center; min-height: 27px; padding: 4px 8px; border-radius: 999px; background: var(--surface-muted); color: var(--text-body); font-size: 12px; font-weight: 800; }
 .class-chips .chip.free { background: var(--status-ok-soft); color: var(--status-ok-text); }
 .class-chips .chip.paid, .class-chips .chip.varies { background: var(--status-warn-soft); color: var(--status-warn-text); }

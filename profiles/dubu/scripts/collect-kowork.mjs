@@ -1,4 +1,4 @@
-import { classifyRole, excludeQualificationReason, safePublicUrl, stableId } from './rules.mjs';
+import { classifyRole, excludeQualificationReason, safePublicUrl, stableId, assessLanguageFit } from './rules.mjs';
 import { koreaCategory, koreaProvince, commuteRegion } from './collect-korea.mjs';
 
 // Public SSR URLs only. No /api/ access, logins, sitemap-wide scans, images,
@@ -8,7 +8,6 @@ const HOME = ROOT + '/en';
 const SEEDS = ['7322', '3448', '3322', '4193', '6527', '5036', '7244', '8102', '4814', '4490'];
 const UNRELATED = /\b(?:mongolian|mongolia|chinese-korean|japanese-korean|vietnamese|myanmar)\b/i;
 const KOREAN_MANDATORY = /\b(?:fluent|native|business|advanced|professional|intermediate)\s+(?:in\s+)?korean\b|\bkorean\b.{0,45}\b(?:required|fluency|business|reports|meetings|interview|c1|c2)\b|한국어.{0,30}(?:중급|능통|비즈니스|고급|유창|필수)|\btopik\s*(?:level\s*)?[3-6]\b/i;
-const OTHER_MANDATORY = /\b(?:chinese|japanese|hebrew|burmese|mongolian|italian|dutch|russian)\b/i;
 
 function decode(text) {
   return String(text || '').replace(/&#(?:x([0-9a-f]+)|(\d+));?/gi, (_full, hex, num) => {
@@ -103,7 +102,7 @@ export function parseKoworkDetail(html, url, now = new Date().toISOString()) {
   };
 }
 
-function toJob(post, now) {
+function toJob(post, now, languages = { es: 'native', ko: 'beginner', en: 'unverified' }) {
   if (!post || post.closed || UNRELATED.test(post.title)) return null;
   const category = classifyRole({ title: post.title, categories: [post.category], market: 'offline' })
     || koreaCategory(post.category);
@@ -111,8 +110,6 @@ function toJob(post, now) {
   const requirements = post.qualification + ' ' + post.requiredLanguages;
   if (excludeQualificationReason({ title: post.title, description: requirements }) ||
       KOREAN_MANDATORY.test(requirements)) return null;
-  if (OTHER_MANDATORY.test(post.requiredLanguages) &&
-      !/\b(?:spanish\s+or|or\s+spanish|either|one\s+of)\b/i.test(requirements)) return null;
   const id = post.url.match(/\/(\d+)$/)?.[1];
   if (!id) return null;
   const mode = /remote/i.test(post.mode) ? 'remote' : /hybrid/i.test(post.mode) ? 'hybrid'
@@ -138,8 +135,12 @@ function toJob(post, now) {
       'Open the original page for the full description and current status.'
     ].filter(Boolean).join(' '),
     languageRequirements: [post.requiredLanguages ? `Required: ${post.requiredLanguages}` : '', post.preferredLanguages ? `Preferred: ${post.preferredLanguages}` : ''].filter(Boolean).join('; ') || 'Verify on original KOWORK listing',
-    languageFitStatus: 'unknown',
-    languageFitReason: 'Public metadata was checked; language requirements still need confirmation.',
+    ...assessLanguageFit({
+      title: post.title,
+      description: [post.qualification, post.mode, post.jobType].filter(Boolean).join(' '),
+      category,
+      languageRequirements: [post.requiredLanguages ? `Required: ${post.requiredLanguages}` : '', post.preferredLanguages ? `Preferred: ${post.preferredLanguages}` : ''].filter(Boolean).join('; ')
+    }, languages),
     eligibilityStatus: /(?:korea residents? only|대한민국|한국 거주)/i.test(post.currentResidence) ||
       /F-6|international marriage|결혼이민/i.test(`${post.requiredVisas} ${post.preferredVisas}`) ? 'possible' : 'unknown',
     eligibility: [post.currentResidence ? `Current residence: ${post.currentResidence}` : '', post.requiredVisas ? `Required visas: ${post.requiredVisas}` : '', post.preferredVisas ? `Preferred visas: ${post.preferredVisas}` : ''].filter(Boolean).join('; ') || 'Confirm exact language, employment and visa conditions on original listing.',
@@ -149,7 +150,7 @@ function toJob(post, now) {
 }
 
 export async function collectKoworkJobs({ fetchImpl = fetch, now = new Date().toISOString(),
-  timeoutMs = 12000, delayMs = 1100, maxDetails = 6, seeds = SEEDS } = {}) {
+  timeoutMs = 12000, delayMs = 1100, maxDetails = 6, seeds = SEEDS, languages = { es: 'native', ko: 'beginner', en: 'unverified' } } = {}) {
   const get = async (url) => {
     const response = await fetchImpl(url, {
       headers: { Accept: 'text/html' }, signal: AbortSignal.timeout(timeoutMs),
@@ -183,7 +184,7 @@ export async function collectKoworkJobs({ fetchImpl = fetch, now = new Date().to
     try {
       const post = parseKoworkDetail(await get(url), url, now);
       if (!post) throw new Error('Detail format changed');
-      const lead = toJob(post, now);
+      const lead = toJob(post, now, languages);
       if (lead) jobs.push(lead);
       else excludedUrls.push(url);
     } catch (error) { failures.push(ids[n] + ': ' + txt(error?.message || error, 100)); }

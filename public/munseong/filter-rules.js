@@ -24,11 +24,11 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
   const requirementsFilter = value('requirementsFilter');
   const minScore = Number(value('minScore') || 0);
   const status = value('statusFilter');
+  const statusIgnored = skipped.has('statusFilter');
   const includeAllFits = teachingOnly
     || value('includeAllFits') === 'true'
     || (!isNicole && listingFilter !== 'active')
-    || ['saved', 'hidden'].includes(status)
-    || (isNicole && value('archiveFilter') !== 'all');
+    || (!statusIgnored && ['saved', 'hidden', 'all', 'planned', 'applied'].includes(status));
   const haystack = [job.title, job.company, job.location, region.label, region.province, region.locality, job.description, job.category, salaryLabel(job), ...(job.tags || []), ...(job.matchedKeywords || [])].join(' ').toLowerCase();
   const jobState = state.jobStates[job.id] || '';
   const canonical = (text) => String(text || '').normalize('NFKC').replace(/\s+/g, ' ').trim().toLowerCase();
@@ -43,12 +43,12 @@ function jobMatchesFilters(job, values = currentFilterValues(), { market = state
     // 'Current' bypasses the soft relevance threshold, not verified hard
     // disqualifiers (e.g. a Kinyarwanda-only language specialist). Never hide
     // these records in explicit audit/advanced views or personal workflows.
-    const explicitReview = ['all', 'saved', 'hidden', 'planned', 'applied'].includes(status)
+    const explicitReview = (!statusIgnored && ['all', 'saved', 'hidden', 'planned', 'applied'].includes(status))
       || value('includeAllFits') === 'true' || eligibility === 'restricted'
       || ['archived', 'unverified'].includes(value('archiveFilter'));
     if (!job.manual && !explicitReview
       && profileFit(job).status === 'fail') return false;
-    if (!includeAllFits && (job.languageFitStatus || 'unknown') === 'mismatch') return false;
+    if (!includeAllFits && !explicitReview && (job.languageFitStatus || 'unknown') === 'mismatch') return false;
     if (!skipped.has('commuteFilter') && market === 'domestic' && !['', 'all'].includes(value('commuteFilter')) && (region.commuteClass || 'unknown') !== value('commuteFilter')) return false;
     if (market === 'overseas_remote' && (job.category === 'interpreting' || /live\s*interpret|video\s*interpret|remote\s*interpreter|실시간\s*통역/i.test(`${job.title || ''} ${job.description || ''}`))) return false;
   }

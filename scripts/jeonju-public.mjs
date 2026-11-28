@@ -53,6 +53,15 @@ export function parseJeonjuPublicList(html, page = 1) {
   return rows;
 }
 
+async function detailWorkAddress(fetchText, url) {
+  try {
+    const body = decode(await fetchText(url));
+    const match = body.match(/(?:주소|소재지|근무지|사업장)[:\s]*((?:전북특별자치도|전라북도|전북)?\s*전주시[^.]{0,80})/i)
+      || body.match(/((?:전북특별자치도|전라북도|전북)\s*전주시[^.]{0,80})/i);
+    return match ? match[1].replace(/\s+/g, ' ').trim() : '';
+  } catch { return ''; }
+}
+
 export async function collectJeonjuPublic({ fetchText, normalizeJob, sourceCollection, pages = [1, 2] } = {}) {
   let rows = [];
   let successes = 0;
@@ -72,15 +81,17 @@ export async function collectJeonjuPublic({ fetchText, normalizeJob, sourceColle
   for (const row of rows) {
     if (seen.has(row.id)) continue;
     seen.add(row.id);
+    const workAddress = await detailWorkAddress(fetchText, row.url);
     jobs.push(normalizeJob({
       ...row,
+      ...(workAddress ? { workAddress, workAddressEvidence: 'detail_html' } : {}),
       source: '전주시 공공기관',
       type: typeFor(row.title),
       location: '전북특별자치도 전주시',
       countryCode: 'KR',
       workplaceMode: 'onsite',
       remote: false,
-      locationEvidenceLevel: 'source_text',
+      locationEvidenceLevel: workAddress ? 'source_structured' : 'source_text',
       sourceListingState: 'public_list',
       description: '전주시 공식 시험·채용 게시판의 공개 채용 공고입니다. 근무지, 자격요건, 급여와 모집 상태는 원문에서 확인하세요.',
       tags: ['전주시', '공공기관'],
