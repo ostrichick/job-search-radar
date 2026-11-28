@@ -310,10 +310,11 @@ test('Collection source drawer retains manual platform search links and states',
 
 test('Two Nicole shared screen tabs share saved and hidden state without touching Munseong DB', async ({ page, context }) => {
   const other = await context.newPage();
+  await other.route('**/feeds/dubu.json?*', (route) => route.fulfill({ json: feed }));
   await Promise.all([page.goto('/nicole/'), other.goto('/nicole/')]);
   await page.locator('#jobs .favorite').click();
   await expect(other.locator('#jobs .favorite.active')).toHaveCount(1);
-  await other.locator('#jobs .hide-actions').getByRole('button', { name: 'Hide source' }).click();
+  await other.locator('#jobs .hide-actions').getByRole('button', { name: 'Hide source' }).first().click();
   await expect(page.locator('#nicoleHiddenCount')).toContainText('1 hidden');
   const dbNames = await page.evaluate(async () => (await indexedDB.databases()).map((item) => item.name));
   expect(dbNames).toContain('job-search-radar-nicole');

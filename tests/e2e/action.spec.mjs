@@ -187,7 +187,7 @@ test('freshness status reflects provenance, partial checks, failures and timezon
   await page.route('**/jobs.json*', (route) => route.fulfill({ json: feed }));
   await page.goto('/action/');
   await expect(page.locator('.freshness-kind')).toHaveText('수동 확인');
-  await expect(page.locator('.freshness-chip')).toHaveText('일부 확인 · 6건 미확인');
+  await expect(page.locator('.freshness-chip')).toHaveText('일부 확인 · 4건 미확인');
   const cleanTourFeed = { updatedAt: new Date().toISOString(), items: [{ id: 'tour', checkedAt: new Date().toISOString() }], sourceStatus: [] };
   await page.route('**/tours.json*', (route) => route.fulfill({ json: cleanTourFeed }));
   await page.goto('/tours/');
